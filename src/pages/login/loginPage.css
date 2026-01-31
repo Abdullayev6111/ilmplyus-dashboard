@@ -326,9 +326,12 @@ form input::placeholder {
     margin-left: 20px;
   }
   .phone-logo {
+    width: 170px;
+    height: 150px;
     display: block;
     position: absolute;
     top: 150px;
+    z-index: 7;
   }
   .login-right-content {
     gap: 10px;
