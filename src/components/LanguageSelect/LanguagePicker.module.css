@@ -1,0 +1,33 @@
+.wrapper {
+  display: flex;
+  background: transparent;
+  padding: 4px;
+  border-radius: 10px;
+  width: fit-content;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 7;
+}
+
+.btn {
+  all: unset;
+  cursor: pointer;
+  padding: 6px 14px;
+  font-size: 20px;
+  font-family: noto-b;
+  border-radius: 8px;
+  color: #1f2937;
+
+  transition: all 0.2s ease;
+}
+
+.btn:not(.active):hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.active {
+  background: #003366;
+  color: #fff;
+  border: 2px solid #f6f6f6;
+}

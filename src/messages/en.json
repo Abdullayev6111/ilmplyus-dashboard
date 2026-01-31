@@ -1,0 +1,17 @@
+{
+  "login": {
+    "logout": "Logout",
+    "login": "Login",
+    "auth": "Two-factor authentication",
+    "authText": "To improve your account security, an SMS was sent to +998901234567. Please enter the 6-digit code",
+    "system": "EDUCATION SYSTEM",
+    "loginPlaceHolder": "Login",
+    "passwordPlaceHolder": "Password",
+    "systemSupport": "SYSTEM TECHNICAL SUPPORT:",
+    "telegramGroup": "Telegram group",
+    "instruction": "System guide",
+    "authorization": "Authorization",
+    "resetPassword": "Reset password",
+    "rightReserved": "All rights reserved"
+  }
+}

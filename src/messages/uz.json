@@ -1,0 +1,17 @@
+{
+  "login": {
+    "logout": "Chiqish",
+    "login": "Kirish",
+    "auth": "Ikki bosqichli autentifikatsiya",
+    "authText": "Sizning akkauntingiz xavfsizligini oshirish maqsadida telefon nomeringizga +998901234567 sms yuborildi. 6ta raqamli kodni kiriting",
+    "system": "TA’LIM TIZIMI",
+    "loginPlaceHolder": "Login",
+    "passwordPlaceHolder": "Parol",
+    "systemSupport": "TIZIM BO‘YICHA TEXNIK YORDAM:",
+    "telegramGroup": "Telegram guruh",
+    "instruction": "Tizim bo’yicha qo’llanma",
+    "authorization": "Avtorizatsiya",
+    "resetPassword": "Parolni tiklash",
+    "rightReserved": "Barcha huquqlar himoyalangan"
+  }
+}

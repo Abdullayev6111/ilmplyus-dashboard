@@ -1,0 +1,48 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: noto-r;
+  src: url(./assets/fonts/NotoSansJP-Regular.ttf);
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: noto-m;
+  src: url(./assets/fonts/NotoSansJP-Medium.ttf);
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: noto-sb;
+  src: url(./assets/fonts/NotoSansJP-SemiBold.ttf);
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: noto-b;
+  src: url(./assets/fonts/NotoSansJP-Bold.ttf);
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: noto-bl;
+  src: url(./assets/fonts/NotoSansJP-Black.ttf);
+  font-weight: 900;
+}
+
+.container {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.loader {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
