@@ -34,7 +34,7 @@
 
 .login-left-center {
   margin: 0 auto;
-  margin-top: 290px;
+  margin-top: 20%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -64,7 +64,7 @@
 }
 
 .login-left-bottom {
-  margin-top: 240px;
+  margin-top: 14%;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -106,7 +106,7 @@
   flex-direction: column;
   align-items: center;
   gap: 15px;
-  margin-top: 350px;
+  margin-top: 50%;
 }
 
 .login-right-content h1 {
@@ -123,8 +123,8 @@
   font-size: 15px;
   letter-spacing: 2%;
   font-weight: 700;
-  margin-top: 230px;
-  margin-left: 50px;
+  margin-top: 30%;
+  margin-left: 10px;
 }
 
 .login-right h4 span {
@@ -158,6 +158,51 @@ form input::placeholder {
   font-family: noto-r;
   font-size: 18px;
   color: #032140;
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  padding-right: 45px;
+}
+
+.password-eye {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #003366;
+  font-size: 18px;
+}
+
+.custom-password .mantine-PasswordInput-input {
+  width: 250px;
+  height: 60px;
+  border-radius: 15px;
+  border: 2px solid #003366;
+  font-size: 18px;
+  color: #003366;
+  padding: 18px 20px;
+}
+
+.custom-password .mantine-PasswordInput-input::placeholder {
+  font-family: noto-r;
+  font-size: 18px;
+  color: #032140 !important;
+}
+
+.custom-password .mantine-PasswordInput-visibilityToggle {
+  color: #003366;
+}
+
+.custom-password .mantine-PasswordInput-visibilityToggle:hover {
+  background: transparent;
 }
 
 .login-right a {
@@ -279,12 +324,16 @@ form input::placeholder {
   }
 }
 
-.mantine-Modal-root {
-  position: fixed !important;
-  inset: 0 !important;
+@media (max-width: 1920px) {
+  .login-right h4 {
+    margin-top: 46%;
+  }
+  .login-left-bottom {
+    margin-top: 24%;
+  }
 }
 
-@media screen and (max-width: 1280px) {
+@media (max-width: 1280px) {
   .login-right h4 {
     margin-top: 150px;
     font-size: 14px;
@@ -306,7 +355,7 @@ form input::placeholder {
   }
 }
 
-@media screen and (max-width: 480px) {
+@media (max-width: 480px) {
   .login-left {
     display: none;
   }
@@ -316,7 +365,7 @@ form input::placeholder {
   .login-support-phone {
     display: flex !important;
     gap: 20px !important;
-    margin-top: 100px;
+    margin-top: 15%;
   }
   .login-support-phone a {
     font-size: 25px;

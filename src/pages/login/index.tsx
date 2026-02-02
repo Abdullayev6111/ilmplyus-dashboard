@@ -12,16 +12,44 @@ import phoneLogo from '../../assets/images/phone-logo.png';
 import { Link } from 'react-router-dom';
 import LanguageSelect from '../../components/LanguageSelect/LanguageSelect';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
-import { Modal, Button, Text, TextInput, Group, Stack, Paper } from '@mantine/core';
-import { useState } from 'react';
+import { Modal, Button, Text, TextInput, Group, Stack, Paper, PasswordInput } from '@mantine/core';
+import { useState, useEffect } from 'react';
 import './loginPage.css';
 import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
   const { t } = useTranslation();
+  const [seconds, setSeconds] = useState(180);
   const [opened, { open, close }] = useDisclosure(false);
   const isMobile = useMediaQuery('(max-width: 50em)');
   const [code, setCode] = useState('');
+  const [resetOpened, resetHandlers] = useDisclosure(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleOpen = () => {
+    setSeconds(180);
+    open();
+  };
+
+  const handleResetOpen = () => {
+    resetHandlers.open();
+  };
+
+  useEffect(() => {
+    if (!opened) return;
+
+    const interval = setInterval(() => {
+      setSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [opened]);
+
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  const isValid = newPassword.length >= 8 && newPassword === confirmPassword;
 
   return (
     <section className="login">
@@ -64,7 +92,9 @@ const LoginPage = () => {
                 }}
               />
 
-              <Text fw={500}>3:00</Text>
+              <Text fw={500}>
+                {minutes}:{remainingSeconds.toString().padStart(2, '0')}
+              </Text>
             </Group>
 
             <Group grow mt="md">
@@ -77,13 +107,63 @@ const LoginPage = () => {
           </Stack>
         </Paper>
       </Modal>
+
+      <Modal
+        opened={resetOpened}
+        onClose={resetHandlers.close}
+        centered
+        withinPortal
+        fullScreen={isMobile}
+        zIndex={99999}
+        withCloseButton={false}
+        overlayProps={{
+          blur: 6,
+          backgroundOpacity: 0.6,
+        }}
+      >
+        <Paper radius="lg" p="xl" maw={520} mx="auto" shadow="lg">
+          <Stack gap="md" align="center">
+            <Text fw={700} size="xl" c="blue.9">
+              Parol yangilash
+            </Text>
+
+            <Text size="sm" c="dimmed" ta="center">
+              8ta harfdan yoki raqamdan iborat kod qoyin.
+            </Text>
+
+            <PasswordInput
+              value={newPassword}
+              className="custom-password"
+              onChange={(e) => setNewPassword(e.currentTarget.value)}
+              placeholder="XXXXXXXX"
+              radius="xl"
+              size="lg"
+            />
+
+            <PasswordInput
+              value={confirmPassword}
+              className="custom-password"
+              onChange={(e) => setConfirmPassword(e.currentTarget.value)}
+              placeholder="XXXXXXXX"
+              radius="xl"
+              size="lg"
+              mt="sm"
+            />
+
+            <Button disabled={!isValid} radius="xl" fullWidth mt="sm">
+              Kirish
+            </Button>
+          </Stack>
+        </Paper>
+      </Modal>
+
       <div className="login-left">
         <img src={LogoTop} className="main-logo" alt="*" />
         <img src={whiteLogoBig} className="white-logo-big" alt="*" />
 
         <div className="login-left-center">
           <img src={Logo} className="logo" alt="*" />
-          <img src={IlmPlyusText} alt="" />
+          <img src={IlmPlyusText} alt="*" />
           <h1>{t('login.system')}</h1>
         </div>
 
@@ -114,10 +194,31 @@ const LoginPage = () => {
           <h1>{t('login.authorization')}</h1>
           <form>
             <input type="text" placeholder={t('login.loginPlaceHolder')} />
-            <input type="password" placeholder={t('login.passwordPlaceHolder')} />
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder={t('login.passwordPlaceHolder')}
+              />
+
+              <button
+                type="button"
+                className="password-eye"
+                onClick={() => setShowPassword((v) => !v)}
+              >
+                <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
+              </button>
+            </div>
           </form>
-          <Link to="">{t('login.resetPassword')}</Link>
-          <button type="button" onClick={open} className="login-btn">
+          <Link
+            to=""
+            onClick={(e) => {
+              e.preventDefault();
+              handleResetOpen();
+            }}
+          >
+            {t('login.resetPassword')}
+          </Link>
+          <button type="button" onClick={handleOpen} className="login-btn">
             {t('login.login')}
           </button>
         </div>
