@@ -14,15 +14,16 @@ import classesIcon from '../assets/images/aside-school.svg';
 import studentsIcon from '../assets/images/aside-students.svg';
 import teachersIcon from '../assets/images/aside-teacher.svg';
 import { Accordion } from '@mantine/core';
+import { NavLink } from 'react-router-dom';
 
 const menu = [
-  { label: 'Boshqaruv paneli', icon: infoGrafikIcon },
-  { label: 'Foydalanuvchilar', icon: usersIcon },
-  { label: 'Sozlamalar', icon: settingsIcon },
-  { label: 'Filiallar', icon: branchesIcon },
-  { label: 'Sinflar', icon: classesIcon },
-  { label: 'O‘quvchilar', icon: studentsIcon },
-  { label: 'O‘qtuvchilar', icon: teachersIcon },
+  { label: 'Boshqaruv paneli', icon: infoGrafikIcon, path: '/' },
+  { label: 'Foydalanuvchilar', icon: usersIcon, path: '/users' },
+  { label: 'Sozlamalar', icon: settingsIcon, path: '/settings' },
+  { label: 'Filiallar', icon: branchesIcon, path: '/branches' },
+  { label: 'Sinflar', icon: classesIcon, path: '/classes' },
+  { label: 'O‘quvchilar', icon: studentsIcon, path: '/students' },
+  { label: 'O‘qtuvchilar', icon: teachersIcon, path: '/teachers' },
 ];
 
 const Aside = ({ collapsed, onOpen, onClose }: Props) => {
@@ -44,13 +45,18 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         <Accordion radius={0} className="sidebar" multiple={false}>
           {menu.map((item) => (
             <Accordion.Item value={item.label} key={item.label}>
-              <Accordion.Control className="sidebar-item">
-                <span className="sidebar-icon">
-                  <img src={item.icon} alt={item.label} />
-                </span>
+              <NavLink
+                to={item.path}
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+              >
+                <Accordion.Control component="div">
+                  <span className="sidebar-icon">
+                    <img src={item.icon} alt={item.label} />
+                  </span>
 
-                <span className={`sidebar-label ${collapsed ? 'hidden' : ''}`}>{item.label}</span>
-              </Accordion.Control>
+                  <span className={`sidebar-label ${collapsed ? 'hidden' : ''}`}>{item.label}</span>
+                </Accordion.Control>
+              </NavLink>
 
               <Accordion.Panel />
             </Accordion.Item>

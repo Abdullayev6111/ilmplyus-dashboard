@@ -2,6 +2,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #032140 transparent;
+}
+
+body {
+  background-color: #f5faff;
 }
 
 @font-face {
@@ -47,6 +53,8 @@
   place-items: center;
 }
 
+/* Header start */
+
 header {
   width: 100%;
   height: 100px;
@@ -79,6 +87,33 @@ header {
 .layout.collapsed {
   grid-template-columns: 80px 1fr;
 }
+
+.user-name {
+  font-family: noto-b;
+  font-size: 18px;
+  color: #fff;
+}
+
+.user-role {
+  font-family: noto-r;
+  font-size: 14px;
+  color: #fff;
+  opacity: 80%;
+}
+
+.user-icon-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #fe9100 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Header end */
+
+/* Aside start */
 
 aside {
   background: linear-gradient(to right, #032140, #003366);
@@ -139,7 +174,10 @@ aside {
 }
 
 .sidebar-label {
+  color: #fff;
   white-space: nowrap;
+  font-family: noto-b;
+  font-size: 18px;
 }
 
 .sidebar-label.hidden {
@@ -161,29 +199,6 @@ aside {
 
 .mantine-Accordion-control {
   padding: 0 !important;
-}
-
-.user-name {
-  font-family: noto-b;
-  font-size: 18px;
-  color: #fff;
-}
-
-.user-role {
-  font-family: noto-r;
-  font-size: 14px;
-  color: #fff;
-  opacity: 80%;
-}
-
-.user-icon-circle {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #fe9100 !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .mantine-Accordion-control {
@@ -231,4 +246,168 @@ aside {
 .sidebar-item {
   height: 56px;
   padding: 14px 18px !important;
+  text-decoration: none;
+}
+
+.sidebar-item.active {
+  background: #ffffff26;
+}
+
+.sidebar-item:hover {
+  background: #ffffff26 !important;
+}
+
+.sidebar .mantine-Accordion-control:hover {
+  background: transparent !important;
+}
+
+/* Aside end */
+
+/* Home page start */
+
+.control {
+  padding: 63px 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.control-top {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  transition: all 0.3s ease;
+}
+
+.control-card {
+  height: 190px;
+  border-radius: 15px;
+  border: 1px solid #003366;
+  padding: 30px 40px 15px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.control-card h4 {
+  font-family: noto-m;
+  font-size: 20px;
+  color: #003366;
+}
+
+.control-card p {
+  font-family: noto-r;
+  font-size: 24px;
+  color: #211715;
+}
+
+.control-content {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  transition: all 0.3s ease;
+}
+
+.control-content-left {
+  height: 477px;
+  border: 1px solid #003366;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  padding: 17px 15px 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart {
+  flex: 1;
+  margin-top: 30px;
+  margin-left: -40px;
+}
+
+.control-content-left.expanded {
+  width: 100%;
+}
+
+.control-content-left.collapsed {
+  width: 820px;
+}
+
+.control-content-left h1 {
+  font-family: noto-m;
+  font-size: 20px;
+  color: #003366;
+  letter-spacing: 1px;
+}
+
+.control-content-right {
+  width: 340px;
+  height: 477px;
+  border-radius: 15px;
+  border: 1px solid #003366;
+  padding: 55px 43px;
+}
+
+.control-content-right h1 {
+  font-family: noto-b;
+  font-size: 20px;
+  color: #003366;
+  text-align: center;
+}
+
+.control-content-right h2 {
+  font-family: noto-m;
+  font-size: 20px;
+  color: #003366;
+}
+
+.control-content-right h3 {
+  font-family: noto-r;
+  font-size: 16px;
+  color: #000;
+}
+
+.control-content-right h4 {
+  font-family: noto-m;
+  font-size: 16px;
+  color: #003366;
+  border-bottom: 1px solid #003366;
+  padding-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.control-content-right h4 span {
+  font-family: noto-r;
+  font-size: 16px;
+  color: #fe9100;
+}
+
+.control-content-right h5 {
+  font-family: noto-m;
+  font-size: 16px;
+  color: #003366;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
+
+.control-content-right h5:nth-of-type(1) span {
+  font-family: noto-r;
+  font-size: 16px;
+  color: #26ff00;
+}
+
+.control-content-right h5:nth-of-type(2) span {
+  font-family: noto-r;
+  font-size: 16px;
+  color: #3f88c9;
+}
+
+.control-content-right h5:nth-of-type(3) span {
+  font-family: noto-r;
+  font-size: 16px;
+  color: #fe0000;
 }
