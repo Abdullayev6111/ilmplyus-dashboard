@@ -17,31 +17,38 @@ import userRoleIcon from '../assets/images/aside-user-role.svg';
 import paymentsIcon from '../assets/images/money-bill.svg';
 import expenseIcon from '../assets/images/walletIcon.svg';
 import { Accordion } from '@mantine/core';
-import { NavLink } from 'react-router-dom';
-
-const menu = [
-  { label: 'Boshqaruv paneli', icon: infoGrafikIcon, path: '/' },
-  { label: 'Ro‘llar', icon: userRoleIcon, path: '/roles' },
-  { label: 'Foydalanuvchilar', icon: usersIcon, path: '/users' },
-  { label: 'Sozlamalar', icon: settingsIcon, path: '/settings' },
-  { label: 'Filiallar', icon: branchesIcon, path: '/branches' },
-  { label: 'Guruhlar', icon: classesIcon, path: '/classes' },
-  { label: 'O‘quvchilar', icon: studentsIcon, path: '/students' },
-  { label: 'O‘qtuvchilar', icon: teachersIcon, path: '/teachers' },
-  { label: 'To‘lovlar', icon: paymentsIcon, path: '/payments' },
-  {
-    label: 'Chiqimlar',
-    icon: expenseIcon,
-    path: '/expenses',
-    children: [
-      { label: 'Chiqimlar kategoriyasi', path: '/expenses/category' },
-      { label: 'Chiqimlar podkategoriyasi', path: '/expenses/subcategory' },
-      { label: 'Chiqim kiritish', path: '/expenses/create' },
-    ],
-  },
-];
+import { NavLink, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Aside = ({ collapsed, onOpen, onClose }: Props) => {
+  const { t } = useTranslation();
+  const location = useLocation(); // Import qiling: import { useLocation } from 'react-router-dom';
+
+  const menu = [
+    { label: t('aside.controlPanel'), icon: infoGrafikIcon, path: '/' },
+    { label: t('aside.roles'), icon: userRoleIcon, path: '/roles' },
+    { label: t('aside.users'), icon: usersIcon, path: '/users' },
+    { label: t('aside.settings'), icon: settingsIcon, path: '/settings' },
+    { label: t('aside.branches'), icon: branchesIcon, path: '/branches' },
+    { label: t('aside.groups'), icon: classesIcon, path: '/classes' },
+    { label: t('aside.students'), icon: studentsIcon, path: '/students' },
+    { label: t('aside.teachers'), icon: teachersIcon, path: '/teachers' },
+    { label: t('aside.payments'), icon: paymentsIcon, path: '/payments' },
+    {
+      label: t('aside.expenses'),
+      icon: expenseIcon,
+      path: '/expenses',
+      children: [
+        { label: t('aside.expenseCategory'), path: '/expenses/category' },
+        { label: t('aside.expenseSubCategory'), path: '/expenses/subcategory' },
+        { label: t('aside.expenseCreate'), path: '/expenses/create' },
+      ],
+    },
+  ];
+
+  // Expenses bo'limining active ekanligini tekshirish
+  const isExpensesActive = location.pathname.startsWith('/expenses');
+
   return (
     <aside
       className={collapsed ? 'aside collapsed' : 'aside'}
@@ -62,14 +69,14 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
             if (item.children) {
               return (
                 <Accordion.Item value={item.label} key={item.label}>
-                  <Accordion.Control>
-                    <div className="sidebar-item">
+                  <Accordion.Control
+                    className={`sidebar-accordion-control ${isExpensesActive ? 'active' : ''}`}
+                  >
+                    <div className="sidebar-item-content">
                       <span className="sidebar-icon">
                         <img src={item.icon} alt={item.label} />
                       </span>
-                      <span className={`sidebar-label ${collapsed ? 'hidden' : ''}`}>
-                        {item.label}
-                      </span>
+                      {!collapsed && <span className="sidebar-label">{item.label}</span>}
                     </div>
                   </Accordion.Control>
 
@@ -83,7 +90,8 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
                             `sidebar-subitem ${isActive ? 'active' : ''}`
                           }
                         >
-                          {child.label}
+                          <i className="fa-solid fa-circle dot-icon"></i>
+                          <span className="subitem-label">{child.label}</span>
                         </NavLink>
                       ))}
                     </div>
@@ -101,7 +109,6 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
                 <span className="sidebar-icon">
                   <img src={item.icon} alt={item.label} />
                 </span>
-
                 <span className={`sidebar-label ${collapsed ? 'hidden' : ''}`}>{item.label}</span>
               </NavLink>
             );

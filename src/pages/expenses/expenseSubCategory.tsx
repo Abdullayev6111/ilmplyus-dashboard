@@ -4,6 +4,7 @@ import { API } from '../../api/api';
 import '../users/users.css';
 import './expenses.css';
 import Loading from '../../components/Loading';
+import { useTranslation } from 'react-i18next';
 
 interface ExpenseCategory {
   id: number;
@@ -18,6 +19,7 @@ interface ExpenseSubcategory {
 }
 
 const ExpensesSubcategory = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -123,12 +125,12 @@ const ExpensesSubcategory = () => {
 
   return (
     <section className="users container">
-      <h1 className="main-title">Chiqim podkategoriyasi</h1>
+      <h1 className="main-title">{t('expenses.expenseSubCategory')}</h1>
 
       {showAddModal && (
         <div className="modal-overlay">
           <div className="expenses-subcategory">
-            <h1>Chiqim podkategoriyasi</h1>
+            <h1>{t('expenses.expenseSubCategory')}</h1>
 
             <form
               className="subcategory-form"
@@ -146,7 +148,7 @@ const ExpensesSubcategory = () => {
               }}
             >
               <div className="subcategory-form-group">
-                <label>Chiqim podkategoriyasi</label>
+                <label>{t('expenses.expenseSubCategoryName')}</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -156,7 +158,7 @@ const ExpensesSubcategory = () => {
               </div>
 
               <div className="subcategory-form-group">
-                <label>Chiqim kategoriyasi</label>
+                <label>{t('expenses.expenseCategory')}</label>
                 <select
                   value={formData.expense_category_id}
                   onChange={(e) =>
@@ -167,7 +169,7 @@ const ExpensesSubcategory = () => {
                   }
                   required
                 >
-                  <option value="">Tanlang</option>
+                  <option value="">{t('expenses.choose')}</option>
                   {categories?.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -186,11 +188,11 @@ const ExpensesSubcategory = () => {
                     setFormData({ name: '', expense_category_id: '' });
                   }}
                 >
-                  Bekor qilish
+                  {t('expenses.cancel')}
                 </button>
 
                 <button className="primary" type="submit">
-                  Saqlash
+                  {t('expenses.save')}
                 </button>
               </div>
             </form>
@@ -201,15 +203,15 @@ const ExpensesSubcategory = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>O‘chirishni tasdiqlaysizmi?</h3>
+            <h3>{t('expenses.confirmDelete')}</h3>
 
             <div className="modal-actions">
               <button className="cancel" onClick={() => setShowDeleteModal(false)}>
-                Bekor qilish
+                {t('expenses.cancel')}
               </button>
 
               <button className="danger" onClick={confirmDelete}>
-                O‘chirish
+                {t('expenses.delete')}
               </button>
             </div>
           </div>
@@ -218,7 +220,7 @@ const ExpensesSubcategory = () => {
 
       <div className="users-filters">
         <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          qo‘shish
+          {t('expenses.addBtn')}
         </button>
 
         <button
@@ -229,7 +231,7 @@ const ExpensesSubcategory = () => {
             setShowDeleteModal(true);
           }}
         >
-          o‘chirish
+          {t('expenses.delete')}
         </button>
       </div>
 
@@ -248,9 +250,9 @@ const ExpensesSubcategory = () => {
                 />
               </th>
               <th>ID</th>
-              <th>Podkategoriya</th>
-              <th>Kategoriya</th>
-              <th>Harakatlar</th>
+              <th>{t('expenses.subCategory')}</th>
+              <th>{t('expenses.category')}</th>
+              <th>{t('expenses.actions')}</th>
             </tr>
           </thead>
 
@@ -294,7 +296,7 @@ const ExpensesSubcategory = () => {
             ) : (
               <tr>
                 <td colSpan={5} style={{ textAlign: 'center', padding: 20 }}>
-                  Ma'lumot mavjud emas
+                  {t('expenses.notFound')}
                 </td>
               </tr>
             )}

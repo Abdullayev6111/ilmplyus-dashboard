@@ -36,6 +36,21 @@
     "day5": "JU",
     "day6": "SHA"
   },
+  "aside": {
+    "controlPanel": "Boshqaruv paneli",
+    "roles": "Ro‘llar",
+    "users": "Foydalanuvchilar",
+    "settings": "Sozlamalar",
+    "branches": "Filiallar",
+    "groups": "Guruhlar",
+    "students": "O‘quvchilar",
+    "teachers": "O‘qituvchilar",
+    "payments": "To‘lovlar",
+    "expenses": "Chiqimlar",
+    "expenseCategory": "Chiqimlar kategoriyasi",
+    "expenseSubCategory": "Chiqimlar podkategoriyasi",
+    "expenseCreate": "Chiqim kiritish"
+  },
   "payments": {
     "mainTitle": "To‘lovlar",
     "editPaymenTitle": "To‘lovni tahrirlash",
@@ -170,9 +185,10 @@
   "expenses": {
     "expenseTitle": "Chiqimlar",
     "addNewExpense": "Chiqim kiritish",
-    "expenseCategory": "Chiqimlar kategoriyasi",
+    "expenseCategory": "Chiqim kategoriyasi",
     "choose": "Tanlang",
     "expenseSubCategory": "Chiqim podkategoriyasi",
+    "expenseSubCategoryName": "Chiqim podkategoriyasi nomi",
     "cashier": "Kassir",
     "amount": "Summa",
     "date": "Sana",
@@ -185,6 +201,9 @@
     "category": "Kategoriya",
     "subCategory": "Podkategoriya",
     "actions": "Harakatlar",
-    "comment": "Izoh"
+    "comment": "Izoh",
+    "expenseCategoryName": "Chiqim kategoriyasi nomi",
+    "categoryName": "Kategoriya nomi",
+    "notFound": "Ma‘lumot mavjud emas"
   }
 }

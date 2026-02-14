@@ -36,6 +36,21 @@
     "day5": "FRI",
     "day6": "SAT"
   },
+  "aside": {
+    "controlPanel": "Control Panel",
+    "roles": "Roles",
+    "users": "Users",
+    "settings": "Settings",
+    "branches": "Branches",
+    "groups": "Groups",
+    "students": "Students",
+    "teachers": "Teachers",
+    "payments": "Payments",
+    "expenses": "Expenses",
+    "expenseCategory": "Expense Categories",
+    "expenseSubCategory": "Expense Subcategories",
+    "expenseCreate": "Add Expense"
+  },
   "payments": {
     "mainTitle": "Payments",
     "editPaymenTitle": "Edit Payment",
@@ -173,6 +188,7 @@
     "expenseCategory": "Expense Category",
     "choose": "Select",
     "expenseSubCategory": "Expense Subcategory",
+    "expenseSubCategoryName": "Expense Subcategory Name",
     "cashier": "Cashier",
     "amount": "Amount",
     "date": "Date",
@@ -185,6 +201,9 @@
     "category": "Category",
     "subCategory": "Subcategory",
     "actions": "Actions",
-    "comment": "Comment"
+    "comment": "Comment",
+    "expenseCategoryName": "Expense Category Name",
+    "categoryName": "Category Name",
+    "notFound": "No data available"
   }
 }

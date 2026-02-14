@@ -36,6 +36,21 @@
     "day5": "ПТ",
     "day6": "СБ"
   },
+  "aside": {
+    "controlPanel": "Панель управления",
+    "roles": "Роли",
+    "users": "Пользователи",
+    "settings": "Настройки",
+    "branches": "Филиалы",
+    "groups": "Группы",
+    "students": "Ученики",
+    "teachers": "Преподаватели",
+    "payments": "Платежи",
+    "expenses": "Расходы",
+    "expenseCategory": "Категории расходов",
+    "expenseSubCategory": "Подкатегории расходов",
+    "expenseCreate": "Добавить расход"
+  },
   "payments": {
     "mainTitle": "Платежи",
     "editPaymenTitle": "Редактировать платеж",
@@ -173,6 +188,7 @@
     "expenseCategory": "Категория расходов",
     "choose": "Выберите",
     "expenseSubCategory": "Подкатегория расходов",
+    "expenseSubCategoryName": "Название подкатегории расходов",
     "cashier": "Кассир",
     "amount": "Сумма",
     "date": "Дата",
@@ -185,6 +201,9 @@
     "category": "Категория",
     "subCategory": "Подкатегория",
     "actions": "Действия",
-    "comment": "Коммент"
+    "comment": "Комментарий",
+    "expenseCategoryName": "Название категории расходов",
+    "categoryName": "Название категории",
+    "notFound": "Данные отсутствуют"
   }
 }

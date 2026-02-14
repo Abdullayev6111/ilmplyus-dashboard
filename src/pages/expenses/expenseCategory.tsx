@@ -4,6 +4,7 @@ import { API } from '../../api/api';
 import '../users/users.css';
 import './expenses.css';
 import Loading from '../../components/Loading';
+import { useTranslation } from 'react-i18next';
 
 interface ExpenseCategory {
   id: number;
@@ -11,6 +12,7 @@ interface ExpenseCategory {
 }
 
 const ExpensesCategory = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -106,12 +108,12 @@ const ExpensesCategory = () => {
 
   return (
     <section className="users container">
-      <h1 className="main-title">Chiqim kategoriyasi</h1>
+      <h1 className="main-title">{t('expenses.expenseCategory')}</h1>
 
       {showAddModal && (
         <div className="modal-overlay">
           <div className="expenses-category">
-            <h1>Chiqim kategoriyasi</h1>
+            <h1>{t('expenses.expenseCategory')}</h1>
 
             <form
               onSubmit={(e) => {
@@ -123,7 +125,7 @@ const ExpensesCategory = () => {
                 }
               }}
             >
-              <label>Chiqim kategoriyasi</label>
+              <label>{t('expenses.expenseCategoryName')}</label>
 
               <input
                 type="text"
@@ -142,11 +144,11 @@ const ExpensesCategory = () => {
                     setCategoryName('');
                   }}
                 >
-                  Bekor qilish
+                  {t('expenses.cancel')}
                 </button>
 
                 <button className="primary" type="submit">
-                  Saqlash
+                  {t('expenses.save')}
                 </button>
               </div>
             </form>
@@ -157,15 +159,15 @@ const ExpensesCategory = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>O‘chirishni tasdiqlaysizmi?</h3>
+            <h3>{t('expenses.confirmDelete')}</h3>
 
             <div className="modal-actions">
               <button className="cancel" onClick={() => setShowDeleteModal(false)}>
-                Bekor qilish
+                {t('expenses.cancel')}
               </button>
 
               <button className="danger" onClick={confirmDelete}>
-                O‘chirish
+                {t('expenses.delete')}
               </button>
             </div>
           </div>
@@ -174,7 +176,7 @@ const ExpensesCategory = () => {
 
       <div className="users-filters">
         <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          qo‘shish
+          {t('expenses.addBtn')}
         </button>
 
         <button
@@ -185,7 +187,7 @@ const ExpensesCategory = () => {
             setShowDeleteModal(true);
           }}
         >
-          o‘chirish
+          {t('expenses.delete')}
         </button>
       </div>
 
@@ -203,8 +205,8 @@ const ExpensesCategory = () => {
                 />
               </th>
               <th>ID</th>
-              <th>Kategoriya nomi</th>
-              <th>Harakatlar</th>
+              <th>{t('expenses.categoryName')}</th>
+              <th>{t('expenses.actions')}</th>
             </tr>
           </thead>
 
@@ -247,7 +249,7 @@ const ExpensesCategory = () => {
             ) : (
               <tr>
                 <td colSpan={4} style={{ textAlign: 'center', padding: 20 }}>
-                  Ma'lumot mavjud emas
+                  {t('expenses.notFound')}
                 </td>
               </tr>
             )}

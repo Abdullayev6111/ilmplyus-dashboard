@@ -189,8 +189,20 @@ aside {
   padding: 14px 18px !important;
 }
 
-.mantine-Accordion-chevron {
-  display: none;
+.sidebar-subitem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot-icon {
+  font-size: 10px;
+  opacity: 0.6;
+  margin-right: 5px;
+}
+
+.sidebar-subitem.active .dot-icon {
+  opacity: 1;
 }
 
 .aside:not(.collapsed) .mantine-Accordion-panel {
@@ -234,7 +246,20 @@ aside {
 }
 
 .mantine-Accordion-chevron {
-  display: none;
+  display: block !important;
+  color: rgba(255, 255, 255, 0.7);
+  transition: transform 0.2s ease;
+  /* margin-right: 16px; */
+  padding: 14px 18px !important;
+  position: absolute;
+}
+
+.sidebar-item-content:hover .mantine-Accordion-chevron {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.aside.collapsed .mantine-Accordion-chevron {
+  display: none !important;
 }
 
 .sidebar-icon {
@@ -355,6 +380,43 @@ aside {
 .sidebar .mantine-Accordion-item {
   width: 100% !important;
   padding: 0 !important;
+}
+
+.mantine-Accordion-control {
+  width: 100%;
+}
+
+.sidebar-item {
+  width: 100%;
+  height: 56px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.sidebar-item-content {
+  display: flex;
+  width: 100%;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+.sidebar-item-content:hover {
+  background: #ffffff26;
+}
+
+.sidebar-item:hover {
+  background: #ffffff26;
+}
+
+.sidebar-item[data-active='true'],
+.sidebar-item.active {
+  background: #ffffff26;
 }
 
 /* Aside end */
