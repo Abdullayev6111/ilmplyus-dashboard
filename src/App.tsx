@@ -1,4 +1,7 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import useAuthStore from './store/useAuthStore';
+import ProtectedRoute from './components/ProtectedRoute';
+
 import Home from './pages/Home';
 import LoginPage from './pages/login';
 import Layout from './components/Layout';
@@ -14,27 +17,35 @@ import ArchivedPayments from './pages/archive';
 import Expenses from './pages/expenses';
 import ExpenseCategory from './pages/expenses/expenseCategory';
 import ExpenseSubCategory from './pages/expenses/expenseSubCategory';
+import NotFound from './pages/notFound';
+
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
 const App = () => {
+  const isAuth = useAuthStore((state) => state.isAuth);
+
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/roles" element={<Roles />} />
-        <Route path="/users" element={<Users />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/branches" element={<Branches />} />
-        <Route path="/classes" element={<Classes />} />
-        <Route path="/students" element={<Students />} />
-        <Route path="/teachers" element={<Teachers />} />
-        <Route path="/payments" element={<Payments />} />
-        <Route path="/payments/archive" element={<ArchivedPayments />} />
-        <Route path="/expenses/create" element={<Expenses />} />
-        <Route path="/expenses/category" element={<ExpenseCategory />} />
-        <Route path="/expenses/subcategory" element={<ExpenseSubCategory />} />
+      <Route path="/login" element={isAuth ? <Navigate to="/" replace /> : <LoginPage />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/roles" element={<Roles />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/branches" element={<Branches />} />
+          <Route path="/classes" element={<Classes />} />
+          <Route path="/students" element={<Students />} />
+          <Route path="/teachers" element={<Teachers />} />
+          <Route path="/payments" element={<Payments />} />
+          <Route path="/payments/archive" element={<ArchivedPayments />} />
+          <Route path="/expenses/create" element={<Expenses />} />
+          <Route path="/expenses/category" element={<ExpenseCategory />} />
+          <Route path="/expenses/subcategory" element={<ExpenseSubCategory />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
       </Route>
     </Routes>
   );

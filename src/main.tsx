@@ -8,7 +8,7 @@ import { Notifications } from '@mantine/notifications';
 import './i18n';
 import './index.css';
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
