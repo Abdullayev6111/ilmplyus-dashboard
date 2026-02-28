@@ -17,6 +17,7 @@ import ArchivedPayments from './pages/archive';
 import Expenses from './pages/expenses';
 import ExpenseCategory from './pages/expenses/expenseCategory';
 import ExpenseSubCategory from './pages/expenses/expenseSubCategory';
+import Courses from './pages/courses';
 import NotFound from './pages/notFound';
 
 import '@mantine/core/styles.css';
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/payments/archive" element={<ArchivedPayments />} />
+          <Route path="/courses" element={<Courses />} />
           <Route path="/expenses/create" element={<Expenses />} />
           <Route path="/expenses/category" element={<ExpenseCategory />} />
           <Route path="/expenses/subcategory" element={<ExpenseSubCategory />} />

@@ -16,6 +16,23 @@ import { Modal, Button, Text, TextInput, Group, Stack, Paper, PasswordInput } fr
 import { useState, useEffect } from 'react';
 import './loginPage.css';
 import { useTranslation } from 'react-i18next';
+import { useMutation } from '@tanstack/react-query';
+import { API } from '../../api/api';
+import useAuthStore from '../../store/useAuthStore';
+
+export interface LoginPayload {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: {
+    id: number;
+    name: string;
+    role: string;
+  };
+}
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -27,6 +44,8 @@ const LoginPage = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleOpen = () => {
     setSeconds(180);
@@ -50,6 +69,25 @@ const LoginPage = () => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
   const isValid = newPassword.length >= 8 && newPassword === confirmPassword;
+
+  const { setToken, setUser } = useAuthStore();
+
+  const loginMutation = useMutation({
+    mutationFn: async (payload: LoginPayload) => {
+      const { data } = await API.post<LoginResponse>('/login', payload);
+      return data;
+    },
+
+    onSuccess: (data) => {
+      setToken(data.token);
+      setUser(data.user);
+      window.location.href = '/';
+    },
+
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
   return (
     <section className="login">
@@ -193,10 +231,17 @@ const LoginPage = () => {
         <div className="login-right-content">
           <h1>{t('login.authorization')}</h1>
           <form>
-            <input type="text" placeholder={t('login.loginPlaceHolder')} />
+            <input
+              type="text"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
+              placeholder={t('login.loginPlaceHolder')}
+            />
             <div className="password-wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder={t('login.passwordPlaceHolder')}
               />
 
@@ -218,8 +263,18 @@ const LoginPage = () => {
           >
             {t('login.resetPassword')}
           </Link>
-          <button type="button" onClick={handleOpen} className="login-btn">
-            {t('login.login')}
+          <button
+            type="button"
+            className="login-btn"
+            disabled={loginMutation.isPending}
+            onClick={() =>
+              loginMutation.mutate({
+                username: login,
+                password,
+              })
+            }
+          >
+            {loginMutation.isPending ? 'Loading...' : t('login.login')}
           </button>
         </div>
 

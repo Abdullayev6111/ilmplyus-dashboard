@@ -47,6 +47,7 @@
     "teachers": "Teachers",
     "payments": "Payments",
     "expenses": "Expenses",
+    "courses": "Courses",
     "expenseCategory": "Expense Categories",
     "expenseSubCategory": "Expense Subcategories",
     "expenseCreate": "Add Expense"

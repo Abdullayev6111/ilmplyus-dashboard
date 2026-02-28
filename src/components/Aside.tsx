@@ -16,6 +16,7 @@ import teachersIcon from '../assets/images/aside-teacher.svg';
 import userRoleIcon from '../assets/images/aside-user-role.svg';
 import paymentsIcon from '../assets/images/money-bill.svg';
 import expenseIcon from '../assets/images/walletIcon.svg';
+import coursesIcon from '../assets/images/user-graduate-solid-full.svg';
 import { Accordion } from '@mantine/core';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +34,7 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
     { label: t('aside.groups'), icon: classesIcon, path: '/classes' },
     { label: t('aside.students'), icon: studentsIcon, path: '/students' },
     { label: t('aside.teachers'), icon: teachersIcon, path: '/teachers' },
+    { label: t('aside.courses'), icon: coursesIcon, path: '/courses' },
     { label: t('aside.payments'), icon: paymentsIcon, path: '/payments' },
     {
       label: t('aside.expenses'),

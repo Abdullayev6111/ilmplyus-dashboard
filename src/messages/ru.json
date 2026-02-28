@@ -47,6 +47,7 @@
     "teachers": "Преподаватели",
     "payments": "Платежи",
     "expenses": "Расходы",
+    "courses": "Курсы",
     "expenseCategory": "Категории расходов",
     "expenseSubCategory": "Подкатегории расходов",
     "expenseCreate": "Добавить расход"
