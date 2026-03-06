@@ -13,6 +13,14 @@ interface Level {
   updated_at: string;
 }
 
+interface Branch {
+  id: number;
+  name: string;
+  city: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface Course {
   id: number;
   name: string;
@@ -23,11 +31,13 @@ interface Course {
   created_at: string;
   updated_at: string;
   level: Level;
+  branch: Branch;
 }
 
 interface CourseFormData {
   name: string;
   level_id: string;
+  branch_id: string;
 }
 
 const Courses = () => {
@@ -43,12 +53,21 @@ const Courses = () => {
   const [formData, setFormData] = useState<CourseFormData>({
     name: '',
     level_id: '',
+    branch_id: '',
   });
 
   const { data: courses, isLoading } = useQuery<Course[]>({
     queryKey: ['courses'],
     queryFn: async () => {
       const { data } = await API.get<Course[]>('/courses');
+      return data;
+    },
+  });
+
+  const { data: branches } = useQuery<Branch[]>({
+    queryKey: ['branches'],
+    queryFn: async () => {
+      const { data } = await API.get<Branch[]>('/branches');
       return data;
     },
   });
@@ -65,7 +84,7 @@ const Courses = () => {
   }, [courses]);
 
   const createMutation = useMutation({
-    mutationFn: async (payload: { name: string; level_id: number }) =>
+    mutationFn: async (payload: { name: string; level_id: number; branch_id: number }) =>
       API.post('/courses', payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
@@ -74,8 +93,10 @@ const Courses = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (params: { id: number; payload: { name: string; level_id: number } }) =>
-      API.put(`/courses/${params.id}`, params.payload),
+    mutationFn: async (params: {
+      id: number;
+      payload: { name: string; level_id: number; branch_id: number };
+    }) => API.put(`/courses/${params.id}`, params.payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       resetForm();
@@ -92,7 +113,7 @@ const Courses = () => {
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-    setFormData({ name: '', level_id: '' });
+    setFormData({ name: '', level_id: '', branch_id: '' });
   };
 
   const openEditModal = (item: Course) => {
@@ -100,6 +121,7 @@ const Courses = () => {
     setFormData({
       name: item.name,
       level_id: String(item.level_id),
+      branch_id: String(item.branch_id),
     });
     setShowModal(true);
   };
@@ -144,6 +166,7 @@ const Courses = () => {
                 const payload = {
                   name: formData.name.trim(),
                   level_id: Number(formData.level_id),
+                  branch_id: Number(formData.branch_id),
                 };
 
                 if (editingItem) {
@@ -161,6 +184,27 @@ const Courses = () => {
                   onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                   required
                 />
+              </div>
+
+              <div className="subcategory-form-group">
+                <label>Filial</label>
+                <select
+                  value={formData.branch_id}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      branch_id: e.target.value,
+                    }))
+                  }
+                  required
+                >
+                  <option value="">Tanlang</option>
+                  {branches?.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="subcategory-form-group">
@@ -246,7 +290,8 @@ const Courses = () => {
               </th>
               <th>ID</th>
               <th>Kurs nomi</th>
-              <th>Level</th>
+              <th>Daraja</th>
+              <th>Filial</th>
               <th>Yaratilgan sana</th>
               <th>{t('expenses.actions')}</th>
             </tr>
@@ -266,6 +311,7 @@ const Courses = () => {
                   <td>{item.id}</td>
                   <td>{item.name}</td>
                   <td>{item.level?.name ?? '-'}</td>
+                  <td>{branches?.find((b) => b.id === item.branch_id)?.name ?? '-'}</td>
                   <td>{new Date(item.created_at).toLocaleDateString()}</td>
                   <td className="actions">
                     <button className="user-edit-btn" onClick={() => openEditModal(item)}>
