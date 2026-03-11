@@ -47,22 +47,6 @@
   color: #fff;
 }
 
-.logo {
-  animation: spin 5s linear infinite;
-  transform-style: preserve-3d;
-  backface-visibility: visible;
-  filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.15));
-}
-
-@keyframes spin {
-  from {
-    transform: rotateY(0deg);
-  }
-  to {
-    transform: rotateY(-360deg);
-  }
-}
-
 .login-left-bottom {
   margin-top: 14%;
   display: flex;
@@ -387,5 +371,15 @@ form input::placeholder {
   }
   .login-right-content h1 {
     margin-bottom: -5px;
+  }
+}
+
+@media (height: 945px) {
+  .login-right h4 {
+    margin-top: calc(46% - 50px);
+  }
+
+  .login-left-bottom {
+    margin-top: calc(24% - 35px);
   }
 }

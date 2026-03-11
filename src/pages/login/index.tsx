@@ -225,7 +225,15 @@ const LoginPage = () => {
         <img src={phoneLogo} alt="*" className="phone-logo" />
         <div className="login-right-content">
           <h1>{t('login.authorization')}</h1>
-          <form>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              loginMutation.mutate({
+                username: login,
+                password,
+              });
+            }}
+          >
             <input
               type="text"
               value={login}
@@ -248,29 +256,31 @@ const LoginPage = () => {
                 <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
               </button>
             </div>
+
+            <Link
+              to=""
+              onClick={(e) => {
+                e.preventDefault();
+                handleResetOpen();
+              }}
+            >
+              {t('login.resetPassword')}
+            </Link>
+
+            <button
+              type="submit"
+              className="login-btn"
+              disabled={loginMutation.isPending}
+              onClick={() =>
+                loginMutation.mutate({
+                  username: login,
+                  password,
+                })
+              }
+            >
+              {loginMutation.isPending ? 'Loading...' : t('login.login')}
+            </button>
           </form>
-          <Link
-            to=""
-            onClick={(e) => {
-              e.preventDefault();
-              handleResetOpen();
-            }}
-          >
-            {t('login.resetPassword')}
-          </Link>
-          <button
-            type="button"
-            className="login-btn"
-            disabled={loginMutation.isPending}
-            onClick={() =>
-              loginMutation.mutate({
-                username: login,
-                password,
-              })
-            }
-          >
-            {loginMutation.isPending ? 'Loading...' : t('login.login')}
-          </button>
         </div>
 
         <div
