@@ -37,7 +37,7 @@ export interface LoginResponse {
 const LoginPage = () => {
   const { t } = useTranslation();
   const [seconds, setSeconds] = useState(180);
-  const [opened, { open, close }] = useDisclosure(false);
+  const [opened, { close }] = useDisclosure(false);
   const isMobile = useMediaQuery('(max-width: 50em)');
   const [code, setCode] = useState('');
   const [resetOpened, resetHandlers] = useDisclosure(false);
@@ -46,11 +46,6 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
-
-  const handleOpen = () => {
-    setSeconds(180);
-    open();
-  };
 
   const handleResetOpen = () => {
     resetHandlers.open();

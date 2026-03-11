@@ -48,7 +48,6 @@
 
 .branch-data-table th {
   padding: 10px;
-  border: 1px solid #8aa3c0;
   color: #003366;
   text-align: center;
   font-weight: 600;
@@ -56,14 +55,7 @@
 
 .branch-data-table td {
   padding: 10px;
-  border-right: 1px solid #8aa3c0;
-  border-bottom: 1px solid #8aa3c0;
   text-align: center;
-}
-
-.branch-data-table tr td:first-child,
-.branch-data-table tr th:first-child {
-  border-left: 1px solid #8aa3c0;
 }
 
 .branch-data-table tbody tr:hover {
@@ -83,6 +75,7 @@
 .branch-table-container {
   overflow-y: auto;
   flex: 1;
+  box-shadow: 0 0 1px black;
 }
 
 .branch-data-table thead th {

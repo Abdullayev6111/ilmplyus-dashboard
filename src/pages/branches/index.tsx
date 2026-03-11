@@ -26,13 +26,6 @@ interface Branch {
   updated_at: string;
 }
 
-// interface BranchApiResponse {
-//   current_page: number;
-//   data: Branch[];
-//   total: number;
-//   per_page: number;
-// }
-
 const Branches = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
