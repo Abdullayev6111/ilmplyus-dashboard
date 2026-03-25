@@ -2,12 +2,11 @@
   width: 100%;
   max-width: 1262px;
   min-height: 864px;
-  border: 1px solid #003366;
   border-radius: 15px;
   padding: 25px;
   margin-top: 30px !important;
   margin-bottom: 30px !important;
-  background: #fff;
+  background: transparent;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -23,7 +22,7 @@
 .users-filters input {
   height: 38px;
   padding: 0 12px;
-  border-radius: 8px;
+  border-radius: 15px;
   border: 1px solid #003366;
   outline: none;
   min-width: 200px;
@@ -47,16 +46,26 @@
   padding: 10px;
   color: #003366;
   text-align: center;
-  font-weight: 600;
+  font-family: noto-sb;
+}
+
+.users-table th:last-child {
+  border-right: 1px solid #d9d9d9;
+}
+
+.users-table th:first-child {
+  border-left: 1px solid #d9d9d9;
 }
 
 .users-table td {
   padding: 10px;
   text-align: center;
+  border: 1px solid #00336628;
 }
 
 .users-table tbody tr:hover {
-  background: #f5faff;
+  background-color: #00336617;
+  cursor: pointer;
 }
 
 .users-table td:last-child {
@@ -356,7 +365,7 @@
 .form-group select {
   padding: 10px 12px;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 15px !important;
   font-size: 14px;
   color: #003366;
 }

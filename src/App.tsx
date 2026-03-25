@@ -1,34 +1,39 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
-import useAuthStore from './store/useAuthStore';
-import ProtectedRoute from './components/ProtectedRoute';
+import { Route, Routes, Navigate } from "react-router-dom";
+import useAuthStore from "./store/useAuthStore";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-import Home from './pages/Home';
-import LoginPage from './pages/login';
-import Layout from './components/Layout';
-import Users from './pages/users';
-import Settings from './pages/settings';
-import Branches from './pages/branches';
-import Classes from './pages/classes';
-import Students from './pages/students';
-import Teachers from './pages/teachers';
-import Roles from './pages/roles';
-import Payments from './pages/payments';
-import ArchivedPayments from './pages/archive';
-import Expenses from './pages/expenses';
-import ExpenseCategory from './pages/expenses/expenseCategory';
-import ExpenseSubCategory from './pages/expenses/expenseSubCategory';
-import Courses from './pages/courses';
-import NotFound from './pages/notFound';
+import Home from "./pages/Home";
+import LoginPage from "./pages/login";
+import Layout from "./components/Layout";
+import Users from "./pages/users";
+import Settings from "./pages/settings";
+import Branches from "./pages/branches";
+import Classes from "./pages/classes";
+import Students from "./pages/students";
+import Teachers from "./pages/teachers";
+import Roles from "./pages/roles";
+import Payments from "./pages/payments";
+import ArchivedPayments from "./pages/archive";
+import Expenses from "./pages/expenses";
+import ExpenseCategory from "./pages/expenses/expenseCategory";
+import ExpenseSubCategory from "./pages/expenses/expenseSubCategory";
+import Courses from "./pages/courses";
+import NotFound from "./pages/notFound";
+import Rooms from "./pages/rooms";
+import Department from "./pages/department";
 
-import '@mantine/core/styles.css';
-import '@mantine/notifications/styles.css';
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 
 const App = () => {
   const isAuth = useAuthStore((state) => state.isAuth);
 
   return (
     <Routes>
-      <Route path="/login" element={isAuth ? <Navigate to="/" replace /> : <LoginPage />} />
+      <Route
+        path="/login"
+        element={isAuth ? <Navigate to="/" replace /> : <LoginPage />}
+      />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
@@ -45,9 +50,14 @@ const App = () => {
           <Route path="/courses" element={<Courses />} />
           <Route path="/expenses/create" element={<Expenses />} />
           <Route path="/expenses/category" element={<ExpenseCategory />} />
-          <Route path="/expenses/subcategory" element={<ExpenseSubCategory />} />
-          <Route path="*" element={<NotFound />} />
+          <Route
+            path="/expenses/subcategory"
+            element={<ExpenseSubCategory />}
+          />
+          <Route path="/rooms" element={<Rooms />} />
+          <Route path="/department" element={<Department />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );

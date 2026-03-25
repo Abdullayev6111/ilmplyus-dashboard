@@ -9,7 +9,7 @@
     "passwordPlaceHolder": "Parol",
     "systemSupport": "TIZIM BO‘YICHA TEXNIK YORDAM:",
     "telegramGroup": "Telegram guruh",
-    "instruction": "Tizim bo’yicha qo’llanma",
+    "instruction": "Tizim bo‘yicha qo‘llanma",
     "authorization": "Avtorizatsiya",
     "resetPassword": "Parolni tiklash",
     "rightReserved": "Barcha huquqlar himoyalangan"
@@ -50,7 +50,9 @@
     "courses": "Kurslar",
     "expenseCategory": "Chiqimlar kategoriyasi",
     "expenseSubCategory": "Chiqimlar podkategoriyasi",
-    "expenseCreate": "Chiqim kiritish"
+    "expenseCreate": "Chiqim kiritish",
+    "rooms": "Xonalar",
+    "departments": "Bo'limlar"
   },
   "payments": {
     "mainTitle": "To‘lovlar",
@@ -93,7 +95,10 @@
     "delete": "O‘chirish",
     "archivedTitle": "Arxivlangan to‘lovlar",
     "noArchived": "Arxivlangan to‘lovlar y‘oq",
-    "group": "Guruh"
+    "group": "Guruh",
+    "restore": "Qaytarish",
+    "permanentDelete": "Butunlay o'chirish",
+    "restoreError": "Qayta tiklashda xatolik yuz berdi!"
   },
   "users": {
     "listTitle": "Foydaluvchilar ro‘yhati",
@@ -205,6 +210,58 @@
     "comment": "Izoh",
     "expenseCategoryName": "Chiqim kategoriyasi nomi",
     "categoryName": "Kategoriya nomi",
-    "notFound": "Ma‘lumot mavjud emas"
+    "notFound": "Ma’lumot mavjud emas"
+  },
+  "rooms": {
+    "rooms": "Xonalar",
+    "branchName": "Filial nomi",
+    "roomName": "Xona",
+    "capacity": "Xona sig'imi",
+    "floor": "Qavati",
+    "actions": "Harakatlar",
+    "notFound": "Ma’lumot mavjud emas",
+    "addBtn": "Qo‘shish",
+    "delete": "O‘chirish",
+    "choose": "Tanlang",
+    "branch": "Filial",
+    "confirmDelete": "O‘chirishni tasdiqlaysizmi?",
+    "cancel": "Bekor qilish",
+    "save": "Saqlash"
+  },
+  "departments": {
+    "listTitle": "Bo‘limlar ro‘yhati",
+    "addNewTitle": "Qo‘shish",
+    "editTitle": "Bo‘limni tahrirlash",
+    "name": "Nomi",
+    "code": "Kodi",
+    "branch": "Filial",
+    "selectBranch": "Filialni tanlang",
+    "manager": "Manager",
+    "status": "Holat",
+    "active": "Faol",
+    "inactive": "Nofaol",
+    "actions": "Harakatlar",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "loading": "Ma’lumotlar yuklanmoqda...",
+    "noData": "Ma’lumot topilmadi",
+    "confirmDelete": "Haqiqatan ham o‘chirmoqchimisiz?"
+  },
+  "courses": {
+    "mainTitle": "Kurslar",
+    "course": "Kurs",
+    "courseName": "Kurs nomi",
+    "level": "Daraja",
+    "branch": "Filial",
+    "createdDate": "Yaratilgan sana",
+    "choose": "Tanlang",
+    "actions": "Harakatlar"
+  },
+  "header": {
+    "administrator": "Administrator"
+  },
+  "notFound": {
+    "page": "Sahifa",
+    "notFound": "topilmadi"
   }
 }

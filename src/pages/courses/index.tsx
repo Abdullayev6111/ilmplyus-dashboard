@@ -60,7 +60,7 @@ const Courses = () => {
     queryKey: ['courses'],
     queryFn: async () => {
       const { data } = await API.get<Course[]>('/courses');
-      return data;
+      return Array.isArray(data) ? data : (data as any)?.data || [];
     },
   });
 
@@ -68,7 +68,7 @@ const Courses = () => {
     queryKey: ['branches'],
     queryFn: async () => {
       const { data } = await API.get<Branch[]>('/branches');
-      return data;
+      return Array.isArray(data) ? data : (data as any)?.data || [];
     },
   });
 
@@ -151,12 +151,12 @@ const Courses = () => {
 
   return (
     <section className="users container">
-      <h1 className="main-title">Kurslar</h1>
+      <h1 className="main-title">{t('courses.mainTitle')}</h1>
 
       {showModal && (
         <div className="modal-overlay">
           <div className="expenses-subcategory">
-            <h1>Kurs</h1>
+            <h1>{t('courses.course')}</h1>
 
             <form
               className="subcategory-form"
@@ -177,7 +177,7 @@ const Courses = () => {
               }}
             >
               <div className="subcategory-form-group">
-                <label>Kurs nomi</label>
+                <label>{t('courses.courseName')}</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -187,7 +187,7 @@ const Courses = () => {
               </div>
 
               <div className="subcategory-form-group">
-                <label>Filial</label>
+                <label>{t('courses.branch')}</label>
                 <select
                   value={formData.branch_id}
                   onChange={(e) =>
@@ -198,7 +198,7 @@ const Courses = () => {
                   }
                   required
                 >
-                  <option value="">Tanlang</option>
+                  <option value="">{t('courses.choose')}</option>
                   {branches?.map((branch) => (
                     <option key={branch.id} value={branch.id}>
                       {branch.name}
@@ -208,7 +208,7 @@ const Courses = () => {
               </div>
 
               <div className="subcategory-form-group">
-                <label>Level</label>
+                <label>{t('courses.level')}</label>
                 <select
                   value={formData.level_id}
                   onChange={(e) =>
@@ -219,7 +219,7 @@ const Courses = () => {
                   }
                   required
                 >
-                  <option value="">Tanlang</option>
+                  <option value="">{t('courses.choose')}</option>
                   {levels.map((level) => (
                     <option key={level.id} value={level.id}>
                       {level.name}
@@ -289,11 +289,11 @@ const Courses = () => {
                 />
               </th>
               <th>ID</th>
-              <th>Kurs nomi</th>
-              <th>Daraja</th>
-              <th>Filial</th>
-              <th>Yaratilgan sana</th>
-              <th>{t('expenses.actions')}</th>
+              <th>{t('courses.courseName')}</th>
+              <th>{t('courses.level')}</th>
+              <th>{t('courses.branch')}</th>
+              <th>{t('courses.createdDate')}</th>
+              <th>{t('courses.actions')}</th>
             </tr>
           </thead>
 

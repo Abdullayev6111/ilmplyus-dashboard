@@ -2,12 +2,11 @@
   width: 100%;
   max-width: 1262px;
   min-height: 864px;
-  border: 1px solid #003366;
   border-radius: 15px;
   padding: 25px;
   margin-top: 30px !important;
   margin-bottom: 30px !important;
-  background: #fff;
+  background: transparent;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -25,7 +24,7 @@
 .branch-date-input {
   height: 38px;
   padding: 0 12px;
-  border-radius: 8px;
+  border-radius: 15px;
   border: 1px solid #003366;
   outline: none;
   min-width: 200px;

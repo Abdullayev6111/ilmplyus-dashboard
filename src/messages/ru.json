@@ -50,7 +50,9 @@
     "courses": "Курсы",
     "expenseCategory": "Категории расходов",
     "expenseSubCategory": "Подкатегории расходов",
-    "expenseCreate": "Добавить расход"
+    "expenseCreate": "Добавить расход",
+    "rooms": "Комнаты",
+    "departments": "Отделы"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -93,7 +95,10 @@
     "delete": "Удалить",
     "archivedTitle": "Архивированные платежи",
     "noArchived": "Архивированных платежей нет",
-    "group": "Группа"
+    "group": "Группа",
+    "restore": "Восстановить",
+    "permanentDelete": "Удалить навсегда",
+    "restoreError": "Произошла ошибка при восстановлении!"
   },
   "users": {
     "listTitle": "Список пользователей",
@@ -183,6 +188,22 @@
     "setTime": "Назначить время",
     "archive": "Архивировать"
   },
+  "rooms": {
+    "rooms": "Комнаты",
+    "branchName": "Название филиала",
+    "roomName": "Комната",
+    "capacity": "Вместимость комнаты",
+    "floor": "Этаж",
+    "actions": "Действия",
+    "notFound": "Данные отсутствуют",
+    "addBtn": "Добавить",
+    "delete": "Удалить",
+    "choose": "Выберите",
+    "branch": "Филиал",
+    "confirmDelete": "Вы уверены, что хотите удалить?",
+    "cancel": "Отмена",
+    "save": "Сохранить"
+  },
   "expenses": {
     "expenseTitle": "Расходы",
     "addNewExpense": "Добавить расход",
@@ -206,5 +227,41 @@
     "expenseCategoryName": "Название категории расходов",
     "categoryName": "Название категории",
     "notFound": "Данные отсутствуют"
+  },
+  "departments": {
+    "listTitle": "Список отделов",
+    "addNewTitle": "Добавить",
+    "editTitle": "Редактировать отдел",
+    "name": "Название",
+    "code": "Код",
+    "branch": "Филиал",
+    "selectBranch": "Выберите филиал",
+    "manager": "Менеджер",
+    "status": "Статус",
+    "active": "Активный",
+    "inactive": "Неактивный",
+    "actions": "Действия",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "loading": "Загрузка данных...",
+    "noData": "Данные не найдены",
+    "confirmDelete": "Вы действительно хотите удалить?"
+  },
+  "courses": {
+    "mainTitle": "Курсы",
+    "course": "Курс",
+    "courseName": "Название курса",
+    "level": "Уровень",
+    "branch": "Филиал",
+    "createdDate": "Дата создания",
+    "choose": "Выберите",
+    "actions": "Действия"
+  },
+  "header": {
+    "administrator": "Администратор"
+  },
+  "notFound": {
+    "page": "Страница",
+    "notFound": "не найдена"
   }
 }

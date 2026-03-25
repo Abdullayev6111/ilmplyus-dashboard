@@ -50,7 +50,9 @@
     "courses": "Courses",
     "expenseCategory": "Expense Categories",
     "expenseSubCategory": "Expense Subcategories",
-    "expenseCreate": "Add Expense"
+    "expenseCreate": "Add Expense",
+    "rooms": "Rooms",
+    "departments": "Departments"
   },
   "payments": {
     "mainTitle": "Payments",
@@ -93,7 +95,10 @@
     "delete": "Delete",
     "archivedTitle": "Archived Payments",
     "noArchived": "No archived payments",
-    "group": "Group"
+    "group": "Group",
+    "restore": "Restore",
+    "permanentDelete": "Delete permanently",
+    "restoreError": "An error occurred while restoring!"
   },
   "users": {
     "listTitle": "User list",
@@ -183,6 +188,22 @@
     "setTime": "Set time",
     "archive": "Archive"
   },
+  "rooms": {
+    "rooms": "Rooms",
+    "branchName": "Branch Name",
+    "roomName": "Room",
+    "capacity": "Room Capacity",
+    "floor": "Floor",
+    "actions": "Actions",
+    "notFound": "No data available",
+    "addBtn": "Add",
+    "delete": "Delete",
+    "choose": "Select",
+    "branch": "Branch",
+    "confirmDelete": "Are you sure you want to delete?",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
   "expenses": {
     "expenseTitle": "Expenses",
     "addNewExpense": "Add Expense",
@@ -206,5 +227,41 @@
     "expenseCategoryName": "Expense Category Name",
     "categoryName": "Category Name",
     "notFound": "No data available"
+  },
+  "departments": {
+    "listTitle": "Department List",
+    "addNewTitle": "Add",
+    "editTitle": "Edit Department",
+    "name": "Name",
+    "code": "Code",
+    "branch": "Branch",
+    "selectBranch": "Select Branch",
+    "manager": "Manager",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "actions": "Actions",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading data...",
+    "noData": "No data found",
+    "confirmDelete": "Are you sure you want to delete?"
+  },
+  "courses": {
+    "mainTitle": "Courses",
+    "course": "Course",
+    "courseName": "Course Name",
+    "level": "Level",
+    "branch": "Branch",
+    "createdDate": "Created Date",
+    "choose": "Select",
+    "actions": "Actions"
+  },
+  "header": {
+    "administrator": "Administrator"
+  },
+  "notFound": {
+    "page": "Page",
+    "notFound": "not found"
   }
 }

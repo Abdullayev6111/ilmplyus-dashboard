@@ -43,7 +43,7 @@ const Branches = () => {
     queryKey: ['branches'],
     queryFn: async () => {
       const { data } = await API.get('/branches');
-      return data;
+      return Array.isArray(data) ? data : data?.data || [];
     },
   });
 

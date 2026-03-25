@@ -1,7 +1,10 @@
 import userIcon from '../assets/images/user-icon.svg';
 import LanguageSelect from './LanguageSelect/LanguageSelect';
+import { useTranslation } from 'react-i18next';
 
 const Header = () => {
+  const { t } = useTranslation();
+
   return (
     <header className="header">
       <LanguageSelect />
@@ -12,7 +15,7 @@ const Header = () => {
 
         <div>
           <h1 className="user-name">Obidov Ibrohim</h1>
-          <p className="user-role">Administrator</p>
+          <p className="user-role">{t('header.administrator')}</p>
         </div>
       </div>
     </header>

@@ -103,7 +103,7 @@ const Payments = () => {
     queryKey: ['payments'],
     queryFn: async () => {
       const { data } = await API.get('/payments');
-      return data;
+      return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
@@ -111,7 +111,7 @@ const Payments = () => {
     queryKey: ['branches'],
     queryFn: async () => {
       const { data } = await API.get('/branches');
-      return data;
+      return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
@@ -119,7 +119,7 @@ const Payments = () => {
     queryKey: ['employees'],
     queryFn: async () => {
       const { data } = await API.get('/employees');
-      return data;
+      return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
@@ -127,7 +127,7 @@ const Payments = () => {
     queryKey: ['courses'],
     queryFn: async () => {
       const { data } = await API.get('/courses');
-      return data;
+      return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
@@ -135,7 +135,7 @@ const Payments = () => {
     queryKey: ['groups'],
     queryFn: async () => {
       const { data } = await API.get('/groups');
-      return data;
+      return Array.isArray(data) ? data : data?.data || [];
     },
   });
 

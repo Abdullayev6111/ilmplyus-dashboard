@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Word {
   x: number;
@@ -8,6 +9,7 @@ interface Word {
 }
 
 const NotFound = () => {
+  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
 
@@ -39,7 +41,7 @@ const NotFound = () => {
     const words: Word[] = [];
 
     for (let i = 0; i < 25; i++) {
-      ['404', 'page', 'not found', '404'].forEach((text) => {
+      ['404', t('notFound.page'), t('notFound.notFound'), '404'].forEach((text) => {
         words.push({
           x: random(0, width),
           y: random(0, height),

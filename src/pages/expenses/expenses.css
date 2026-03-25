@@ -4,7 +4,6 @@
   max-width: 692px;
   padding: 30px 120px;
   border-radius: 15px;
-  border-radius: 1px solid #003366;
   background-color: #fff;
   display: flex;
   flex-direction: column;
@@ -41,7 +40,6 @@
   max-width: 912px;
   padding: 30px 60px;
   border-radius: 15px;
-  border-radius: 1px solid #003366;
   background-color: #fff;
   display: flex;
   flex-direction: column;
@@ -96,7 +94,6 @@
   max-width: 912px;
   padding: 40px 76px;
   border-radius: 15px;
-  border-radius: 1px solid #003366;
   background-color: #fff;
   display: flex;
   flex-direction: column;

@@ -106,7 +106,7 @@ const ArchivedPayments = () => {
       console.log("✅ To'lov qayta tiklandi:", payment.id);
     } catch (error) {
       console.error('❌ Restore xatosi:', error);
-      alert('Qayta tiklashda xatolik yuz berdi!');
+      alert(t('payments.restoreError'));
     }
   };
 
@@ -167,14 +167,14 @@ const ArchivedPayments = () => {
                     <button
                       className="restore-btn"
                       onClick={() => restorePayment(u)}
-                      title="Qaytarish"
+                      title={t('payments.restore')}
                     >
                       <i className="fa-solid fa-rotate-left"></i>
                     </button>
                     <button
                       className="payment-delete-btn"
                       onClick={() => deleteFromArchive(u.id)}
-                      title="Butunlay o'chirish"
+                      title={t('payments.permanentDelete')}
                     >
                       <i className="fa-solid fa-trash"></i>
                     </button>

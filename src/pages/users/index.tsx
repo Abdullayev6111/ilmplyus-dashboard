@@ -158,7 +158,7 @@ const Users = () => {
     queryKey: ['branches'],
     queryFn: async () => {
       const { data } = await API.get('/branches');
-      return data;
+      return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
@@ -166,7 +166,7 @@ const Users = () => {
     queryKey: ['positions'],
     queryFn: async () => {
       const { data } = await API.get('/positions');
-      return data;
+      return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
@@ -174,7 +174,7 @@ const Users = () => {
     queryKey: ['roles'],
     queryFn: async () => {
       const { data } = await API.get('/roles');
-      return data;
+      return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
@@ -723,7 +723,7 @@ const Users = () => {
 
                 <td>{u.phone}</td>
                 <td>{u.roles[0]?.name || '-'}</td>
-                <td>{u.is_active ? 'Aktiv' : 'Noaktiv'}</td>
+                <td>{u.is_active ? t('users.active') : t('users.inactive')}</td>
                 <td>{u.branch?.address || '-'}</td>
                 <td>{u.username}</td>
                 <td>{u.created_at.slice(0, 10).replaceAll('-', '.')}</td>

@@ -57,7 +57,7 @@ const Expenses = () => {
   const [formData, setFormData] = useState({
     expense_category_id: '',
     expense_subcategory_id: '',
-    cashier_id: '',
+    user_id: '',
     amount: '',
     expense_date: '',
     branch_id: '',
@@ -136,7 +136,7 @@ const Expenses = () => {
     setFormData({
       expense_category_id: String(item.category?.id || ''),
       expense_subcategory_id: String(item.subcategory?.id || ''),
-      cashier_id: String(item.cashier?.id || ''),
+      user_id: String(item.cashier?.id || ''),
       amount: item.amount,
       expense_date: item.expense_date,
       branch_id: String(item.branch?.id || ''),
@@ -151,7 +151,7 @@ const Expenses = () => {
     setFormData({
       expense_category_id: '',
       expense_subcategory_id: '',
-      cashier_id: '',
+      user_id: '',
       amount: '',
       expense_date: '',
       branch_id: '',
@@ -265,9 +265,9 @@ const Expenses = () => {
                 <div className="form-group">
                   <label>{t('expenses.cashier')}</label>
                   <select
-                    value={formData.cashier_id}
+                    value={formData.user_id}
                     className="create-form-input"
-                    onChange={(e) => setFormData({ ...formData, cashier_id: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, user_id: e.target.value })}
                     required
                   >
                     <option value="">{t('expenses.choose')}</option>
@@ -494,7 +494,7 @@ const Expenses = () => {
             ) : (
               <tr>
                 <td colSpan={9} style={{ textAlign: 'center', padding: 20 }}>
-                  Ma'lumot mavjud emas
+                  {t('expenses.notFound')}
                 </td>
               </tr>
             )}
