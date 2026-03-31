@@ -19,6 +19,7 @@ import expenseIcon from "../assets/images/walletIcon.svg";
 import coursesIcon from "../assets/images/user-graduate-solid-full.svg";
 import roomsIcon from "../assets/images/user-clock-solid-full.svg";
 import departmentsIcon from "../assets/images/sitemap-solid-full.svg";
+import areasIcon from "../assets/images/globe-solid-full.svg";
 import { Accordion } from "@mantine/core";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -33,6 +34,15 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
     { label: t("aside.users"), icon: usersIcon, path: "/users" },
 
     { label: t("aside.branches"), icon: branchesIcon, path: "/branches" },
+    {
+      label: t("aside.areas"),
+      icon: areasIcon,
+      path: "/areas",
+      children: [
+        { label: t("aside.regions"), path: "/areas/regions" },
+        { label: t("aside.districts"), path: "/areas/districts" },
+      ],
+    },
     {
       label: t("aside.departments"),
       icon: departmentsIcon,

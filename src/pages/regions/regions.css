@@ -1,0 +1,87 @@
+/* Regions & Districts style start */
+
+.regions-category {
+  max-width: 692px;
+  padding: 30px 120px;
+  border-radius: 15px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 70px auto;
+  align-items: center;
+}
+
+.regions-category h1 {
+  font-family: noto-b;
+  font-size: 20px;
+  color: #003366;
+}
+
+.regions-category form label {
+  font-family: noto-m;
+  font-size: 14px;
+  color: #003366;
+  margin-left: -85px;
+  margin-bottom: -15px;
+}
+
+.regions-category form input {
+  height: 40px;
+  border-radius: 15px;
+  border: 1px solid #003366;
+}
+
+/* Districts start */
+
+.districts-container {
+  max-width: 912px;
+  padding: 30px 60px;
+  border-radius: 15px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin: 70px auto;
+  align-items: center;
+}
+
+.districts-container h1 {
+  font-family: noto-b;
+  font-size: 20px;
+  color: #003366;
+}
+
+.district-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.district-form-group input {
+  width: 330px;
+  height: 40px;
+  border-radius: 15px;
+  border: 1px solid #003366;
+  margin-top: 9px;
+}
+
+.district-form-group select {
+  width: 330px;
+  height: 40px;
+  border-radius: 15px;
+  border: 1px solid #003366;
+  margin-top: 9px;
+  padding: 8px 15px;
+  outline: none;
+}
+
+.district-form label {
+  color: #003366;
+}
+
+.district-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Districts end */

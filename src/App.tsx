@@ -21,6 +21,9 @@ import Courses from "./pages/courses";
 import NotFound from "./pages/notFound";
 import Rooms from "./pages/rooms";
 import Department from "./pages/department";
+import Areas from "./pages/regions";
+import AreaRegions from "./pages/regions/areaRegions";
+import AreaDistricts from "./pages/regions/areaDistricts";
 
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
@@ -42,6 +45,9 @@ const App = () => {
           <Route path="/users" element={<Users />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/branches" element={<Branches />} />
+          <Route path="/areas" element={<Areas />} />
+          <Route path="/areas/regions" element={<AreaRegions />} />
+          <Route path="/areas/districts" element={<AreaDistricts />} />
           <Route path="/classes" element={<Classes />} />
           <Route path="/students" element={<Students />} />
           <Route path="/teachers" element={<Teachers />} />

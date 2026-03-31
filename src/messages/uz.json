@@ -52,7 +52,10 @@
     "expenseSubCategory": "Chiqimlar podkategoriyasi",
     "expenseCreate": "Chiqim kiritish",
     "rooms": "Xonalar",
-    "departments": "Bo'limlar"
+    "departments": "Bo'limlar",
+    "areas": "Hududlar",
+    "regions": "Viloyatlar",
+    "districts": "Tumanlar"
   },
   "payments": {
     "mainTitle": "To‘lovlar",

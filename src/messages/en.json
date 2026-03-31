@@ -52,7 +52,10 @@
     "expenseSubCategory": "Expense Subcategories",
     "expenseCreate": "Add Expense",
     "rooms": "Rooms",
-    "departments": "Departments"
+    "departments": "Departments",
+    "areas": "Areas",
+    "regions": "Regions",
+    "districts": "Districts"
   },
   "payments": {
     "mainTitle": "Payments",

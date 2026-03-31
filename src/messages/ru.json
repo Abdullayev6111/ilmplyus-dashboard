@@ -52,7 +52,10 @@
     "expenseSubCategory": "Подкатегории расходов",
     "expenseCreate": "Добавить расход",
     "rooms": "Комнаты",
-    "departments": "Отделы"
+    "departments": "Отделы",
+    "areas": "Области",
+    "regions": "Регионы",
+    "districts": "Районы"
   },
   "payments": {
     "mainTitle": "Платежи",
