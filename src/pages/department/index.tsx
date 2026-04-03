@@ -1,34 +1,15 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import { API } from "../../api/api";
 import { useTranslation } from "react-i18next";
 import EmptyState from "../../components/EmptyState";
 import "../branches/branches.css";
-
-// --- TYPES ---
-export interface Branch {
-  id: number;
-  name: string;
-  city: string;
-}
-
-export interface Department {
-  id: number;
-  name: string;
-  code: string;
-  branch_id: number;
-  manager: string;
-  is_active: boolean;
-  branch: Branch;
-}
-
-export interface DepartmentPayload {
-  name: string;
-  code: string;
-  branch_id: number;
-  manager: string;
-  is_active: boolean;
-}
+import type { Branch, DepartmentType, DepartmentPayload } from "../../types";
+import { useEffect, useMemo, useState } from "react";
 
 // --- API FUNCTIONS ---
 const getBranches = async (): Promise<Branch[]> => {
@@ -36,14 +17,14 @@ const getBranches = async (): Promise<Branch[]> => {
   return data;
 };
 
-const getDepartments = async (): Promise<Department[]> => {
+const getDepartments = async (): Promise<DepartmentType[]> => {
   const { data } = await API.get("/departments");
   return data;
 };
 
 const createDepartment = async (
   payload: DepartmentPayload,
-): Promise<Department> => {
+): Promise<DepartmentType> => {
   const { data } = await API.post("/departments", payload);
   return data;
 };
@@ -51,7 +32,7 @@ const createDepartment = async (
 const updateDepartment = async (
   id: number,
   payload: DepartmentPayload,
-): Promise<Department> => {
+): Promise<DepartmentType> => {
   const { data } = await API.put(`/departments/${id}`, payload);
   return data;
 };
@@ -66,7 +47,7 @@ interface DepartmentModalProps {
   onClose: () => void;
   onSubmit: (payload: DepartmentPayload, id?: number) => void;
   branches: Branch[];
-  initialData?: Department | null;
+  initialData?: DepartmentType | null;
 }
 
 const DepartmentModal: React.FC<DepartmentModalProps> = ({
@@ -251,24 +232,27 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
 };
 
 // --- MAIN PAGE COMPONENT ---
-const Department: React.FC = () => {
+const Department = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingDepartment, setEditingDepartment] = useState<Department | null>(
-    null,
-  );
+  const [editingDepartment, setEditingDepartment] =
+    useState<DepartmentType | null>(null);
 
   const { data: departments = [], isLoading: isLoadingDepartments } = useQuery<
-    Department[]
+    DepartmentType[]
   >({
     queryKey: ["departments"],
     queryFn: getDepartments,
+    staleTime: 1000 * 60 * 5,
+    placeholderData: keepPreviousData,
   });
 
-  const { data: branches = [] } = useQuery({
+  const { data: branches = [] } = useQuery<Branch[]>({
     queryKey: ["branches"],
     queryFn: getBranches,
+    staleTime: 1000 * 60 * 30,
+    placeholderData: keepPreviousData,
   });
 
   const createMutation = useMutation({
@@ -295,7 +279,7 @@ const Department: React.FC = () => {
     },
   });
 
-  const handleOpenModal = (department?: Department) => {
+  const handleOpenModal = (department?: DepartmentType) => {
     setEditingDepartment(department || null);
     setIsModalOpen(true);
   };

@@ -1,75 +1,11 @@
 import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { API } from '../../api/api';
 import './payments.css';
 import { useTranslation } from 'react-i18next';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
-
-interface Branch {
-  id: number;
-  name: string;
-  address: string;
-  city: string;
-}
-
-interface Employee {
-  id: number;
-  full_name: string;
-}
-
-interface Course {
-  id: number;
-  name: string;
-}
-
-interface Student {
-  id: number;
-  first_name: string;
-  last_name: string;
-}
-
-interface Group {
-  id: number;
-  name: string;
-}
-
-interface Payment {
-  id: number;
-  amount: string;
-  payment_method: string;
-  payment_period: string;
-  created_at: string;
-  updated_at: string;
-  student_id: number;
-  group_id: number;
-  course_id: number;
-  branch_id: number;
-  user_id: number;
-  branch?: Branch;
-  cashier?: Employee;
-  student?: Student;
-  group?: Group;
-  course?: Course;
-  teacher?: Employee;
-}
-
-interface PaymentPayload {
-  full_name: string;
-  amount: number;
-  payment_method: string;
-  payment_period: string;
-  course: string;
-  group: string;
-  teacher: string;
-  course_id: number;
-  branch_id: number;
-  user_id: number;
-  teacher_id?: number;
-  group_id?: number;
-  payment_date: string;
-  student_id?: number;
-}
+import type { Payment, PaymentPayload, Branch, Employee, Course, Group } from '../../types';
 
 const Payments = () => {
   const { t } = useTranslation();
@@ -106,6 +42,8 @@ const Payments = () => {
       const { data } = await API.get('/payments');
       return Array.isArray(data) ? data : data?.data || [];
     },
+    staleTime: 1000 * 60 * 5,
+    placeholderData: keepPreviousData,
   });
 
   const { data: branchesData } = useQuery<Branch[]>({
@@ -114,6 +52,8 @@ const Payments = () => {
       const { data } = await API.get('/branches');
       return Array.isArray(data) ? data : data?.data || [];
     },
+    staleTime: 1000 * 60 * 30,
+    placeholderData: keepPreviousData,
   });
 
   const { data: employeesData } = useQuery<Employee[]>({
@@ -122,6 +62,8 @@ const Payments = () => {
       const { data } = await API.get('/employees');
       return Array.isArray(data) ? data : data?.data || [];
     },
+    staleTime: 1000 * 60 * 30,
+    placeholderData: keepPreviousData,
   });
 
   const { data: coursesData } = useQuery<Course[]>({
@@ -130,6 +72,8 @@ const Payments = () => {
       const { data } = await API.get('/courses');
       return Array.isArray(data) ? data : data?.data || [];
     },
+    staleTime: 1000 * 60 * 30,
+    placeholderData: keepPreviousData,
   });
 
   const { data: groupsData } = useQuery<Group[]>({
@@ -138,6 +82,8 @@ const Payments = () => {
       const { data } = await API.get('/groups');
       return Array.isArray(data) ? data : data?.data || [];
     },
+    staleTime: 1000 * 60 * 10,
+    placeholderData: keepPreviousData,
   });
 
   const createMutation = useMutation({

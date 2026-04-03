@@ -1,45 +1,11 @@
 import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { API } from "../../api/api";
 import "./users.css";
 import { useTranslation } from "react-i18next";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
-
-interface Branch {
-  id: number;
-  address: string;
-  city: string;
-}
-
-interface Position {
-  id: number;
-  name: string;
-}
-
-interface Role {
-  id: number;
-  name: string;
-}
-
-interface User {
-  id: number;
-  full_name: string;
-  username: string;
-  phone: string;
-  type: string;
-  is_active: boolean;
-  branch: Branch;
-  roles: Role[];
-  created_at: string;
-}
-
-interface ApiResponse {
-  current_page: number;
-  data: User[];
-  total: number;
-  per_page: number;
-}
+import type { User, UsersResponse, Branch, Position, Role } from "../../types";
 
 const genPassword = () =>
   Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4);
@@ -62,12 +28,14 @@ const Users = () => {
   const [showRange, setShowRange] = useState(false);
   const [userImage, setUserImage] = useState<File | null>(null);
 
-  const { data: apiData, isLoading } = useQuery<ApiResponse>({
+  const { data: apiData, isLoading } = useQuery<UsersResponse>({
     queryKey: ["users"],
     queryFn: async () => {
       const { data } = await API.get("/users");
       return data;
     },
+    staleTime: 1000 * 60 * 5,
+    placeholderData: keepPreviousData,
   });
 
   const [formData, setFormData] = useState({

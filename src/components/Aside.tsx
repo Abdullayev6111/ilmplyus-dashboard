@@ -49,7 +49,15 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       path: "/department",
     },
     { label: t("aside.groups"), icon: classesIcon, path: "/classes" },
-    { label: t("aside.courses"), icon: coursesIcon, path: "/courses" },
+    {
+      label: t("aside.courses"),
+      icon: coursesIcon,
+      path: "/courses",
+      children: [
+        { label: t("aside.course"), path: "/courses/course" },
+        { label: t("aside.courseLevel"), path: "/courses/course-level" },
+      ],
+    },
     { label: t("aside.students"), icon: studentsIcon, path: "/students" },
     { label: t("aside.teachers"), icon: teachersIcon, path: "/teachers" },
     { label: t("aside.rooms"), icon: roomsIcon, path: "/rooms" },

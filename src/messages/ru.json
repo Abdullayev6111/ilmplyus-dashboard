@@ -58,7 +58,9 @@
     "departments": "Отделы",
     "areas": "Области",
     "regions": "Регионы",
-    "districts": "Районы"
+    "districts": "Районы",
+    "course": "Курс",
+    "courseLevel": "Уровень курса"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -265,7 +267,8 @@
     "createdDate": "Дата создания",
     "choose": "Выберите",
     "actions": "Действия",
-    "notFound": "Курсы не найдены"
+    "notFound": "Курсы не найдены",
+    "levelName": "Название уровня"
   },
   "header": {
     "administrator": "Администратор"

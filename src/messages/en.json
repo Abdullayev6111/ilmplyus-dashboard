@@ -55,7 +55,9 @@
     "departments": "Departments",
     "areas": "Areas",
     "regions": "Regions",
-    "districts": "Districts"
+    "districts": "Districts",
+    "course": "Course",
+    "courseLevel": "Course Level"
   },
   "payments": {
     "mainTitle": "Payments",
@@ -258,7 +260,9 @@
     "branch": "Branch",
     "createdDate": "Created Date",
     "choose": "Select",
-    "actions": "Actions"
+    "actions": "Actions",
+    "notFound": "Courses not found",
+    "levelName": "Level Name"
   },
   "header": {
     "administrator": "Administrator"

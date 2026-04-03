@@ -58,7 +58,9 @@
     "departments": "Bo'limlar",
     "areas": "Hududlar",
     "regions": "Viloyatlar",
-    "districts": "Tumanlar"
+    "districts": "Tumanlar",
+    "course": "Kurs",
+    "courseLevel": "Kurs darajasi"
   },
   "payments": {
     "mainTitle": "To‘lovlar",
@@ -268,7 +270,8 @@
     "createdDate": "Yaratilgan sana",
     "choose": "Tanlang",
     "actions": "Harakatlar",
-    "notFound": "Kurslar topilmadi"
+    "notFound": "Kurslar topilmadi",
+    "levelName": "Daraja nomi"
   },
   "header": {
     "administrator": "Administrator"
