@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { API } from '../../api/api';
-import '../users/users.css';
-import '../expenses/expenses.css';
-import Loading from '../../components/Loading';
-import { useTranslation } from 'react-i18next';
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { API } from "../../api/api";
+import "../users/users.css";
+import "../expenses/expenses.css";
+import { useTranslation } from "react-i18next";
+import TableSkeleton from "../../components/TableSkeleton";
+import EmptyState from "../../components/EmptyState";
 
 interface Branch {
   id: number;
@@ -33,56 +34,62 @@ const Rooms = () => {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [editingItem, setEditingItem] = useState<Room | null>(null);
 
   const [formData, setFormData] = useState<RoomFormData>({
-    name: '',
-    branch_id: '',
-    capacity: '',
-    floor: '',
+    name: "",
+    branch_id: "",
+    capacity: "",
+    floor: "",
   });
 
   const [archivedIds, setArchivedIds] = useState<number[]>(() => {
-    const stored = localStorage.getItem('archivedRoomIds');
+    const stored = localStorage.getItem("archivedRoomIds");
     return stored ? JSON.parse(stored) : [];
   });
 
   const { data: rooms, isLoading } = useQuery<Room[]>({
-    queryKey: ['rooms'],
+    queryKey: ["rooms"],
     queryFn: async () => {
-      const { data } = await API.get('/rooms');
+      const { data } = await API.get("/rooms");
       return data.data;
     },
   });
 
   const { data: branches } = useQuery<Branch[]>({
-    queryKey: ['branches'],
+    queryKey: ["branches"],
     queryFn: async () => {
-      const { data } = await API.get('/branches');
+      const { data } = await API.get("/branches");
       return data;
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async () =>
-      API.post('/rooms', {
+      API.post("/rooms", {
         name: formData.name,
         branch_id: Number(formData.branch_id),
         capacity: Number(formData.capacity),
         floor: Number(formData.floor),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
       setShowAddModal(false);
       setEditingItem(null);
-      setFormData({ name: '', branch_id: '', capacity: '', floor: '' });
+      setFormData({ name: "", branch_id: "", capacity: "", floor: "" });
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, payload }: { id: number; payload: RoomFormData }) =>
+    mutationFn: async ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: RoomFormData;
+    }) =>
       API.put(`/rooms/${id}`, {
         name: payload.name,
         branch_id: Number(payload.branch_id),
@@ -90,17 +97,17 @@ const Rooms = () => {
         floor: Number(payload.floor),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
       setShowAddModal(false);
       setEditingItem(null);
-      setFormData({ name: '', branch_id: '', capacity: '', floor: '' });
+      setFormData({ name: "", branch_id: "", capacity: "", floor: "" });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => API.delete(`/rooms/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
     },
   });
 
@@ -116,12 +123,12 @@ const Rooms = () => {
   };
 
   const confirmDelete = () => {
-    if (deleteTarget === 'all') {
+    if (deleteTarget === "all") {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
 
-    if (typeof deleteTarget === 'number') {
+    if (typeof deleteTarget === "number") {
       deleteMutation.mutate(deleteTarget);
       setSelected((p) => p.filter((x) => x !== deleteTarget));
     }
@@ -133,27 +140,33 @@ const Rooms = () => {
   const archiveItem = (item: Room) => {
     const newArchivedIds = [...archivedIds, item.id];
     setArchivedIds(newArchivedIds);
-    localStorage.setItem('archivedRoomIds', JSON.stringify(newArchivedIds));
+    localStorage.setItem("archivedRoomIds", JSON.stringify(newArchivedIds));
 
-    const allArchived = JSON.parse(localStorage.getItem('archivedRooms') || '[]');
-    localStorage.setItem('archivedRooms', JSON.stringify([...allArchived, item]));
+    const allArchived = JSON.parse(
+      localStorage.getItem("archivedRooms") || "[]",
+    );
+    localStorage.setItem(
+      "archivedRooms",
+      JSON.stringify([...allArchived, item]),
+    );
   };
 
-  const toggleAll = (checked: boolean) => setSelected(checked ? rooms?.map((r) => r.id) || [] : []);
+  const toggleAll = (checked: boolean) =>
+    setSelected(checked ? rooms?.map((r) => r.id) || [] : []);
 
   const toggleOne = (id: number) =>
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-
-  if (isLoading) return <Loading />;
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
 
   return (
     <section className="users container">
-      <h1 className="main-title">{t('rooms.rooms')}</h1>
+      <h1 className="main-title">{t("rooms.rooms")}</h1>
 
       {showAddModal && (
         <div className="modal-overlay">
           <div className="expenses-subcategory">
-            <h1>{t('rooms.rooms')}</h1>
+            <h1>{t("rooms.rooms")}</h1>
 
             <form
               className="subcategory-form"
@@ -171,7 +184,7 @@ const Rooms = () => {
               }}
             >
               <div className="subcategory-form-group">
-                <label>{t('rooms.branch')}</label>
+                <label>{t("rooms.branch")}</label>
                 <select
                   value={formData.branch_id}
                   onChange={(e) =>
@@ -182,7 +195,7 @@ const Rooms = () => {
                   }
                   required
                 >
-                  <option value="">{t('rooms.choose')}</option>
+                  <option value="">{t("rooms.choose")}</option>
                   {branches?.map((b) => (
                     <option key={b.id} value={b.id}>
                       {b.name}
@@ -192,31 +205,37 @@ const Rooms = () => {
               </div>
 
               <div className="subcategory-form-group">
-                <label>{t('rooms.roomName')}</label>
+                <label>{t("rooms.roomName")}</label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   required
                 />
               </div>
 
               <div className="subcategory-form-group">
-                <label>{t('rooms.capacity')}</label>
+                <label>{t("rooms.capacity")}</label>
                 <input
                   type="number"
                   value={formData.capacity}
-                  onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, capacity: e.target.value })
+                  }
                   required
                 />
               </div>
 
               <div className="subcategory-form-group">
-                <label>{t('rooms.floor')}</label>
+                <label>{t("rooms.floor")}</label>
                 <input
                   type="number"
                   value={formData.floor}
-                  onChange={(e) => setFormData({ ...formData, floor: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, floor: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -228,14 +247,19 @@ const Rooms = () => {
                   onClick={() => {
                     setShowAddModal(false);
                     setEditingItem(null);
-                    setFormData({ name: '', branch_id: '', capacity: '', floor: '' });
+                    setFormData({
+                      name: "",
+                      branch_id: "",
+                      capacity: "",
+                      floor: "",
+                    });
                   }}
                 >
-                  {t('rooms.cancel')}
+                  {t("rooms.cancel")}
                 </button>
 
                 <button className="primary" type="submit">
-                  {t('rooms.save')}
+                  {t("rooms.save")}
                 </button>
               </div>
             </form>
@@ -246,15 +270,18 @@ const Rooms = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t('rooms.confirmDelete')}</h3>
+            <h3>{t("rooms.confirmDelete")}</h3>
 
             <div className="modal-actions">
-              <button className="cancel" onClick={() => setShowDeleteModal(false)}>
-                {t('rooms.cancel')}
+              <button
+                className="cancel"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                {t("rooms.cancel")}
               </button>
 
               <button className="danger" onClick={confirmDelete}>
-                {t('rooms.delete')}
+                {t("rooms.delete")}
               </button>
             </div>
           </div>
@@ -263,18 +290,18 @@ const Rooms = () => {
 
       <div className="users-filters">
         <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          {t('rooms.addBtn')}
+          {t("rooms.addBtn")}
         </button>
 
         <button
           className="delete-all"
           disabled={!selected.length}
           onClick={() => {
-            setDeleteTarget('all');
+            setDeleteTarget("all");
             setShowDeleteModal(true);
           }}
         >
-          {t('rooms.delete')}
+          {t("rooms.delete")}
         </button>
       </div>
 
@@ -285,21 +312,26 @@ const Rooms = () => {
               <th>
                 <input
                   type="checkbox"
-                  checked={selected.length === (rooms?.length || 0) && (rooms?.length || 0) > 0}
+                  checked={
+                    selected.length === (rooms?.length || 0) &&
+                    (rooms?.length || 0) > 0
+                  }
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
               <th>ID</th>
-              <th>{t('rooms.branchName')}</th>
-              <th>{t('rooms.roomName')}</th>
-              <th>{t('rooms.capacity')}</th>
-              <th>{t('rooms.floor')}</th>
-              <th>{t('rooms.actions')}</th>
+              <th>{t("rooms.branchName")}</th>
+              <th>{t("rooms.roomName")}</th>
+              <th>{t("rooms.capacity")}</th>
+              <th>{t("rooms.floor")}</th>
+              <th>{t("rooms.actions")}</th>
             </tr>
           </thead>
 
           <tbody>
-            {rooms?.length ? (
+            {isLoading ? (
+              <TableSkeleton rowCount={8} columnCount={7} />
+            ) : rooms?.length ? (
               rooms.map((item) => (
                 <tr key={item.id}>
                   <td>
@@ -311,17 +343,23 @@ const Rooms = () => {
                   </td>
 
                   <td>{item.id}</td>
-                  <td>{item.branch || '-'}</td>
+                  <td>{item.branch || "-"}</td>
                   <td>{item.name}</td>
                   <td>{item.capacity}</td>
                   <td>{item.floor}</td>
 
                   <td className="actions">
-                    <button className="user-archive-btn" onClick={() => archiveItem(item)}>
+                    <button
+                      className="user-archive-btn"
+                      onClick={() => archiveItem(item)}
+                    >
                       <i className="fa-solid fa-box-archive"></i>
                     </button>
 
-                    <button className="user-edit-btn" onClick={() => openEditModal(item)}>
+                    <button
+                      className="user-edit-btn"
+                      onClick={() => openEditModal(item)}
+                    >
                       <i className="fa-solid fa-pen"></i>
                     </button>
 
@@ -338,11 +376,7 @@ const Rooms = () => {
                 </tr>
               ))
             ) : (
-              <tr>
-                <td colSpan={7} style={{ textAlign: 'center', padding: 20 }}>
-                  {t('rooms.notFound')}
-                </td>
-              </tr>
+              <EmptyState colSpan={10} message={t("rooms.notFound")} />
             )}
           </tbody>
         </table>

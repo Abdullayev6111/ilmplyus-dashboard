@@ -1,4 +1,7 @@
 {
+  "common": {
+    "noData": "Данные не найдены"
+  },
   "login": {
     "logout": "Выход",
     "login": "Вход",
@@ -101,7 +104,8 @@
     "group": "Группа",
     "restore": "Восстановить",
     "permanentDelete": "Удалить навсегда",
-    "restoreError": "Произошла ошибка при восстановлении!"
+    "restoreError": "Произошла ошибка при восстановлении!",
+    "notFound": "Платежи не найдены"
   },
   "users": {
     "listTitle": "Список пользователей",
@@ -229,7 +233,9 @@
     "comment": "Комментарий",
     "expenseCategoryName": "Название категории расходов",
     "categoryName": "Название категории",
-    "notFound": "Данные отсутствуют"
+    "notFound": "Данные отсутствуют",
+    "categoryNotFound": "Категория не найдена",
+    "subCategoryNotFound": "Подкатегория не найдена"
   },
   "departments": {
     "listTitle": "Список отделов",
@@ -258,7 +264,8 @@
     "branch": "Филиал",
     "createdDate": "Дата создания",
     "choose": "Выберите",
-    "actions": "Действия"
+    "actions": "Действия",
+    "notFound": "Курсы не найдены"
   },
   "header": {
     "administrator": "Администратор"
@@ -266,5 +273,9 @@
   "notFound": {
     "page": "Страница",
     "notFound": "не найдена"
+  },
+  "districts": {
+    "choose": "Выберите район",
+    "notFound": "Районы не найдены"
   }
 }

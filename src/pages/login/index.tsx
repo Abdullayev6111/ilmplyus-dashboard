@@ -1,24 +1,33 @@
-import LogoTop from '../../assets/images/talim tizimi white.svg';
-import whiteLogoBig from '../../assets/images/whiteLogoBig.png';
-import Logo from '../../assets/images/logo.svg';
-import IlmPlyusText from '../../assets/images/IlmPlyusText.svg';
-import ptl1 from '../../assets/images/ptl1.png';
-import ptl2 from '../../assets/images/ptl2.png';
-import ptr1 from '../../assets/images/ptr1.png';
-import ptr2 from '../../assets/images/ptr2.png';
-import ptc1 from '../../assets/images/ptc1.png';
-import ptc2 from '../../assets/images/ptc2.png';
-import phoneLogo from '../../assets/images/phone-logo.png';
-import { Link } from 'react-router-dom';
-import LanguageSelect from '../../components/LanguageSelect/LanguageSelect';
-import { useDisclosure, useMediaQuery } from '@mantine/hooks';
-import { Modal, Button, Text, TextInput, Group, Stack, Paper, PasswordInput } from '@mantine/core';
-import { useState, useEffect } from 'react';
-import './loginPage.css';
-import { useTranslation } from 'react-i18next';
-import { useMutation } from '@tanstack/react-query';
-import { API } from '../../api/api';
-import useAuthStore from '../../store/useAuthStore';
+import LogoTop from "../../assets/images/talim tizimi white.svg";
+import whiteLogoBig from "../../assets/images/whiteLogoBig.png";
+import Logo from "../../assets/images/logo.svg";
+import IlmPlyusText from "../../assets/images/IlmPlyusText.svg";
+import ptl1 from "../../assets/images/ptl1.png";
+import ptl2 from "../../assets/images/ptl2.png";
+import ptr1 from "../../assets/images/ptr1.png";
+import ptr2 from "../../assets/images/ptr2.png";
+import ptc1 from "../../assets/images/ptc1.png";
+import ptc2 from "../../assets/images/ptc2.png";
+import phoneLogo from "../../assets/images/phone-logo.png";
+import { Link } from "react-router-dom";
+import LanguageSelect from "../../components/LanguageSelect/LanguageSelect";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import {
+  Modal,
+  Button,
+  Text,
+  TextInput,
+  Group,
+  Stack,
+  Paper,
+  PasswordInput,
+} from "@mantine/core";
+import { useState, useEffect } from "react";
+import "./loginPage.css";
+import { useTranslation } from "react-i18next";
+import { useMutation } from "@tanstack/react-query";
+import { API } from "../../api/api";
+import useAuthStore from "../../store/useAuthStore";
 
 export interface LoginPayload {
   username: string;
@@ -38,14 +47,14 @@ const LoginPage = () => {
   const { t } = useTranslation();
   const [seconds, setSeconds] = useState(180);
   const [opened, { close }] = useDisclosure(false);
-  const isMobile = useMediaQuery('(max-width: 50em)');
-  const [code, setCode] = useState('');
+  const isMobile = useMediaQuery("(max-width: 50em)");
+  const [code, setCode] = useState("");
   const [resetOpened, resetHandlers] = useDisclosure(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleResetOpen = () => {
     resetHandlers.open();
@@ -65,18 +74,32 @@ const LoginPage = () => {
   const remainingSeconds = seconds % 60;
   const isValid = newPassword.length >= 8 && newPassword === confirmPassword;
 
-  const { setToken, setUser } = useAuthStore();
+  const { setAuth } = useAuthStore();
 
   const loginMutation = useMutation({
     mutationFn: async (payload: LoginPayload) => {
-      const { data } = await API.post<LoginResponse>('/login', payload);
+      const { data } = await API.post<LoginResponse>("/login", payload);
       return data;
     },
 
     onSuccess: (data) => {
-      setToken(data.token);
-      setUser(data.user);
-      window.location.href = '/';
+      const store = useAuthStore.getState();
+
+      store.setAuth(data.token, data.user);
+
+      const expiresAt = store.expiresAt;
+
+      if (expiresAt) {
+        const timeout = expiresAt - Date.now();
+
+        if (timeout > 0) {
+          setTimeout(() => {
+            store.logout();
+          }, timeout);
+        }
+      }
+
+      window.location.href = "/";
     },
 
     onError: (error) => {
@@ -99,26 +122,36 @@ const LoginPage = () => {
           backgroundOpacity: 0.6,
         }}
       >
-        <Paper radius="lg" p="xl" maw={520} mx="auto" my="auto" shadow="lg" bg="white">
+        <Paper
+          radius="lg"
+          p="xl"
+          maw={520}
+          mx="auto"
+          my="auto"
+          shadow="lg"
+          bg="white"
+        >
           <Stack gap="md">
             <Text fw={700} size="xl" ta="center" c="blue.9">
-              {t('login.auth')}
+              {t("login.auth")}
             </Text>
 
             <Text size="sm" ta="center" c="dimmed">
-              {t('login.authText')}
+              {t("login.authText")}
             </Text>
 
             <Group grow align="flex-end">
               <TextInput
                 value={code}
-                onChange={(e) => setCode(e.currentTarget.value.replace(/\D/g, '').slice(0, 6))}
+                onChange={(e) =>
+                  setCode(e.currentTarget.value.replace(/\D/g, "").slice(0, 6))
+                }
                 placeholder="XXXXXX"
                 size="md"
                 radius="md"
                 styles={{
                   input: {
-                    textAlign: 'center',
+                    textAlign: "center",
                     letterSpacing: 4,
                     fontSize: 18,
                   },
@@ -126,16 +159,16 @@ const LoginPage = () => {
               />
 
               <Text fw={500}>
-                {minutes}:{remainingSeconds.toString().padStart(2, '0')}
+                {minutes}:{remainingSeconds.toString().padStart(2, "0")}
               </Text>
             </Group>
 
             <Group grow mt="md">
               <Button variant="fill" bg="red" radius="xl" onClick={close}>
-                {t('login.logout')}
+                {t("login.logout")}
               </Button>
 
-              <Button radius="xl">{t('login.login')}</Button>
+              <Button radius="xl">{t("login.login")}</Button>
             </Group>
           </Stack>
         </Paper>
@@ -197,24 +230,25 @@ const LoginPage = () => {
         <div className="login-left-center">
           <img src={Logo} className="logo" alt="*" />
           <img src={IlmPlyusText} alt="*" />
-          <h1>{t('login.system')}</h1>
+          <h1>{t("login.system")}</h1>
         </div>
 
         <div className="login-left-bottom">
-          <h1>{t('login.systemSupport')}</h1>
+          <h1>{t("login.systemSupport")}</h1>
           <div
             className="login-support"
-            style={{ display: 'flex', gap: 200, alignItems: 'center' }}
+            style={{ display: "flex", gap: 200, alignItems: "center" }}
           >
             <a target="_blank" href="tel:+998742002020">
               <i className="fa-solid fa-phone" />
               74 200 20 20
             </a>
             <Link target="_blank" to="https://web.telegram.org/">
-              <i className="fa-brands fa-telegram"></i> {t('login.telegramGroup')}
+              <i className="fa-brands fa-telegram"></i>{" "}
+              {t("login.telegramGroup")}
             </Link>
             <Link target="_blank" to="https://www.youtube.com/">
-              <i className="fa-brands fa-youtube"></i> {t('login.instruction')}
+              <i className="fa-brands fa-youtube"></i> {t("login.instruction")}
             </Link>
           </div>
         </div>
@@ -224,7 +258,7 @@ const LoginPage = () => {
         <LanguageSelect variant="login" />
         <img src={phoneLogo} alt="*" className="phone-logo" />
         <div className="login-right-content">
-          <h1>{t('login.authorization')}</h1>
+          <h1>{t("login.authorization")}</h1>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -238,14 +272,14 @@ const LoginPage = () => {
               type="text"
               value={login}
               onChange={(e) => setLogin(e.target.value)}
-              placeholder={t('login.loginPlaceHolder')}
+              placeholder={t("login.loginPlaceHolder")}
             />
             <div className="password-wrapper">
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder={t('login.passwordPlaceHolder')}
+                placeholder={t("login.passwordPlaceHolder")}
               />
 
               <button
@@ -253,7 +287,9 @@ const LoginPage = () => {
                 className="password-eye"
                 onClick={() => setShowPassword((v) => !v)}
               >
-                <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
+                <i
+                  className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                />
               </button>
             </div>
 
@@ -264,7 +300,7 @@ const LoginPage = () => {
                 handleResetOpen();
               }}
             >
-              {t('login.resetPassword')}
+              {t("login.resetPassword")}
             </Link>
 
             <button
@@ -278,14 +314,14 @@ const LoginPage = () => {
                 })
               }
             >
-              {loginMutation.isPending ? 'Loading...' : t('login.login')}
+              {loginMutation.isPending ? "Loading..." : t("login.login")}
             </button>
           </form>
         </div>
 
         <div
           className="login-support login-support-phone"
-          style={{ display: 'flex', gap: 20, alignItems: 'center' }}
+          style={{ display: "flex", gap: 20, alignItems: "center" }}
         >
           <a target="_blank" href="tel:+998742002020">
             <i className="fa-solid fa-phone" />
@@ -298,7 +334,8 @@ const LoginPage = () => {
           </Link>
         </div>
         <h4>
-          © 2026 ILM PLYUS {t('login.system')}. <br /> <span>{t('login.rightReserved')}</span>
+          © 2026 ILM PLYUS {t("login.system")}. <br />{" "}
+          <span>{t("login.rightReserved")}</span>
         </h4>
         <img src={ptl1} className="ptl1" />
         <img src={ptl2} className="ptl2" />

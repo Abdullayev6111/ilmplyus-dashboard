@@ -31,6 +31,18 @@ import "@mantine/notifications/styles.css";
 const App = () => {
   const isAuth = useAuthStore((state) => state.isAuth);
 
+  const { expiresAt, logout } = useAuthStore.getState();
+
+  if (expiresAt) {
+    const timeout = expiresAt - Date.now();
+
+    if (timeout > 0) {
+      setTimeout(() => logout(), timeout);
+    } else {
+      logout();
+    }
+  }
+
   return (
     <Routes>
       <Route

@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { API } from '../../api/api';
-import './regions.css';
-import '../users/users.css';
-import Loading from '../../components/Loading';
-import { useTranslation } from 'react-i18next';
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { API } from "../../api/api";
+import "./regions.css";
+import "../users/users.css";
+import { useTranslation } from "react-i18next";
+import TableSkeleton from "../../components/TableSkeleton";
+import EmptyState from "../../components/EmptyState";
 
 interface Region {
   id: number;
@@ -21,21 +22,21 @@ const AreaDistricts = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
-  const [selectedRegionId, setSelectedRegionId] = useState<string>('');
+  const [selectedRegionId, setSelectedRegionId] = useState<string>("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selectedDistricts, setSelectedDistricts] = useState<number[]>([]);
-  const [districtName, setDistrictName] = useState('');
+  const [districtName, setDistrictName] = useState("");
   const [editingItem, setEditingItem] = useState<District | null>(null);
 
   const { data: regions } = useQuery<Region[]>({
-    queryKey: ['regions'],
-    queryFn: async () => (await API.get('/regions')).data,
+    queryKey: ["regions"],
+    queryFn: async () => (await API.get("/regions")).data,
   });
 
   const { data: districts, isLoading } = useQuery<District[]>({
-    queryKey: ['districts', selectedRegionId],
+    queryKey: ["districts", selectedRegionId],
     queryFn: async () => {
       if (!selectedRegionId) return [];
       const { data } = await API.get(`/regions/${selectedRegionId}/districts`);
@@ -46,25 +47,32 @@ const AreaDistricts = () => {
 
   const createMutation = useMutation({
     mutationFn: async () =>
-      API.post('/districts', {
+      API.post("/districts", {
         name: districtName,
         region_id: Number(selectedRegionId),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['districts', selectedRegionId] });
+      queryClient.invalidateQueries({
+        queryKey: ["districts", selectedRegionId],
+      });
       setShowAddModal(false);
-      setDistrictName('');
+      setDistrictName("");
       setEditingItem(null);
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, name }: { id: number; name: string }) =>
-      API.put(`/districts/${id}`, { name, region_id: Number(selectedRegionId) }),
+      API.put(`/districts/${id}`, {
+        name,
+        region_id: Number(selectedRegionId),
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['districts', selectedRegionId] });
+      queryClient.invalidateQueries({
+        queryKey: ["districts", selectedRegionId],
+      });
       setShowAddModal(false);
-      setDistrictName('');
+      setDistrictName("");
       setEditingItem(null);
     },
   });
@@ -72,7 +80,9 @@ const AreaDistricts = () => {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => API.delete(`/districts/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['districts', selectedRegionId] });
+      queryClient.invalidateQueries({
+        queryKey: ["districts", selectedRegionId],
+      });
     },
   });
 
@@ -83,10 +93,10 @@ const AreaDistricts = () => {
   };
 
   const confirmDelete = () => {
-    if (deleteTarget === 'all') {
+    if (deleteTarget === "all") {
       selectedDistricts.forEach((id) => deleteMutation.mutate(id));
       setSelectedDistricts([]);
-    } else if (typeof deleteTarget === 'number') {
+    } else if (typeof deleteTarget === "number") {
       deleteMutation.mutate(deleteTarget);
       setSelectedDistricts((p) => p.filter((x) => x !== deleteTarget));
     }
@@ -99,30 +109,33 @@ const AreaDistricts = () => {
 
   const toggleOne = (id: number) =>
     setSelectedDistricts((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
 
   return (
     <section className="users container">
-      <h1 className="main-title">{t('aside.districts')}</h1>
+      <h1 className="main-title">{t("aside.districts")}</h1>
 
       {showAddModal && (
         <div className="modal-overlay">
           <div className="districts-container">
-            <h1>{t('aside.districts')}</h1>
+            <h1>{t("aside.districts")}</h1>
             <form
               className="district-form"
               onSubmit={(e) => {
                 e.preventDefault();
                 if (editingItem) {
-                  updateMutation.mutate({ id: editingItem.id, name: districtName });
+                  updateMutation.mutate({
+                    id: editingItem.id,
+                    name: districtName,
+                  });
                 } else {
                   createMutation.mutate();
                 }
               }}
             >
               <div className="district-form-group">
-                <label>{t('branches.name')}</label>
+                <label>{t("branches.name")}</label>
                 <input
                   type="text"
                   value={districtName}
@@ -138,13 +151,13 @@ const AreaDistricts = () => {
                   onClick={() => {
                     setShowAddModal(false);
                     setEditingItem(null);
-                    setDistrictName('');
+                    setDistrictName("");
                   }}
                 >
-                  {t('expenses.cancel')}
+                  {t("expenses.cancel")}
                 </button>
                 <button className="primary" type="submit">
-                  {t('expenses.save')}
+                  {t("expenses.save")}
                 </button>
               </div>
             </form>
@@ -155,13 +168,16 @@ const AreaDistricts = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t('expenses.confirmDelete')}</h3>
+            <h3>{t("expenses.confirmDelete")}</h3>
             <div className="modal-actions">
-              <button className="cancel" onClick={() => setShowDeleteModal(false)}>
-                {t('expenses.cancel')}
+              <button
+                className="cancel"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                {t("expenses.cancel")}
               </button>
               <button className="danger" onClick={confirmDelete}>
-                {t('expenses.delete')}
+                {t("expenses.delete")}
               </button>
             </div>
           </div>
@@ -174,18 +190,18 @@ const AreaDistricts = () => {
           onClick={() => setShowAddModal(true)}
           disabled={!selectedRegionId}
         >
-          {t('expenses.addBtn')}
+          {t("expenses.addBtn")}
         </button>
 
         <button
           className="delete-all"
           disabled={!selectedDistricts.length}
           onClick={() => {
-            setDeleteTarget('all');
+            setDeleteTarget("all");
             setShowDeleteModal(true);
           }}
         >
-          {t('expenses.delete')}
+          {t("expenses.delete")}
         </button>
 
         <select
@@ -195,7 +211,7 @@ const AreaDistricts = () => {
             setSelectedDistricts([]);
           }}
         >
-          <option value="">{t('aside.regions')}</option>
+          <option value="">{t("aside.regions")}</option>
           {regions?.map((r) => (
             <option key={r.id} value={r.id}>
               {r.name}
@@ -219,15 +235,13 @@ const AreaDistricts = () => {
                 />
               </th>
               <th>ID</th>
-              <th>{t('branches.name')}</th>
-              <th>{t('expenses.actions')}</th>
+              <th>{t("branches.name")}</th>
+              <th>{t("expenses.actions")}</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
-              <tr>
-                <td colSpan={4}><Loading /></td>
-              </tr>
+              <TableSkeleton rowCount={8} columnCount={4} />
             ) : districts?.length ? (
               districts.map((item) => (
                 <tr key={item.id}>
@@ -241,7 +255,10 @@ const AreaDistricts = () => {
                   <td>{item.id}</td>
                   <td>{item.name}</td>
                   <td className="actions">
-                    <button className="user-edit-btn" onClick={() => openEditModal(item)}>
+                    <button
+                      className="user-edit-btn"
+                      onClick={() => openEditModal(item)}
+                    >
                       <i className="fa-solid fa-pen"></i>
                     </button>
                     <button
@@ -257,11 +274,14 @@ const AreaDistricts = () => {
                 </tr>
               ))
             ) : (
-              <tr>
-                <td colSpan={4} style={{ textAlign: 'center', padding: 20 }}>
-                  {selectedRegionId ? t('expenses.notFound') : t('expenses.choose')}
-                </td>
-              </tr>
+              <EmptyState
+                colSpan={10}
+                message={
+                  selectedRegionId
+                    ? t("districts.notFound")
+                    : t("districts.choose")
+                }
+              />
             )}
           </tbody>
         </table>

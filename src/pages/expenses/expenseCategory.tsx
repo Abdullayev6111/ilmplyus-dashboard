@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { API } from '../../api/api';
-import '../users/users.css';
-import './expenses.css';
-import Loading from '../../components/Loading';
-import { useTranslation } from 'react-i18next';
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { API } from "../../api/api";
+import "../users/users.css";
+import "./expenses.css";
+import { useTranslation } from "react-i18next";
+import TableSkeleton from "../../components/TableSkeleton";
+import EmptyState from "../../components/EmptyState";
 
 interface ExpenseCategory {
   id: number;
@@ -17,30 +18,31 @@ const ExpensesCategory = () => {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
-  const [categoryName, setCategoryName] = useState('');
+  const [categoryName, setCategoryName] = useState("");
   const [editingItem, setEditingItem] = useState<ExpenseCategory | null>(null);
 
   const [archivedIds, setArchivedIds] = useState<number[]>(() => {
-    const stored = localStorage.getItem('archivedExpensesIds');
+    const stored = localStorage.getItem("archivedExpensesIds");
     return stored ? JSON.parse(stored) : [];
   });
 
   const { data: categories, isLoading } = useQuery<ExpenseCategory[]>({
-    queryKey: ['expense-categories'],
+    queryKey: ["expense-categories"],
     queryFn: async () => {
-      const { data } = await API.get('/expense-categories');
+      const { data } = await API.get("/expense-categories");
       return data;
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async () => API.post('/expense-categories', { name: categoryName }),
+    mutationFn: async () =>
+      API.post("/expense-categories", { name: categoryName }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expense-categories'] });
+      queryClient.invalidateQueries({ queryKey: ["expense-categories"] });
       setShowAddModal(false);
-      setCategoryName('');
+      setCategoryName("");
       setEditingItem(null);
     },
   });
@@ -49,9 +51,9 @@ const ExpensesCategory = () => {
     mutationFn: async ({ id, name }: { id: number; name: string }) =>
       API.put(`/expense-categories/${id}`, { name }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expense-categories'] });
+      queryClient.invalidateQueries({ queryKey: ["expense-categories"] });
       setShowAddModal(false);
-      setCategoryName('');
+      setCategoryName("");
       setEditingItem(null);
     },
   });
@@ -59,7 +61,7 @@ const ExpensesCategory = () => {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => API.delete(`/expense-categories/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expense-categories'] });
+      queryClient.invalidateQueries({ queryKey: ["expense-categories"] });
     },
   });
 
@@ -70,12 +72,12 @@ const ExpensesCategory = () => {
   };
 
   const confirmDelete = () => {
-    if (deleteTarget === 'all') {
+    if (deleteTarget === "all") {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
 
-    if (typeof deleteTarget === 'number') {
+    if (typeof deleteTarget === "number") {
       deleteMutation.mutate(deleteTarget);
       setSelected((p) => p.filter((x) => x !== deleteTarget));
     }
@@ -88,11 +90,16 @@ const ExpensesCategory = () => {
     try {
       const newArchivedIds = [...archivedIds, item.id];
       setArchivedIds(newArchivedIds);
-      localStorage.setItem('archivedExpensesIds', JSON.stringify(newArchivedIds));
+      localStorage.setItem(
+        "archivedExpensesIds",
+        JSON.stringify(newArchivedIds),
+      );
 
-      const allArchived = JSON.parse(localStorage.getItem('archivedExpenses') || '[]');
+      const allArchived = JSON.parse(
+        localStorage.getItem("archivedExpenses") || "[]",
+      );
       const newArchived = [...allArchived, item];
-      localStorage.setItem('archivedExpenses', JSON.stringify(newArchived));
+      localStorage.setItem("archivedExpenses", JSON.stringify(newArchived));
     } catch (error) {
       console.error(error);
     }
@@ -102,30 +109,33 @@ const ExpensesCategory = () => {
     setSelected(checked ? categories?.map((c) => c.id) || [] : []);
 
   const toggleOne = (id: number) =>
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-
-  if (isLoading) return <Loading />;
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
 
   return (
     <section className="users container">
-      <h1 className="main-title">{t('expenses.expenseCategory')}</h1>
+      <h1 className="main-title">{t("expenses.expenseCategory")}</h1>
 
       {showAddModal && (
         <div className="modal-overlay">
           <div className="expenses-category">
-            <h1>{t('expenses.expenseCategory')}</h1>
+            <h1>{t("expenses.expenseCategory")}</h1>
 
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 if (editingItem) {
-                  updateMutation.mutate({ id: editingItem.id, name: categoryName });
+                  updateMutation.mutate({
+                    id: editingItem.id,
+                    name: categoryName,
+                  });
                 } else {
                   createMutation.mutate();
                 }
               }}
             >
-              <label>{t('expenses.expenseCategoryName')}</label>
+              <label>{t("expenses.expenseCategoryName")}</label>
 
               <input
                 type="text"
@@ -141,14 +151,14 @@ const ExpensesCategory = () => {
                   onClick={() => {
                     setShowAddModal(false);
                     setEditingItem(null);
-                    setCategoryName('');
+                    setCategoryName("");
                   }}
                 >
-                  {t('expenses.cancel')}
+                  {t("expenses.cancel")}
                 </button>
 
                 <button className="primary" type="submit">
-                  {t('expenses.save')}
+                  {t("expenses.save")}
                 </button>
               </div>
             </form>
@@ -159,15 +169,18 @@ const ExpensesCategory = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t('expenses.confirmDelete')}</h3>
+            <h3>{t("expenses.confirmDelete")}</h3>
 
             <div className="modal-actions">
-              <button className="cancel" onClick={() => setShowDeleteModal(false)}>
-                {t('expenses.cancel')}
+              <button
+                className="cancel"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                {t("expenses.cancel")}
               </button>
 
               <button className="danger" onClick={confirmDelete}>
-                {t('expenses.delete')}
+                {t("expenses.delete")}
               </button>
             </div>
           </div>
@@ -176,18 +189,18 @@ const ExpensesCategory = () => {
 
       <div className="users-filters">
         <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          {t('expenses.addBtn')}
+          {t("expenses.addBtn")}
         </button>
 
         <button
           className="delete-all"
           disabled={!selected.length}
           onClick={() => {
-            setDeleteTarget('all');
+            setDeleteTarget("all");
             setShowDeleteModal(true);
           }}
         >
-          {t('expenses.delete')}
+          {t("expenses.delete")}
         </button>
       </div>
 
@@ -199,19 +212,22 @@ const ExpensesCategory = () => {
                 <input
                   type="checkbox"
                   checked={
-                    selected.length === (categories?.length || 0) && (categories?.length || 0) > 0
+                    selected.length === (categories?.length || 0) &&
+                    (categories?.length || 0) > 0
                   }
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
               <th>ID</th>
-              <th>{t('expenses.categoryName')}</th>
-              <th>{t('expenses.actions')}</th>
+              <th>{t("expenses.categoryName")}</th>
+              <th>{t("expenses.actions")}</th>
             </tr>
           </thead>
 
           <tbody>
-            {categories?.length ? (
+            {isLoading ? (
+              <TableSkeleton rowCount={8} columnCount={4} />
+            ) : categories?.length ? (
               categories.map((item) => (
                 <tr key={item.id}>
                   <td>
@@ -226,11 +242,17 @@ const ExpensesCategory = () => {
                   <td>{item.name}</td>
 
                   <td className="actions">
-                    <button className="user-archive-btn" onClick={() => archiveExpenses(item)}>
+                    <button
+                      className="user-archive-btn"
+                      onClick={() => archiveExpenses(item)}
+                    >
                       <i className="fa-solid fa-box-archive"></i>
                     </button>
 
-                    <button className="user-edit-btn" onClick={() => openEditModal(item)}>
+                    <button
+                      className="user-edit-btn"
+                      onClick={() => openEditModal(item)}
+                    >
                       <i className="fa-solid fa-pen"></i>
                     </button>
 
@@ -247,11 +269,10 @@ const ExpensesCategory = () => {
                 </tr>
               ))
             ) : (
-              <tr>
-                <td colSpan={4} style={{ textAlign: 'center', padding: 20 }}>
-                  {t('expenses.notFound')}
-                </td>
-              </tr>
+              <EmptyState
+                colSpan={10}
+                message={t("expenses.categoryNotFound")}
+              />
             )}
           </tbody>
         </table>

@@ -50,21 +50,31 @@
   color: #003366;
   text-align: center;
   font-weight: 600;
+  border-right: 1px solid #9e9d9d5d;
+}
+
+.branch-data-table th:first-child {
+  border-left: 1px solid #9e9d9d5d;
 }
 
 .branch-data-table td {
   padding: 10px;
   text-align: center;
+  border: 1px solid #9e9d9d5d;
+}
+
+.branch-data-table td:last-child {
+  border-right: none;
 }
 
 .branch-data-table tbody tr:hover {
   background: #f5faff;
 }
 
-.branch-data-table td:last-child {
+/* .branch-data-table td:last-child {
   display: flex;
   gap: 10px;
-}
+} */
 
 .branch-data-table td:last-child svg,
 .branch-data-table td:last-child span {
@@ -84,7 +94,7 @@
   z-index: 2;
 }
 
-.branch-data-table input[type='checkbox'] {
+.branch-data-table input[type="checkbox"] {
   width: 16px;
   height: 16px;
   cursor: pointer;

@@ -1,4 +1,7 @@
 {
+  "common": {
+    "noData": "Ma’lumot topilmadi"
+  },
   "login": {
     "logout": "Chiqish",
     "login": "Kirish",
@@ -101,7 +104,8 @@
     "group": "Guruh",
     "restore": "Qaytarish",
     "permanentDelete": "Butunlay o'chirish",
-    "restoreError": "Qayta tiklashda xatolik yuz berdi!"
+    "restoreError": "Qayta tiklashda xatolik yuz berdi!",
+    "notFound": "To'lovlar topilmadi"
   },
   "users": {
     "listTitle": "Foydaluvchilar ro‘yhati",
@@ -140,7 +144,8 @@
     "status": "Holat",
     "date": "Sana",
     "actions": "Harakatlar",
-    "branch": "Filial"
+    "branch": "Filial",
+    "notFound": "Foydalanuvchilar topilmadi"
   },
   "branches": {
     "listTitle": "Filiallar ro‘yhati",
@@ -171,7 +176,8 @@
     "legalName": "Yuridik nomi",
     "director": "Direktor F.I.Sh",
     "location": "Joylashtirish shahri/tuman",
-    "branchName": "Filial nomi"
+    "branchName": "Filial nomi",
+    "notFound": "Filiallar topilmadi"
   },
   "roles": {
     "pageTitle": "Yangi rol qo‘shish",
@@ -213,7 +219,9 @@
     "comment": "Izoh",
     "expenseCategoryName": "Chiqim kategoriyasi nomi",
     "categoryName": "Kategoriya nomi",
-    "notFound": "Ma’lumot mavjud emas"
+    "notFound": "Ma’lumot mavjud emas",
+    "categoryNotFound": "Kategoriya topilmadi",
+    "subCategoryNotFound": "Podkategoriya topilmadi"
   },
   "rooms": {
     "rooms": "Xonalar",
@@ -248,7 +256,8 @@
     "cancel": "Bekor qilish",
     "loading": "Ma’lumotlar yuklanmoqda...",
     "noData": "Ma’lumot topilmadi",
-    "confirmDelete": "Haqiqatan ham o‘chirmoqchimisiz?"
+    "confirmDelete": "Haqiqatan ham o‘chirmoqchimisiz?",
+    "notFound": "Bo‘limlar topilmadi"
   },
   "courses": {
     "mainTitle": "Kurslar",
@@ -258,7 +267,8 @@
     "branch": "Filial",
     "createdDate": "Yaratilgan sana",
     "choose": "Tanlang",
-    "actions": "Harakatlar"
+    "actions": "Harakatlar",
+    "notFound": "Kurslar topilmadi"
   },
   "header": {
     "administrator": "Administrator"
@@ -266,5 +276,9 @@
   "notFound": {
     "page": "Sahifa",
     "notFound": "topilmadi"
+  },
+  "districts": {
+    "choose": "Tumanni tanlang",
+    "notFound": "Tumanlar topilmadi"
   }
 }

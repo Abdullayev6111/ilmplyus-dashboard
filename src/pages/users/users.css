@@ -47,10 +47,11 @@
   color: #003366;
   text-align: center;
   font-family: noto-sb;
+  border-right: 1px solid #9e9d9d5d;
 }
 
 .users-table th:last-child {
-  border-right: 1px solid #d9d9d9;
+  border-right: none;
 }
 
 .users-table th:first-child {
@@ -68,10 +69,10 @@
   cursor: pointer;
 }
 
-.users-table td:last-child {
+/* .users-table td:last-child {
   display: flex;
   gap: 10px;
-}
+} */
 
 .users-table td:last-child svg,
 .users-table td:last-child span {
@@ -91,7 +92,7 @@
   z-index: 2;
 }
 
-.users-table input[type='checkbox'] {
+.users-table input[type="checkbox"] {
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -399,7 +400,7 @@
   gap: 6px;
 }
 
-.checkbox-group input[type='checkbox'] {
+.checkbox-group input[type="checkbox"] {
   width: auto;
   margin: 0;
 }

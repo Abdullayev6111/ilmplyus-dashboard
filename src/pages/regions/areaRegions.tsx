@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { API } from '../../api/api';
-import './regions.css';
-import '../users/users.css';
-import Loading from '../../components/Loading';
-import { useTranslation } from 'react-i18next';
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { API } from "../../api/api";
+import "./regions.css";
+import "../users/users.css";
+import { useTranslation } from "react-i18next";
+import TableSkeleton from "../../components/TableSkeleton";
+import EmptyState from "../../components/EmptyState";
 
 interface Region {
   id: number;
@@ -17,25 +18,25 @@ const AreaRegions = () => {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
-  const [regionName, setRegionName] = useState('');
+  const [regionName, setRegionName] = useState("");
   const [editingItem, setEditingItem] = useState<Region | null>(null);
 
   const { data: regions, isLoading } = useQuery<Region[]>({
-    queryKey: ['regions'],
+    queryKey: ["regions"],
     queryFn: async () => {
-      const { data } = await API.get('/regions');
+      const { data } = await API.get("/regions");
       return data;
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async () => API.post('/regions', { name: regionName }),
+    mutationFn: async () => API.post("/regions", { name: regionName }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['regions'] });
+      queryClient.invalidateQueries({ queryKey: ["regions"] });
       setShowAddModal(false);
-      setRegionName('');
+      setRegionName("");
       setEditingItem(null);
     },
   });
@@ -44,9 +45,9 @@ const AreaRegions = () => {
     mutationFn: async ({ id, name }: { id: number; name: string }) =>
       API.put(`/regions/${id}`, { name }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['regions'] });
+      queryClient.invalidateQueries({ queryKey: ["regions"] });
       setShowAddModal(false);
-      setRegionName('');
+      setRegionName("");
       setEditingItem(null);
     },
   });
@@ -54,7 +55,7 @@ const AreaRegions = () => {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => API.delete(`/regions/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['regions'] });
+      queryClient.invalidateQueries({ queryKey: ["regions"] });
     },
   });
 
@@ -65,12 +66,12 @@ const AreaRegions = () => {
   };
 
   const confirmDelete = () => {
-    if (deleteTarget === 'all') {
+    if (deleteTarget === "all") {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
 
-    if (typeof deleteTarget === 'number') {
+    if (typeof deleteTarget === "number") {
       deleteMutation.mutate(deleteTarget);
       setSelected((p) => p.filter((x) => x !== deleteTarget));
     }
@@ -83,30 +84,33 @@ const AreaRegions = () => {
     setSelected(checked ? regions?.map((r) => r.id) || [] : []);
 
   const toggleOne = (id: number) =>
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-
-  if (isLoading) return <Loading />;
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
 
   return (
     <section className="users container">
-      <h1 className="main-title">{t('aside.regions')}</h1>
+      <h1 className="main-title">{t("aside.regions")}</h1>
 
       {showAddModal && (
         <div className="modal-overlay">
           <div className="regions-category">
-            <h1>{t('aside.regions')}</h1>
+            <h1>{t("aside.regions")}</h1>
 
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 if (editingItem) {
-                  updateMutation.mutate({ id: editingItem.id, name: regionName });
+                  updateMutation.mutate({
+                    id: editingItem.id,
+                    name: regionName,
+                  });
                 } else {
                   createMutation.mutate();
                 }
               }}
             >
-              <label>{t('branches.name')}</label>
+              <label>{t("branches.name")}</label>
 
               <input
                 type="text"
@@ -122,14 +126,14 @@ const AreaRegions = () => {
                   onClick={() => {
                     setShowAddModal(false);
                     setEditingItem(null);
-                    setRegionName('');
+                    setRegionName("");
                   }}
                 >
-                  {t('expenses.cancel')}
+                  {t("expenses.cancel")}
                 </button>
 
                 <button className="primary" type="submit">
-                  {t('expenses.save')}
+                  {t("expenses.save")}
                 </button>
               </div>
             </form>
@@ -140,15 +144,18 @@ const AreaRegions = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t('expenses.confirmDelete')}</h3>
+            <h3>{t("expenses.confirmDelete")}</h3>
 
             <div className="modal-actions">
-              <button className="cancel" onClick={() => setShowDeleteModal(false)}>
-                {t('expenses.cancel')}
+              <button
+                className="cancel"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                {t("expenses.cancel")}
               </button>
 
               <button className="danger" onClick={confirmDelete}>
-                {t('expenses.delete')}
+                {t("expenses.delete")}
               </button>
             </div>
           </div>
@@ -157,18 +164,18 @@ const AreaRegions = () => {
 
       <div className="users-filters">
         <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          {t('expenses.addBtn')}
+          {t("expenses.addBtn")}
         </button>
 
         <button
           className="delete-all"
           disabled={!selected.length}
           onClick={() => {
-            setDeleteTarget('all');
+            setDeleteTarget("all");
             setShowDeleteModal(true);
           }}
         >
-          {t('expenses.delete')}
+          {t("expenses.delete")}
         </button>
       </div>
 
@@ -180,19 +187,22 @@ const AreaRegions = () => {
                 <input
                   type="checkbox"
                   checked={
-                    selected.length === (regions?.length || 0) && (regions?.length || 0) > 0
+                    selected.length === (regions?.length || 0) &&
+                    (regions?.length || 0) > 0
                   }
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
               <th>ID</th>
-              <th>{t('branches.name')}</th>
-              <th>{t('expenses.actions')}</th>
+              <th>{t("branches.name")}</th>
+              <th>{t("expenses.actions")}</th>
             </tr>
           </thead>
 
           <tbody>
-            {regions?.length ? (
+            {isLoading ? (
+              <TableSkeleton rowCount={8} columnCount={4} />
+            ) : regions?.length ? (
               regions.map((item) => (
                 <tr key={item.id}>
                   <td>
@@ -207,7 +217,10 @@ const AreaRegions = () => {
                   <td>{item.name}</td>
 
                   <td className="actions">
-                    <button className="user-edit-btn" onClick={() => openEditModal(item)}>
+                    <button
+                      className="user-edit-btn"
+                      onClick={() => openEditModal(item)}
+                    >
                       <i className="fa-solid fa-pen"></i>
                     </button>
 
@@ -224,11 +237,7 @@ const AreaRegions = () => {
                 </tr>
               ))
             ) : (
-              <tr>
-                <td colSpan={4} style={{ textAlign: 'center', padding: 20 }}>
-                  {t('expenses.notFound')}
-                </td>
-              </tr>
+              <EmptyState colSpan={10} message={t("regions.notFound")} />
             )}
           </tbody>
         </table>

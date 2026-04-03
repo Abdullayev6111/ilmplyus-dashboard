@@ -2,8 +2,9 @@ import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API } from '../../api/api';
 import './payments.css';
-import Loading from '../../components/Loading';
 import { useTranslation } from 'react-i18next';
+import TableSkeleton from '../../components/TableSkeleton';
+import EmptyState from '../../components/EmptyState';
 
 interface Branch {
   id: number;
@@ -307,7 +308,6 @@ const Payments = () => {
     setDeleteTarget(null);
   };
 
-  if (isLoading) return <Loading />;
 
   const archivePayment = (u: Payment) => {
     try {
@@ -630,46 +630,54 @@ const Payments = () => {
             </tr>
           </thead>
           <tbody>
-            {filtered?.map((u) => (
-              <tr key={u.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(u.id)}
-                    onChange={() => toggleOne(u.id)}
-                  />
-                </td>
+            {isLoading ? (
+              <TableSkeleton rowCount={10} columnCount={10} />
+            ) : filtered.length > 0 ? (
+              filtered.map((u) => (
+                <tr key={u.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(u.id)}
+                      onChange={() => toggleOne(u.id)}
+                    />
+                  </td>
 
-                <td>{u.id}</td>
-                <td>
-                  {u.student?.last_name} {u.student?.first_name}
-                </td>
-                <td>{formatAmount(u.amount)}</td>
-                <td>{u.payment_method}</td>
-                <td>{u.payment_period}</td>
-                <td>{u.course?.name}</td>
-                <td>{u.cashier?.full_name}</td>
-                <td>{u.branch?.address}</td>
-                <td className="actions">
-                  <button className="user-archive-btn" onClick={() => archivePayment(u)}>
-                    <i className="fa-solid fa-box-archive"></i>
-                  </button>
-                  <button className="payment-edit-btn" onClick={() => openEditModal(u)}>
-                    <i className="fa-solid fa-pen"></i>
-                  </button>
-                  <button
-                    className="payment-delete-btn"
-                    onClick={() => {
-                      setDeleteTarget(u.id);
-                      setShowDeleteModal(true);
-                    }}
-                  >
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  <td>{u.id}</td>
+                  <td>
+                    {u.student?.last_name} {u.student?.first_name}
+                  </td>
+                  <td>{formatAmount(u.amount)}</td>
+                  <td>{u.payment_method}</td>
+                  <td>{u.payment_period}</td>
+                  <td>{u.course?.name}</td>
+                  <td>{u.cashier?.full_name}</td>
+                  <td>{u.branch?.address}</td>
+                  <td className="actions">
+                    <button className="user-archive-btn" onClick={() => archivePayment(u)}>
+                      <i className="fa-solid fa-box-archive"></i>
+                    </button>
+                    <button className="payment-edit-btn" onClick={() => openEditModal(u)}>
+                      <i className="fa-solid fa-pen"></i>
+                    </button>
+                    <button
+                      className="payment-delete-btn"
+                      onClick={() => {
+                        setDeleteTarget(u.id);
+                        setShowDeleteModal(true);
+                      }}
+                    >
+                      <i className="fa-solid fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <EmptyState colSpan={10} message={t('payments.notFound')} />
+            )}
+
           </tbody>
+
         </table>
       </div>
     </section>

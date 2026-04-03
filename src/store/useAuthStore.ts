@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface User {
   id: number;
@@ -10,30 +10,36 @@ interface AuthState {
   token: string | null;
   user: User | null;
   isAuth: boolean;
-  setToken: (token: string) => void;
-  setUser: (user: User) => void;
+  expiresAt: number | null;
+
+  setAuth: (token: string, user: User) => void;
   logout: () => void;
 }
 
+const SIX_HOURS = 6 * 60 * 60 * 1000;
+
 const useAuthStore = create<AuthState>((set) => ({
-  token: localStorage.getItem('access'),
-  user: JSON.parse(localStorage.getItem('user') || 'null'),
-  isAuth: !!localStorage.getItem('access'),
+  token: localStorage.getItem("access"),
+  user: JSON.parse(localStorage.getItem("user") || "null"),
+  isAuth: !!localStorage.getItem("access"),
+  expiresAt: Number(localStorage.getItem("expiresAt")) || null,
 
-  setToken: (token) => {
-    localStorage.setItem('access', token);
-    set({ token, isAuth: true });
-  },
+  setAuth: (token, user) => {
+    const expiresAt = Date.now() + SIX_HOURS;
 
-  setUser: (user) => {
-    localStorage.setItem('user', JSON.stringify(user));
-    set({ user });
+    localStorage.setItem("access", token);
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("expiresAt", String(expiresAt));
+
+    set({ token, user, expiresAt, isAuth: true });
   },
 
   logout: () => {
-    localStorage.removeItem('access');
-    localStorage.removeItem('user');
-    set({ token: null, user: null, isAuth: false });
+    localStorage.removeItem("access");
+    localStorage.removeItem("user");
+    localStorage.removeItem("expiresAt");
+
+    set({ token: null, user: null, expiresAt: null, isAuth: false });
   },
 }));
 

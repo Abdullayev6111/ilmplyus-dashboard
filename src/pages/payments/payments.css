@@ -192,6 +192,11 @@
   text-align: center;
   font-weight: 600;
   font-family: noto-b;
+  border-right: 1px solid #9e9d9d5d;
+}
+
+.payments-table th:last-child {
+  border-right: none;
 }
 
 .payments-table td {

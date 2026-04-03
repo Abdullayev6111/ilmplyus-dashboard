@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { API } from '../../api/api';
-import './users.css';
-import Loading from '../../components/Loading';
-import { useTranslation } from 'react-i18next';
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { API } from "../../api/api";
+import "./users.css";
+import { useTranslation } from "react-i18next";
+import TableSkeleton from "../../components/TableSkeleton";
+import EmptyState from "../../components/EmptyState";
 
 interface Branch {
   id: number;
@@ -52,35 +53,35 @@ const Users = () => {
   const [workTimeId, setWorkTimeId] = useState<number | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
-  const [search, setSearch] = useState('');
-  const [role, setRole] = useState('');
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
+  const [search, setSearch] = useState("");
+  const [role, setRole] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   // const [password, setPassword] = useState(genPassword());
   const [showRange, setShowRange] = useState(false);
   const [userImage, setUserImage] = useState<File | null>(null);
 
   const { data: apiData, isLoading } = useQuery<ApiResponse>({
-    queryKey: ['users'],
+    queryKey: ["users"],
     queryFn: async () => {
-      const { data } = await API.get('/users');
+      const { data } = await API.get("/users");
       return data;
     },
   });
 
   const [formData, setFormData] = useState({
-    familiya: '',
-    ism: '',
-    sharif: '',
-    phone: '',
-    username: '',
+    familiya: "",
+    ism: "",
+    sharif: "",
+    phone: "",
+    username: "",
     password: genPassword(),
-    start_date: '',
+    start_date: "",
     role_ids: [] as string[],
     branch_ids: [] as string[],
-    type: '',
-    position_id: '',
+    type: "",
+    position_id: "",
     is_active: true,
   });
 
@@ -91,89 +92,101 @@ const Users = () => {
   };
 
   const removeRole = (roleId: string) => {
-    setFormData({ ...formData, role_ids: formData.role_ids.filter((id) => id !== roleId) });
+    setFormData({
+      ...formData,
+      role_ids: formData.role_ids.filter((id) => id !== roleId),
+    });
   };
 
   const addBranch = (branchId: string) => {
     if (branchId && !formData.branch_ids.includes(branchId)) {
-      setFormData({ ...formData, branch_ids: [...formData.branch_ids, branchId] });
+      setFormData({
+        ...formData,
+        branch_ids: [...formData.branch_ids, branchId],
+      });
     }
   };
 
   const removeBranch = (branchId: string) => {
-    setFormData({ ...formData, branch_ids: formData.branch_ids.filter((id) => id !== branchId) });
+    setFormData({
+      ...formData,
+      branch_ids: formData.branch_ids.filter((id) => id !== branchId),
+    });
   };
 
   const createMutation = useMutation({
     mutationFn: async () => {
       const data = new FormData();
 
-      data.append('full_name', `${formData.familiya} ${formData.ism} ${formData.sharif}`);
-      data.append('username', formData.username);
-      data.append('phone', formData.phone);
-      data.append('password', formData.password);
-      data.append('type', formData.type);
-      data.append('position_id', formData.position_id || '');
-      data.append('is_active', String(formData.is_active));
+      data.append(
+        "full_name",
+        `${formData.familiya} ${formData.ism} ${formData.sharif}`,
+      );
+      data.append("username", formData.username);
+      data.append("phone", formData.phone);
+      data.append("password", formData.password);
+      data.append("type", formData.type);
+      data.append("position_id", formData.position_id || "");
+      data.append("is_active", String(formData.is_active));
 
-      formData.role_ids.forEach((id) => data.append('role_ids[]', id));
+      formData.role_ids.forEach((id) => data.append("role_ids[]", id));
 
-      formData.branch_ids.forEach((id) => data.append('branch_ids[]', id));
+      formData.branch_ids.forEach((id) => data.append("branch_ids[]", id));
 
       if (userImage) {
-        data.append('image', userImage);
+        data.append("image", userImage);
       }
 
-      const res = await API.post('/users', data, {
+      const res = await API.post("/users", data, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       setShowAddModal(false);
       setUserImage(null);
       resetForm();
       setFormData({
-        familiya: '',
-        ism: '',
-        sharif: '',
-        phone: '',
-        username: '',
+        familiya: "",
+        ism: "",
+        sharif: "",
+        phone: "",
+        username: "",
         password: genPassword(),
-        start_date: '',
+        start_date: "",
         role_ids: [],
         branch_ids: [],
-        type: '',
-        position_id: '',
+        type: "",
+        position_id: "",
         is_active: true,
       });
     },
   });
 
   const { data: branchesData } = useQuery<Branch[]>({
-    queryKey: ['branches'],
+    queryKey: ["branches"],
     queryFn: async () => {
-      const { data } = await API.get('/branches');
+      const { data } = await API.get("/branches");
       return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
   const { data: positionsData } = useQuery<Position[]>({
-    queryKey: ['positions'],
+    queryKey: ["positions"],
     queryFn: async () => {
-      const { data } = await API.get('/positions');
+      const { data } = await API.get("/positions");
       return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
   const { data: rolesData } = useQuery<Role[]>({
-    queryKey: ['roles'],
+    queryKey: ["roles"],
     queryFn: async () => {
-      const { data } = await API.get('/roles');
+      const { data } = await API.get("/roles");
       return Array.isArray(data) ? data : data?.data || [];
     },
   });
@@ -190,17 +203,17 @@ const Users = () => {
   const openEditModal = (user: User) => {
     setEditingUser(user);
     setFormData({
-      familiya: user.full_name.split(' ')[0] || '',
-      ism: user.full_name.split(' ')[1] || '',
-      sharif: user.full_name.split(' ')[2] || '',
+      familiya: user.full_name.split(" ")[0] || "",
+      ism: user.full_name.split(" ")[1] || "",
+      sharif: user.full_name.split(" ")[2] || "",
       phone: user.phone,
       username: user.username,
-      password: '',
+      password: "",
       start_date: user.created_at.slice(0, 10),
       role_ids: user.roles?.map((r) => r.id.toString()),
       branch_ids: user.branch ? [user.branch.id.toString()] : [],
       type: user.type,
-      position_id: '',
+      position_id: "",
       is_active: user.is_active,
     });
     setShowAddModal(true);
@@ -238,27 +251,33 @@ const Users = () => {
   }
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, updates }: { id: number; updates: UpdateUserPayload }) => {
+    mutationFn: async ({
+      id,
+      updates,
+    }: {
+      id: number;
+      updates: UpdateUserPayload;
+    }) => {
       const { data } = await API.put(`/users/${id}`, updates);
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       setShowAddModal(false);
       setEditingUser(null);
       resetForm();
       setFormData({
-        familiya: '',
-        ism: '',
-        sharif: '',
-        phone: '',
-        username: '',
+        familiya: "",
+        ism: "",
+        sharif: "",
+        phone: "",
+        username: "",
         password: genPassword(),
-        start_date: '',
+        start_date: "",
         role_ids: [],
         branch_ids: [],
-        type: '',
-        position_id: '',
+        type: "",
+        position_id: "",
         is_active: true,
       });
     },
@@ -266,17 +285,17 @@ const Users = () => {
 
   const resetForm = () => {
     setFormData({
-      familiya: '',
-      ism: '',
-      sharif: '',
-      phone: '',
-      username: '',
+      familiya: "",
+      ism: "",
+      sharif: "",
+      phone: "",
+      username: "",
       password: genPassword(),
-      start_date: '',
+      start_date: "",
       role_ids: [],
       branch_ids: [],
-      type: '',
-      position_id: '',
+      type: "",
+      position_id: "",
       is_active: true,
     });
     setEditingUser(null);
@@ -288,7 +307,7 @@ const Users = () => {
       await API.delete(`/users/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 
@@ -298,7 +317,9 @@ const Users = () => {
     return users
       .filter((u) => {
         const d = u.created_at.slice(0, 10);
-        const matchSearch = u.full_name.toLowerCase().includes(search.toLowerCase());
+        const matchSearch = u.full_name
+          .toLowerCase()
+          .includes(search.toLowerCase());
         const matchRole = role ? u.roles[0]?.name === role : true;
 
         if (!matchSearch || !matchRole) return false;
@@ -312,18 +333,21 @@ const Users = () => {
       .sort((a, b) => a.id - b.id);
   }, [apiData?.data, search, role, fromDate, toDate]);
 
-  const toggleAll = (checked: boolean) => setSelected(checked ? filtered?.map((u) => u.id) : []);
+  const toggleAll = (checked: boolean) =>
+    setSelected(checked ? filtered?.map((u) => u.id) : []);
 
   const toggleOne = (id: number) =>
-    setSelected((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
+    setSelected((p) =>
+      p.includes(id) ? p.filter((x) => x !== id) : [...p, id],
+    );
 
   const confirmDelete = () => {
-    if (deleteTarget === 'all') {
+    if (deleteTarget === "all") {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
 
-    if (typeof deleteTarget === 'number') {
+    if (typeof deleteTarget === "number") {
       deleteMutation.mutate(deleteTarget);
       setSelected((p) => p.filter((x) => x !== deleteTarget));
     }
@@ -333,34 +357,27 @@ const Users = () => {
   };
 
   const archiveUser = (u: User) => {
-    const archived = JSON.parse(localStorage.getItem('archivedUsers') || '[]');
-    localStorage.setItem('archivedUsers', JSON.stringify([...archived, u]));
+    const archived = JSON.parse(localStorage.getItem("archivedUsers") || "[]");
+    localStorage.setItem("archivedUsers", JSON.stringify([...archived, u]));
     deleteMutation.mutate(u.id);
   };
 
-  if (isLoading)
-    return (
-      <div>
-        <Loading />
-      </div>
-    );
-
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
-  const ALLOWED_TYPES = ['image/png', 'image/jpeg'];
+  const ALLOWED_TYPES = ["image/png", "image/jpeg"];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      alert('Only PNG or JPG format is allowed');
-      e.target.value = '';
+      alert("Only PNG or JPG format is allowed");
+      e.target.value = "";
       return;
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      alert('Maximum file size is 5MB');
-      e.target.value = '';
+      alert("Maximum file size is 5MB");
+      e.target.value = "";
       return;
     }
 
@@ -369,59 +386,71 @@ const Users = () => {
 
   return (
     <section className="users container">
-      <h1 className="main-title">{t('users.listTitle')}</h1>
+      <h1 className="main-title">{t("users.listTitle")}</h1>
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal add-user-modal">
             <h3 className="modal-title">
-              {editingUser ? t('users.userEditTitle') : t('users.addNewUserTitle')}
+              {editingUser
+                ? t("users.userEditTitle")
+                : t("users.addNewUserTitle")}
             </h3>
 
             <div className="add-user-form">
               <div className="form-left">
                 <div className="form-group">
-                  <label>{t('users.lastName')}</label>
+                  <label>{t("users.lastName")}</label>
                   <input
                     type="text"
                     value={formData.familiya}
-                    onChange={(e) => setFormData({ ...formData, familiya: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, familiya: e.target.value })
+                    }
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t('users.firstName')}</label>
+                  <label>{t("users.firstName")}</label>
                   <input
                     type="text"
                     value={formData.ism}
-                    onChange={(e) => setFormData({ ...formData, ism: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, ism: e.target.value })
+                    }
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t('users.familyName')}</label>
+                  <label>{t("users.familyName")}</label>
                   <input
                     type="text"
                     value={formData.sharif}
-                    onChange={(e) => setFormData({ ...formData, sharif: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, sharif: e.target.value })
+                    }
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t('users.phoneNumber')}</label>
+                  <label>{t("users.phoneNumber")}</label>
                   <input
                     type="text"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t('users.loginText')}</label>
+                  <label>{t("users.loginText")}</label>
                   <input
                     type="text"
                     value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, username: e.target.value })
+                    }
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t('users.password')}</label>
-                  <div style={{ position: 'relative' }}>
+                  <label>{t("users.password")}</label>
+                  <div style={{ position: "relative" }}>
                     <input type="text" value={formData.password} readOnly />
                     <button
                       className="refresh-password"
@@ -435,11 +464,13 @@ const Users = () => {
                   </div>
                 </div>
                 <div className="form-group">
-                  <label>{t('users.startDate')}</label>
+                  <label>{t("users.startDate")}</label>
                   <input
                     type="date"
                     value={formData.start_date}
-                    onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, start_date: e.target.value })
+                    }
                   />
                 </div>
                 <div className="form-group">
@@ -462,10 +493,12 @@ const Users = () => {
 
               <div className="form-right">
                 <div className="form-group">
-                  <label>{t('users.roles')}</label>
+                  <label>{t("users.roles")}</label>
                   <div className="selected-items-box">
                     {formData.role_ids?.map((roleId) => {
-                      const role = roles.find((r) => r.id.toString() === roleId);
+                      const role = roles.find(
+                        (r) => r.id.toString() === roleId,
+                      );
                       return (
                         <div key={roleId} className="selected-item">
                           {role?.name || roleId}
@@ -480,10 +513,10 @@ const Users = () => {
                   <select
                     onChange={(e) => {
                       addRole(e.target.value);
-                      e.target.value = '';
+                      e.target.value = "";
                     }}
                   >
-                    <option value="">{t('users.choose')}</option>
+                    <option value="">{t("users.choose")}</option>
                     {roles?.map((role) => (
                       <option key={role.id} value={role.id}>
                         {role.name}
@@ -493,14 +526,18 @@ const Users = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>{t('users.branches')}</label>
+                  <label>{t("users.branches")}</label>
                   <div className="selected-items-box">
                     {formData.branch_ids?.map((branchId) => {
-                      const branch = branches.find((b) => b.id.toString() === branchId);
+                      const branch = branches.find(
+                        (b) => b.id.toString() === branchId,
+                      );
                       return (
                         <div key={branchId} className="selected-item">
                           {branch?.address || branchId}
-                          <button onClick={() => removeBranch(branchId)}>×</button>
+                          <button onClick={() => removeBranch(branchId)}>
+                            ×
+                          </button>
                         </div>
                       );
                     })}
@@ -511,10 +548,10 @@ const Users = () => {
                   <select
                     onChange={(e) => {
                       addBranch(e.target.value);
-                      e.target.value = '';
+                      e.target.value = "";
                     }}
                   >
-                    <option value="">{t('users.choose')}</option>
+                    <option value="">{t("users.choose")}</option>
                     {branches?.map((branch) => (
                       <option key={branch.id} value={branch.id}>
                         {branch.address}
@@ -524,12 +561,14 @@ const Users = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>{t('users.position')}</label>
+                  <label>{t("users.position")}</label>
                   <select
                     value={formData.position_id}
-                    onChange={(e) => setFormData({ ...formData, position_id: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, position_id: e.target.value })
+                    }
                   >
-                    <option value="">{t('users.choose')}</option>
+                    <option value="">{t("users.choose")}</option>
                     {positions?.map((position) => (
                       <option key={position.id} value={position.id}>
                         {position.name}
@@ -539,7 +578,7 @@ const Users = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>{t('users.endDate')}</label>
+                  <label>{t("users.endDate")}</label>
                   <input type="date" />
                 </div>
 
@@ -547,30 +586,34 @@ const Users = () => {
                   <div className="toggle-buttons">
                     <button
                       type="button"
-                      className={formData.is_active ? '' : 'active'}
-                      onClick={() => setFormData({ ...formData, is_active: false })}
+                      className={formData.is_active ? "" : "active"}
+                      onClick={() =>
+                        setFormData({ ...formData, is_active: false })
+                      }
                     >
-                      {t('users.inactive')}
+                      {t("users.inactive")}
                     </button>
                     <button
                       type="button"
-                      className={formData.is_active ? 'active' : ''}
-                      onClick={() => setFormData({ ...formData, is_active: true })}
+                      className={formData.is_active ? "active" : ""}
+                      onClick={() =>
+                        setFormData({ ...formData, is_active: true })
+                      }
                     >
-                      {t('users.active')}
+                      {t("users.active")}
                     </button>
                   </div>
                 </div>
 
                 {!formData.is_active && (
                   <div className="form-group">
-                    <label>{t('users.isActive')}</label>
+                    <label>{t("users.isActive")}</label>
                     <div className="checkbox-group">
                       <label>
-                        <input type="checkbox" /> {t('users.yes')}
+                        <input type="checkbox" /> {t("users.yes")}
                       </label>
                       <label>
-                        <input type="checkbox" /> {t('users.no')}
+                        <input type="checkbox" /> {t("users.no")}
                       </label>
                     </div>
                   </div>
@@ -587,7 +630,7 @@ const Users = () => {
                   resetForm();
                 }}
               >
-                {t('users.cancel')}
+                {t("users.cancel")}
               </button>
               <button
                 className="primary"
@@ -595,8 +638,8 @@ const Users = () => {
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
                 {createMutation.isPending || updateMutation.isPending
-                  ? t('users.saving')
-                  : t('users.save')}
+                  ? t("users.saving")
+                  : t("users.save")}
               </button>
             </div>
           </div>
@@ -606,14 +649,17 @@ const Users = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t('users.confirmDelete')}</h3>
+            <h3>{t("users.confirmDelete")}</h3>
 
             <div className="modal-actions">
-              <button className="cancel" onClick={() => setShowDeleteModal(false)}>
-                {t('users.cancel')}
+              <button
+                className="cancel"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                {t("users.cancel")}
               </button>
               <button className="danger" onClick={confirmDelete}>
-                {t('users.confirm')}
+                {t("users.confirm")}
               </button>
             </div>
           </div>
@@ -622,22 +668,22 @@ const Users = () => {
 
       <div className="users-filters">
         <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          {t('users.addNew')}
+          {t("users.addNew")}
         </button>
 
         <button
           className="delete-all"
           disabled={!selected.length}
           onClick={() => {
-            setDeleteTarget('all');
+            setDeleteTarget("all");
             setShowDeleteModal(true);
           }}
         >
-          {t('users.delete')}
+          {t("users.delete")}
         </button>
 
         <select onChange={(e) => setRole(e.target.value)}>
-          <option value="">{t('users.employeeType')}</option>
+          <option value="">{t("users.employeeType")}</option>
           {roles?.map((role) => (
             <option key={role.id} value={role.name}>
               {role.name}
@@ -645,20 +691,26 @@ const Users = () => {
           ))}
         </select>
 
-        <input placeholder={t('users.search')} onChange={(e) => setSearch(e.target.value)} />
+        <input
+          placeholder={t("users.search")}
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: "relative" }}>
           <input
             type="text"
             readOnly
-            placeholder={t('users.dateFilter')}
-            value={fromDate && toDate ? `${fromDate} - ${toDate}` : ''}
+            placeholder={t("users.dateFilter")}
+            value={fromDate && toDate ? `${fromDate} - ${toDate}` : ""}
             onClick={() => setShowRange(true)}
           />
 
           {showRange && (
             <div className="range-box">
-              <input type="date" onChange={(e) => setFromDate(e.target.value)} />
+              <input
+                type="date"
+                onChange={(e) => setFromDate(e.target.value)}
+              />
 
               <input
                 type="date"
@@ -679,98 +731,122 @@ const Users = () => {
               <th>
                 <input
                   type="checkbox"
-                  checked={selected.length === filtered.length && filtered.length > 0}
+                  checked={
+                    selected.length === filtered.length && filtered.length > 0
+                  }
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
               <th>ID</th>
-              <th>{t('users.fish')}</th>
-              <th>{t('users.phone')}</th>
-              <th>{t('users.role')}</th>
-              <th>{t('users.status')}</th>
-              <th>{t('users.branch')}</th>
-              <th>{t('users.loginText')}</th>
-              <th>{t('users.date')}</th>
-              <th>{t('users.actions')}</th>
+              <th>{t("users.fish")}</th>
+              <th>{t("users.phone")}</th>
+              <th>{t("users.role")}</th>
+              <th>{t("users.status")}</th>
+              <th>{t("users.branch")}</th>
+              <th>{t("users.loginText")}</th>
+              <th>{t("users.date")}</th>
+              <th>{t("users.actions")}</th>
             </tr>
           </thead>
 
           <tbody>
-            {filtered?.map((u) => (
-              <tr key={u.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(u.id)}
-                    onChange={() => toggleOne(u.id)}
-                  />
-                </td>
-
-                <td>{u.id}</td>
-
-                <td>
-                  {editingId === u.id ? (
+            {isLoading ? (
+              <TableSkeleton rowCount={8} columnCount={10} />
+            ) : filtered.length > 0 ? (
+              filtered.map((u) => (
+                <tr key={u.id}>
+                  <td>
                     <input
-                      value={u.full_name}
-                      onChange={(e) =>
-                        updateMutation.mutate({ id: u.id, updates: { full_name: e.target.value } })
-                      }
+                      type="checkbox"
+                      checked={selected.includes(u.id)}
+                      onChange={() => toggleOne(u.id)}
                     />
-                  ) : (
-                    u.full_name
-                  )}
-                </td>
+                  </td>
 
-                <td>{u.phone}</td>
-                <td>{u.roles[0]?.name || '-'}</td>
-                <td>{u.is_active ? t('users.active') : t('users.inactive')}</td>
-                <td>{u.branch?.address || '-'}</td>
-                <td>{u.username}</td>
-                <td>{u.created_at.slice(0, 10).replaceAll('-', '.')}</td>
+                  <td>{u.id}</td>
 
-                <td className="actions">
-                  <div style={{ position: 'relative' }}>
-                    <button className="user-workTime-btn" onClick={() => setWorkTimeId(u.id)}>
-                      <i className="fa-solid fa-clock"></i>
+                  <td>
+                    {editingId === u.id ? (
+                      <input
+                        value={u.full_name}
+                        onChange={(e) =>
+                          updateMutation.mutate({
+                            id: u.id,
+                            updates: { full_name: e.target.value },
+                          })
+                        }
+                      />
+                    ) : (
+                      u.full_name
+                    )}
+                  </td>
+
+                  <td>{u.phone}</td>
+                  <td>{u.roles[0]?.name || "-"}</td>
+                  <td>
+                    {u.is_active ? t("users.active") : t("users.inactive")}
+                  </td>
+                  <td>{u.branch?.address || "-"}</td>
+                  <td>{u.username}</td>
+                  <td>{u.created_at.slice(0, 10).replaceAll("-", ".")}</td>
+
+                  <td className="actions">
+                    <div style={{ position: "relative" }}>
+                      <button
+                        className="user-workTime-btn"
+                        onClick={() => setWorkTimeId(u.id)}
+                      >
+                        <i className="fa-solid fa-clock"></i>
+                      </button>
+
+                      {workTimeId === u.id && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: -60,
+                            left: -40,
+                            background: "#fff",
+                            border: "1px solid #003366",
+                            padding: 8,
+                          }}
+                        >
+                          <input type="time" step="60" lang="ru" />
+                          <button onClick={() => setWorkTimeId(null)}>
+                            OK
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <button
+                      className="user-archive-btn"
+                      onClick={() => archiveUser(u)}
+                    >
+                      <i className="fa-solid fa-box-archive"></i>
                     </button>
 
-                    {workTimeId === u.id && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: -60,
-                          left: -40,
-                          background: '#fff',
-                          border: '1px solid #003366',
-                          padding: 8,
-                        }}
-                      >
-                        <input type="time" step="60" lang="ru" />
-                        <button onClick={() => setWorkTimeId(null)}>OK</button>
-                      </div>
-                    )}
-                  </div>
+                    <button
+                      className="user-edit-btn"
+                      onClick={() => openEditModal(u)}
+                    >
+                      <i className="fa-solid fa-pen"></i>
+                    </button>
 
-                  <button className="user-archive-btn" onClick={() => archiveUser(u)}>
-                    <i className="fa-solid fa-box-archive"></i>
-                  </button>
-
-                  <button className="user-edit-btn" onClick={() => openEditModal(u)}>
-                    <i className="fa-solid fa-pen"></i>
-                  </button>
-
-                  <button
-                    className="user-delete-btn"
-                    onClick={() => {
-                      setDeleteTarget(u.id);
-                      setShowDeleteModal(true);
-                    }}
-                  >
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
+                    <button
+                      className="user-delete-btn"
+                      onClick={() => {
+                        setDeleteTarget(u.id);
+                        setShowDeleteModal(true);
+                      }}
+                    >
+                      <i className="fa-solid fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <EmptyState colSpan={10} message={t("users.notFound")} />
+            )}
           </tbody>
         </table>
       </div>

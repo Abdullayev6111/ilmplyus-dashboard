@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { API } from '../../api/api';
-import '../users/users.css';
-import './courses.css';
-import Loading from '../../components/Loading';
-import { useTranslation } from 'react-i18next';
+import { useMemo, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { API } from "../../api/api";
+import "../users/users.css";
+import "./courses.css";
+import { useTranslation } from "react-i18next";
+import TableSkeleton from "../../components/TableSkeleton";
+import EmptyState from "../../components/EmptyState";
 
 interface Level {
   id: number;
@@ -46,28 +47,28 @@ const Courses = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [editingItem, setEditingItem] = useState<Course | null>(null);
 
   const [formData, setFormData] = useState<CourseFormData>({
-    name: '',
-    level_id: '',
-    branch_id: '',
+    name: "",
+    level_id: "",
+    branch_id: "",
   });
 
   const { data: courses, isLoading } = useQuery<Course[]>({
-    queryKey: ['courses'],
+    queryKey: ["courses"],
     queryFn: async () => {
-      const { data } = await API.get<Course[]>('/courses');
+      const { data } = await API.get<Course[]>("/courses");
       return Array.isArray(data) ? data : (data as any)?.data || [];
     },
   });
 
   const { data: branches } = useQuery<Branch[]>({
-    queryKey: ['branches'],
+    queryKey: ["branches"],
     queryFn: async () => {
-      const { data } = await API.get<Branch[]>('/branches');
+      const { data } = await API.get<Branch[]>("/branches");
       return Array.isArray(data) ? data : (data as any)?.data || [];
     },
   });
@@ -84,10 +85,13 @@ const Courses = () => {
   }, [courses]);
 
   const createMutation = useMutation({
-    mutationFn: async (payload: { name: string; level_id: number; branch_id: number }) =>
-      API.post('/courses', payload),
+    mutationFn: async (payload: {
+      name: string;
+      level_id: number;
+      branch_id: number;
+    }) => API.post("/courses", payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
       resetForm();
     },
   });
@@ -98,7 +102,7 @@ const Courses = () => {
       payload: { name: string; level_id: number; branch_id: number };
     }) => API.put(`/courses/${params.id}`, params.payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
       resetForm();
     },
   });
@@ -106,14 +110,14 @@ const Courses = () => {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => API.delete(`/courses/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
   });
 
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-    setFormData({ name: '', level_id: '', branch_id: '' });
+    setFormData({ name: "", level_id: "", branch_id: "" });
   };
 
   const openEditModal = (item: Course) => {
@@ -127,12 +131,12 @@ const Courses = () => {
   };
 
   const confirmDelete = () => {
-    if (deleteTarget === 'all') {
+    if (deleteTarget === "all") {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
 
-    if (typeof deleteTarget === 'number') {
+    if (typeof deleteTarget === "number") {
       deleteMutation.mutate(deleteTarget);
       setSelected((prev) => prev.filter((x) => x !== deleteTarget));
     }
@@ -145,18 +149,18 @@ const Courses = () => {
     setSelected(checked ? (courses?.map((c) => c.id) ?? []) : []);
 
   const toggleOne = (id: number) =>
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-
-  if (isLoading) return <Loading />;
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
 
   return (
     <section className="users container">
-      <h1 className="main-title">{t('courses.mainTitle')}</h1>
+      <h1 className="main-title">{t("courses.mainTitle")}</h1>
 
       {showModal && (
         <div className="modal-overlay">
           <div className="expenses-subcategory">
-            <h1>{t('courses.course')}</h1>
+            <h1>{t("courses.course")}</h1>
 
             <form
               className="subcategory-form"
@@ -177,17 +181,19 @@ const Courses = () => {
               }}
             >
               <div className="subcategory-form-group">
-                <label>{t('courses.courseName')}</label>
+                <label>{t("courses.courseName")}</label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   required
                 />
               </div>
 
               <div className="subcategory-form-group">
-                <label>{t('courses.branch')}</label>
+                <label>{t("courses.branch")}</label>
                 <select
                   value={formData.branch_id}
                   onChange={(e) =>
@@ -198,7 +204,7 @@ const Courses = () => {
                   }
                   required
                 >
-                  <option value="">{t('courses.choose')}</option>
+                  <option value="">{t("courses.choose")}</option>
                   {branches?.map((branch) => (
                     <option key={branch.id} value={branch.id}>
                       {branch.name}
@@ -208,7 +214,7 @@ const Courses = () => {
               </div>
 
               <div className="subcategory-form-group">
-                <label>{t('courses.level')}</label>
+                <label>{t("courses.level")}</label>
                 <select
                   value={formData.level_id}
                   onChange={(e) =>
@@ -219,7 +225,7 @@ const Courses = () => {
                   }
                   required
                 >
-                  <option value="">{t('courses.choose')}</option>
+                  <option value="">{t("courses.choose")}</option>
                   {levels.map((level) => (
                     <option key={level.id} value={level.id}>
                       {level.name}
@@ -230,11 +236,11 @@ const Courses = () => {
 
               <div className="modal-actions">
                 <button type="button" className="cancel" onClick={resetForm}>
-                  {t('expenses.cancel')}
+                  {t("expenses.cancel")}
                 </button>
 
                 <button className="primary" type="submit">
-                  {t('expenses.save')}
+                  {t("expenses.save")}
                 </button>
               </div>
             </form>
@@ -245,15 +251,18 @@ const Courses = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t('expenses.confirmDelete')}</h3>
+            <h3>{t("expenses.confirmDelete")}</h3>
 
             <div className="modal-actions">
-              <button className="cancel" onClick={() => setShowDeleteModal(false)}>
-                {t('expenses.cancel')}
+              <button
+                className="cancel"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                {t("expenses.cancel")}
               </button>
 
               <button className="danger" onClick={confirmDelete}>
-                {t('expenses.delete')}
+                {t("expenses.delete")}
               </button>
             </div>
           </div>
@@ -262,18 +271,18 @@ const Courses = () => {
 
       <div className="users-filters">
         <button className="add-new-user" onClick={() => setShowModal(true)}>
-          {t('expenses.addBtn')}
+          {t("expenses.addBtn")}
         </button>
 
         <button
           className="delete-all"
           disabled={!selected.length}
           onClick={() => {
-            setDeleteTarget('all');
+            setDeleteTarget("all");
             setShowDeleteModal(true);
           }}
         >
-          {t('expenses.delete')}
+          {t("expenses.delete")}
         </button>
       </div>
 
@@ -284,21 +293,26 @@ const Courses = () => {
               <th>
                 <input
                   type="checkbox"
-                  checked={selected.length === (courses?.length ?? 0) && (courses?.length ?? 0) > 0}
+                  checked={
+                    selected.length === (courses?.length ?? 0) &&
+                    (courses?.length ?? 0) > 0
+                  }
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
               <th>ID</th>
-              <th>{t('courses.courseName')}</th>
-              <th>{t('courses.level')}</th>
-              <th>{t('courses.branch')}</th>
-              <th>{t('courses.createdDate')}</th>
-              <th>{t('courses.actions')}</th>
+              <th>{t("courses.courseName")}</th>
+              <th>{t("courses.level")}</th>
+              <th>{t("courses.branch")}</th>
+              <th>{t("courses.createdDate")}</th>
+              <th>{t("courses.actions")}</th>
             </tr>
           </thead>
 
           <tbody>
-            {courses && courses.length > 0 ? (
+            {isLoading ? (
+              <TableSkeleton rowCount={8} columnCount={7} />
+            ) : courses && courses.length > 0 ? (
               courses.map((item) => (
                 <tr key={item.id}>
                   <td>
@@ -310,11 +324,17 @@ const Courses = () => {
                   </td>
                   <td>{item.id}</td>
                   <td>{item.name}</td>
-                  <td>{item.level?.name ?? '-'}</td>
-                  <td>{branches?.find((b) => b.id === item.branch_id)?.name ?? '-'}</td>
+                  <td>{item.level?.name ?? "-"}</td>
+                  <td>
+                    {branches?.find((b) => b.id === item.branch_id)?.name ??
+                      "-"}
+                  </td>
                   <td>{new Date(item.created_at).toLocaleDateString()}</td>
                   <td className="actions">
-                    <button className="user-edit-btn" onClick={() => openEditModal(item)}>
+                    <button
+                      className="user-edit-btn"
+                      onClick={() => openEditModal(item)}
+                    >
                       <i className="fa-solid fa-pen"></i>
                     </button>
 
@@ -331,11 +351,7 @@ const Courses = () => {
                 </tr>
               ))
             ) : (
-              <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: 20 }}>
-                  {t('expenses.notFound')}
-                </td>
-              </tr>
+              <EmptyState colSpan={10} message={t("courses.notFound")} />
             )}
           </tbody>
         </table>

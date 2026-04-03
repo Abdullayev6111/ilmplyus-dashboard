@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../api/api";
 import { useTranslation } from "react-i18next";
+import EmptyState from "../../components/EmptyState";
 import "../branches/branches.css";
 
 // --- TYPES ---
@@ -128,7 +129,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
     onSubmit(payload, initialData?.id);
   };
 
-  const inputStyle = { padding: "6px 10px", height: "32px", fontSize: "13px" };
+  const inputStyle = { padding: "6px 10px", height: "36px", fontSize: "13px" };
 
   return (
     <div className="branch-modal-overlay" onClick={onClose}>
@@ -138,7 +139,9 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
         onSubmit={handleSubmit}
       >
         <h3 className="branch-modal-heading">
-          {initialData ? t("departments.editTitle") : t("departments.addNewTitle")}
+          {initialData
+            ? t("departments.editTitle")
+            : t("departments.addNewTitle")}
         </h3>
 
         <div className="branch-form-wrapper">
@@ -383,14 +386,7 @@ const Department: React.FC = () => {
               </tr>
             ))}
             {tableData.length === 0 && (
-              <tr>
-                <td
-                  colSpan={7}
-                  style={{ textAlign: "center", padding: "2rem" }}
-                >
-                  {t("departments.noData")}
-                </td>
-              </tr>
+              <EmptyState colSpan={10} message={t("common.noData")} />
             )}
           </tbody>
         </table>
