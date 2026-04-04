@@ -24,4 +24,8 @@ export interface Position {
 export interface Role {
   id: number;
   name: string;
+  branches?: Branch[];
 }
+
+export type PermissionItem = { id: number; action: string };
+export type PermissionMap = Record<string, PermissionItem[]>;

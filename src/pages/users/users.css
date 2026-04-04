@@ -282,6 +282,7 @@
   padding: 8px 12px;
   border-radius: 10px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .main-title {

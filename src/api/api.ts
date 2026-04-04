@@ -1,6 +1,7 @@
 import axios from "axios";
 import useAuthStore from "../store/useAuthStore";
 import { queryClient } from "../main";
+import { notifications } from "@mantine/notifications";
 
 export const API = axios.create({
   baseURL: "https://easypos.uz/api",
@@ -8,6 +9,8 @@ export const API = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+let isNotifying = false;
 
 API.interceptors.request.use((config) => {
   const { token, expiresAt, logout } = useAuthStore.getState();
@@ -27,9 +30,33 @@ API.interceptors.request.use((config) => {
 API.interceptors.response.use(
   (res) => res,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error?.response?.status;
+    const message = error?.response?.data?.message;
+
+    if (status === 401) {
       logoutAndRedirect();
+      return Promise.reject(error);
     }
+
+    if (!isNotifying) {
+      isNotifying = true;
+
+      notifications.clean();
+
+      notifications.show({
+        color: "red",
+        title: "Xatolik",
+        message:
+          status === 403
+            ? "Sahifaga kirishga ruxsat yo'q"
+            : message || "Xatolik yuz berdi",
+      });
+
+      setTimeout(() => {
+        isNotifying = false;
+      }, 2000);
+    }
+
     return Promise.reject(error);
   },
 );

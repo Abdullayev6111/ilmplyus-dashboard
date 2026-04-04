@@ -384,6 +384,7 @@
   font-family: noto-m;
   font-size: 15px;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .cancel:hover {

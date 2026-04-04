@@ -12,6 +12,7 @@ import Classes from "./pages/classes";
 import Students from "./pages/students";
 import Teachers from "./pages/teachers";
 import Roles from "./pages/roles";
+import RolePermissions from "./pages/roles/RolePermissions";
 import Payments from "./pages/payments";
 import ArchivedPayments from "./pages/archive";
 import Expenses from "./pages/expenses";
@@ -55,6 +56,7 @@ const App = () => {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/roles" element={<Roles />} />
+          <Route path="/roles/:id/permissions" element={<RolePermissions />} />
           <Route path="/users" element={<Users />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/branches" element={<Branches />} />
