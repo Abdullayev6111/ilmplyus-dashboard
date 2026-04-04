@@ -1,5 +1,10 @@
 import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import { API } from "../../api/api";
 import "../users/users.css";
 import "./courses.css";
@@ -272,7 +277,7 @@ const CourseLevel = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={7} />
             ) : levels && levels.length > 0 ? (
-              levels.map((item) => (
+              levels?.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

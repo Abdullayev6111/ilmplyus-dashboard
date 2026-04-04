@@ -6,9 +6,9 @@ interface TableSkeletonProps {
 const TableSkeleton = ({ rowCount, columnCount }: TableSkeletonProps) => {
   return (
     <>
-      {[...Array(rowCount)].map((_, rowIndex) => (
+      {[...Array(rowCount)]?.map((_, rowIndex) => (
         <tr key={rowIndex}>
-          {[...Array(columnCount)].map((_, colIndex) => (
+          {[...Array(columnCount)]?.map((_, colIndex) => (
             <td key={colIndex}>
               <div className="skeleton"></div>
             </td>

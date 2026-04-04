@@ -172,7 +172,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
                 <option value="" disabled>
                   {t("departments.selectBranch")}
                 </option>
-                {branches.map((b) => (
+                {branches?.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.name}
                   </option>
@@ -339,7 +339,7 @@ const Department = () => {
             </tr>
           </thead>
           <tbody>
-            {tableData.map((dept) => (
+            {tableData?.map((dept) => (
               <tr key={dept.id}>
                 <td>{dept.id}</td>
                 <td>{dept.name}</td>

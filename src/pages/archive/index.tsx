@@ -150,7 +150,7 @@ const ArchivedPayments = () => {
             {archived.length === 0 ? (
               <EmptyState colSpan={10} message={t("payments.noArchived")} />
             ) : (
-              archived.map((u) => (
+              archived?.map((u) => (
                 <tr key={u.id}>
                   <td>{u.id}</td>
                   <td>

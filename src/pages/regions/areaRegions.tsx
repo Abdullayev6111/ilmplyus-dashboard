@@ -203,7 +203,7 @@ const AreaRegions = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={4} />
             ) : regions?.length ? (
-              regions.map((item) => (
+              regions?.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

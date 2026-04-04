@@ -243,7 +243,7 @@ const AreaDistricts = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={4} />
             ) : districts?.length ? (
-              districts.map((item) => (
+              districts?.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

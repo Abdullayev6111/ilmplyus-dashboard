@@ -1,5 +1,10 @@
 import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import { API } from "../../api/api";
 import "./users.css";
 import { useTranslation } from "react-i18next";
@@ -721,7 +726,7 @@ const Users = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={10} />
             ) : filtered.length > 0 ? (
-              filtered.map((u) => (
+              filtered?.map((u) => (
                 <tr key={u.id}>
                   <td>
                     <input

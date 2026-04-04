@@ -95,7 +95,7 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
 
       <div className="aside-content">
         <Accordion radius={0} className="sidebar" multiple={false}>
-          {menu.map((item) => {
+          {menu?.map((item) => {
             if (item.children) {
               return (
                 <Accordion.Item value={item.label} key={item.label}>
@@ -114,7 +114,7 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
 
                   <Accordion.Panel>
                     <div className="sidebar-submenu">
-                      {item.children.map((child) => (
+                      {item?.children?.map((child) => (
                         <NavLink
                           key={child.path}
                           to={child.path}

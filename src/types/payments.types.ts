@@ -1,6 +1,6 @@
-import type { Branch, ApiResponse } from './common.types';
-import type { Group } from './groups.types';
-import type { Course } from './course.types';
+import type { Branch, ApiResponse } from "./common.types";
+import type { Group } from "./groups.types";
+import type { Course } from "./course.types";
 
 export interface Student {
   id: number;
@@ -10,6 +10,7 @@ export interface Student {
 }
 
 export interface Employee {
+  id: number;
   full_name: string;
   role?: string;
 }

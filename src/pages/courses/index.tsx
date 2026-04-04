@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import { API } from "../../api/api";
 import "../users/users.css";
 import "./courses.css";
@@ -55,7 +60,6 @@ const Courses = () => {
     staleTime: 1000 * 60 * 30,
     placeholderData: keepPreviousData,
   });
-
 
   const createMutation = useMutation({
     mutationFn: async (payload: CoursePayload) => API.post("/courses", payload),
@@ -178,7 +182,6 @@ const Courses = () => {
                 </select>
               </div>
 
-
               <div className="modal-actions">
                 <button type="button" className="cancel" onClick={resetForm}>
                   {t("expenses.cancel")}
@@ -257,7 +260,7 @@ const Courses = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={7} />
             ) : courses && courses.length > 0 ? (
-              courses.map((item) => (
+              courses?.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

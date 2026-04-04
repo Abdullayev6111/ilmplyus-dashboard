@@ -228,7 +228,7 @@ const ExpensesCategory = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={4} />
             ) : categories?.length ? (
-              categories.map((item) => (
+              categories?.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

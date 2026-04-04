@@ -427,7 +427,7 @@ const Expenses = () => {
                 !categoryFilter ||
                 String(s.expense_category_id) === categoryFilter,
             )
-            .map((s) => (
+            ?.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
               </option>
@@ -490,7 +490,7 @@ const Expenses = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={9} />
             ) : filteredExpenses?.length ? (
-              filteredExpenses.map((item) => (
+              filteredExpenses?.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

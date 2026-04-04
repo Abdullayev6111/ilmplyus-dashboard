@@ -332,7 +332,7 @@ const Rooms = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={7} />
             ) : rooms?.length ? (
-              rooms.map((item) => (
+              rooms?.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

@@ -1,34 +1,34 @@
-import { useTranslation } from 'react-i18next';
-import classes from './LanguagePicker.module.css';
-import { Select } from '@mantine/core';
+import { useTranslation } from "react-i18next";
+import classes from "./LanguagePicker.module.css";
+import { Select } from "@mantine/core";
 
 const langs = [
-  { value: 'uz', label: 'UZ' },
-  { value: 'ru', label: 'RU' },
-  { value: 'en', label: 'EN' },
+  { value: "uz", label: "UZ" },
+  { value: "ru", label: "RU" },
+  { value: "en", label: "EN" },
 ];
 
 type Props = {
-  variant?: 'login' | 'header';
+  variant?: "login" | "header";
 };
 
-export default function LanguageSelect({ variant = 'header' }: Props) {
+export default function LanguageSelect({ variant = "header" }: Props) {
   const { i18n } = useTranslation();
 
   const changeLang = (lng: string) => {
     i18n.changeLanguage(lng);
-    localStorage.setItem('lang', lng);
+    localStorage.setItem("lang", lng);
   };
 
   // LOGIN
-  if (variant === 'login') {
+  if (variant === "login") {
     return (
       <div className={classes.wrapper}>
-        {langs.map((l) => (
+        {langs?.map((l) => (
           <button
             key={l.value}
             onClick={() => changeLang(l.value)}
-            className={`${classes.btn} ${i18n.language === l.value ? classes.active : ''}`}
+            className={`${classes.btn} ${i18n.language === l.value ? classes.active : ""}`}
           >
             {l.label}
           </button>
@@ -50,13 +50,13 @@ export default function LanguageSelect({ variant = 'header' }: Props) {
       radius="md"
       styles={{
         input: {
-          background: '#003366',
-          color: 'white',
-          border: 'none',
-          fontFamily: 'noto-b',
+          background: "#003366",
+          color: "white",
+          border: "none",
+          fontFamily: "noto-b",
           height: 36,
           width: 70,
-          textAlign: 'center',
+          textAlign: "center",
           fontSize: 18,
         },
         dropdown: {
@@ -65,7 +65,7 @@ export default function LanguageSelect({ variant = 'header' }: Props) {
         },
       }}
       classNames={{
-        option: 'lang-option',
+        option: "lang-option",
       }}
     />
   );

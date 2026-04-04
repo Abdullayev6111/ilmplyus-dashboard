@@ -282,7 +282,7 @@ const ExpensesSubcategory = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={5} />
             ) : subcategories?.length ? (
-              subcategories.map((item) => (
+              subcategories?.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input
