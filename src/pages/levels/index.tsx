@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import {
   useQuery,
   useMutation,
@@ -7,16 +7,11 @@ import {
 } from "@tanstack/react-query";
 import { API } from "../../api/api";
 import "../users/users.css";
-import "./courses.css";
+import "./levels.css";
 import { useTranslation } from "react-i18next";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
-import type { Level, LevelPayload, Course } from "../../types";
-
-interface LevelFormData {
-  name: string;
-  course_id: string;
-}
+import type { Level, LevelPayload } from "../../types";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -26,7 +21,7 @@ const formatDate = (dateString: string) => {
   return `${day}.${month}.${year}`;
 };
 
-const CourseLevel = () => {
+const Levels = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
@@ -36,9 +31,8 @@ const CourseLevel = () => {
   const [selected, setSelected] = useState<number[]>([]);
   const [editingItem, setEditingItem] = useState<Level | null>(null);
 
-  const [formData, setFormData] = useState<LevelFormData>({
+  const [formData, setFormData] = useState<LevelPayload>({
     name: "",
-    course_id: "",
   });
 
   const { data: levels, isLoading } = useQuery<Level[]>({
@@ -50,22 +44,6 @@ const CourseLevel = () => {
     staleTime: 1000 * 60 * 5,
     placeholderData: keepPreviousData,
   });
-
-  const { data: courses } = useQuery<Course[]>({
-    queryKey: ["courses"],
-    queryFn: async () => {
-      const { data } = await API.get<Course[]>("/courses");
-      return Array.isArray(data) ? data : (data as any)?.data || [];
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const selectedCourseBranch = useMemo(() => {
-    if (!formData.course_id || !courses) return "";
-    const course = courses.find((c) => String(c.id) === formData.course_id);
-    return course?.branch?.name || "";
-  }, [formData.course_id, courses]);
 
   const createMutation = useMutation({
     mutationFn: async (payload: LevelPayload) => API.post("/levels", payload),
@@ -94,14 +72,13 @@ const CourseLevel = () => {
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-    setFormData({ name: "", course_id: "" });
+    setFormData({ name: "" });
   };
 
   const openEditModal = (item: Level) => {
     setEditingItem(item);
     setFormData({
       name: item.name,
-      course_id: String(item.course.id),
     });
     setShowModal(true);
   };
@@ -122,7 +99,7 @@ const CourseLevel = () => {
   };
 
   const toggleAll = (checked: boolean) =>
-    setSelected(checked ? (levels?.map((l) => l.id) ?? []) : []);
+    setSelected(checked ? (levels?.map((c) => c.id) ?? []) : []);
 
   const toggleOne = (id: number) =>
     setSelected((prev) =>
@@ -131,12 +108,12 @@ const CourseLevel = () => {
 
   return (
     <section className="users container">
-      <h1 className="main-title">{t("aside.courseLevel")}</h1>
+      <h1 className="main-title">{t("levels.mainTitle")}</h1>
 
       {showModal && (
         <div className="modal-overlay">
           <div className="expenses-subcategory">
-            <h1>{t("aside.courseLevel")}</h1>
+            <h1>{t("levels.level")}</h1>
 
             <form
               className="subcategory-form"
@@ -145,7 +122,6 @@ const CourseLevel = () => {
 
                 const payload: LevelPayload = {
                   name: formData.name.trim(),
-                  course_id: Number(formData.course_id),
                 };
 
                 if (editingItem) {
@@ -156,38 +132,7 @@ const CourseLevel = () => {
               }}
             >
               <div className="subcategory-form-group">
-                <label>{t("courses.course")}</label>
-                <select
-                  value={formData.course_id}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      course_id: e.target.value,
-                    }))
-                  }
-                  required
-                >
-                  <option value="">{t("courses.choose")}</option>
-                  {courses?.map((course) => (
-                    <option key={course.id} value={course.id}>
-                      {course.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="subcategory-form-group">
-                <label>{t("courses.branch")}</label>
-                <input
-                  type="text"
-                  value={selectedCourseBranch}
-                  readOnly
-                  disabled
-                />
-              </div>
-
-              <div className="subcategory-form-group">
-                <label>{t("courses.levelName")}</label>
+                <label>{t("levels.levelName")}</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -200,11 +145,11 @@ const CourseLevel = () => {
 
               <div className="modal-actions">
                 <button type="button" className="cancel" onClick={resetForm}>
-                  {t("expenses.cancel")}
+                  {t("payments.cancel")}
                 </button>
 
                 <button className="primary" type="submit">
-                  {t("expenses.save")}
+                  {t("payments.save")}
                 </button>
               </div>
             </form>
@@ -215,18 +160,18 @@ const CourseLevel = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t("expenses.confirmDelete")}</h3>
+            <h3>{t("users.confirmDelete")}</h3>
 
             <div className="modal-actions">
               <button
                 className="cancel"
                 onClick={() => setShowDeleteModal(false)}
               >
-                {t("expenses.cancel")}
+                {t("users.cancel")}
               </button>
 
               <button className="danger" onClick={confirmDelete}>
-                {t("expenses.delete")}
+                {t("users.delete")}
               </button>
             </div>
           </div>
@@ -235,7 +180,7 @@ const CourseLevel = () => {
 
       <div className="users-filters">
         <button className="add-new-user" onClick={() => setShowModal(true)}>
-          {t("expenses.addBtn")}
+          {t("users.addNew")}
         </button>
 
         <button
@@ -246,7 +191,7 @@ const CourseLevel = () => {
             setShowDeleteModal(true);
           }}
         >
-          {t("expenses.delete")}
+          {t("users.delete")}
         </button>
       </div>
 
@@ -265,17 +210,15 @@ const CourseLevel = () => {
                 />
               </th>
               <th>ID</th>
-              <th>{t("courses.course")}</th>
-              <th>{t("courses.level")}</th>
-              <th>{t("courses.branch")}</th>
-              <th>{t("courses.createdDate")}</th>
-              <th>{t("courses.actions")}</th>
+              <th>{t("levels.levelName")}</th>
+              <th>{t("levels.createdDate")}</th>
+              <th>{t("levels.actions")}</th>
             </tr>
           </thead>
 
           <tbody>
             {isLoading ? (
-              <TableSkeleton rowCount={8} columnCount={7} />
+              <TableSkeleton rowCount={8} columnCount={5} />
             ) : levels && levels.length > 0 ? (
               levels?.map((item) => (
                 <tr key={item.id}>
@@ -287,9 +230,7 @@ const CourseLevel = () => {
                     />
                   </td>
                   <td>{item.id}</td>
-                  <td>{item.course?.name ?? "-"}</td>
                   <td>{item.name}</td>
-                  <td>{item.course?.branch?.name ?? "-"}</td>
                   <td>{item.created_at ? formatDate(item.created_at) : "-"}</td>
                   <td className="actions">
                     <button
@@ -312,7 +253,7 @@ const CourseLevel = () => {
                 </tr>
               ))
             ) : (
-              <EmptyState colSpan={10} message={t("courses.notFound")} />
+              <EmptyState colSpan={5} message={t("levels.notFound")} />
             )}
           </tbody>
         </table>
@@ -321,4 +262,4 @@ const CourseLevel = () => {
   );
 };
 
-export default CourseLevel;
+export default Levels;

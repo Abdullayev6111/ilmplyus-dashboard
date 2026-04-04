@@ -60,7 +60,7 @@
     "regions": "Viloyatlar",
     "districts": "Tumanlar",
     "course": "Kurs",
-    "courseLevel": "Kurs darajasi"
+    "levels": "Darajalar"
   },
   "payments": {
     "mainTitle": "To‘lovlar",
@@ -283,5 +283,13 @@
   "districts": {
     "choose": "Tumanni tanlang",
     "notFound": "Tumanlar topilmadi"
+  },
+  "levels": {
+    "mainTitle": "Darajalar",
+    "level": "Daraja",
+    "levelName": "Daraja nomi",
+    "createdDate": "Yaratilgan sana",
+    "actions": "Harakatlar",
+    "notFound": "Darajalar topilmadi"
   }
 }

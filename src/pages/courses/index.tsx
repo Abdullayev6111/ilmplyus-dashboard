@@ -8,14 +8,16 @@ import {
 import { API } from "../../api/api";
 import "../users/users.css";
 import "./courses.css";
+import "../levels/levels.css";
 import { useTranslation } from "react-i18next";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
-import type { Course, CoursePayload } from "../../types";
+import type { Course, CoursePayload, Level } from "../../types";
 
 interface CourseFormData {
   name: string;
   branch_id: string;
+  level_id: string;
 }
 
 const formatDate = (dateString: string) => {
@@ -39,6 +41,7 @@ const Courses = () => {
   const [formData, setFormData] = useState<CourseFormData>({
     name: "",
     branch_id: "",
+    level_id: "",
   });
 
   const { data: courses, isLoading } = useQuery<Course[]>({
@@ -55,6 +58,16 @@ const Courses = () => {
     queryKey: ["branches"],
     queryFn: async () => {
       const { data } = await API.get("/branches");
+      return Array.isArray(data) ? data : (data as any)?.data || [];
+    },
+    staleTime: 1000 * 60 * 30,
+    placeholderData: keepPreviousData,
+  });
+
+  const { data: levels } = useQuery<Level[]>({
+    queryKey: ["levels"],
+    queryFn: async () => {
+      const { data } = await API.get<Level[]>("/levels");
       return Array.isArray(data) ? data : (data as any)?.data || [];
     },
     staleTime: 1000 * 60 * 30,
@@ -88,7 +101,7 @@ const Courses = () => {
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-    setFormData({ name: "", branch_id: "" });
+    setFormData({ name: "", branch_id: "", level_id: "" });
   };
 
   const openEditModal = (item: Course) => {
@@ -96,6 +109,7 @@ const Courses = () => {
     setFormData({
       name: item.name,
       branch_id: String(item.branch?.id || ""),
+      level_id: String(item.level?.id || ""),
     });
     setShowModal(true);
   };
@@ -140,6 +154,7 @@ const Courses = () => {
                 const payload: CoursePayload = {
                   name: formData.name.trim(),
                   branch_id: Number(formData.branch_id),
+                  level_id: Number(formData.level_id),
                 };
 
                 if (editingItem) {
@@ -177,6 +192,27 @@ const Courses = () => {
                   {branches?.map((branch) => (
                     <option key={branch.id} value={branch.id}>
                       {branch.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="subcategory-form-group">
+                <label>Daraja</label>
+                <select
+                  value={formData.level_id}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      level_id: e.target.value,
+                    }))
+                  }
+                  required
+                >
+                  <option value="">{t("courses.choose")}</option>
+                  {levels?.map((level) => (
+                    <option key={level.id} value={level.id}>
+                      {level.name}
                     </option>
                   ))}
                 </select>
@@ -251,6 +287,7 @@ const Courses = () => {
               <th>ID</th>
               <th>{t("courses.courseName")}</th>
               <th>{t("courses.branch")}</th>
+              <th>Daraja</th>
               <th>{t("courses.createdDate")}</th>
               <th>{t("courses.actions")}</th>
             </tr>
@@ -272,6 +309,7 @@ const Courses = () => {
                   <td>{item.id}</td>
                   <td>{item.name}</td>
                   <td>{item.branch?.name ?? "-"}</td>
+                  <td>{item.level?.name ?? "-"}</td>
                   <td>{item.created_at ? formatDate(item.created_at) : "-"}</td>
                   <td className="actions">
                     <button

@@ -60,7 +60,7 @@
     "regions": "Регионы",
     "districts": "Районы",
     "course": "Курс",
-    "courseLevel": "Уровень курса"
+    "levels": "Уровни"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -280,5 +280,13 @@
   "districts": {
     "choose": "Выберите район",
     "notFound": "Районы не найдены"
+  },
+  "levels": {
+    "mainTitle": "Уровни",
+    "level": "Уровень",
+    "levelName": "Название уровня",
+    "createdDate": "Дата создания",
+    "actions": "Действия",
+    "notFound": "Уровни не найдены"
   }
 }

@@ -1,0 +1,148 @@
+/* Levels and Courses Module Styles */
+
+.users-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.users-table {
+  min-width: 800px; /* Ensure table doesn't collapse too much */
+}
+
+/* Modal Responsiveness */
+.expenses-subcategory {
+  background: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.subcategory-form {
+  gap: 20px;
+  width: 100%;
+}
+
+.subcategory-form-group {
+  width: 100%;
+}
+
+.subcategory-form-group input,
+.subcategory-form-group select {
+  width: 100% !important;
+  height: 45px;
+  border-radius: 12px;
+  border: 1px solid #003366;
+  padding: 0 15px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.modal-actions button {
+  flex: 1;
+  height: 45px;
+  font-size: 16px;
+  font-family: noto-m;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-actions .cancel {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.modal-actions .primary {
+  background: #003366;
+  color: #fff;
+  border: none;
+}
+
+.modal-actions .primary:hover {
+  background: #004a94;
+}
+
+/* Breakpoints */
+
+/* 1400px and below */
+@media (max-width: 1400px) {
+  .users.container {
+    max-width: 1300px;
+  }
+}
+
+/* 1200px and below */
+@media (max-width: 1200px) {
+  .users.container {
+    max-width: 1100px;
+  }
+}
+
+/* 992px and below */
+@media (max-width: 992px) {
+  .users.container {
+    padding: 20px;
+  }
+  
+  .users-filters {
+    gap: 10px;
+  }
+}
+
+/* 768px (Mobile/Tablet) and below */
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .users-filters {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .add-new-user, .delete-all {
+    width: 100% !important;
+  }
+
+  .expenses-subcategory {
+    width: 90%;
+    padding: 20px;
+    margin: 20px auto;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}
+
+/* 576px (Small Mobile) and below */
+@media (max-width: 576px) {
+  .users.container {
+    padding: 10px;
+    margin-top: 15px !important;
+  }
+
+  .expenses-subcategory {
+    padding: 15px;
+  }
+
+  .expenses-subcategory h1 {
+    font-size: 18px;
+  }
+}

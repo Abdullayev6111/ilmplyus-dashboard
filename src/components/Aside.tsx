@@ -20,6 +20,7 @@ import coursesIcon from "../assets/images/user-graduate-solid-full.svg";
 import roomsIcon from "../assets/images/user-clock-solid-full.svg";
 import departmentsIcon from "../assets/images/sitemap-solid-full.svg";
 import areasIcon from "../assets/images/globe-solid-full.svg";
+import levelsIcon from "../assets/images/signal-solid-full.svg";
 import { Accordion } from "@mantine/core";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -49,15 +50,8 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       path: "/department",
     },
     { label: t("aside.groups"), icon: classesIcon, path: "/classes" },
-    {
-      label: t("aside.courses"),
-      icon: coursesIcon,
-      path: "/courses",
-      children: [
-        { label: t("aside.course"), path: "/courses/course" },
-        { label: t("aside.courseLevel"), path: "/courses/course-level" },
-      ],
-    },
+    { label: t("aside.courses"), icon: coursesIcon, path: "/courses" },
+    { label: t("aside.levels"), icon: levelsIcon, path: "/levels" },
     { label: t("aside.students"), icon: studentsIcon, path: "/students" },
     { label: t("aside.teachers"), icon: teachersIcon, path: "/teachers" },
     { label: t("aside.rooms"), icon: roomsIcon, path: "/rooms" },

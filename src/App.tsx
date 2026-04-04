@@ -18,13 +18,13 @@ import Expenses from "./pages/expenses";
 import ExpenseCategory from "./pages/expenses/expenseCategory";
 import ExpenseSubCategory from "./pages/expenses/expenseSubCategory";
 import Courses from "./pages/courses";
-import CourseLevel from "./pages/courses/courseLevel";
 import NotFound from "./pages/notFound";
 import Rooms from "./pages/rooms";
 import Department from "./pages/department";
 import Areas from "./pages/regions";
 import AreaRegions from "./pages/regions/areaRegions";
 import AreaDistricts from "./pages/regions/areaDistricts";
+import Levels from "./pages/levels";
 
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
@@ -66,8 +66,8 @@ const App = () => {
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/payments/archive" element={<ArchivedPayments />} />
-          <Route path="/courses/course" element={<Courses />} />
-          <Route path="/courses/course-level" element={<CourseLevel />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/levels" element={<Levels />} />
           <Route path="/expenses/create" element={<Expenses />} />
           <Route path="/expenses/category" element={<ExpenseCategory />} />
           <Route

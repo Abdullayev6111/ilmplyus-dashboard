@@ -57,7 +57,7 @@
     "regions": "Regions",
     "districts": "Districts",
     "course": "Course",
-    "courseLevel": "Course Level"
+    "levels": "Levels"
   },
   "payments": {
     "mainTitle": "Payments",
@@ -270,5 +270,13 @@
   "notFound": {
     "page": "Page",
     "notFound": "not found"
+  },
+  "levels": {
+    "mainTitle": "Levels",
+    "level": "Level",
+    "levelName": "Level name",
+    "createdDate": "Created date",
+    "actions": "Actions",
+    "notFound": "Levels not found"
   }
 }

@@ -1,7 +1,11 @@
 export interface Course {
   id: number;
   name: string;
-  branch: {
+  branch?: {
+    id: number;
+    name: string;
+  };
+  level?: {
     id: number;
     name: string;
   };
@@ -11,4 +15,5 @@ export interface Course {
 export interface CoursePayload {
   name: string;
   branch_id: number;
+  level_id: number;
 }
