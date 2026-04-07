@@ -60,7 +60,8 @@
     "regions": "Регионы",
     "districts": "Районы",
     "course": "Курс",
-    "levels": "Уровни"
+    "levels": "Уровни",
+    "positions": "Должности"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -113,6 +114,7 @@
     "listTitle": "Список пользователей",
     "userEditTitle": "Редактировать пользователя",
     "addNewUserTitle": "Добавить нового пользователя",
+    "pinfl": "ПИНФЛ",
     "fish": "Ф.И.О.",
     "lastName": "Фамилия",
     "firstName": "Имя",
@@ -288,5 +290,16 @@
     "createdDate": "Дата создания",
     "actions": "Действия",
     "notFound": "Уровни не найдены"
+  },
+  "positions": {
+    "mainTitle": "Должности",
+    "addTitle": "Добавить должность",
+    "editTitle": "Редактировать должность",
+    "department": "Отдел",
+    "positionName": "Название должности",
+    "createdDate": "Дата создания",
+    "actions": "Действия",
+    "choose": "Выберите",
+    "notFound": "Данные отсутствуют"
   }
 }

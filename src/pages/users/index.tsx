@@ -47,6 +47,7 @@ const Users = () => {
     familiya: "",
     ism: "",
     sharif: "",
+    pinfl: "",
     phone: "",
     username: "",
     password: genPassword(),
@@ -89,33 +90,42 @@ const Users = () => {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      const data = new FormData();
-
-      data.append(
-        "full_name",
-        `${formData.familiya} ${formData.ism} ${formData.sharif}`,
-      );
-      data.append("username", formData.username);
-      data.append("phone", formData.phone);
-      data.append("password", formData.password);
-      data.append("type", formData.type);
-      data.append("position_id", formData.position_id || "");
-      data.append("is_active", String(formData.is_active));
-
-      formData.role_ids.forEach((id) => data.append("role_ids[]", id));
-
-      formData.branch_ids.forEach((id) => data.append("branch_ids[]", id));
+      const payload: Record<string, unknown> = {
+        full_name:
+          `${formData.familiya} ${formData.ism} ${formData.sharif}`.trim(),
+        username: formData.username,
+        pinfl: formData.pinfl,
+        phone: formData.phone,
+        password: formData.password,
+        position_id: formData.position_id
+          ? Number(formData.position_id)
+          : undefined,
+        branch_id:
+          formData.branch_ids.length > 0
+            ? Number(formData.branch_ids[0])
+            : undefined,
+        roles: formData.role_ids.map(Number),
+        is_active: formData.is_active,
+      };
 
       if (userImage) {
-        data.append("image", userImage);
+        const fd = new FormData();
+        Object.entries(payload).forEach(([k, v]) => {
+          if (v === undefined) return;
+          if (Array.isArray(v)) {
+            v.forEach((item) => fd.append(`${k}[]`, String(item)));
+          } else {
+            fd.append(k, String(v));
+          }
+        });
+        fd.append("image", userImage);
+        const res = await API.post("/users", fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        return res.data;
       }
 
-      const res = await API.post("/users", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
+      const res = await API.post("/users", payload);
       return res.data;
     },
     onSuccess: () => {
@@ -123,20 +133,6 @@ const Users = () => {
       setShowAddModal(false);
       setUserImage(null);
       resetForm();
-      setFormData({
-        familiya: "",
-        ism: "",
-        sharif: "",
-        phone: "",
-        username: "",
-        password: genPassword(),
-        start_date: "",
-        role_ids: [],
-        branch_ids: [],
-        type: "",
-        position_id: "",
-        is_active: true,
-      });
     },
   });
 
@@ -179,6 +175,7 @@ const Users = () => {
       familiya: user.full_name.split(" ")[0] || "",
       ism: user.full_name.split(" ")[1] || "",
       sharif: user.full_name.split(" ")[2] || "",
+      pinfl: user.pinfl || "",
       phone: user.phone,
       username: user.username,
       password: "",
@@ -197,13 +194,19 @@ const Users = () => {
       updateMutation.mutate({
         id: editingUser.id,
         updates: {
-          full_name: `${formData.familiya} ${formData.ism} ${formData.sharif}`,
+          full_name:
+            `${formData.familiya} ${formData.ism} ${formData.sharif}`.trim(),
           username: formData.username,
+          pinfl: formData.pinfl,
           phone: formData.phone,
-          role_ids: formData.role_ids,
-          branch_ids: formData.branch_ids,
-          type: formData.type,
-          position_id: formData.position_id || null,
+          roles: formData.role_ids.map(Number),
+          branch_id:
+            formData.branch_ids.length > 0
+              ? Number(formData.branch_ids[0])
+              : null,
+          position_id: formData.position_id
+            ? Number(formData.position_id)
+            : null,
           is_active: formData.is_active,
         },
       });
@@ -215,11 +218,11 @@ const Users = () => {
   interface UpdateUserPayload {
     full_name?: string;
     username?: string;
+    pinfl?: string;
     phone?: string;
-    role_ids?: string[];
-    branch_ids?: string[];
-    type?: string;
-    position_id?: string | null;
+    roles?: number[];
+    branch_id?: number | null;
+    position_id?: number | null;
     is_active?: boolean;
   }
 
@@ -239,20 +242,6 @@ const Users = () => {
       setShowAddModal(false);
       setEditingUser(null);
       resetForm();
-      setFormData({
-        familiya: "",
-        ism: "",
-        sharif: "",
-        phone: "",
-        username: "",
-        password: genPassword(),
-        start_date: "",
-        role_ids: [],
-        branch_ids: [],
-        type: "",
-        position_id: "",
-        is_active: true,
-      });
     },
   });
 
@@ -261,6 +250,7 @@ const Users = () => {
       familiya: "",
       ism: "",
       sharif: "",
+      pinfl: "",
       phone: "",
       username: "",
       password: genPassword(),
@@ -402,6 +392,23 @@ const Users = () => {
                   />
                 </div>
                 <div className="form-group">
+                  <label>{t("users.pinfl")}</label>
+                  <input
+                    type="text"
+                    value={formData.pinfl}
+                    maxLength={14}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 14);
+                      setFormData({ ...formData, pinfl: val });
+                    }}
+                  />
+                  {formData.pinfl.length > 0 && formData.pinfl.length !== 14 && (
+                    <span className="error-text" style={{ color: "red", fontSize: "12px", marginTop: "4px", display: "block" }}>
+                      14 ta raqam bo'lishi shart
+                    </span>
+                  )}
+                </div>
+                <div className="form-group">
                   <label>{t("users.phoneNumber")}</label>
                   <input
                     type="text"
@@ -424,9 +431,18 @@ const Users = () => {
                 <div className="form-group">
                   <label>{t("users.password")}</label>
                   <div style={{ position: "relative" }}>
-                    <input type="text" value={formData.password} readOnly />
+                    <input
+                      type="text"
+                      value={formData.password}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
+                      placeholder="Parol kiriting yoki generatsiya qiling"
+                    />
                     <button
                       className="refresh-password"
+                      type="button"
+                      title="Yangi parol generatsiya qilish"
                       onClick={() => {
                         const newPass = genPassword();
                         setFormData({ ...formData, password: newPass });
@@ -608,7 +624,7 @@ const Users = () => {
               <button
                 className="primary"
                 onClick={editingUser ? handleEditSubmit : handleSubmit}
-                disabled={createMutation.isPending || updateMutation.isPending}
+                disabled={createMutation.isPending || updateMutation.isPending || formData.pinfl.length !== 14}
               >
                 {createMutation.isPending || updateMutation.isPending
                   ? t("users.saving")

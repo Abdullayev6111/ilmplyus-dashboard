@@ -1,9 +1,23 @@
 import { create } from "zustand";
 
-interface User {
+interface Permission {
   id: number;
   name: string;
-  role: string;
+}
+
+interface UserRole {
+  id: number;
+  name: string;
+  permissions?: Permission[];
+}
+
+interface User {
+  id: number;
+  name?: string;
+  full_name?: string;
+  username?: string;
+  role?: string;
+  roles?: UserRole[];
 }
 
 interface AuthState {
@@ -13,6 +27,7 @@ interface AuthState {
   expiresAt: number | null;
 
   setAuth: (token: string, user: User) => void;
+  setUser: (user: User) => void;
   logout: () => void;
 }
 
@@ -32,6 +47,11 @@ const useAuthStore = create<AuthState>((set) => ({
     localStorage.setItem("expiresAt", String(expiresAt));
 
     set({ token, user, expiresAt, isAuth: true });
+  },
+
+  setUser: (user) => {
+    localStorage.setItem("user", JSON.stringify(user));
+    set({ user });
   },
 
   logout: () => {

@@ -57,7 +57,8 @@
     "regions": "Regions",
     "districts": "Districts",
     "course": "Course",
-    "levels": "Levels"
+    "levels": "Levels",
+    "positions": "Positions"
   },
   "payments": {
     "mainTitle": "Payments",
@@ -109,6 +110,7 @@
     "listTitle": "User list",
     "userEditTitle": "Edit user",
     "addNewUserTitle": "Add new user",
+    "pinfl": "PINFL",
     "fish": "Full name",
     "lastName": "Last name",
     "firstName": "First name",
@@ -278,5 +280,16 @@
     "createdDate": "Created date",
     "actions": "Actions",
     "notFound": "Levels not found"
+  },
+  "positions": {
+    "mainTitle": "Positions",
+    "addTitle": "Add Position",
+    "editTitle": "Edit Position",
+    "department": "Department",
+    "positionName": "Position name",
+    "createdDate": "Created date",
+    "actions": "Actions",
+    "choose": "Select",
+    "notFound": "No data available"
   }
 }

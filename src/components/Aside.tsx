@@ -21,24 +21,53 @@ import roomsIcon from "../assets/images/user-clock-solid-full.svg";
 import departmentsIcon from "../assets/images/sitemap-solid-full.svg";
 import areasIcon from "../assets/images/globe-solid-full.svg";
 import levelsIcon from "../assets/images/signal-solid-full.svg";
+import positionIcon from "../assets/images/briefcase-solid-full.svg";
 import { Accordion } from "@mantine/core";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import useAuthStore from "../store/useAuthStore";
 
 const Aside = ({ collapsed, onOpen, onClose }: Props) => {
   const { t } = useTranslation();
   const location = useLocation();
+  const user = useAuthStore((state) => state.user);
+
+  const isAdmin = user?.roles?.some(
+    (r) =>
+      r.name.toLowerCase() === "admin" || r.name.toLowerCase() === "superadmin",
+  );
+
+  const hasPermission = (permission?: string) => {
+    if (!permission) return true;
+    if (isAdmin) return true;
+    if (!user?.roles) return false;
+
+    return user.roles.some((role) =>
+      role.permissions?.some((p) => p.name === permission),
+    );
+  };
 
   const menu = [
     { label: t("aside.controlPanel"), icon: infoGrafikIcon, path: "/" },
 
-    { label: t("aside.users"), icon: usersIcon, path: "/users" },
+    {
+      label: t("aside.users"),
+      icon: usersIcon,
+      path: "/users",
+      permission: "users.view",
+    },
 
-    { label: t("aside.branches"), icon: branchesIcon, path: "/branches" },
+    {
+      label: t("aside.branches"),
+      icon: branchesIcon,
+      path: "/branches",
+      permission: "branches.view",
+    },
     {
       label: t("aside.areas"),
       icon: areasIcon,
       path: "/areas",
+      permission: "regions.view",
       children: [
         { label: t("aside.regions"), path: "/areas/regions" },
         { label: t("aside.districts"), path: "/areas/districts" },
@@ -48,27 +77,82 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       label: t("aside.departments"),
       icon: departmentsIcon,
       path: "/department",
+      permission: "departments.view",
     },
-    { label: t("aside.groups"), icon: classesIcon, path: "/classes" },
-    { label: t("aside.courses"), icon: coursesIcon, path: "/courses" },
-    { label: t("aside.levels"), icon: levelsIcon, path: "/levels" },
-    { label: t("aside.students"), icon: studentsIcon, path: "/students" },
-    { label: t("aside.teachers"), icon: teachersIcon, path: "/teachers" },
-    { label: t("aside.rooms"), icon: roomsIcon, path: "/rooms" },
-    { label: t("aside.payments"), icon: paymentsIcon, path: "/payments" },
+    {
+      label: t("aside.groups"),
+      icon: classesIcon,
+      path: "/classes",
+      permission: "groups.view",
+    },
+    {
+      label: t("aside.courses"),
+      icon: coursesIcon,
+      path: "/courses",
+      permission: "courses.view",
+    },
+    {
+      label: t("aside.levels"),
+      icon: levelsIcon,
+      path: "/levels",
+      permission: "levels.view",
+    },
+    {
+      label: t("aside.positions"),
+      icon: positionIcon,
+      path: "/positions",
+      permission: "positions.view",
+    },
+    {
+      label: t("aside.students"),
+      icon: studentsIcon,
+      path: "/students",
+      permission: "students.view",
+    },
+    {
+      label: t("aside.teachers"),
+      icon: teachersIcon,
+      path: "/teachers",
+      permission: "teachers.view",
+    },
+    {
+      label: t("aside.rooms"),
+      icon: roomsIcon,
+      path: "/rooms",
+      permission: "rooms.view",
+    },
+    {
+      label: t("aside.payments"),
+      icon: paymentsIcon,
+      path: "/payments",
+      permission: "payments.view",
+    },
     {
       label: t("aside.expenses"),
       icon: expenseIcon,
       path: "/expenses",
+      permission: "expenses.view",
       children: [
         { label: t("aside.expenseCategory"), path: "/expenses/category" },
         { label: t("aside.expenseSubCategory"), path: "/expenses/subcategory" },
         { label: t("aside.expenseCreate"), path: "/expenses/create" },
       ],
     },
-    { label: t("aside.roles"), icon: userRoleIcon, path: "/roles" },
-    { label: t("aside.settings"), icon: settingsIcon, path: "/settings" },
+    {
+      label: t("aside.roles"),
+      icon: userRoleIcon,
+      path: "/roles",
+      permission: "roles.view",
+    },
+    {
+      label: t("aside.settings"),
+      icon: settingsIcon,
+      path: "/settings",
+      permission: "settings.view",
+    },
   ];
+
+  const filteredMenu = menu.filter((item) => hasPermission(item.permission));
 
   // Expenses bo'limining active ekanligini tekshirish
   const isExpensesActive = location.pathname.startsWith("/expenses");
@@ -89,7 +173,7 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
 
       <div className="aside-content">
         <Accordion radius={0} className="sidebar" multiple={false}>
-          {menu?.map((item) => {
+          {filteredMenu?.map((item) => {
             if (item.children) {
               return (
                 <Accordion.Item value={item.label} key={item.label}>

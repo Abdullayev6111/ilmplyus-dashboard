@@ -12,6 +12,7 @@ export interface User {
   created_at: string;
   updated_at?: string;
   position?: Position | null;
+  pinfl?: string;
 }
 
 export type UsersResponse = ApiResponse<User[]>;
@@ -22,6 +23,7 @@ export interface UserPayload {
   phone: string;
   password?: string;
   type: string;
+  pinfl: string;
   position_id?: string | number | null;
   role_ids: string[] | number[];
   branch_ids: string[] | number[];

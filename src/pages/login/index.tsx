@@ -74,8 +74,6 @@ const LoginPage = () => {
   const remainingSeconds = seconds % 60;
   const isValid = newPassword.length >= 8 && newPassword === confirmPassword;
 
-  const { setAuth } = useAuthStore();
-
   const loginMutation = useMutation({
     mutationFn: async (payload: LoginPayload) => {
       const { data } = await API.post<LoginResponse>("/login", payload);

@@ -12,7 +12,9 @@ const RolePermissions = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const [permissionsState, setPermissionsState] = useState<Record<string, PermissionItem[]>>({});
+  const [permissionsState, setPermissionsState] = useState<
+    Record<string, PermissionItem[]>
+  >({});
 
   // Fetch all available permissions from the backend
   const { data: allPermissions, isLoading: isLoadingAll } = useQuery<any[]>({
@@ -80,7 +82,7 @@ const RolePermissions = () => {
 
     // Filter rules array to only those having a "view" action
     const validModules = Object.keys(modulesMap).filter((moduleName) =>
-      modulesMap[moduleName].some((p) => p.action === "view")
+      modulesMap[moduleName].some((p) => p.action === "view"),
     );
 
     return validModules.map((moduleName) => ({
@@ -101,7 +103,10 @@ const RolePermissions = () => {
     },
   });
 
-  const handleActionChange = (moduleName: string, selectedActions: PermissionItem[]) => {
+  const handleActionChange = (
+    moduleName: string,
+    selectedActions: PermissionItem[],
+  ) => {
     setPermissionsState((prev) => ({
       ...prev,
       [moduleName]: selectedActions,

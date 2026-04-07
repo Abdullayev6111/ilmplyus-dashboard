@@ -60,7 +60,8 @@
     "regions": "Viloyatlar",
     "districts": "Tumanlar",
     "course": "Kurs",
-    "levels": "Darajalar"
+    "levels": "Darajalar",
+    "positions": "Lavozimlar"
   },
   "payments": {
     "mainTitle": "To‘lovlar",
@@ -113,6 +114,7 @@
     "listTitle": "Foydaluvchilar ro‘yhati",
     "userEditTitle": "Foydalanuvchini tahrirlash",
     "addNewUserTitle": "Yangi foydalanuvchi qo'shish",
+    "pinfl": "JSHSHR",
     "fish": "F.I.SH",
     "lastName": "Familiya",
     "firstName": "Ism",
@@ -291,5 +293,16 @@
     "createdDate": "Yaratilgan sana",
     "actions": "Harakatlar",
     "notFound": "Darajalar topilmadi"
+  },
+  "positions": {
+    "mainTitle": "Lavozimlar",
+    "addTitle": "Lavozim qo'shish",
+    "editTitle": "Lavozimni tahrirlash",
+    "department": "Bo'lim",
+    "positionName": "Lavozim nomi",
+    "createdDate": "Yaratilgan sana",
+    "actions": "Harakatlar",
+    "choose": "Tanlang",
+    "notFound": "Ma'lumot mavjud emas"
   }
 }
