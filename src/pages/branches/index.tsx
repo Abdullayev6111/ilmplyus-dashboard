@@ -485,16 +485,6 @@ const Branches = () => {
 
             <div className="branch-modal-buttons">
               <button
-                className="branch-cancel-btn"
-                onClick={() => {
-                  setShowBranchModal(false);
-                  setEditingBranch(null);
-                  resetBranchForm();
-                }}
-              >
-                {t("branches.cancel")}
-              </button>
-              <button
                 className="branch-save-btn"
                 onClick={
                   editingBranch ? handleBranchEditSubmit : handleBranchSubmit
@@ -508,6 +498,16 @@ const Branches = () => {
                 updateBranchMutation.isPending
                   ? t("branches.saving")
                   : t("branches.save")}
+              </button>
+              <button
+                className="branch-cancel-btn"
+                onClick={() => {
+                  setShowBranchModal(false);
+                  setEditingBranch(null);
+                  resetBranchForm();
+                }}
+              >
+                {t("branches.cancel")}
               </button>
             </div>
           </div>

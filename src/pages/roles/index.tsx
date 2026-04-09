@@ -8,14 +8,13 @@ import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import type { Role, Branch } from "../../types/common.types";
 
-
 const Roles = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
-  
+
   const [roleFormData, setRoleFormData] = useState<{
     name: string;
     branch_ids: number[];
@@ -40,8 +39,6 @@ const Roles = () => {
     },
   });
 
-
-
   const createRoleMutation = useMutation({
     mutationFn: async (newRole: { name: string; branch_ids: number[] }) => {
       const { data } = await API.post("/roles", newRole);
@@ -55,7 +52,13 @@ const Roles = () => {
   });
 
   const updateRoleMutation = useMutation({
-    mutationFn: async ({ id, updates }: { id: number; updates: { name: string; branch_ids: number[] } }) => {
+    mutationFn: async ({
+      id,
+      updates,
+    }: {
+      id: number;
+      updates: { name: string; branch_ids: number[] };
+    }) => {
       const { data } = await API.put(`/roles/${id}`, updates);
       return data;
     },
@@ -106,7 +109,9 @@ const Roles = () => {
 
   return (
     <section className="role-container container">
-      <h1 className="role-page-title">{t("roles.listTitle", "Amallar ro'yxati")}</h1>
+      <h1 className="role-page-title">
+        {t("roles.listTitle", "Amallar ro'yxati")}
+      </h1>
 
       <div className="role-header-actions">
         <button
@@ -125,7 +130,9 @@ const Roles = () => {
         <div className="role-modal-overlay">
           <div className="role-modal">
             <h3 className="role-modal-heading">
-              {editingRole ? t("roles.editRole", "Ro'lni tahrirlash") : t("roles.addNewRole", "Yangi ro'l qo'shish")}
+              {editingRole
+                ? t("roles.editRole", "Ro'lni tahrirlash")
+                : t("roles.addNewRole", "Yangi ro'l qo'shish")}
             </h3>
 
             <div className="role-form-wrapper">
@@ -156,7 +163,9 @@ const Roles = () => {
                   }}
                   className="role-selector-input"
                 >
-                  <option value="">{t("roles.selectBranchPlaceholder", "Filialni tanlang")}</option>
+                  <option value="">
+                    {t("roles.selectBranchPlaceholder", "Filialni tanlang")}
+                  </option>
                   {branches?.map((branch) => (
                     <option key={branch.id} value={branch.id}>
                       {branch.name}
@@ -176,7 +185,9 @@ const Roles = () => {
                             onClick={() =>
                               setRoleFormData((prev) => ({
                                 ...prev,
-                                branch_ids: prev.branch_ids.filter((x) => x !== id),
+                                branch_ids: prev.branch_ids.filter(
+                                  (x) => x !== id,
+                                ),
                               }))
                             }
                           >
@@ -192,6 +203,20 @@ const Roles = () => {
 
             <div className="role-modal-buttons">
               <button
+                className="role-save-btn"
+                onClick={handleRoleSubmit}
+                disabled={
+                  createRoleMutation.isPending ||
+                  updateRoleMutation.isPending ||
+                  !roleFormData.name
+                }
+              >
+                {createRoleMutation.isPending || updateRoleMutation.isPending
+                  ? t("roles.saving", "Saqlanmoqda...")
+                  : t("roles.save", "Saqlash")}
+              </button>
+
+              <button
                 className="role-cancel-btn"
                 onClick={() => {
                   setShowRoleModal(false);
@@ -200,17 +225,6 @@ const Roles = () => {
                 }}
               >
                 {t("roles.cancel", "Bekor qilish")}
-              </button>
-              <button
-                className="role-save-btn"
-                onClick={handleRoleSubmit}
-                disabled={
-                  createRoleMutation.isPending || updateRoleMutation.isPending || !roleFormData.name
-                }
-              >
-                {createRoleMutation.isPending || updateRoleMutation.isPending
-                  ? t("roles.saving", "Saqlanmoqda...")
-                  : t("roles.save", "Saqlash")}
               </button>
             </div>
           </div>
@@ -251,7 +265,14 @@ const Roles = () => {
                     <button
                       className="role-delete-icon"
                       onClick={() => {
-                        if (window.confirm(t("roles.confirmDelete", "Haqiqatan ham o'chirmoqchimisiz?"))) {
+                        if (
+                          window.confirm(
+                            t(
+                              "roles.confirmDelete",
+                              "Haqiqatan ham o'chirmoqchimisiz?",
+                            ),
+                          )
+                        ) {
                           deleteRoleMutation.mutate(role.id);
                         }
                       }}
@@ -270,7 +291,10 @@ const Roles = () => {
                 </tr>
               ))
             ) : (
-              <EmptyState colSpan={4} message={t("roles.notFound", "Ro'llar topilmadi")} />
+              <EmptyState
+                colSpan={4}
+                message={t("roles.notFound", "Ro'llar topilmadi")}
+              />
             )}
           </tbody>
         </table>

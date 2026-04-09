@@ -145,6 +145,10 @@ const AreaDistricts = () => {
               </div>
 
               <div className="modal-actions">
+                <button className="primary" type="submit">
+                  {t("expenses.save")}
+                </button>
+
                 <button
                   type="button"
                   className="cancel"
@@ -155,9 +159,6 @@ const AreaDistricts = () => {
                   }}
                 >
                   {t("expenses.cancel")}
-                </button>
-                <button className="primary" type="submit">
-                  {t("expenses.save")}
                 </button>
               </div>
             </form>

@@ -514,6 +514,9 @@ const Payments = () => {
             </div>
 
             <div className="modal-actions center">
+              <button className="primary" onClick={handleFormSubmit}>
+                {t("payments.save")}
+              </button>
               <button
                 className="cancel"
                 onClick={() => {
@@ -535,9 +538,6 @@ const Payments = () => {
                 }}
               >
                 {t("payments.cancel")}
-              </button>
-              <button className="primary" onClick={handleFormSubmit}>
-                {t("payments.save")}
               </button>
             </div>
           </div>

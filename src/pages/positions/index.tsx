@@ -43,7 +43,7 @@ const Positions = () => {
       const { data } = await API.get<PositionItem[] | { data: PositionItem[] }>(
         "/positions",
       );
-      return Array.isArray(data) ? data : data?.data ?? [];
+      return Array.isArray(data) ? data : (data?.data ?? []);
     },
     staleTime: 1000 * 60 * 5,
     placeholderData: keepPreviousData,
@@ -55,7 +55,7 @@ const Positions = () => {
       const { data } = await API.get<
         DepartmentType[] | { data: DepartmentType[] }
       >("/departments");
-      return Array.isArray(data) ? data : data?.data ?? [];
+      return Array.isArray(data) ? data : (data?.data ?? []);
     },
     staleTime: 1000 * 60 * 5,
   });
@@ -133,9 +133,7 @@ const Positions = () => {
         <div className="modal-overlay">
           <div className="expenses-subcategory">
             <h1>
-              {editingItem
-                ? t("positions.editTitle")
-                : t("positions.addTitle")}
+              {editingItem ? t("positions.editTitle") : t("positions.addTitle")}
             </h1>
 
             <form
@@ -191,12 +189,12 @@ const Positions = () => {
               </div>
 
               <div className="modal-actions">
-                <button type="button" className="cancel" onClick={resetForm}>
-                  {t("payments.cancel")}
-                </button>
-
                 <button className="primary" type="submit" disabled={isPending}>
                   {isPending ? t("users.saving") : t("payments.save")}
+                </button>
+
+                <button type="button" className="cancel" onClick={resetForm}>
+                  {t("payments.cancel")}
                 </button>
               </div>
             </form>
@@ -283,9 +281,7 @@ const Positions = () => {
                   <td>{item.id}</td>
                   <td>{item.department?.name ?? "-"}</td>
                   <td>{item.name}</td>
-                  <td>
-                    {item.created_at ? formatDate(item.created_at) : "-"}
-                  </td>
+                  <td>{item.created_at ? formatDate(item.created_at) : "-"}</td>
                   <td className="actions">
                     <button
                       className="user-edit-btn"

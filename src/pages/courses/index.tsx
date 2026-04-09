@@ -219,12 +219,11 @@ const Courses = () => {
               </div>
 
               <div className="modal-actions">
-                <button type="button" className="cancel" onClick={resetForm}>
-                  {t("expenses.cancel")}
-                </button>
-
                 <button className="primary" type="submit">
                   {t("expenses.save")}
+                </button>
+                <button type="button" className="cancel" onClick={resetForm}>
+                  {t("expenses.cancel")}
                 </button>
               </div>
             </form>

@@ -144,12 +144,11 @@ const Levels = () => {
               </div>
 
               <div className="modal-actions">
-                <button type="button" className="cancel" onClick={resetForm}>
-                  {t("payments.cancel")}
-                </button>
-
                 <button className="primary" type="submit">
                   {t("payments.save")}
+                </button>
+                <button type="button" className="cancel" onClick={resetForm}>
+                  {t("payments.cancel")}
                 </button>
               </div>
             </form>

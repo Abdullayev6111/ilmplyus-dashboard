@@ -398,15 +398,26 @@ const Users = () => {
                     value={formData.pinfl}
                     maxLength={14}
                     onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, "").slice(0, 14);
+                      const val = e.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, 14);
                       setFormData({ ...formData, pinfl: val });
                     }}
                   />
-                  {formData.pinfl.length > 0 && formData.pinfl.length !== 14 && (
-                    <span className="error-text" style={{ color: "red", fontSize: "12px", marginTop: "4px", display: "block" }}>
-                      14 ta raqam bo'lishi shart
-                    </span>
-                  )}
+                  {formData.pinfl.length > 0 &&
+                    formData.pinfl.length !== 14 && (
+                      <span
+                        className="error-text"
+                        style={{
+                          color: "red",
+                          fontSize: "12px",
+                          marginTop: "4px",
+                          display: "block",
+                        }}
+                      >
+                        14 ta raqam bo'lishi shart
+                      </span>
+                    )}
                 </div>
                 <div className="form-group">
                   <label>{t("users.phoneNumber")}</label>
@@ -612,6 +623,20 @@ const Users = () => {
 
             <div className="modal-actions">
               <button
+                className="primary"
+                onClick={editingUser ? handleEditSubmit : handleSubmit}
+                disabled={
+                  createMutation.isPending ||
+                  updateMutation.isPending ||
+                  formData.pinfl.length !== 14
+                }
+              >
+                {createMutation.isPending || updateMutation.isPending
+                  ? t("users.saving")
+                  : t("users.save")}
+              </button>
+
+              <button
                 className="cancel"
                 onClick={() => {
                   setShowAddModal(false);
@@ -620,15 +645,6 @@ const Users = () => {
                 }}
               >
                 {t("users.cancel")}
-              </button>
-              <button
-                className="primary"
-                onClick={editingUser ? handleEditSubmit : handleSubmit}
-                disabled={createMutation.isPending || updateMutation.isPending || formData.pinfl.length !== 14}
-              >
-                {createMutation.isPending || updateMutation.isPending
-                  ? t("users.saving")
-                  : t("users.save")}
               </button>
             </div>
           </div>

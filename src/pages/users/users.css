@@ -1,7 +1,7 @@
 .users {
   width: 100%;
   max-width: 1262px;
-  min-height: 864px;
+  /* min-height: 864px; */
   border-radius: 15px;
   padding: 25px;
   margin-top: 30px !important;
@@ -42,7 +42,7 @@
   background: #e6e6e6;
 }
 
-.users-table th {
+/* .users-table th {
   padding: 10px;
   color: #003366;
   text-align: center;
@@ -51,7 +51,7 @@
 }
 
 .users-table th:last-child {
-  border-right: none;
+  border-bottom: 1px solid #9e9d9d5d;
 }
 
 .users-table th:first-child {
@@ -64,15 +64,31 @@
   border: 1px solid #00336628;
 }
 
+.users-table td:last-child {
+  border-left: none;
+  border-top: none;
+} */
+
+.users-table th,
+.users-table td {
+  border: 1px solid #d9d9d9;
+  padding: 10px;
+  text-align: center;
+}
+
+.users-table th:last-child {
+  border-bottom: 1px solid #9e9d9d5d;
+}
+
+.users-table td:last-child {
+  border-left: none;
+  border-top: none;
+}
+
 .users-table tbody tr:hover {
   background-color: #00336617;
   cursor: pointer;
 }
-
-/* .users-table td:last-child {
-  display: flex;
-  gap: 10px;
-} */
 
 .users-table td:last-child svg,
 .users-table td:last-child span {
@@ -80,9 +96,9 @@
 }
 
 .users-table-wrapper {
-  overflow-y: auto;
+  overflow-y: visible;
   flex: 1;
-  box-shadow: 0 0 1px black;
+  /* box-shadow: 0 0 1px black; */
 }
 
 .users-table thead th {

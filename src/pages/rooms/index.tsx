@@ -241,6 +241,10 @@ const Rooms = () => {
               </div>
 
               <div className="modal-actions">
+                <button className="primary" type="submit">
+                  {t("rooms.save")}
+                </button>
+
                 <button
                   type="button"
                   className="cancel"
@@ -256,10 +260,6 @@ const Rooms = () => {
                   }}
                 >
                   {t("rooms.cancel")}
-                </button>
-
-                <button className="primary" type="submit">
-                  {t("rooms.save")}
                 </button>
               </div>
             </form>

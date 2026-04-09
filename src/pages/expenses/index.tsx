@@ -354,11 +354,10 @@ const Expenses = () => {
               </div>
 
               <div className="modal-actions">
+                <button className="primary">{t("expenses.save")}</button>
                 <button type="button" className="cancel" onClick={closeModal}>
                   {t("expenses.cancel")}
                 </button>
-
-                <button className="primary">{t("expenses.save")}</button>
               </div>
             </form>
           </div>

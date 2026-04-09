@@ -219,11 +219,11 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
         </div>
 
         <div className="branch-modal-buttons">
-          <button type="button" onClick={onClose} className="branch-cancel-btn">
-            {t("departments.cancel")}
-          </button>
           <button type="submit" className="branch-save-btn">
             {t("departments.save")}
+          </button>
+          <button type="button" onClick={onClose} className="branch-cancel-btn">
+            {t("departments.cancel")}
           </button>
         </div>
       </form>

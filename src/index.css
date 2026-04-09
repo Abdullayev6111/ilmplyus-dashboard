@@ -414,7 +414,7 @@ aside {
   background: #ffffff26;
 }
 
-.sidebar-item[data-active='true'],
+.sidebar-item[data-active="true"],
 .sidebar-item.active {
   background: #ffffff26;
 }
@@ -614,5 +614,3 @@ aside {
   font-size: 18px;
   margin: 0;
 }
-
-

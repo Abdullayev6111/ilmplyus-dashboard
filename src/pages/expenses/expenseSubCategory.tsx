@@ -198,6 +198,9 @@ const ExpensesSubcategory = () => {
               </div>
 
               <div className="modal-actions">
+                <button className="primary" type="submit">
+                  {t("expenses.save")}
+                </button>
                 <button
                   type="button"
                   className="cancel"
@@ -208,10 +211,6 @@ const ExpensesSubcategory = () => {
                   }}
                 >
                   {t("expenses.cancel")}
-                </button>
-
-                <button className="primary" type="submit">
-                  {t("expenses.save")}
                 </button>
               </div>
             </form>
