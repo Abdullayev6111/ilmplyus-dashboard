@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../api/api";
 import "../users/users.css";
@@ -6,6 +6,7 @@ import "../expenses/expenses.css";
 import { useTranslation } from "react-i18next";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
+import { useTableSettingsStore } from "../../store/useTableSettingsStore";
 
 interface Branch {
   id: number;
@@ -32,6 +33,10 @@ const Rooms = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
+  const { settings } = useTableSettingsStore();
+  const roomSettings = settings.rooms || {};
+  const isVisible = (colId: string) => roomSettings[colId] ?? true;
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
@@ -57,6 +62,10 @@ const Rooms = () => {
       return data.data;
     },
   });
+
+  const sortedRooms = useMemo(() => {
+    return (rooms || []).slice().sort((a, b) => a.id - b.id);
+  }, [rooms]);
 
   const { data: branches } = useQuery<Branch[]>({
     queryKey: ["branches"],
@@ -319,11 +328,11 @@ const Rooms = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
-              <th>{t("rooms.branchName")}</th>
-              <th>{t("rooms.roomName")}</th>
-              <th>{t("rooms.capacity")}</th>
-              <th>{t("rooms.floor")}</th>
+              {isVisible("id") && <th>ID</th>}
+              {isVisible("branch") && <th>{t("rooms.branchName")}</th>}
+              {isVisible("name") && <th>{t("rooms.roomName")}</th>}
+              {isVisible("capacity") && <th>{t("rooms.capacity")}</th>}
+              {isVisible("floor") && <th>{t("rooms.floor")}</th>}
               <th>{t("rooms.actions")}</th>
             </tr>
           </thead>
@@ -331,8 +340,8 @@ const Rooms = () => {
           <tbody>
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={7} />
-            ) : rooms?.length ? (
-              rooms?.map((item) => (
+            ) : sortedRooms.length ? (
+              sortedRooms.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input
@@ -342,11 +351,11 @@ const Rooms = () => {
                     />
                   </td>
 
-                  <td>{item.id}</td>
-                  <td>{item.branch || "-"}</td>
-                  <td>{item.name}</td>
-                  <td>{item.capacity}</td>
-                  <td>{item.floor}</td>
+                  {isVisible("id") && <td>{item.id}</td>}
+                  {isVisible("branch") && <td>{item.branch || "-"}</td>}
+                  {isVisible("name") && <td>{item.name}</td>}
+                  {isVisible("capacity") && <td>{item.capacity}</td>}
+                  {isVisible("floor") && <td>{item.floor}</td>}
 
                   <td className="actions">
                     <button

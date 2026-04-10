@@ -1,0 +1,169 @@
+.settings-page {
+  padding: 63px 25px;
+}
+
+.settings-layout {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+  min-height: 600px;
+}
+
+.settings-sidebar {
+  width: 250px;
+  background-color: #fff;
+  border-radius: 15px;
+  border: 1px solid #003366;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-sidebar h3 {
+  font-family: noto-b;
+  font-size: 18px;
+  color: #003366;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 51, 102, 0.1);
+}
+
+.settings-page-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-page-btn {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-family: noto-m;
+  font-size: 15px;
+  color: #003366;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-page-btn:hover {
+  background-color: rgba(0, 51, 102, 0.05);
+}
+
+.settings-page-btn.active {
+  background-color: #003366;
+  color: #fff;
+}
+
+.settings-content {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 15px;
+  border: 1px solid #003366;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-content-header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 51, 102, 0.1);
+}
+
+.settings-content-header h3 {
+  font-family: noto-b;
+  font-size: 22px;
+  color: #003366;
+  margin-bottom: 8px;
+}
+
+.settings-content-header p {
+  font-family: noto-r;
+  font-size: 14px;
+  color: #666;
+}
+
+.settings-columns-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  flex: 1;
+}
+
+.settings-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.settings-checkbox-label:hover {
+  background-color: rgba(0, 51, 102, 0.03);
+}
+
+.settings-checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #003366;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.settings-checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+  background-color: #003366;
+}
+
+.settings-checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -2px;
+}
+
+.checkbox-text {
+  font-family: noto-m;
+  font-size: 16px;
+  color: #333;
+}
+
+.settings-actions {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 51, 102, 0.1);
+}
+
+.settings-save-btn {
+  background-color: #fe9100;
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-family: noto-sb;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-save-btn:hover {
+  background-color: #e58200;
+  transform: translateY(-1px);
+}

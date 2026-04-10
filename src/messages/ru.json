@@ -1,6 +1,11 @@
 {
   "common": {
-    "noData": "Данные не найдены"
+    "noData": "Данные не найдены",
+    "edit": "Tahrirlash (needs translation)",
+    "delete": "O‘chirish (needs translation)",
+    "save": "Saqlash (needs translation)",
+    "cancel": "Bekor qilish (needs translation)",
+    "saving": "Saqlanmoqda... (needs translation)"
   },
   "login": {
     "logout": "Выход",
@@ -15,7 +20,9 @@
     "instruction": "Руководство по системе",
     "authorization": "Авторизация",
     "resetPassword": "Восстановить пароль",
-    "rightReserved": "Все права защищены"
+    "rightReserved": "Все права защищены",
+    "resetPasswordSub": "8ta harfdan yoki raqamdan iborat kod qo'ying. (needs translation)",
+    "loading": "Yuklanmoqda... (needs translation)"
   },
   "home": {
     "weeklySales": "Еженедельные продажи",
@@ -108,7 +115,11 @@
     "restore": "Восстановить",
     "permanentDelete": "Удалить навсегда",
     "restoreError": "Произошла ошибка при восстановлении!",
-    "notFound": "Платежи не найдены"
+    "notFound": "Платежи не найдены",
+    "confirm": "Tasdiqlash (needs translation)",
+    "restoreSelected": "Tanlanganlarni tiklash (needs translation)",
+    "deleteSelected": "Tanlanganlarni o'chirish (needs translation)",
+    "confirmBatchDelete": "Tanlangan to'lovlarni haqiqatan ham o'chirmoqchimisiz? (needs translation)"
   },
   "users": {
     "listTitle": "Список пользователей",
@@ -148,7 +159,13 @@
     "status": "Статус",
     "date": "Дата",
     "actions": "Действия",
-    "branch": "Филиал"
+    "branch": "Филиал",
+    "generatePasswordTooltip": "Сгенерировать новый пароль",
+    "passwordPlaceholder": "Введите пароль или сгенерируйте",
+    "pinflError": "Должно быть 14 цифр",
+    "imageLabel": "Изображение профиля (png или jpg, макс. 5мб)",
+    "upload": "Загрузить",
+    "notFound": "Foydalanuvchilar topilmadi (needs translation)"
   },
   "branches": {
     "listTitle": "Список филиалов",
@@ -179,7 +196,8 @@
     "legalName": "Юридическое название",
     "director": "Ф.И.О. директора",
     "location": "Город/район размещения",
-    "branchName": "Название филиала"
+    "branchName": "Название филиала",
+    "notFound": "Filiallar topilmadi (needs translation)"
   },
   "roles": {
     "pageTitle": "Добавить новую роль",
@@ -197,7 +215,20 @@
     "view": "Просмотр",
     "delete": "Удалить",
     "setTime": "Назначить время",
-    "archive": "Архивировать"
+    "archive": "Архивировать",
+    "confirmDelete": "O'chirmoqchimisiz? (needs translation)",
+    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz? (needs translation)",
+    "back": "Ortga (needs translation)",
+    "listTitle": "Amallar ro'yxati (needs translation)",
+    "permissionsTitle": "Huquqlarni boshqarish:  (needs translation)",
+    "saving": "Saqlanmoqda... (needs translation)",
+    "selectBranchPlaceholder": "Filialni tanlang (needs translation)",
+    "noBranches": "Filial yo'q (needs translation)",
+    "assignPermissions": "Huquqlar berish (needs translation)",
+    "branchesList": "Filiallar (needs translation)",
+    "addNew": "Yangi ro'l qo'shish (needs translation)",
+    "addNewRole": "Yangi ro'l qo'shish (needs translation)",
+    "editRole": "Ro'lni tahrirlash (needs translation)"
   },
   "rooms": {
     "rooms": "Комнаты",
@@ -258,7 +289,10 @@
     "cancel": "Отмена",
     "loading": "Загрузка данных...",
     "noData": "Данные не найдены",
-    "confirmDelete": "Вы действительно хотите удалить?"
+    "confirmDelete": "Вы действительно хотите удалить?",
+    "notFound": "Отделы не найдены",
+    "deleteSelected": "Удалить",
+    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz? (needs translation)"
   },
   "courses": {
     "mainTitle": "Курсы",
@@ -270,7 +304,12 @@
     "choose": "Выберите",
     "actions": "Действия",
     "notFound": "Курсы не найдены",
-    "levelName": "Название уровня"
+    "levelName": "Название уровня",
+    "editTitle": "Редактировать курс",
+    "addTitle": "Добавить курс",
+    "detailsTitle": "Детали курса",
+    "availableLevels": "ДОСТУПНЫЕ УРОВНИ",
+    "back": "Назад"
   },
   "header": {
     "administrator": "Администратор"
@@ -301,5 +340,17 @@
     "actions": "Действия",
     "choose": "Выберите",
     "notFound": "Данные отсутствуют"
+  },
+  "settingsGroup": {
+    "mainTitle": "Настройки",
+    "pages": "Страницы",
+    "pageColumnsTitle": " столбцы страницы",
+    "pageColumnsDesc": "Выберите столбцы, которые должны отображаться в таблице",
+    "confirm": "Подтвердить",
+    "saveSuccess": "Настройки успешно сохранены!",
+    "close": "Закрыть"
+  },
+  "regions": {
+    "notFound": "Viloyatlar topilmadi (needs translation)"
   }
 }

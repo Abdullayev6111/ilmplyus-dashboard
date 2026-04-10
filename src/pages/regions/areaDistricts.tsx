@@ -23,7 +23,7 @@ interface District {
 }
 
 const AreaDistricts = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const [selectedRegionId, setSelectedRegionId] = useState<string>("");
@@ -217,13 +217,17 @@ const AreaDistricts = () => {
             setSelectedDistricts([]);
           }}
         >
-          <option value="">{t("aside.regions")}</option>
-          {regions?.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.name_uz}
-            </option>
-          ))}
-        </select>
+            <option value="">{t("aside.regions")}</option>
+            {regions?.map((r) => (
+              <option key={r.id} value={r.id}>
+                {i18n.language === "uz"
+                  ? r.name_uz
+                  : i18n.language === "ru"
+                    ? r.name_ru || r.name_uz
+                    : r.name_en || r.name_uz}
+              </option>
+            ))}
+          </select>
       </div>
 
       <div className="users-table-wrapper">
@@ -259,7 +263,13 @@ const AreaDistricts = () => {
                     />
                   </td>
                   <td>{item.id}</td>
-                  <td>{item.name_uz}</td>
+                  <td>
+                    {i18n.language === "uz"
+                      ? item.name_uz
+                      : i18n.language === "ru"
+                        ? item.name_ru || item.name_uz
+                        : item.name_en || item.name_uz}
+                  </td>
                   <td className="actions">
                     <button
                       className="user-edit-btn"

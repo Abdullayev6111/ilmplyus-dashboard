@@ -307,13 +307,13 @@ const Department = () => {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm(t("departments.confirmDelete"))) {
+    if (window.confirm(t("departments.confirmDelete", "Haqiqatan ham o‘chirmoqchimisiz?"))) {
       deleteMutation.mutate(id);
     }
   };
 
   const handleDeleteSelected = () => {
-    if (window.confirm(t("departments.confirmBatchDelete"))) {
+    if (window.confirm(t("departments.confirmBatchDelete", "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz?"))) {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
@@ -396,14 +396,14 @@ const Department = () => {
                   <button
                     className="branch-edit-icon"
                     onClick={() => handleOpenModal(dept)}
-                    aria-label="Tahrirlash"
+                    aria-label={t("common.edit", "Tahrirlash")}
                   >
                     <i className="fa-solid fa-pen"></i>
                   </button>
                   <button
                     className="branch-delete-icon"
                     onClick={() => handleDelete(dept.id)}
-                    aria-label="O‘chirish"
+                    aria-label={t("common.delete", "O‘chirish")}
                   >
                     <i className="fa-solid fa-trash"></i>
                   </button>

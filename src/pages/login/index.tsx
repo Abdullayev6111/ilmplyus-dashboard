@@ -188,11 +188,11 @@ const LoginPage = () => {
         <Paper radius="lg" p="xl" maw={520} mx="auto" shadow="lg">
           <Stack gap="md" align="center">
             <Text fw={700} size="xl" c="blue.9">
-              Parol yangilash
+              {t("login.resetPassword", "Parol yangilash")}
             </Text>
 
             <Text size="sm" c="dimmed" ta="center">
-              8ta harfdan yoki raqamdan iborat kod qoyin.
+              {t("login.resetPasswordSub", "8ta harfdan yoki raqamdan iborat kod qo'ying.")}
             </Text>
 
             <PasswordInput
@@ -215,7 +215,7 @@ const LoginPage = () => {
             />
 
             <Button disabled={!isValid} radius="xl" fullWidth mt="sm">
-              Kirish
+              {t("login.login")}
             </Button>
           </Stack>
         </Paper>
@@ -312,7 +312,7 @@ const LoginPage = () => {
                 })
               }
             >
-              {loginMutation.isPending ? "Loading..." : t("login.login")}
+              {loginMutation.isPending ? t("login.loading", "Loading...") : t("login.login")}
             </button>
           </form>
         </div>

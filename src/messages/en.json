@@ -12,7 +12,9 @@
     "instruction": "System guide",
     "authorization": "Authorization",
     "resetPassword": "Reset password",
-    "rightReserved": "All rights reserved"
+    "rightReserved": "All rights reserved",
+    "resetPasswordSub": "8ta harfdan yoki raqamdan iborat kod qo'ying. (needs translation)",
+    "loading": "Yuklanmoqda... (needs translation)"
   },
   "home": {
     "weeklySales": "Weekly sales",
@@ -104,7 +106,12 @@
     "group": "Group",
     "restore": "Restore",
     "permanentDelete": "Delete permanently",
-    "restoreError": "An error occurred while restoring!"
+    "restoreError": "An error occurred while restoring!",
+    "notFound": "To'lovlar topilmadi (needs translation)",
+    "confirm": "Tasdiqlash (needs translation)",
+    "restoreSelected": "Tanlanganlarni tiklash (needs translation)",
+    "deleteSelected": "Tanlanganlarni o'chirish (needs translation)",
+    "confirmBatchDelete": "Tanlangan to'lovlarni haqiqatan ham o'chirmoqchimisiz? (needs translation)"
   },
   "users": {
     "listTitle": "User list",
@@ -144,7 +151,13 @@
     "status": "Status",
     "date": "Date",
     "actions": "Actions",
-    "branch": "Branch"
+    "branch": "Branch",
+    "generatePasswordTooltip": "Generate new password",
+    "passwordPlaceholder": "Enter password or generate",
+    "pinflError": "Must be 14 digits",
+    "imageLabel": "Profile image in png or jpg format max 5mb",
+    "upload": "Upload",
+    "notFound": "Foydalanuvchilar topilmadi (needs translation)"
   },
   "branches": {
     "listTitle": "Branch list",
@@ -175,7 +188,8 @@
     "legalName": "Legal name",
     "director": "Director full name",
     "location": "City/District",
-    "branchName": "Branch name"
+    "branchName": "Branch name",
+    "notFound": "Filiallar topilmadi (needs translation)"
   },
   "roles": {
     "pageTitle": "Add new role",
@@ -193,7 +207,20 @@
     "view": "View",
     "delete": "Delete",
     "setTime": "Set time",
-    "archive": "Archive"
+    "archive": "Archive",
+    "confirmDelete": "O'chirmoqchimisiz? (needs translation)",
+    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz? (needs translation)",
+    "back": "Ortga (needs translation)",
+    "listTitle": "Amallar ro'yxati (needs translation)",
+    "permissionsTitle": "Huquqlarni boshqarish:  (needs translation)",
+    "saving": "Saqlanmoqda... (needs translation)",
+    "selectBranchPlaceholder": "Filialni tanlang (needs translation)",
+    "noBranches": "Filial yo'q (needs translation)",
+    "assignPermissions": "Huquqlar berish (needs translation)",
+    "branchesList": "Filiallar (needs translation)",
+    "addNew": "Yangi ro'l qo'shish (needs translation)",
+    "addNewRole": "Yangi ro'l qo'shish (needs translation)",
+    "editRole": "Ro'lni tahrirlash (needs translation)"
   },
   "rooms": {
     "rooms": "Rooms",
@@ -233,7 +260,9 @@
     "comment": "Comment",
     "expenseCategoryName": "Expense Category Name",
     "categoryName": "Category Name",
-    "notFound": "No data available"
+    "notFound": "No data available",
+    "categoryNotFound": "Kategoriya topilmadi (needs translation)",
+    "subCategoryNotFound": "Podkategoriya topilmadi (needs translation)"
   },
   "departments": {
     "listTitle": "Department List",
@@ -252,7 +281,10 @@
     "cancel": "Cancel",
     "loading": "Loading data...",
     "noData": "No data found",
-    "confirmDelete": "Are you sure you want to delete?"
+    "confirmDelete": "Are you sure you want to delete?",
+    "notFound": "Departments not found",
+    "deleteSelected": "Delete",
+    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz? (needs translation)"
   },
   "courses": {
     "mainTitle": "Courses",
@@ -264,7 +296,12 @@
     "choose": "Select",
     "actions": "Actions",
     "notFound": "Courses not found",
-    "levelName": "Level Name"
+    "levelName": "Level Name",
+    "editTitle": "Edit course",
+    "addTitle": "Add course",
+    "detailsTitle": "Course details",
+    "availableLevels": "AVAILABLE LEVELS",
+    "back": "Back"
   },
   "header": {
     "administrator": "Administrator"
@@ -291,5 +328,29 @@
     "actions": "Actions",
     "choose": "Select",
     "notFound": "No data available"
+  },
+  "common": {
+    "noData": "No data found",
+    "edit": "Tahrirlash (needs translation)",
+    "delete": "O‘chirish (needs translation)",
+    "save": "Saqlash (needs translation)",
+    "cancel": "Bekor qilish (needs translation)",
+    "saving": "Saqlanmoqda... (needs translation)"
+  },
+  "settingsGroup": {
+    "mainTitle": "Settings",
+    "pages": "Pages",
+    "pageColumnsTitle": " page columns",
+    "pageColumnsDesc": "Select the columns that should be visible in the table",
+    "confirm": "Confirm",
+    "saveSuccess": "Settings saved successfully!",
+    "close": "Close"
+  },
+  "districts": {
+    "choose": "Tumanni tanlang (needs translation)",
+    "notFound": "Tumanlar topilmadi (needs translation)"
+  },
+  "regions": {
+    "notFound": "Viloyatlar topilmadi (needs translation)"
   }
 }

@@ -1,6 +1,11 @@
 {
   "common": {
-    "noData": "Ma’lumot topilmadi"
+    "noData": "Ma’lumot topilmadi",
+    "edit": "Tahrirlash",
+    "delete": "O‘chirish",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "saving": "Saqlanmoqda..."
   },
   "login": {
     "logout": "Chiqish",
@@ -15,6 +20,8 @@
     "instruction": "Tizim bo‘yicha qo‘llanma",
     "authorization": "Avtorizatsiya",
     "resetPassword": "Parolni tiklash",
+    "resetPasswordSub": "8ta harfdan yoki raqamdan iborat kod qo'ying.",
+    "loading": "Yuklanmoqda...",
     "rightReserved": "Barcha huquqlar himoyalangan"
   },
   "home": {
@@ -99,16 +106,19 @@
     "october": "Oktabr",
     "november": "Noyabr",
     "december": "Dekabr",
-    "conmfirm": "Tasdiqlash",
+    "confirm": "Tasdiqlash",
     "addPayment": "To‘lov qo‘shish",
     "delete": "O‘chirish",
     "archivedTitle": "Arxivlangan to‘lovlar",
-    "noArchived": "Arxivlangan to‘lovlar y‘oq",
+    "noArchived": "Arxivlangan to‘lovlar yo‘q",
     "group": "Guruh",
     "restore": "Qaytarish",
     "permanentDelete": "Butunlay o'chirish",
     "restoreError": "Qayta tiklashda xatolik yuz berdi!",
-    "notFound": "To'lovlar topilmadi"
+    "notFound": "To'lovlar topilmadi",
+    "restoreSelected": "Tanlanganlarni tiklash",
+    "deleteSelected": "Tanlanganlarni o'chirish",
+    "confirmBatchDelete": "Tanlangan to'lovlarni haqiqatan ham o'chirmoqchimisiz?"
   },
   "users": {
     "listTitle": "Foydaluvchilar ro‘yhati",
@@ -149,7 +159,12 @@
     "date": "Sana",
     "actions": "Harakatlar",
     "branch": "Filial",
-    "notFound": "Foydalanuvchilar topilmadi"
+    "notFound": "Foydalanuvchilar topilmadi",
+    "generatePasswordTooltip": "Yangi parol generatsiya qilish",
+    "passwordPlaceholder": "Parol kiriting yoki generatsiya qiling",
+    "pinflError": "14 ta raqam bo'lishi shart",
+    "imageLabel": "Profil uchun rasm png yoki jpg formatda max 5mb",
+    "upload": "Yuklash"
   },
   "branches": {
     "listTitle": "Filiallar ro‘yhati",
@@ -199,7 +214,20 @@
     "view": "Ko‘rish",
     "delete": "O‘chirish",
     "setTime": "Vaqt belgilash",
-    "archive": "Arxivlash"
+    "archive": "Arxivlash",
+    "confirmDelete": "O'chirmoqchimisiz?",
+    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz?",
+    "back": "Ortga",
+    "listTitle": "Amallar ro'yxati",
+    "permissionsTitle": "Huquqlarni boshqarish: ",
+    "saving": "Saqlanmoqda...",
+    "selectBranchPlaceholder": "Filialni tanlang",
+    "noBranches": "Filial yo'q",
+    "assignPermissions": "Huquqlar berish",
+    "branchesList": "Filiallar",
+    "addNew": "Yangi ro'l qo'shish",
+    "addNewRole": "Yangi ro'l qo'shish",
+    "editRole": "Ro'lni tahrirlash"
   },
   "expenses": {
     "expenseTitle": "Chiqimlar",
@@ -243,6 +271,9 @@
     "cancel": "Bekor qilish",
     "save": "Saqlash"
   },
+  "regions": {
+    "notFound": "Viloyatlar topilmadi"
+  },
   "departments": {
     "listTitle": "Bo‘limlar ro‘yhati",
     "addNewTitle": "Qo‘shish",
@@ -261,7 +292,9 @@
     "loading": "Ma’lumotlar yuklanmoqda...",
     "noData": "Ma’lumot topilmadi",
     "confirmDelete": "Haqiqatan ham o‘chirmoqchimisiz?",
-    "notFound": "Bo‘limlar topilmadi"
+    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz?",
+    "notFound": "Bo‘limlar topilmadi",
+    "deleteSelected": "O‘chirish"
   },
   "courses": {
     "mainTitle": "Kurslar",
@@ -273,7 +306,12 @@
     "choose": "Tanlang",
     "actions": "Harakatlar",
     "notFound": "Kurslar topilmadi",
-    "levelName": "Daraja nomi"
+    "levelName": "Daraja nomi",
+    "editTitle": "Kursni tahrirlash",
+    "addTitle": "Kurs qo'shish",
+    "detailsTitle": "Kurs tafsilotlari",
+    "availableLevels": "MAVJUD DARAJALAR",
+    "back": "Qaytish"
   },
   "header": {
     "administrator": "Administrator"
@@ -304,5 +342,14 @@
     "actions": "Harakatlar",
     "choose": "Tanlang",
     "notFound": "Ma'lumot mavjud emas"
+  },
+  "settingsGroup": {
+    "mainTitle": "Sozlamalar",
+    "pages": "Sahifalar",
+    "pageColumnsTitle": " sahifasi ustunlari",
+    "pageColumnsDesc": "Jadvalda ko'rinishi kerak bo'lgan ustunlarni belgilang",
+    "confirm": "Tasdiqlash",
+    "saveSuccess": "Sozlamalar muvaffaqiyatli saqlandi!",
+    "close": "Yopish"
   }
 }

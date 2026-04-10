@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import type { User, UsersResponse, Branch, Position, Role } from "../../types";
+import { useTableSettingsStore } from "../../store/useTableSettingsStore";
 
 const genPassword = () =>
   Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4);
@@ -32,6 +33,10 @@ const Users = () => {
   // const [password, setPassword] = useState(genPassword());
   const [showRange, setShowRange] = useState(false);
   const [userImage, setUserImage] = useState<File | null>(null);
+
+  const { settings } = useTableSettingsStore();
+  const userSettings = settings.users || {};
+  const isVisible = (colId: string) => userSettings[colId] ?? true;
 
   const { data: apiData, isLoading } = useQuery<UsersResponse>({
     queryKey: ["users"],
@@ -415,7 +420,7 @@ const Users = () => {
                           display: "block",
                         }}
                       >
-                        14 ta raqam bo'lishi shart
+                        {t("users.pinflError")}
                       </span>
                     )}
                 </div>
@@ -448,12 +453,12 @@ const Users = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, password: e.target.value })
                       }
-                      placeholder="Parol kiriting yoki generatsiya qiling"
+                      placeholder={t("users.passwordPlaceholder")}
                     />
                     <button
                       className="refresh-password"
                       type="button"
-                      title="Yangi parol generatsiya qilish"
+                      title={t("users.generatePasswordTooltip")}
                       onClick={() => {
                         const newPass = genPassword();
                         setFormData({ ...formData, password: newPass });
@@ -474,7 +479,7 @@ const Users = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Profil uchun rasm png yoki jpg formatda max 5mb</label>
+                  <label>{t("users.imageLabel")}</label>
 
                   <div className="file-upload-wrapper">
                     <input
@@ -485,7 +490,7 @@ const Users = () => {
                       className="file-input"
                     />
                     <label htmlFor="userImage" className="file-upload-btn">
-                      Yuklash
+                      {t("users.upload")}
                     </label>
                   </div>
                 </div>
@@ -743,14 +748,14 @@ const Users = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
-              <th>{t("users.fish")}</th>
-              <th>{t("users.phone")}</th>
-              <th>{t("users.role")}</th>
-              <th>{t("users.status")}</th>
-              <th>{t("users.branch")}</th>
-              <th>{t("users.loginText")}</th>
-              <th>{t("users.date")}</th>
+              {isVisible("id") && <th>ID</th>}
+              {isVisible("full_name") && <th>{t("users.fish")}</th>}
+              {isVisible("phone") && <th>{t("users.phone")}</th>}
+              {isVisible("role") && <th>{t("users.role")}</th>}
+              {isVisible("status") && <th>{t("users.status")}</th>}
+              {isVisible("branch") && <th>{t("users.branch")}</th>}
+              {isVisible("username") && <th>{t("users.loginText")}</th>}
+              {isVisible("date") && <th>{t("users.date")}</th>}
               <th>{t("users.actions")}</th>
             </tr>
           </thead>
@@ -769,32 +774,38 @@ const Users = () => {
                     />
                   </td>
 
-                  <td>{u.id}</td>
+                  {isVisible("id") && <td>{u.id}</td>}
 
-                  <td>
-                    {editingId === u.id ? (
-                      <input
-                        value={u.full_name}
-                        onChange={(e) =>
-                          updateMutation.mutate({
-                            id: u.id,
-                            updates: { full_name: e.target.value },
-                          })
-                        }
-                      />
-                    ) : (
-                      u.full_name
-                    )}
-                  </td>
+                  {isVisible("full_name") && (
+                    <td>
+                      {editingId === u.id ? (
+                        <input
+                          value={u.full_name}
+                          onChange={(e) =>
+                            updateMutation.mutate({
+                              id: u.id,
+                              updates: { full_name: e.target.value },
+                            })
+                          }
+                        />
+                      ) : (
+                        u.full_name
+                      )}
+                    </td>
+                  )}
 
-                  <td>{u.phone}</td>
-                  <td>{u.roles[0]?.name || "-"}</td>
-                  <td>
-                    {u.is_active ? t("users.active") : t("users.inactive")}
-                  </td>
-                  <td>{u.branch?.address || "-"}</td>
-                  <td>{u.username}</td>
-                  <td>{u.created_at.slice(0, 10).replaceAll("-", ".")}</td>
+                  {isVisible("phone") && <td>{u.phone}</td>}
+                  {isVisible("role") && <td>{u.roles[0]?.name || "-"}</td>}
+                  {isVisible("status") && (
+                    <td>
+                      {u.is_active ? t("users.active") : t("users.inactive")}
+                    </td>
+                  )}
+                  {isVisible("branch") && <td>{u.branch?.address || "-"}</td>}
+                  {isVisible("username") && <td>{u.username}</td>}
+                  {isVisible("date") && (
+                    <td>{u.created_at.slice(0, 10).replaceAll("-", ".")}</td>
+                  )}
 
                   <td className="actions">
                     <div style={{ position: "relative" }}>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../api/api";
 import "./regions.css";
@@ -15,7 +15,7 @@ interface Region {
 }
 
 const AreaRegions = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -32,6 +32,10 @@ const AreaRegions = () => {
       return data;
     },
   });
+
+  const sortedRegions = useMemo(() => {
+    return (regions || []).slice().sort((a, b) => a.id - b.id);
+  }, [regions]);
 
   const createMutation = useMutation({
     mutationFn: async () => API.post("/regions", { name: regionName }),
@@ -189,8 +193,8 @@ const AreaRegions = () => {
                 <input
                   type="checkbox"
                   checked={
-                    selected.length === (regions?.length || 0) &&
-                    (regions?.length || 0) > 0
+                    selected.length === (sortedRegions.length || 0) &&
+                    (sortedRegions.length || 0) > 0
                   }
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
@@ -204,8 +208,8 @@ const AreaRegions = () => {
           <tbody>
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={4} />
-            ) : regions?.length ? (
-              regions?.map((item) => (
+            ) : sortedRegions.length ? (
+              sortedRegions.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input
@@ -216,7 +220,13 @@ const AreaRegions = () => {
                   </td>
 
                   <td>{item.id}</td>
-                  <td>{item.name_uz}</td>
+                  <td>
+                    {i18n.language === "uz"
+                      ? item.name_uz
+                      : i18n.language === "ru"
+                        ? item.name_ru || item.name_uz
+                        : item.name_en || item.name_uz}
+                  </td>
 
                   <td className="actions">
                     <button

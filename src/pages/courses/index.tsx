@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import type { Course, CoursePayload, Level } from "../../types";
+import { useTableSettingsStore } from "../../store/useTableSettingsStore";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -39,6 +40,10 @@ const Courses = () => {
   const [selectedLevelIds, setSelectedLevelIds] = useState<number[]>([]);
   const [openBranchDropdown, setOpenBranchDropdown] = useState(false);
   const [openLevelDropdown, setOpenLevelDropdown] = useState(false);
+
+  const { settings } = useTableSettingsStore();
+  const courseSettings = settings.courses || {};
+  const isVisible = (colId: string) => courseSettings[colId] ?? true;
 
   const { data: courses, isLoading } = useQuery<Course[]>({
     queryKey: ["courses"],
@@ -495,13 +500,13 @@ const Courses = () => {
                 color: "#003b73",
               }}
             >
-              Kurs tafsilotlari
+              {t("courses.detailsTitle")}
             </h2>
 
             <div style={{ display: "flex", marginBottom: 24 }}>
               <div style={{ flex: 1 }}>
                 <p style={{ color: "#888", fontSize: 14, marginBottom: 8 }}>
-                  Kurs nomi:
+                  {t("courses.courseName")}:
                 </p>
                 <p style={{ color: "#003b73", fontWeight: 500, fontSize: 16 }}>
                   {viewItem.name}
@@ -509,7 +514,7 @@ const Courses = () => {
               </div>
               <div style={{ flex: 1 }}>
                 <p style={{ color: "#888", fontSize: 14, marginBottom: 8 }}>
-                  Fililal:
+                  {t("courses.branch")}:
                 </p>
                 <p style={{ color: "#003b73", fontWeight: 500, fontSize: 16 }}>
                   {viewItem.branches && viewItem.branches.length > 0
@@ -522,7 +527,7 @@ const Courses = () => {
             <div style={{ display: "flex", marginBottom: 32 }}>
               <div style={{ flex: 1 }}>
                 <p style={{ color: "#888", fontSize: 14, marginBottom: 8 }}>
-                  Yaratilgan sana:
+                  {t("courses.createdDate")}:
                 </p>
                 <p style={{ color: "#003b73", fontWeight: 500, fontSize: 16 }}>
                   {viewItem.created_at ? formatDate(viewItem.created_at) : "-"}
@@ -555,7 +560,7 @@ const Courses = () => {
                 fontWeight: 700,
               }}
             >
-              MAVJUD DARAJALAR
+              {t("courses.availableLevels")}
             </h4>
             <div
               style={{
@@ -599,7 +604,7 @@ const Courses = () => {
                 fontSize: 14,
               }}
             >
-              Qaytish
+              {t("courses.back")}
             </button>
           </div>
         </div>
@@ -635,11 +640,11 @@ const Courses = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
-              <th>{t("courses.courseName")}</th>
-              <th>{t("courses.branch")}</th>
-              <th>{t("levels.level")}</th>
-              <th>{t("courses.createdDate")}</th>
+              {isVisible("id") && <th>ID</th>}
+              {isVisible("name") && <th>{t("courses.courseName")}</th>}
+              {isVisible("branches") && <th>{t("courses.branch")}</th>}
+              {isVisible("levels") && <th>{t("levels.level")}</th>}
+              {isVisible("created_at") && <th>{t("courses.createdDate")}</th>}
               <th>{t("courses.actions")}</th>
             </tr>
           </thead>
@@ -668,13 +673,13 @@ const Courses = () => {
                         onChange={() => toggleOne(item.id)}
                       />
                     </td>
-                    <td>{item.id}</td>
-                    <td>{item.name}</td>
-                    <td>{branchLabel}</td>
-                    <td>{levelLabel}</td>
-                    <td>
+                    {isVisible("id") && <td>{item.id}</td>}
+                    {isVisible("name") && <td>{item.name}</td>}
+                    {isVisible("branches") && <td>{branchLabel}</td>}
+                    {isVisible("levels") && <td>{levelLabel}</td>}
+                    {isVisible("created_at") && <td>
                       {item.created_at ? formatDate(item.created_at) : "-"}
-                    </td>
+                    </td>}
                     <td className="actions">
                       <button
                         className="user-view-btn"

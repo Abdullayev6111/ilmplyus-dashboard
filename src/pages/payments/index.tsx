@@ -175,7 +175,7 @@ const Payments = () => {
 
   const handleFormSubmit = () => {
     if (!formData.familiya || !formData.ism) {
-      alert("Familiya va Ism to'ldirilishi shart!");
+      alert(t("payments.lastNameRequiredAlert", "Familiya va Ism to'ldirilishi shart!"));
       return;
     }
 
@@ -184,12 +184,12 @@ const Payments = () => {
       !formData.payment_type ||
       !formData.payment_period
     ) {
-      alert("Barcha to'lov maydonlarini to'ldiring!");
+      alert(t("payments.allFieldsRequiredAlert", "Barcha to'lov maydonlarini to'ldiring!"));
       return;
     }
 
     if (!formData.course_id || !formData.branch_id || !formData.cashier_id) {
-      alert("Kurs, Filial va Kassir tanlanishi shart!");
+      alert(t("payments.courseBranchCashierRequiredAlert", "Kurs, Filial va Kassir tanlanishi shart!"));
       return;
     }
 
@@ -306,7 +306,7 @@ const Payments = () => {
       localStorage.setItem("archivedPayments", JSON.stringify(newArchived));
     } catch (error) {
       console.error("❌ Arxivlash xatosi:", error);
-      alert("Arxivlashda xatolik yuz berdi!");
+      alert(t("payments.archiveError", "Arxivlashda xatolik yuz berdi!"));
     }
   };
 
@@ -416,7 +416,7 @@ const Payments = () => {
 
               <div className="form-right">
                 <div className="form-group">
-                  <label>Filial</label>
+                  <label>{t("payments.branch")}</label>
                   <select
                     value={formData.branch_id}
                     onChange={(e) =>
@@ -547,7 +547,7 @@ const Payments = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>O'chirishni tasdiqlaysizmi?</h3>
+            <h3>{t("payments.confirmDelete")}</h3>
             <div className="modal-actions">
               <button className="danger" onClick={confirmDelete}>
                 {t("payments.confirm")}
