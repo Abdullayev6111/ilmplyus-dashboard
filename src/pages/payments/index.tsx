@@ -549,14 +549,14 @@ const Payments = () => {
           <div className="modal small">
             <h3>O'chirishni tasdiqlaysizmi?</h3>
             <div className="modal-actions">
+              <button className="danger" onClick={confirmDelete}>
+                {t("payments.confirm")}
+              </button>
               <button
                 className="cancel"
                 onClick={() => setShowDeleteModal(false)}
               >
                 {t("payments.cancel")}
-              </button>
-              <button className="danger" onClick={confirmDelete}>
-                {t("payments.confirm")}
               </button>
             </div>
           </div>

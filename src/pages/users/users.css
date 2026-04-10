@@ -42,33 +42,6 @@
   background: #e6e6e6;
 }
 
-/* .users-table th {
-  padding: 10px;
-  color: #003366;
-  text-align: center;
-  font-family: noto-sb;
-  border-right: 1px solid #9e9d9d5d;
-}
-
-.users-table th:last-child {
-  border-bottom: 1px solid #9e9d9d5d;
-}
-
-.users-table th:first-child {
-  border-left: 1px solid #d9d9d9;
-}
-
-.users-table td {
-  padding: 10px;
-  text-align: center;
-  border: 1px solid #00336628;
-}
-
-.users-table td:last-child {
-  border-left: none;
-  border-top: none;
-} */
-
 .users-table th,
 .users-table td {
   border: 1px solid #d9d9d9;
@@ -262,10 +235,22 @@
   font-family: noto-b;
 }
 
+.user-view-btn {
+  font-size: 18px !important;
+  color: #f39c12;
+  font-family: noto-b;
+  border: none !important;
+  background: transparent;
+  cursor: pointer;
+}
+
 .user-edit-btn {
   font-size: 18px !important;
-  color: green;
+  color: #22a7f0;
   font-family: noto-b;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 .user-archive-btn {
@@ -283,7 +268,10 @@
 .user-delete-btn {
   font-size: 18px !important;
   font-family: noto-b;
-  color: #e70a0a;
+  color: #FA2A00;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 .danger {

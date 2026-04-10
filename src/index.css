@@ -400,6 +400,8 @@ aside {
 
 .sidebar-item-content {
   display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
   padding: 14px 18px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -613,4 +615,60 @@ aside {
   font-family: noto-m;
   font-size: 18px;
   margin: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th:first-child,
+td:first-child {
+  width: 53px;
+  min-width: 53px;
+  max-width: 53px;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+th:first-child,
+td:first-child {
+  width: 53px;
+  min-width: 53px;
+  max-width: 53px;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+}
+
+th:last-child,
+td:last-child {
+  width: 203px;
+  min-width: 203px;
+  max-width: 203px;
+  height: auto;
+}
+
+td:last-child {
+  padding: 12px 8px;
+}
+
+td:last-child > * {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap; /* MUHIM */
 }

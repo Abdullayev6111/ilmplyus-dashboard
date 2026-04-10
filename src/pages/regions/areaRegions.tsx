@@ -9,7 +9,9 @@ import EmptyState from "../../components/EmptyState";
 
 interface Region {
   id: number;
-  name: string;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
 }
 
 const AreaRegions = () => {
@@ -61,7 +63,7 @@ const AreaRegions = () => {
 
   const openEditModal = (item: Region) => {
     setEditingItem(item);
-    setRegionName(item.name);
+    setRegionName(item.name_uz);
     setShowAddModal(true);
   };
 
@@ -147,15 +149,15 @@ const AreaRegions = () => {
             <h3>{t("expenses.confirmDelete")}</h3>
 
             <div className="modal-actions">
+              <button className="danger" onClick={confirmDelete}>
+                {t("expenses.delete")}
+              </button>
+
               <button
                 className="cancel"
                 onClick={() => setShowDeleteModal(false)}
               >
                 {t("expenses.cancel")}
-              </button>
-
-              <button className="danger" onClick={confirmDelete}>
-                {t("expenses.delete")}
               </button>
             </div>
           </div>
@@ -214,7 +216,7 @@ const AreaRegions = () => {
                   </td>
 
                   <td>{item.id}</td>
-                  <td>{item.name}</td>
+                  <td>{item.name_uz}</td>
 
                   <td className="actions">
                     <button
@@ -237,7 +239,7 @@ const AreaRegions = () => {
                 </tr>
               ))
             ) : (
-              <EmptyState colSpan={10} message={t("regions.notFound")} />
+              <EmptyState colSpan={4} message={t("regions.notFound")} />
             )}
           </tbody>
         </table>

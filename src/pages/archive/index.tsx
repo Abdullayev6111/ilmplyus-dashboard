@@ -57,6 +57,16 @@ const ArchivedPayments = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [archived, setArchived] = useState<Payment[]>([]);
+  const [selected, setSelected] = useState<number[]>([]);
+
+  const toggleAll = (checked: boolean) =>
+    setSelected(checked ? archived?.map((r) => r.id) : []);
+
+  const toggleOne = (id: number) =>
+    setSelected((p) =>
+      p.includes(id) ? p.filter((x) => x !== id) : [...p, id],
+    );
+
   useEffect(() => {
     const loadArchived = () => {
       try {
@@ -121,6 +131,30 @@ const ArchivedPayments = () => {
     console.log("Arxivdan butunlay o'chirildi:", id);
   };
 
+  const handleRestoreSelected = () => {
+    const selectedPayments = archived.filter((p) => selected.includes(p.id));
+    selectedPayments.forEach((p) => restorePayment(p));
+    setSelected([]);
+  };
+
+  const handleDeleteSelected = () => {
+    if (window.confirm(t("payments.confirmBatchDelete"))) {
+      const updated = archived.filter((p) => !selected.includes(p.id));
+      localStorage.setItem("archivedPayments", JSON.stringify(updated));
+      setArchived(updated);
+
+      const storedIds = JSON.parse(
+        localStorage.getItem("archivedPaymentIds") || "[]",
+      );
+      const updatedIds = storedIds.filter(
+        (id: number) => !selected.includes(id),
+      );
+      localStorage.setItem("archivedPaymentIds", JSON.stringify(updatedIds));
+
+      setSelected([]);
+    }
+  };
+
   const formatAmount = (amount: string | number) => {
     return Number(amount)
       .toString()
@@ -131,10 +165,42 @@ const ArchivedPayments = () => {
     <section className="payments container">
       <h1 className="main-title">{t("payments.archivedTitle")}</h1>
 
+      <div className="payments-filters">
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            className="restore-btn"
+            style={{ padding: "8px 16px", borderRadius: "8px" }}
+            disabled={!selected.length}
+            onClick={handleRestoreSelected}
+          >
+            <i className="fa-solid fa-rotate-left" style={{ marginRight: "8px" }}></i>
+            {t("payments.restoreSelected")}
+          </button>
+          <button
+            className="payment-delete-btn"
+            style={{ padding: "8px 16px", borderRadius: "8px" }}
+            disabled={!selected.length}
+            onClick={handleDeleteSelected}
+          >
+            <i className="fa-solid fa-trash" style={{ marginRight: "8px" }}></i>
+            {t("payments.deleteSelected")}
+          </button>
+        </div>
+      </div>
+
       <div className="payments-table-wrapper">
         <table className="payments-table">
           <thead>
             <tr>
+              <th>
+                <input
+                  type="checkbox"
+                  checked={
+                    selected.length === archived?.length && archived?.length > 0
+                  }
+                  onChange={(e) => toggleAll(e.target.checked)}
+                />
+              </th>
               <th>ID</th>
               <th>{t("payments.fish")}</th>
               <th>{t("payments.amount")}</th>
@@ -152,6 +218,13 @@ const ArchivedPayments = () => {
             ) : (
               archived?.map((u) => (
                 <tr key={u.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(u.id)}
+                      onChange={() => toggleOne(u.id)}
+                    />
+                  </td>
                   <td>{u.id}</td>
                   <td>
                     {u.student?.last_name} {u.student?.first_name}

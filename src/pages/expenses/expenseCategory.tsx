@@ -269,7 +269,7 @@ const ExpensesCategory = () => {
               ))
             ) : (
               <EmptyState
-                colSpan={10}
+                colSpan={4}
                 message={t("expenses.categoryNotFound")}
               />
             )}

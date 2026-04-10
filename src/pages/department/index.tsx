@@ -238,6 +238,15 @@ const Department = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] =
     useState<DepartmentType | null>(null);
+  const [selected, setSelected] = useState<number[]>([]);
+
+  const toggleAll = (checked: boolean) =>
+    setSelected(checked ? tableData?.map((r) => r.id) : []);
+
+  const toggleOne = (id: number) =>
+    setSelected((p) =>
+      p.includes(id) ? p.filter((x) => x !== id) : [...p, id],
+    );
 
   const { data: departments = [], isLoading: isLoadingDepartments } = useQuery<
     DepartmentType[]
@@ -303,6 +312,13 @@ const Department = () => {
     }
   };
 
+  const handleDeleteSelected = () => {
+    if (window.confirm(t("departments.confirmBatchDelete"))) {
+      selected.forEach((id) => deleteMutation.mutate(id));
+      setSelected([]);
+    }
+  };
+
   const tableData = useMemo(() => {
     return [...departments].sort((a, b) => a.id - b.id);
   }, [departments]);
@@ -323,12 +339,30 @@ const Department = () => {
         <button className="branch-add-btn" onClick={() => handleOpenModal()}>
           {t("departments.addNewTitle")}
         </button>
+
+        <button
+          className="branch-delete-btn"
+          disabled={!selected.length}
+          onClick={handleDeleteSelected}
+          style={{ opacity: selected.length ? 1 : 0.5, cursor: selected.length ? "pointer" : "not-allowed" }}
+        >
+          {t("departments.deleteSelected")}
+        </button>
       </div>
 
       <div className="branch-table-container">
         <table className="branch-data-table">
           <thead>
             <tr>
+              <th>
+                <input
+                  type="checkbox"
+                  checked={
+                    selected.length === tableData?.length && tableData?.length > 0
+                  }
+                  onChange={(e) => toggleAll(e.target.checked)}
+                />
+              </th>
               <th>ID</th>
               <th>{t("departments.name")}</th>
               <th>{t("departments.code")}</th>
@@ -341,6 +375,13 @@ const Department = () => {
           <tbody>
             {tableData?.map((dept) => (
               <tr key={dept.id}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(dept.id)}
+                    onChange={() => toggleOne(dept.id)}
+                  />
+                </td>
                 <td>{dept.id}</td>
                 <td>{dept.name}</td>
                 <td>{dept.code}</td>
@@ -370,7 +411,7 @@ const Department = () => {
               </tr>
             ))}
             {tableData.length === 0 && (
-              <EmptyState colSpan={10} message={t("common.noData")} />
+              <EmptyState colSpan={8} message={t("common.noData")} />
             )}
           </tbody>
         </table>

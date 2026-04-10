@@ -162,15 +162,15 @@ const Levels = () => {
             <h3>{t("users.confirmDelete")}</h3>
 
             <div className="modal-actions">
+              <button className="danger" onClick={confirmDelete}>
+                {t("users.delete")}
+              </button>
+
               <button
                 className="cancel"
                 onClick={() => setShowDeleteModal(false)}
               >
                 {t("users.cancel")}
-              </button>
-
-              <button className="danger" onClick={confirmDelete}>
-                {t("users.delete")}
               </button>
             </div>
           </div>

@@ -370,14 +370,15 @@ const Expenses = () => {
             <h3>{t("expenses.confirmDelete")}</h3>
 
             <div className="modal-actions">
+              <button className="danger" onClick={confirmDelete}>
+                {t("expenses.delete")}
+              </button>
+
               <button
                 className="cancel"
                 onClick={() => setShowDeleteModal(false)}
               >
                 {t("expenses.cancel")}
-              </button>
-              <button className="danger" onClick={confirmDelete}>
-                {t("expenses.delete")}
               </button>
             </div>
           </div>
@@ -535,7 +536,7 @@ const Expenses = () => {
                 </tr>
               ))
             ) : (
-              <EmptyState colSpan={10} message={t("expenses.notFound")} />
+              <EmptyState colSpan={9} message={t("expenses.notFound")} />
             )}
           </tbody>
         </table>

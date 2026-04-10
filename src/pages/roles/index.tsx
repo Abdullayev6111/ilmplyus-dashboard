@@ -14,6 +14,7 @@ const Roles = () => {
   const queryClient = useQueryClient();
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [selected, setSelected] = useState<number[]>([]);
 
   const [roleFormData, setRoleFormData] = useState<{
     name: string;
@@ -107,6 +108,25 @@ const Roles = () => {
     setShowRoleModal(true);
   };
 
+  const toggleAll = (checked: boolean) =>
+    setSelected(checked ? roles?.map((r) => r.id) || [] : []);
+
+  const toggleOne = (id: number) =>
+    setSelected((p) =>
+      p.includes(id) ? p.filter((x) => x !== id) : [...p, id],
+    );
+
+  const handleBatchDelete = () => {
+    if (
+      window.confirm(
+        t("roles.confirmBatchDelete", "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz?")
+      )
+    ) {
+      selected.forEach((id) => deleteRoleMutation.mutate(id));
+      setSelected([]);
+    }
+  };
+
   return (
     <section className="role-container container">
       <h1 className="role-page-title">
@@ -114,16 +134,27 @@ const Roles = () => {
       </h1>
 
       <div className="role-header-actions">
-        <button
-          className="role-add-btn"
-          onClick={() => {
-            resetRoleForm();
-            setEditingRole(null);
-            setShowRoleModal(true);
-          }}
-        >
-          {t("roles.addNew", "Yangi ro'l qo'shish")}
-        </button>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            className="role-add-btn"
+            onClick={() => {
+              resetRoleForm();
+              setEditingRole(null);
+              setShowRoleModal(true);
+            }}
+          >
+            {t("roles.addNew", "Yangi ro'l qo'shish")}
+          </button>
+          
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={handleBatchDelete}
+            style={{ width: "auto", padding: "0 15px", borderRadius: "10px" }}
+          >
+            {t("roles.delete", "O'chirish")}
+          </button>
+        </div>
       </div>
 
       {showRoleModal && (
@@ -235,6 +266,15 @@ const Roles = () => {
         <table className="role-data-table">
           <thead>
             <tr>
+              <th>
+                <input
+                  type="checkbox"
+                  checked={
+                    selected.length > 0 && selected.length === roles?.length
+                  }
+                  onChange={(e) => toggleAll(e.target.checked)}
+                />
+              </th>
               <th>ID</th>
               <th>{t("roles.name", "Nomi")}</th>
               <th>{t("roles.branchesList", "Filiallar")}</th>
@@ -247,6 +287,13 @@ const Roles = () => {
             ) : roles && roles.length > 0 ? (
               roles.map((role) => (
                 <tr key={role.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(role.id)}
+                      onChange={() => toggleOne(role.id)}
+                    />
+                  </td>
                   <td>{role.id}</td>
                   <td>{role.name}</td>
                   <td>
@@ -292,7 +339,7 @@ const Roles = () => {
               ))
             ) : (
               <EmptyState
-                colSpan={4}
+                colSpan={5}
                 message={t("roles.notFound", "Ro'llar topilmadi")}
               />
             )}

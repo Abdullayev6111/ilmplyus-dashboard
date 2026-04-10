@@ -9,12 +9,16 @@ import EmptyState from "../../components/EmptyState";
 
 interface Region {
   id: number;
-  name: string;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
 }
 
 interface District {
   id: number;
-  name: string;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
   region_id: number;
 }
 
@@ -88,7 +92,7 @@ const AreaDistricts = () => {
 
   const openEditModal = (item: District) => {
     setEditingItem(item);
-    setDistrictName(item.name);
+    setDistrictName(item.name_uz);
     setShowAddModal(true);
   };
 
@@ -171,14 +175,15 @@ const AreaDistricts = () => {
           <div className="modal small">
             <h3>{t("expenses.confirmDelete")}</h3>
             <div className="modal-actions">
+              <button className="danger" onClick={confirmDelete}>
+                {t("expenses.delete")}
+              </button>
+
               <button
                 className="cancel"
                 onClick={() => setShowDeleteModal(false)}
               >
                 {t("expenses.cancel")}
-              </button>
-              <button className="danger" onClick={confirmDelete}>
-                {t("expenses.delete")}
               </button>
             </div>
           </div>
@@ -215,7 +220,7 @@ const AreaDistricts = () => {
           <option value="">{t("aside.regions")}</option>
           {regions?.map((r) => (
             <option key={r.id} value={r.id}>
-              {r.name}
+              {r.name_uz}
             </option>
           ))}
         </select>
@@ -254,7 +259,7 @@ const AreaDistricts = () => {
                     />
                   </td>
                   <td>{item.id}</td>
-                  <td>{item.name}</td>
+                  <td>{item.name_uz}</td>
                   <td className="actions">
                     <button
                       className="user-edit-btn"
@@ -276,7 +281,7 @@ const AreaDistricts = () => {
               ))
             ) : (
               <EmptyState
-                colSpan={10}
+                colSpan={4}
                 message={
                   selectedRegionId
                     ? t("districts.notFound")

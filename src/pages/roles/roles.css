@@ -48,7 +48,7 @@
 .role-table-container {
   overflow-y: auto;
   flex: 1;
-  box-shadow: 0 0 1px black;
+  /* box-shadow: 0 0 1px black; */
 }
 
 .role-data-table {
@@ -61,30 +61,39 @@
   background: #e6e6e6;
 }
 
-.role-data-table th {
-  padding: 10px;
-  color: #003366;
-  text-align: center;
-  font-weight: 600;
-  border-right: 1px solid #9e9d9d5d;
-}
-
-.role-data-table th:first-child {
-  border-left: 1px solid #9e9d9d5d;
-}
-
+.role-data-table th,
 .role-data-table td {
+  border: 1px solid #d9d9d9;
   padding: 10px;
   text-align: center;
-  border: 1px solid #9e9d9d5d;
 }
 
-.role-data-table td:last-child {
-  border-right: none;
+.role-data-table th {
+  color: #003366;
+  font-weight: 600;
+}
+
+.role-data-table th:last-child {
+  border-bottom: 1px solid #9e9d9d5d;
 }
 
 .role-data-table tbody tr:hover {
-  background: #f5faff;
+  background-color: #00336617;
+  cursor: pointer;
+}
+
+.role-data-table td:last-child {
+  padding: 13px 8px;
+  border-left: none !important;
+  border-top: none !important;
+}
+
+.role-data-table td:last-child > * {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .role-action-cell {

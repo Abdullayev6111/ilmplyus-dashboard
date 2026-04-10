@@ -521,16 +521,17 @@ const Branches = () => {
 
             <div className="branch-modal-buttons">
               <button
-                className="branch-cancel-btn"
-                onClick={() => setShowDeleteConfirmation(false)}
-              >
-                {t("branches.cancel")}
-              </button>
-              <button
                 className="branch-danger-btn"
                 onClick={confirmBranchDeletion}
               >
                 {t("branches.confirm")}
+              </button>
+
+              <button
+                className="branch-cancel-btn"
+                onClick={() => setShowDeleteConfirmation(false)}
+              >
+                {t("branches.cancel")}
               </button>
             </div>
           </div>
@@ -658,7 +659,7 @@ const Branches = () => {
                 </tr>
               ))
             ) : (
-              <EmptyState colSpan={10} message={t("branches.notFound")} />
+              <EmptyState colSpan={9} message={t("branches.notFound")} />
             )}
           </tbody>
         </table>

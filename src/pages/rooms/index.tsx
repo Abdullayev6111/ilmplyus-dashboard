@@ -273,15 +273,15 @@ const Rooms = () => {
             <h3>{t("rooms.confirmDelete")}</h3>
 
             <div className="modal-actions">
+              <button className="danger" onClick={confirmDelete}>
+                {t("rooms.delete")}
+              </button>
+
               <button
                 className="cancel"
                 onClick={() => setShowDeleteModal(false)}
               >
                 {t("rooms.cancel")}
-              </button>
-
-              <button className="danger" onClick={confirmDelete}>
-                {t("rooms.delete")}
               </button>
             </div>
           </div>
@@ -376,7 +376,7 @@ const Rooms = () => {
                 </tr>
               ))
             ) : (
-              <EmptyState colSpan={10} message={t("rooms.notFound")} />
+              <EmptyState colSpan={7} message={t("rooms.notFound")} />
             )}
           </tbody>
         </table>

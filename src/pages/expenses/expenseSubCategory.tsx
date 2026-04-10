@@ -224,15 +224,15 @@ const ExpensesSubcategory = () => {
             <h3>{t("expenses.confirmDelete")}</h3>
 
             <div className="modal-actions">
+              <button className="danger" onClick={confirmDelete}>
+                {t("expenses.delete")}
+              </button>
+
               <button
                 className="cancel"
                 onClick={() => setShowDeleteModal(false)}
               >
                 {t("expenses.cancel")}
-              </button>
-
-              <button className="danger" onClick={confirmDelete}>
-                {t("expenses.delete")}
               </button>
             </div>
           </div>
@@ -324,7 +324,7 @@ const ExpensesSubcategory = () => {
               ))
             ) : (
               <EmptyState
-                colSpan={10}
+                colSpan={5}
                 message={t("expenses.subCategoryNotFound")}
               />
             )}
