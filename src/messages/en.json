@@ -60,7 +60,8 @@
     "districts": "Districts",
     "course": "Course",
     "levels": "Levels",
-    "positions": "Positions"
+    "positions": "Positions",
+    "attendance": "Attendance"
   },
   "payments": {
     "mainTitle": "Payments",
@@ -341,10 +342,55 @@
     "mainTitle": "Settings",
     "pages": "Pages",
     "pageColumnsTitle": " page columns",
-    "pageColumnsDesc": "Select the columns that should be visible in the table",
+    "pageColumnsDesc": "Select the columns that should be displayed in the table",
     "confirm": "Confirm",
     "saveSuccess": "Settings saved successfully!",
     "close": "Close"
+  },
+  "attendance": {
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "days": {
+      "sun": "Su",
+      "mon": "Mo",
+      "tue": "Tu",
+      "wed": "We",
+      "thu": "Th",
+      "fri": "Fr",
+      "sat": "Sa"
+    },
+    "legend": {
+      "present": "Present",
+      "absentNoExcuse": "Absent without excuse",
+      "absentWithExcuse": "Absent with excuse",
+      "noUniform": "No uniform",
+      "late": "Late"
+    },
+    "table": {
+      "fullName": "Full Name",
+      "position": "Position"
+    },
+    "popover": {
+      "writeComment": "Write a comment...",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "tooltips": {
+      "print": "Print",
+      "edit": "Edit"
+    }
   },
   "districts": {
     "choose": "Tumanni tanlang (needs translation)",

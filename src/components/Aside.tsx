@@ -17,11 +17,12 @@ import userRoleIcon from "../assets/images/aside-user-role.svg";
 import paymentsIcon from "../assets/images/money-bill.svg";
 import expenseIcon from "../assets/images/walletIcon.svg";
 import coursesIcon from "../assets/images/user-graduate-solid-full.svg";
-import roomsIcon from "../assets/images/user-clock-solid-full.svg";
+import roomsIcon from "../assets/images/school-solid-full.svg";
 import departmentsIcon from "../assets/images/sitemap-solid-full.svg";
 import areasIcon from "../assets/images/globe-solid-full.svg";
 import levelsIcon from "../assets/images/signal-solid-full.svg";
 import positionIcon from "../assets/images/briefcase-solid-full.svg";
+import attendanceIcon from "../assets/images/user-clock-solid-full.svg";
 import { Accordion } from "@mantine/core";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -78,6 +79,12 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       icon: departmentsIcon,
       path: "/department",
       permission: "departments.view",
+    },
+    {
+      label: t("aside.attendance"),
+      icon: attendanceIcon,
+      path: "/attendance",
+      permission: "attendance.view",
     },
     {
       label: t("aside.groups"),

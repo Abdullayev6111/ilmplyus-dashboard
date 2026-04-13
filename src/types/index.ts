@@ -7,3 +7,4 @@ export * from './department.types';
 export * from './course.types';
 export * from './level.types';
 export * from './position.types';
+export * from './attendance.types';

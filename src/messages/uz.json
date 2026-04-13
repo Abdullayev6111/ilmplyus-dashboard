@@ -68,7 +68,8 @@
     "districts": "Tumanlar",
     "course": "Kurs",
     "levels": "Darajalar",
-    "positions": "Lavozimlar"
+    "positions": "Lavozimlar",
+    "attendance": "Davomat"
   },
   "payments": {
     "mainTitle": "To‘lovlar",
@@ -351,5 +352,50 @@
     "confirm": "Tasdiqlash",
     "saveSuccess": "Sozlamalar muvaffaqiyatli saqlandi!",
     "close": "Yopish"
+  },
+  "attendance": {
+    "months": {
+      "january": "Yanvar",
+      "february": "Fevral",
+      "march": "Mart",
+      "april": "Aprel",
+      "may": "May",
+      "june": "Iyun",
+      "july": "Iyul",
+      "august": "Avgust",
+      "september": "Sentyabr",
+      "october": "Oktabr",
+      "november": "Noyabr",
+      "december": "Dekabr"
+    },
+    "days": {
+      "sun": "Ya",
+      "mon": "Da",
+      "tue": "Se",
+      "wed": "Ch",
+      "thu": "Pa",
+      "fri": "Ju",
+      "sat": "Sh"
+    },
+    "legend": {
+      "present": "Kelgan",
+      "absentNoExcuse": "Sababsiz kelmagan",
+      "absentWithExcuse": "Uzrli sabab bilan kelmagan",
+      "noUniform": "Fo'rmasiz",
+      "late": "Kech qolgan"
+    },
+    "table": {
+      "fullName": "F.I.SH",
+      "position": "Lavozimi"
+    },
+    "popover": {
+      "writeComment": "Izoh yozing...",
+      "save": "Saqlash",
+      "cancel": "Bekor qilish"
+    },
+    "tooltips": {
+      "print": "Printer",
+      "edit": "Tahrirlash"
+    }
   }
 }

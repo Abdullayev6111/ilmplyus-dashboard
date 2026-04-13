@@ -68,7 +68,8 @@
     "districts": "Районы",
     "course": "Курс",
     "levels": "Уровни",
-    "positions": "Должности"
+    "positions": "Должности",
+    "attendance": "Посещаемость"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -349,6 +350,51 @@
     "confirm": "Подтвердить",
     "saveSuccess": "Настройки успешно сохранены!",
     "close": "Закрыть"
+  },
+  "attendance": {
+    "months": {
+      "january": "Январь",
+      "february": "Февраль",
+      "march": "Март",
+      "april": "Апрель",
+      "may": "Май",
+      "june": "Июнь",
+      "july": "Июль",
+      "august": "Август",
+      "september": "Сентябрь",
+      "october": "Октябрь",
+      "november": "Ноябрь",
+      "december": "Декабрь"
+    },
+    "days": {
+      "sun": "Вс",
+      "mon": "Пн",
+      "tue": "Вт",
+      "wed": "Ср",
+      "thu": "Чт",
+      "fri": "Пт",
+      "sat": "Сб"
+    },
+    "legend": {
+      "present": "Пришел",
+      "absentNoExcuse": "Отсутствует без уважительной причины",
+      "absentWithExcuse": "Отсутствует по уважительной причине",
+      "noUniform": "Без формы",
+      "late": "Опоздал"
+    },
+    "table": {
+      "fullName": "Ф.И.О",
+      "position": "Должность"
+    },
+    "popover": {
+      "writeComment": "Напишите комментарий...",
+      "save": "Сохранить",
+      "cancel": "Отмена"
+    },
+    "tooltips": {
+      "print": "Печать",
+      "edit": "Редактировать"
+    }
   },
   "regions": {
     "notFound": "Viloyatlar topilmadi (needs translation)"
