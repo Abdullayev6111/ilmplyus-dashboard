@@ -120,7 +120,6 @@
 .attendance-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
   font-family: noto-r;
 }
 
@@ -133,6 +132,17 @@
   font-size: 13px;
 }
 
+.attendance-table th:last-child,
+.attendance-table td:last-child {
+  height: 40px !important;
+  width: 40px !important;
+}
+
+.attendance-table th:nth-child(2),
+.attendance-table td:nth-child(2) {
+  width: 150px !important;
+}
+
 .attendance-table th {
   background: #fff;
   padding: 4px;
@@ -143,14 +153,17 @@
   width: 40px;
 }
 .col-name {
-  width: 220px;
+  min-width: 280px !important;
   text-align: left !important;
   padding-left: 10px !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
 }
 .col-position {
-  width: 140px;
+  width: 140px !important;
   text-align: left !important;
   padding-left: 10px !important;
+  white-space: nowrap !important;
 }
 .col-day {
   width: 32px;
@@ -185,25 +198,12 @@
 
 .cell-status {
   display: flex;
+  gap: 2px;
   align-items: center;
   justify-content: center;
   height: 100%;
   width: 100%;
-  font-weight: bold;
-}
-
-.cell-status.nb {
-  color: #ff0000;
   font-family: noto-b;
-}
-.cell-status.s {
-  color: #003366;
-}
-.cell-status.f {
-  color: #fe9100;
-}
-.cell-status.k {
-  color: #ff4d00;
 }
 
 /* Modal / Card stylings */
@@ -238,14 +238,15 @@
 }
 
 .status-btn.selected {
-  background: #003366;
-  color: #fff;
-  border-color: #003366;
+  background: #003366 !important;
+  color: #fff !important;
+  border-color: #003366 !important;
 }
 
 .status-btn.f-btn.selected {
-  background: #fe9100;
-  border-color: #fe9100;
+  background: #003366 !important;
+  color: #fff !important;
+  border-color: #003366 !important;
 }
 
 .status-btn:disabled {
@@ -281,7 +282,7 @@
 }
 
 .popover-save {
-  background: #28a745;
+  background: #003366;
   color: #fff;
 }
 .popover-cancel {
@@ -291,8 +292,17 @@
 
 /* Print Styles */
 @media print {
+  @page {
+    size: landscape;
+    margin: 1cm;
+  }
+
   body {
     background: #fff;
+  }
+
+  .cell-status {
+    flex-direction: column;
   }
   header,
   aside,
@@ -315,7 +325,31 @@
     width: 100%;
   }
 
+  .col-name {
+    width: 100% !important;
+    white-space: normal !important;
+  }
+
+  .attendance-table th:last-child,
+  .attendance-table td:last-child {
+    width: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    padding: 0 !important;
+  }
+
   .col-day {
-    width: auto;
+    width: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    padding: 0 !important;
+  }
+
+  .status-plus,
+  .status-nb,
+  .status-s,
+  .status-f,
+  .status-k {
+    color: #000 !important;
   }
 }

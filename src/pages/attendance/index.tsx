@@ -2,12 +2,14 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../api/api";
 import "./attendance.css";
-import { Popover, Textarea } from "@mantine/core";
+import { Popover, Textarea, Tooltip } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import type {
   EmployeeAttendance,
   AttendanceStatus,
+  AttendanceStatusKey,
   AttendanceRecord,
+  FlatAttendanceRecord,
 } from "../../types/attendance.types";
 
 const AttendancePage = () => {
@@ -18,9 +20,10 @@ const AttendancePage = () => {
 
   // State for popover/modal
   const [activeCell, setActiveCell] = useState<{
+    recordId?: number;
     employeeId: number;
     date: string;
-    currentStatus: AttendanceStatus;
+    currentStatuses: AttendanceStatusKey[];
     comment: string;
   } | null>(null);
 
@@ -28,30 +31,36 @@ const AttendancePage = () => {
   const year = selectedDate.getFullYear();
 
   // Translation helpers
-  const monthNames = useMemo(() => [
-    t("attendance.months.january"),
-    t("attendance.months.february"),
-    t("attendance.months.march"),
-    t("attendance.months.april"),
-    t("attendance.months.may"),
-    t("attendance.months.june"),
-    t("attendance.months.july"),
-    t("attendance.months.august"),
-    t("attendance.months.september"),
-    t("attendance.months.october"),
-    t("attendance.months.november"),
-    t("attendance.months.december"),
-  ], [t]);
+  const monthNames = useMemo(
+    () => [
+      t("attendance.months.january"),
+      t("attendance.months.february"),
+      t("attendance.months.march"),
+      t("attendance.months.april"),
+      t("attendance.months.may"),
+      t("attendance.months.june"),
+      t("attendance.months.july"),
+      t("attendance.months.august"),
+      t("attendance.months.september"),
+      t("attendance.months.october"),
+      t("attendance.months.november"),
+      t("attendance.months.december"),
+    ],
+    [t],
+  );
 
-  const dayNames = useMemo(() => [
-    t("attendance.days.sun"),
-    t("attendance.days.mon"),
-    t("attendance.days.tue"),
-    t("attendance.days.wed"),
-    t("attendance.days.thu"),
-    t("attendance.days.fri"),
-    t("attendance.days.sat"),
-  ], [t]);
+  const dayNames = useMemo(
+    () => [
+      t("attendance.days.sun"),
+      t("attendance.days.mon"),
+      t("attendance.days.tue"),
+      t("attendance.days.wed"),
+      t("attendance.days.thu"),
+      t("attendance.days.fri"),
+      t("attendance.days.sat"),
+    ],
+    [t],
+  );
 
   // Date Logic
   const daysInMonth = useMemo(() => {
@@ -67,7 +76,9 @@ const AttendancePage = () => {
   }, [month, year, dayNames]);
 
   // API Calls
-  const { data: apiData } = useQuery<{ data: EmployeeAttendance[] }>({
+  // Removed usersData query to follow user instruction (only use /attendance)
+
+  const { data: attendanceData } = useQuery<{ data: FlatAttendanceRecord[] }>({
     queryKey: ["attendances", year, month],
     queryFn: async () => {
       const { data } = await API.get("/attendances", {
@@ -77,8 +88,62 @@ const AttendancePage = () => {
     },
   });
 
+  const employeesWithAttendances = useMemo(() => {
+    const flatRecords = attendanceData?.data || [];
+    const grouped: Record<string, EmployeeAttendance> = {};
+
+    flatRecords.forEach((r) => {
+      if (!grouped[r.employee]) {
+        grouped[r.employee] = {
+          // Use real employee_id from API for the parent object
+          id: r.employee_id,
+          full_name: r.employee,
+          position: { id: 0, name: r.position },
+          attendances: [],
+        };
+      }
+
+      // Filter and map statuses, ensuring no nulls for compatibility
+      const currentStatuses = (
+        Array.isArray(r.status) ? r.status : [r.status]
+      ).filter((s): s is AttendanceStatusKey => s !== null);
+
+      // Map entire array to internal representation
+      const mappedStatuses = currentStatuses.map((s) => {
+        if (s === "present") return "+";
+        if (s === "absent") return "NB";
+        if (s === "late") return "K";
+        if (s === "excused") return "S";
+        if (s === "no_uniform") return "F";
+        return s;
+      }) as AttendanceStatusKey[];
+
+      grouped[r.employee].attendances.push({
+        id: r.id,
+        employee_id: r.employee_id, // Use real employee_id from API
+        date: r.date,
+        status: mappedStatuses,
+        comment: r.comment || "",
+        check_in: r.check_in,
+        check_out: r.check_out,
+      });
+    });
+
+    return Object.values(grouped);
+  }, [attendanceData]);
+
   const saveMutation = useMutation({
     mutationFn: async (records: AttendanceRecord[]) => {
+      // If we are updating a single existing record
+      if (activeCell?.recordId) {
+        const record = records[0];
+        const { data } = await API.put(
+          `/attendances/${activeCell.recordId}`,
+          record,
+        );
+        return data;
+      }
+      // Else, creating new records (possibly multiple)
       const { data } = await API.post("/attendances", { records });
       return data;
     },
@@ -108,47 +173,104 @@ const AttendancePage = () => {
 
   const handleCellClick = (employee: EmployeeAttendance, day: any) => {
     if (!isEditMode) return;
-    if (!isPastDay(day.fullDate)) return; // Logic for old days only as per prompt
 
     const existing = employee.attendances.find((a) => a.date === day.fullDate);
 
+    // Extract current statuses from existing record
+    let currentStatuses: AttendanceStatusKey[] = [];
+    if (existing) {
+      if (Array.isArray(existing.status)) {
+        currentStatuses = existing.status.filter(
+          (s): s is AttendanceStatusKey => s !== null,
+        );
+      } else if (existing.status) {
+        currentStatuses = [existing.status as AttendanceStatusKey];
+      }
+    }
+
     setActiveCell({
+      recordId: existing?.id,
       employeeId: employee.id,
       date: day.fullDate,
-      currentStatus: existing?.status || null,
+      currentStatuses,
       comment: existing?.comment || "",
     });
   };
 
-  const handleSubmitStatus = (status: AttendanceStatus) => {
+  const handleSubmitStatus = () => {
     if (!activeCell) return;
+
+    // Map internal codes back to backend-friendly verbose strings
+    const backendStatuses = activeCell.currentStatuses.map((s) => {
+      if (s === "+") return "present";
+      if (s === "NB") return "absent";
+      if (s === "K") return "late";
+      if (s === "S") return "excused";
+      if (s === "F") return "no_uniform";
+      return s;
+    });
 
     const record: AttendanceRecord = {
       employee_id: activeCell.employeeId,
       date: activeCell.date,
-      status: status,
+      status: backendStatuses,
       comment: activeCell.comment,
     };
 
     saveMutation.mutate([record]);
   };
 
-  const getStatusDisplay = (status: AttendanceStatus) => {
-    if (status === "+") return "+";
-    if (status === "NB") return "NB";
-    if (status === "S") return "S";
-    if (status === "F") return "F";
-    if (status === "K") return "K";
-    return "";
+  const toggleStatus = (status: AttendanceStatusKey) => {
+    if (!activeCell) return;
+
+    setActiveCell((prev) => {
+      if (!prev) return null;
+      let newStatuses = [...prev.currentStatuses];
+
+      if (status === "NB" || status === "S") {
+        // Mutual exclusion for Absent/Excused
+        newStatuses = newStatuses.includes(status) ? [] : [status];
+      } else {
+        // Remove Absent/Excused if toggling others
+        newStatuses = newStatuses.filter((s) => s !== "NB" && s !== "S");
+
+        if (status === "+" || status === "K") {
+          // Mutual exclusion between Present and Late
+          const other = status === "+" ? "K" : "+";
+          newStatuses = newStatuses.filter((s) => s !== other);
+
+          if (newStatuses.includes(status)) {
+            newStatuses = newStatuses.filter((s) => s !== status);
+          } else {
+            newStatuses.push(status);
+          }
+        } else if (status === "F") {
+          // Toggle Formasiz
+          if (newStatuses.includes("F")) {
+            newStatuses = newStatuses.filter((s) => s !== "F");
+          } else {
+            newStatuses.push("F");
+          }
+        }
+      }
+
+      return { ...prev, currentStatuses: newStatuses };
+    });
   };
 
-  const getCellClass = (status: AttendanceStatus) => {
-    if (status === "+") return "status-plus";
-    if (status === "NB") return "status-nb";
-    if (status === "S") return "status-s";
-    if (status === "F") return "status-f";
-    if (status === "K") return "status-k";
-    return "";
+  const renderStatuses = (status: AttendanceStatus | string[] | null) => {
+    if (!status) return null;
+    const statuses = Array.isArray(status) ? status : [status];
+
+    if (statuses.includes("NB")) return <span className="status-nb">NB</span>;
+    if (statuses.includes("S")) return <span className="status-s">S</span>;
+
+    const elements = [];
+    if (statuses.includes("+")) elements.push(<span key="+" className="status-plus">+</span>);
+    if (statuses.includes("K")) elements.push(<span key="K" className="status-k">K</span>);
+    if (statuses.includes("F")) elements.push(<span key="F" className="status-f">F</span>);
+
+    return elements;
   };
 
   return (
@@ -168,7 +290,11 @@ const AttendancePage = () => {
           </div>
 
           <div className="action-btns">
-            <button className="icon-btn" onClick={handlePrint} title={t("attendance.tooltips.print")}>
+            <button
+              className="icon-btn"
+              onClick={handlePrint}
+              title={t("attendance.tooltips.print")}
+            >
               <i className="fa-solid fa-print"></i>
             </button>
             <button
@@ -186,10 +312,12 @@ const AttendancePage = () => {
             <b className="status-plus">+</b> - {t("attendance.legend.present")}
           </div>
           <div className="legend-item">
-            <b className="status-nb">NB</b> - {t("attendance.legend.absentNoExcuse")}
+            <b className="status-nb">NB</b> -{" "}
+            {t("attendance.legend.absentNoExcuse")}
           </div>
           <div className="legend-item">
-            <b className="status-s">S</b> - {t("attendance.legend.absentWithExcuse")}
+            <b className="status-s">S</b> -{" "}
+            {t("attendance.legend.absentWithExcuse")}
           </div>
           <div className="legend-item">
             <b className="status-f">F</b> - {t("attendance.legend.noUniform")}
@@ -218,13 +346,13 @@ const AttendancePage = () => {
             </tr>
           </thead>
           <tbody>
-            {apiData?.data.map((employee, idx) => (
+            {employeesWithAttendances.map((employee, idx) => (
               <tr key={employee.id}>
                 <td>{idx + 1}</td>
-                <td className="col-name">{employee.full_name}</td>
-                <td className="col-position">{employee.position.name}</td>
+                <td className="col-name">{employee?.full_name}</td>
+                <td className="col-position">{employee?.position?.name}</td>
                 {daysInMonth.map((day) => {
-                  const record = employee.attendances.find(
+                  const record = employee?.attendances?.find(
                     (a) => a.date === day.fullDate,
                   );
                   const status = record?.status || null;
@@ -246,62 +374,101 @@ const AttendancePage = () => {
                         withArrow
                       >
                         <Popover.Target>
-                          <div
-                            className={`cell-status ${getCellClass(status)}`}
-                          >
-                            {getStatusDisplay(status)}
+                          <div className="tooltip-wrapper">
+                            <Tooltip
+                              label={
+                                record?.comment ||
+                                (record?.check_in
+                                  ? `${record.check_in} - ${record.check_out}`
+                                  : "")
+                              }
+                              disabled={!record?.comment && !record?.check_in}
+                              position="top"
+                              withArrow
+                            >
+                              <div className="cell-status">
+                                {renderStatuses(status as any)}
+                              </div>
+                            </Tooltip>
                           </div>
                         </Popover.Target>
-                        <Popover.Dropdown p={0}>
+                        <Popover.Dropdown
+                          p={0}
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <div className="attendance-popover">
                             <div className="popover-btns">
-                              {/* If K is already there, only F can be chosen. Otherwise S or F. */}
-                              {status === "K" ? (
+                              {activeCell?.currentStatuses.some(
+                                (s) => s !== "no_uniform" && s !== "F",
+                              ) ? (
+                                (() => {
+                                  const primary =
+                                    activeCell.currentStatuses.find(
+                                      (s) => s !== "no_uniform" && s !== "F",
+                                    );
+                                  return (
+                                    <>
+                                      <button
+                                        className="status-btn selected"
+                                        disabled
+                                        type="button"
+                                      >
+                                        {primary === "absent"
+                                          ? "NB"
+                                          : primary === "present"
+                                            ? "+"
+                                            : primary === "late"
+                                              ? "K"
+                                              : primary === "excused"
+                                                ? "S"
+                                                : primary}
+                                      </button>
+                                      <button
+                                        type="button"
+                                        className={`status-btn f-btn ${activeCell.currentStatuses.includes("F") || activeCell.currentStatuses.includes("no_uniform") ? "selected" : ""}`}
+                                        onClick={() => toggleStatus("F")}
+                                      >
+                                        F
+                                      </button>
+                                    </>
+                                  );
+                                })()
+                              ) : (
                                 <>
                                   <button
-                                    className="status-btn selected"
-                                    disabled
+                                    type="button"
+                                    className={`status-btn ${activeCell?.currentStatuses.includes("+") ? "selected" : ""}`}
+                                    onClick={() => toggleStatus("+")}
+                                  >
+                                    +
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={`status-btn k-btn ${activeCell?.currentStatuses.includes("K") ? "selected" : ""}`}
+                                    onClick={() => toggleStatus("K")}
                                   >
                                     K
                                   </button>
                                   <button
-                                    className={`status-btn f-btn ${activeCell?.currentStatus === "F" ? "selected" : ""}`}
-                                    onClick={() =>
-                                      setActiveCell((prev) =>
-                                        prev
-                                          ? { ...prev, currentStatus: "F" }
-                                          : null,
-                                      )
-                                    }
+                                    type="button"
+                                    className={`status-btn f-btn ${activeCell?.currentStatuses.includes("F") ? "selected" : ""}`}
+                                    onClick={() => toggleStatus("F")}
                                   >
                                     F
                                   </button>
-                                </>
-                              ) : (
-                                <>
                                   <button
-                                    className={`status-btn ${activeCell?.currentStatus === "S" ? "selected" : ""}`}
-                                    onClick={() =>
-                                      setActiveCell((prev) =>
-                                        prev
-                                          ? { ...prev, currentStatus: "S" }
-                                          : null,
-                                      )
-                                    }
+                                    type="button"
+                                    className={`status-btn nb-btn ${activeCell?.currentStatuses.includes("NB") ? "selected" : ""}`}
+                                    onClick={() => toggleStatus("NB")}
+                                  >
+                                    NB
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={`status-btn s-btn ${activeCell?.currentStatuses.includes("S") ? "selected" : ""}`}
+                                    onClick={() => toggleStatus("S")}
                                   >
                                     S
-                                  </button>
-                                  <button
-                                    className={`status-btn f-btn ${activeCell?.currentStatus === "F" ? "selected" : ""}`}
-                                    onClick={() =>
-                                      setActiveCell((prev) =>
-                                        prev
-                                          ? { ...prev, currentStatus: "F" }
-                                          : null,
-                                      )
-                                    }
-                                  >
-                                    F
                                   </button>
                                 </>
                               )}
@@ -311,6 +478,7 @@ const AttendancePage = () => {
                               className="comment-area"
                               placeholder={t("attendance.popover.writeComment")}
                               value={activeCell?.comment}
+                              onClick={(e) => e.stopPropagation()}
                               onChange={(e) =>
                                 setActiveCell((prev) =>
                                   prev
@@ -323,19 +491,20 @@ const AttendancePage = () => {
 
                             <div className="popover-actions">
                               <button
+                                type="button"
                                 className="popover-save"
-                                onClick={() =>
-                                  handleSubmitStatus(
-                                    activeCell?.currentStatus || null,
-                                  )
-                                }
+                                onClick={handleSubmitStatus}
                                 disabled={saveMutation.isPending}
                               >
                                 {t("attendance.popover.save")}
                               </button>
                               <button
+                                type="button"
                                 className="popover-cancel"
-                                onClick={() => setActiveCell(null)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveCell(null);
+                                }}
                               >
                                 {t("attendance.popover.cancel")}
                               </button>

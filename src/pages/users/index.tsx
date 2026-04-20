@@ -213,6 +213,7 @@ const Users = () => {
             ? Number(formData.position_id)
             : null,
           is_active: formData.is_active,
+          password: formData.password || undefined,
         },
       });
     } else {
@@ -225,6 +226,7 @@ const Users = () => {
     username?: string;
     pinfl?: string;
     phone?: string;
+    password?: string;
     roles?: number[];
     branch_id?: number | null;
     position_id?: number | null;
