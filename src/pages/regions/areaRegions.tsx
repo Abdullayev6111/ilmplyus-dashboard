@@ -4,6 +4,7 @@ import { API } from "../../api/api";
 import "./regions.css";
 import "../users/users.css";
 import { useTranslation } from "react-i18next";
+import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 
@@ -221,11 +222,7 @@ const AreaRegions = () => {
 
                   <td>{item.id}</td>
                   <td>
-                    {i18n.language === "uz"
-                      ? item.name_uz
-                      : i18n.language === "ru"
-                        ? item.name_ru || item.name_uz
-                        : item.name_en || item.name_uz}
+                    {getLocalized(item, 'name', i18n.language)}
                   </td>
 
                   <td className="actions">

@@ -8,6 +8,7 @@ import {
 import { API } from "../../api/api";
 import "./users.css";
 import { useTranslation } from "react-i18next";
+import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import type { User, UsersResponse, Branch, Position, Role } from "../../types";
@@ -17,7 +18,7 @@ const genPassword = () =>
   Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4);
 
 const Users = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState<number[]>([]);
   const [editingId] = useState<number | null>(null);
@@ -105,10 +106,7 @@ const Users = () => {
         position_id: formData.position_id
           ? Number(formData.position_id)
           : undefined,
-        branch_id:
-          formData.branch_ids.length > 0
-            ? Number(formData.branch_ids[0])
-            : undefined,
+        branch_ids: formData.branch_ids.map(Number),
         roles: formData.role_ids.map(Number),
         is_active: formData.is_active,
       };
@@ -186,7 +184,12 @@ const Users = () => {
       password: "",
       start_date: user.created_at.slice(0, 10),
       role_ids: user.roles?.map((r) => r.id.toString()),
-      branch_ids: user.branch ? [user.branch.id.toString()] : [],
+      branch_ids:
+        user.branches && user.branches.length > 0
+          ? user.branches.map((b) => b.id.toString())
+          : user.branch
+            ? [user.branch.id.toString()]
+            : [],
       type: user.type,
       position_id: "",
       is_active: user.is_active,
@@ -205,10 +208,7 @@ const Users = () => {
           pinfl: formData.pinfl,
           phone: formData.phone,
           roles: formData.role_ids.map(Number),
-          branch_id:
-            formData.branch_ids.length > 0
-              ? Number(formData.branch_ids[0])
-              : null,
+          branch_ids: formData.branch_ids.map(Number),
           position_id: formData.position_id
             ? Number(formData.position_id)
             : null,
@@ -228,7 +228,7 @@ const Users = () => {
     phone?: string;
     password?: string;
     roles?: number[];
-    branch_id?: number | null;
+    branch_ids?: number[];
     position_id?: number | null;
     is_active?: boolean;
   }
@@ -290,7 +290,7 @@ const Users = () => {
         const matchSearch = u.full_name
           .toLowerCase()
           .includes(search.toLowerCase());
-        const matchRole = role ? u.roles[0]?.name === role : true;
+        const matchRole = role ? u.roles?.some((r) => r.name === role) : true;
 
         if (!matchSearch || !matchRole) return false;
 
@@ -541,8 +541,8 @@ const Users = () => {
                       );
                       return (
                         <div key={branchId} className="selected-item">
-                          {branch?.address || branchId}
-                          <button onClick={() => removeBranch(branchId)}>
+                          {branch ? getLocalized(branch, 'name', i18n.language) : branchId}
+                          <button type="button" onClick={() => removeBranch(branchId)}>
                             ×
                           </button>
                         </div>
@@ -561,7 +561,7 @@ const Users = () => {
                     <option value="">{t("users.choose")}</option>
                     {branches?.map((branch) => (
                       <option key={branch.id} value={branch.id}>
-                        {branch.address}
+                        {getLocalized(branch, 'name', i18n.language)}
                       </option>
                     ))}
                   </select>
@@ -578,7 +578,7 @@ const Users = () => {
                     <option value="">{t("users.choose")}</option>
                     {positions?.map((position) => (
                       <option key={position.id} value={position.id}>
-                        {position.name}
+                        {getLocalized(position, 'name', i18n.language)}
                       </option>
                     ))}
                   </select>
@@ -797,13 +797,19 @@ const Users = () => {
                   )}
 
                   {isVisible("phone") && <td>{u.phone}</td>}
-                  {isVisible("role") && <td>{u.roles[0]?.name || "-"}</td>}
+                  {isVisible("role") && <td>{u.roles?.map(r => r.name).join(", ") || "-"}</td>}
                   {isVisible("status") && (
                     <td>
                       {u.is_active ? t("users.active") : t("users.inactive")}
                     </td>
                   )}
-                  {isVisible("branch") && <td>{u.branch?.address || "-"}</td>}
+                  {isVisible("branch") && (
+                    <td>
+                      {u.branches && u.branches.length > 0
+                        ? u.branches.map((b) => getLocalized(b, 'name', i18n.language)).join(", ")
+                        : u.branch ? getLocalized(u.branch, 'name', i18n.language) : "-"}
+                    </td>
+                  )}
                   {isVisible("username") && <td>{u.username}</td>}
                   {isVisible("date") && (
                     <td>{u.created_at.slice(0, 10).replaceAll("-", ".")}</td>

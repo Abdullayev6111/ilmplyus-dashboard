@@ -4,6 +4,7 @@ import { API } from '../../api/api';
 import '../users/users.css';
 import '../levels/levels.css';
 import { useTranslation } from 'react-i18next';
+import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import type { PositionItem, PositionPayload } from '../../types';
@@ -18,7 +19,7 @@ const formatDate = (dateString: string) => {
 };
 
 const Positions = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const [showModal, setShowModal] = useState(false);
@@ -28,7 +29,9 @@ const Positions = () => {
   const [editingItem, setEditingItem] = useState<PositionItem | null>(null);
 
   const [formData, setFormData] = useState<PositionPayload>({
-    name: '',
+    name_uz: '',
+    name_ru: '',
+    name_en: '',
     department_id: 0,
   });
 
@@ -78,13 +81,15 @@ const Positions = () => {
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-    setFormData({ name: '', department_id: 0 });
+    setFormData({ name_uz: '', name_ru: '', name_en: '', department_id: 0 });
   };
 
   const openEditModal = (item: PositionItem) => {
     setEditingItem(item);
     setFormData({
-      name: item.name,
+      name_uz: item.name_uz,
+      name_ru: item.name_ru || '',
+      name_en: item.name_en || '',
       department_id: item.department?.id ?? 0,
     });
     setShowModal(true);
@@ -129,8 +134,12 @@ const Positions = () => {
                 e.preventDefault();
 
                 const payload: PositionPayload = {
-                  name: formData.name.trim(),
+                  name_uz: formData.name_uz.trim(),
                   department_id: formData.department_id,
+                  ...(editingItem && {
+                    name_ru: formData.name_ru?.trim() || '',
+                    name_en: formData.name_en?.trim() || '',
+                  }),
                 };
 
                 if (editingItem) {
@@ -156,22 +165,44 @@ const Positions = () => {
                   <option value="">{t('positions.choose')}</option>
                   {departments?.map((dept) => (
                     <option key={dept.id} value={dept.id}>
-                      {dept.name}
+                      {getLocalized(dept, 'name', i18n.language)}
                     </option>
                   ))}
                 </select>
               </div>
 
-              {/* Position name input */}
+              {/* Position name inputs */}
               <div className="subcategory-form-group">
-                <label>{t('positions.positionName')}</label>
+                <label>{t('positions.positionName')} (UZ)</label>
                 <input
                   type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  value={formData.name_uz}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name_uz: e.target.value }))}
                   required
                 />
               </div>
+
+              {editingItem && (
+                <>
+                  <div className="subcategory-form-group">
+                    <label>{t('positions.positionName')} (RU)</label>
+                    <input
+                      type="text"
+                      value={formData.name_ru}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, name_ru: e.target.value }))}
+                    />
+                  </div>
+
+                  <div className="subcategory-form-group">
+                    <label>{t('positions.positionName')} (EN)</label>
+                    <input
+                      type="text"
+                      value={formData.name_en}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, name_en: e.target.value }))}
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="modal-actions">
                 <button className="primary" type="submit" disabled={isPending}>
@@ -260,8 +291,8 @@ const Positions = () => {
                     />
                   </td>
                   <td>{item.id}</td>
-                  <td>{item.department?.name ?? '-'}</td>
-                  <td>{item.name}</td>
+                  <td>{item.department ? getLocalized(item.department, 'name', i18n.language) : '-'}</td>
+                  <td>{getLocalized(item, 'name', i18n.language)}</td>
                   <td>{item.created_at ? formatDate(item.created_at) : '-'}</td>
                   <td className="actions">
                     <button className="user-edit-btn" onClick={() => openEditModal(item)}>

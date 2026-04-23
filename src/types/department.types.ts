@@ -2,7 +2,9 @@ import type { Branch, ApiResponse } from "./common.types";
 
 export interface DepartmentType {
   id: number;
-  name: string;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
   code: string;
   branch_id: number;
   manager: string;
@@ -13,7 +15,9 @@ export interface DepartmentType {
 export type DepartmentsResponse = ApiResponse<DepartmentType[]>;
 
 export interface DepartmentPayload {
-  name: string;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
   code: string;
   branch_id: number;
   manager: string;

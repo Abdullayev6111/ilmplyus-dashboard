@@ -10,6 +10,7 @@ import "../users/users.css";
 import "./courses.css";
 import "../levels/levels.css";
 import { useTranslation } from "react-i18next";
+import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import type { Course, CoursePayload, Level } from "../../types";
@@ -24,7 +25,7 @@ const formatDate = (dateString: string) => {
 };
 
 const Courses = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const [showModal, setShowModal] = useState(false);
@@ -518,7 +519,7 @@ const Courses = () => {
                 </p>
                 <p style={{ color: "#003b73", fontWeight: 500, fontSize: 16 }}>
                   {viewItem.branches && viewItem.branches.length > 0
-                    ? viewItem.branches.map((b) => b.name).join(", ")
+                    ? viewItem.branches.map((b) => getLocalized(b, "name", i18n.language)).join(", ")
                     : "-"}
                 </p>
               </div>
@@ -583,7 +584,7 @@ const Courses = () => {
                       fontWeight: 500,
                     }}
                   >
-                    {level.name}
+                    {getLocalized(level, "name", i18n.language)}
                   </span>
                 ))
               ) : (
@@ -656,12 +657,12 @@ const Courses = () => {
               courses.map((item) => {
                 const branchLabel =
                   item.branches && item.branches.length > 0
-                    ? item.branches.map((b) => b.name).join(", ")
+                    ? item.branches.map((b) => getLocalized(b, "name", i18n.language)).join(", ")
                     : "-";
 
                 const levelLabel =
                   item.levels && item.levels.length > 0
-                    ? item.levels.map((l) => l.name).join(", ")
+                    ? item.levels.map((l) => getLocalized(l, "name", i18n.language)).join(", ")
                     : "-";
 
                 return (
@@ -674,7 +675,7 @@ const Courses = () => {
                       />
                     </td>
                     {isVisible("id") && <td>{item.id}</td>}
-                    {isVisible("name") && <td>{item.name}</td>}
+                    {isVisible("name") && <td>{getLocalized(item, "name", i18n.language)}</td>}
                     {isVisible("branches") && <td>{branchLabel}</td>}
                     {isVisible("levels") && <td>{levelLabel}</td>}
                     {isVisible("created_at") && <td>

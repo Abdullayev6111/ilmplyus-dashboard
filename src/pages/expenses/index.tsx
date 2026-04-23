@@ -4,6 +4,7 @@ import { API } from "../../api/api";
 import "../users/users.css";
 import "./expenses.css";
 import { useTranslation } from "react-i18next";
+import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 
@@ -40,7 +41,7 @@ interface Expense {
 }
 
 const Expenses = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -245,7 +246,7 @@ const Expenses = () => {
                     <option value="">{t("expenses.choose")}</option>
                     {categories?.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.name}
+                        {getLocalized(c, 'name', i18n.language)}
                       </option>
                     ))}
                   </select>
@@ -267,7 +268,7 @@ const Expenses = () => {
                     <option value="">{t("expenses.choose")}</option>
                     {filteredSubcategories?.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.name}
+                        {getLocalized(s, 'name', i18n.language)}
                       </option>
                     ))}
                   </select>
@@ -411,7 +412,7 @@ const Expenses = () => {
           <option value="">{t("expenses.category")}</option>
           {categories?.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.name}
+              {getLocalized(c, 'name', i18n.language)}
             </option>
           ))}
         </select>
@@ -429,7 +430,7 @@ const Expenses = () => {
             )
             ?.map((s) => (
               <option key={s.id} value={s.id}>
-                {s.name}
+                {getLocalized(s, 'name', i18n.language)}
               </option>
             ))}
         </select>
@@ -501,8 +502,8 @@ const Expenses = () => {
                   </td>
 
                   <td>{item.id}</td>
-                  <td>{item.category?.name || "-"}</td>
-                  <td>{item.subcategory?.name || "-"}</td>
+                  <td>{item.category ? getLocalized(item.category, 'name', i18n.language) : "-"}</td>
+                  <td>{item.subcategory ? getLocalized(item.subcategory, 'name', i18n.language) : "-"}</td>
                   <td>{item.cashier?.full_name || "-"}</td>
                   <td>{item.amount}</td>
                   <td>{item.expense_date}</td>

@@ -9,6 +9,7 @@ import { API } from "../../api/api";
 import "../users/users.css";
 import "./levels.css";
 import { useTranslation } from "react-i18next";
+import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import type { Level, LevelPayload } from "../../types";
@@ -22,7 +23,7 @@ const formatDate = (dateString: string) => {
 };
 
 const Levels = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const [showModal, setShowModal] = useState(false);
@@ -32,7 +33,9 @@ const Levels = () => {
   const [editingItem, setEditingItem] = useState<Level | null>(null);
 
   const [formData, setFormData] = useState<LevelPayload>({
-    name: "",
+    name_uz: "",
+    name_ru: "",
+    name_en: "",
   });
 
   const { data: levels, isLoading } = useQuery<Level[]>({
@@ -72,13 +75,15 @@ const Levels = () => {
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-    setFormData({ name: "" });
+    setFormData({ name_uz: "", name_ru: "", name_en: "" });
   };
 
   const openEditModal = (item: Level) => {
     setEditingItem(item);
     setFormData({
-      name: item.name,
+      name_uz: item.name_uz,
+      name_ru: item.name_ru || "",
+      name_en: item.name_en || "",
     });
     setShowModal(true);
   };
@@ -121,7 +126,11 @@ const Levels = () => {
                 e.preventDefault();
 
                 const payload: LevelPayload = {
-                  name: formData.name.trim(),
+                  name_uz: formData.name_uz.trim(),
+                  ...(editingItem && {
+                    name_ru: formData.name_ru?.trim() || "",
+                    name_en: formData.name_en?.trim() || "",
+                  }),
                 };
 
                 if (editingItem) {
@@ -132,16 +141,42 @@ const Levels = () => {
               }}
             >
               <div className="subcategory-form-group">
-                <label>{t("levels.levelName")}</label>
+                <label>{t("levels.levelName")} (UZ)</label>
                 <input
                   type="text"
-                  value={formData.name}
+                  value={formData.name_uz}
                   onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name: e.target.value }))
+                    setFormData((prev) => ({ ...prev, name_uz: e.target.value }))
                   }
                   required
                 />
               </div>
+
+              {editingItem && (
+                <>
+                  <div className="subcategory-form-group">
+                    <label>{t("levels.levelName")} (RU)</label>
+                    <input
+                      type="text"
+                      value={formData.name_ru}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, name_ru: e.target.value }))
+                      }
+                    />
+                  </div>
+
+                  <div className="subcategory-form-group">
+                    <label>{t("levels.levelName")} (EN)</label>
+                    <input
+                      type="text"
+                      value={formData.name_en}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, name_en: e.target.value }))
+                      }
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="modal-actions">
                 <button className="primary" type="submit">
@@ -229,7 +264,7 @@ const Levels = () => {
                     />
                   </td>
                   <td>{item.id}</td>
-                  <td>{item.name}</td>
+                  <td>{getLocalized(item, 'name', i18n.language)}</td>
                   <td>{item.created_at ? formatDate(item.created_at) : "-"}</td>
                   <td className="actions">
                     <button

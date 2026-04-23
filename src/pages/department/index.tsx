@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import { API } from "../../api/api";
 import { useTranslation } from "react-i18next";
+import { getLocalized } from "../../utils/getLocalized";
 import EmptyState from "../../components/EmptyState";
 import "../branches/branches.css";
 import type { Branch, DepartmentType, DepartmentPayload } from "../../types";
@@ -57,8 +58,10 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
   branches,
   initialData,
 }) => {
-  const { t } = useTranslation();
-  const [name, setName] = useState("");
+  const { t, i18n } = useTranslation();
+  const [nameUz, setNameUz] = useState("");
+  const [nameRu, setNameRu] = useState("");
+  const [nameEn, setNameEn] = useState("");
   const [code, setCode] = useState("");
   const [branchId, setBranchId] = useState<number | "">("");
   const [manager, setManager] = useState("");
@@ -67,14 +70,18 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
 
   useEffect(() => {
     if (initialData) {
-      setName(initialData.name);
+      setNameUz(initialData.name_uz || "");
+      setNameRu(initialData.name_ru || "");
+      setNameEn(initialData.name_en || "");
       setCode(initialData.code);
       setBranchId(initialData.branch_id);
       setManager(initialData.manager || "");
       setIsActive(initialData.is_active);
       setIsCodeModified(true);
     } else {
-      setName("");
+      setNameUz("");
+      setNameRu("");
+      setNameEn("");
       setCode("");
       setBranchId("");
       setManager("");
@@ -100,11 +107,15 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
     if (!branchId) return;
 
     const payload: DepartmentPayload = {
-      name,
+      name_uz: nameUz,
       code,
       branch_id: Number(branchId),
       manager,
       is_active: isActive,
+      ...(initialData && {
+        name_ru: nameRu,
+        name_en: nameEn,
+      }),
     };
 
     onSubmit(payload, initialData?.id);
@@ -128,14 +139,14 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
         <div className="branch-form-wrapper">
           <div className="branch-form-left">
             <div className="branch-input-group">
-              <label htmlFor="name">{t("departments.name")}</label>
+              <label htmlFor="name_uz">{t("departments.name")} (UZ)</label>
               <input
-                id="name"
+                id="name_uz"
                 type="text"
-                value={name}
+                value={nameUz}
                 onChange={(e) => {
                   const newName = e.target.value;
-                  setName(newName);
+                  setNameUz(newName);
                   if (!isCodeModified && !initialData) {
                     setCode(newName.toUpperCase().replace(/\s+/g, "_"));
                   }
@@ -144,6 +155,32 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
                 style={inputStyle}
               />
             </div>
+
+            {initialData && (
+              <>
+                <div className="branch-input-group">
+                  <label htmlFor="name_ru">{t("departments.name")} (RU)</label>
+                  <input
+                    id="name_ru"
+                    type="text"
+                    value={nameRu}
+                    onChange={(e) => setNameRu(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div className="branch-input-group">
+                  <label htmlFor="name_en">{t("departments.name")} (EN)</label>
+                  <input
+                    id="name_en"
+                    type="text"
+                    value={nameEn}
+                    onChange={(e) => setNameEn(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+              </>
+            )}
 
             <div className="branch-input-group">
               <label htmlFor="code">{t("departments.code")}</label>
@@ -174,7 +211,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
                 </option>
                 {branches?.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {b.name}
+                    {getLocalized(b, 'name', i18n.language)}
                   </option>
                 ))}
               </select>
@@ -233,7 +270,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
 
 // --- MAIN PAGE COMPONENT ---
 const Department = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] =
@@ -383,9 +420,9 @@ const Department = () => {
                   />
                 </td>
                 <td>{dept.id}</td>
-                <td>{dept.name}</td>
+                <td>{getLocalized(dept, 'name', i18n.language)}</td>
                 <td>{dept.code}</td>
-                <td>{dept.branch?.name || "-"}</td>
+                <td>{dept.branch ? getLocalized(dept.branch, 'name', i18n.language) : "-"}</td>
                 <td>{dept.manager}</td>
                 <td>
                   {dept.is_active

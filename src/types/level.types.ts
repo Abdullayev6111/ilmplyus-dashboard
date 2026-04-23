@@ -1,9 +1,13 @@
 export interface Level {
   id: number;
-  name: string;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
   created_at: string;
 }
 
 export interface LevelPayload {
-  name: string;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
 }

@@ -8,6 +8,7 @@ export interface User {
   type: string;
   is_active: boolean;
   branch: Branch | null;
+  branches?: Branch[];
   roles: Role[];
   created_at: string;
   updated_at?: string;

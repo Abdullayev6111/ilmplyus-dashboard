@@ -4,6 +4,7 @@ import { API } from "../../api/api";
 import "../users/users.css";
 import "../expenses/expenses.css";
 import { useTranslation } from "react-i18next";
+import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import { useTableSettingsStore } from "../../store/useTableSettingsStore";
@@ -30,7 +31,7 @@ interface RoomFormData {
 }
 
 const Rooms = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const { settings } = useTableSettingsStore();
@@ -207,7 +208,7 @@ const Rooms = () => {
                   <option value="">{t("rooms.choose")}</option>
                   {branches?.map((b) => (
                     <option key={b.id} value={b.id}>
-                      {b.name}
+                      {getLocalized(b, 'name', i18n.language)}
                     </option>
                   ))}
                 </select>
@@ -330,9 +331,9 @@ const Rooms = () => {
               </th>
               {isVisible("id") && <th>ID</th>}
               {isVisible("branch") && <th>{t("rooms.branchName")}</th>}
+              {isVisible("floor") && <th>{t("rooms.floor")}</th>}
               {isVisible("name") && <th>{t("rooms.roomName")}</th>}
               {isVisible("capacity") && <th>{t("rooms.capacity")}</th>}
-              {isVisible("floor") && <th>{t("rooms.floor")}</th>}
               <th>{t("rooms.actions")}</th>
             </tr>
           </thead>
@@ -353,9 +354,9 @@ const Rooms = () => {
 
                   {isVisible("id") && <td>{item.id}</td>}
                   {isVisible("branch") && <td>{item.branch || "-"}</td>}
-                  {isVisible("name") && <td>{item.name}</td>}
-                  {isVisible("capacity") && <td>{item.capacity}</td>}
                   {isVisible("floor") && <td>{item.floor}</td>}
+                  {isVisible("name") && <td>{getLocalized(item, 'name', i18n.language)}</td>}
+                  {isVisible("capacity") && <td>{item.capacity}</td>}
 
                   <td className="actions">
                     <button

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../api/api";
 import "./branches.css";
 import { useTranslation } from "react-i18next";
+import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 
@@ -28,7 +29,7 @@ interface Branch {
 }
 
 const Branches = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [selectedBranches, setSelectedBranches] = useState<number[]>([]);
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
@@ -216,7 +217,7 @@ const Branches = () => {
     return branches
       .filter((branch) => {
         const dateValue = branch.created_at.slice(0, 10);
-        const matchesSearch = branch.name
+        const matchesSearch = getLocalized(branch, "name", i18n.language)
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
 
@@ -631,8 +632,8 @@ const Branches = () => {
                   </td>
 
                   <td>{branch.id}</td>
-                  <td>{branch.name}</td>
-                  <td>{branch.address}</td>
+                  <td>{getLocalized(branch, 'name', i18n.language)}</td>
+                  <td>{getLocalized(branch, 'address', i18n.language)}</td>
                   <td>{branch.email}</td>
                   <td>{branch.account_number}</td>
                   <td>{branch.postal_code}</td>
