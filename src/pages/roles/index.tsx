@@ -7,9 +7,10 @@ import { useNavigate } from "react-router-dom";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import type { Role, Branch } from "../../types/common.types";
+import { getLocalized } from "../../utils/getLocalized";
 
 const Roles = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showRoleModal, setShowRoleModal] = useState(false);
@@ -199,7 +200,7 @@ const Roles = () => {
                   </option>
                   {branches?.map((branch) => (
                     <option key={branch.id} value={branch.id}>
-                      {branch.name}
+                      {getLocalized(branch, 'name', i18n.language)}
                     </option>
                   ))}
                 </select>
@@ -210,7 +211,7 @@ const Roles = () => {
                       const branch = branches?.find((b) => b.id === id);
                       return (
                         <div key={id} className="branch-chip">
-                          {branch?.name}
+                          {branch ? getLocalized(branch, 'name', i18n.language) : id}
                           <button
                             type="button"
                             onClick={() =>
@@ -298,7 +299,7 @@ const Roles = () => {
                   <td>{role.name}</td>
                   <td>
                     {role.branches && role.branches.length > 0
-                      ? role.branches.map((b) => b.name).join(", ")
+                      ? role.branches.map((b) => getLocalized(b, 'name', i18n.language)).join(", ")
                       : t("roles.noBranches", "Filial yo'q")}
                   </td>
                   <td className="role-action-cell">

@@ -8,6 +8,7 @@ import {
 import { API } from "../../api/api";
 import "./payments.css";
 import { useTranslation } from "react-i18next";
+import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import type {
@@ -20,7 +21,7 @@ import type {
 } from "../../types";
 
 const Payments = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState<number[]>([]);
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
@@ -209,7 +210,7 @@ const Payments = () => {
       amount: Number(formData.amount),
       payment_method: formData.payment_type,
       payment_period: formData.payment_period,
-      course: selectedCourse?.name || "",
+      course: selectedCourse ? getLocalized(selectedCourse, 'name', i18n.language) : "",
       group: selectedGroup?.name || "",
       teacher: selectedTeacher?.full_name || "",
       course_id: Number(formData.course_id),
@@ -443,7 +444,7 @@ const Payments = () => {
                     <option value="">{t("payments.choose")}</option>
                     {coursesData?.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.name}
+                        {getLocalized(c, 'name', i18n.language)}
                       </option>
                     ))}
                   </select>
@@ -679,7 +680,7 @@ const Payments = () => {
                   <td>{formatAmount(u.amount)}</td>
                   <td>{u.payment_method}</td>
                   <td>{u.payment_period}</td>
-                  <td>{u.course?.name}</td>
+                  <td>{u.course ? getLocalized(u.course, 'name', i18n.language) : "-"}</td>
                   <td>{u.cashier?.full_name}</td>
                   <td>{u.branch?.address}</td>
                   <td className="actions">

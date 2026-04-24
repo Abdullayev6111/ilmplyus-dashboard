@@ -36,7 +36,11 @@ const Courses = () => {
   const [viewItem, setViewItem] = useState<Course | null>(null);
 
   // Form state
-  const [courseName, setCourseName] = useState("");
+  const [formData, setFormData] = useState({
+    name_uz: "",
+    name_ru: "",
+    name_en: "",
+  });
   const [selectedBranchIds, setSelectedBranchIds] = useState<number[]>([]);
   const [selectedLevelIds, setSelectedLevelIds] = useState<number[]>([]);
   const [openBranchDropdown, setOpenBranchDropdown] = useState(false);
@@ -103,7 +107,7 @@ const Courses = () => {
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-    setCourseName("");
+    setFormData({ name_uz: "", name_ru: "", name_en: "" });
     setSelectedBranchIds([]);
     setSelectedLevelIds([]);
     setOpenBranchDropdown(false);
@@ -112,7 +116,11 @@ const Courses = () => {
 
   const openEditModal = (item: Course) => {
     setEditingItem(item);
-    setCourseName(item.name);
+    setFormData({
+      name_uz: item.name_uz,
+      name_ru: item.name_ru || "",
+      name_en: item.name_en || "",
+    });
     setSelectedBranchIds(item.branches?.map((b) => b.id) || []);
     setSelectedLevelIds(item.levels?.map((l) => l.id) || []);
     setShowModal(true);
@@ -121,7 +129,11 @@ const Courses = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const payload: CoursePayload = {
-      name: courseName.trim(),
+      name_uz: formData.name_uz.trim(),
+      ...(editingItem && {
+        name_ru: formData.name_ru?.trim() || "",
+        name_en: formData.name_en?.trim() || "",
+      }),
       branch_ids: selectedBranchIds,
       level_ids: selectedLevelIds,
     };
@@ -184,14 +196,35 @@ const Courses = () => {
             <form className="subcategory-form" onSubmit={handleSubmit}>
               {/* Course name */}
               <div className="subcategory-form-group">
-                <label>{t("courses.courseName")}</label>
+                <label>{t("courses.courseName")} (UZ)</label>
                 <input
                   type="text"
-                  value={courseName}
-                  onChange={(e) => setCourseName(e.target.value)}
+                  value={formData.name_uz}
+                  onChange={(e) => setFormData(prev => ({...prev, name_uz: e.target.value}))}
                   required
                 />
               </div>
+
+              {editingItem && (
+                <>
+                  <div className="subcategory-form-group">
+                    <label>{t("courses.courseName")} (RU)</label>
+                    <input
+                      type="text"
+                      value={formData.name_ru}
+                      onChange={(e) => setFormData(prev => ({...prev, name_ru: e.target.value}))}
+                    />
+                  </div>
+                  <div className="subcategory-form-group">
+                    <label>{t("courses.courseName")} (EN)</label>
+                    <input
+                      type="text"
+                      value={formData.name_en}
+                      onChange={(e) => setFormData(prev => ({...prev, name_en: e.target.value}))}
+                    />
+                  </div>
+                </>
+              )}
 
               {/* Branch multi-select */}
               <div className="subcategory-form-group">
@@ -245,7 +278,7 @@ const Courses = () => {
                           >
                             &times;
                           </button>
-                          <span style={{ fontSize: 13 }}>{branch?.name}</span>
+                          <span style={{ fontSize: 13 }}>{branch ? getLocalized(branch, 'name', i18n.language) : id}</span>
                         </div>
                       );
                     })}
@@ -303,7 +336,7 @@ const Courses = () => {
                                 justifyContent: "space-between",
                               }}
                             >
-                              {b.name}
+                              {getLocalized(b, 'name', i18n.language)}
                               {isSelected && (
                                 <i
                                   className="fa-solid fa-check"
@@ -371,7 +404,7 @@ const Courses = () => {
                           >
                             &times;
                           </button>
-                          <span style={{ fontSize: 13 }}>{level?.name}</span>
+                          <span style={{ fontSize: 13 }}>{level ? getLocalized(level, 'name', i18n.language) : id}</span>
                         </div>
                       );
                     })}
@@ -429,7 +462,7 @@ const Courses = () => {
                                 justifyContent: "space-between",
                               }}
                             >
-                              {l.name}
+                              {getLocalized(l, 'name', i18n.language)}
                               {isSelected && (
                                 <i
                                   className="fa-solid fa-check"
@@ -510,7 +543,7 @@ const Courses = () => {
                   {t("courses.courseName")}:
                 </p>
                 <p style={{ color: "#003b73", fontWeight: 500, fontSize: 16 }}>
-                  {viewItem.name}
+                  {viewItem ? getLocalized(viewItem, 'name', i18n.language) : ''}
                 </p>
               </div>
               <div style={{ flex: 1 }}>

@@ -332,27 +332,27 @@ const Users = () => {
     deleteMutation.mutate(u.id);
   };
 
-  const MAX_FILE_SIZE = 5 * 1024 * 1024;
-  const ALLOWED_TYPES = ["image/png", "image/jpeg"];
+  // const MAX_FILE_SIZE = 5 * 1024 * 1024;
+  // const ALLOWED_TYPES = ["image/png", "image/jpeg"];
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      alert("Only PNG or JPG format is allowed");
-      e.target.value = "";
-      return;
-    }
+  //   if (!ALLOWED_TYPES.includes(file.type)) {
+  //     alert("Only PNG or JPG format is allowed");
+  //     e.target.value = "";
+  //     return;
+  //   }
 
-    if (file.size > MAX_FILE_SIZE) {
-      alert("Maximum file size is 5MB");
-      e.target.value = "";
-      return;
-    }
+  //   if (file.size > MAX_FILE_SIZE) {
+  //     alert("Maximum file size is 5MB");
+  //     e.target.value = "";
+  //     return;
+  //   }
 
-    setUserImage(file);
-  };
+  //   setUserImage(file);
+  // };
 
   return (
     <section className="users container">
@@ -480,7 +480,7 @@ const Users = () => {
                     }
                   />
                 </div>
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label>{t("users.imageLabel")}</label>
 
                   <div className="file-upload-wrapper">
@@ -495,7 +495,7 @@ const Users = () => {
                       {t("users.upload")}
                     </label>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <div className="form-right">
@@ -541,8 +541,13 @@ const Users = () => {
                       );
                       return (
                         <div key={branchId} className="selected-item">
-                          {branch ? getLocalized(branch, 'name', i18n.language) : branchId}
-                          <button type="button" onClick={() => removeBranch(branchId)}>
+                          {branch
+                            ? getLocalized(branch, "name", i18n.language)
+                            : branchId}
+                          <button
+                            type="button"
+                            onClick={() => removeBranch(branchId)}
+                          >
                             ×
                           </button>
                         </div>
@@ -561,7 +566,7 @@ const Users = () => {
                     <option value="">{t("users.choose")}</option>
                     {branches?.map((branch) => (
                       <option key={branch.id} value={branch.id}>
-                        {getLocalized(branch, 'name', i18n.language)}
+                        {getLocalized(branch, "name", i18n.language)}
                       </option>
                     ))}
                   </select>
@@ -578,7 +583,7 @@ const Users = () => {
                     <option value="">{t("users.choose")}</option>
                     {positions?.map((position) => (
                       <option key={position.id} value={position.id}>
-                        {getLocalized(position, 'name', i18n.language)}
+                        {getLocalized(position, "name", i18n.language)}
                       </option>
                     ))}
                   </select>
@@ -797,7 +802,9 @@ const Users = () => {
                   )}
 
                   {isVisible("phone") && <td>{u.phone}</td>}
-                  {isVisible("role") && <td>{u.roles?.map(r => r.name).join(", ") || "-"}</td>}
+                  {isVisible("role") && (
+                    <td>{u.roles?.map((r) => r.name).join(", ") || "-"}</td>
+                  )}
                   {isVisible("status") && (
                     <td>
                       {u.is_active ? t("users.active") : t("users.inactive")}
@@ -806,8 +813,12 @@ const Users = () => {
                   {isVisible("branch") && (
                     <td>
                       {u.branches && u.branches.length > 0
-                        ? u.branches.map((b) => getLocalized(b, 'name', i18n.language)).join(", ")
-                        : u.branch ? getLocalized(u.branch, 'name', i18n.language) : "-"}
+                        ? u.branches
+                            .map((b) => getLocalized(b, "name", i18n.language))
+                            .join(", ")
+                        : u.branch
+                          ? getLocalized(u.branch, "name", i18n.language)
+                          : "-"}
                     </td>
                   )}
                   {isVisible("username") && <td>{u.username}</td>}

@@ -22,6 +22,7 @@ const AttendancePage = () => {
   const [activeCell, setActiveCell] = useState<{
     recordId?: number;
     employeeId: number;
+    employeeName: string;
     date: string;
     currentStatuses: AttendanceStatusKey[];
     comment: string;
@@ -62,21 +63,20 @@ const AttendancePage = () => {
     [t],
   );
 
-  // Date Logic
   const daysInMonth = useMemo(() => {
     const daysCount = new Date(year, month + 1, 0).getDate();
     return Array.from({ length: daysCount }, (_, i) => {
       const dayDate = new Date(year, month, i + 1);
+      const yearStr = year;
+      const monthStr = String(month + 1).padStart(2, "0");
+      const dayStr = String(i + 1).padStart(2, "0");
       return {
         dayNum: i + 1,
         dayName: dayNames[dayDate.getDay()],
-        fullDate: dayDate.toISOString().split("T")[0],
+        fullDate: `${yearStr}-${monthStr}-${dayStr}`,
       };
     });
   }, [month, year, dayNames]);
-
-  // API Calls
-  // Removed usersData query to follow user instruction (only use /attendance)
 
   const { data: attendanceData } = useQuery<{ data: FlatAttendanceRecord[] }>({
     queryKey: ["attendances", year, month],
@@ -174,15 +174,20 @@ const AttendancePage = () => {
   const handleCellClick = (employee: EmployeeAttendance, day: any) => {
     if (!isEditMode) return;
 
-    const existing = employee.attendances.find((a) => a.date === day.fullDate);
+    const dayRecords = employee.attendances.filter(
+      (a) => a.date === day.fullDate,
+    );
+    const existing = dayRecords[dayRecords.length - 1];
 
-    // Extract current statuses from existing record
+    // Extract current statuses from existing record and deduplicate
     let currentStatuses: AttendanceStatusKey[] = [];
     if (existing) {
       if (Array.isArray(existing.status)) {
-        currentStatuses = existing.status.filter(
-          (s): s is AttendanceStatusKey => s !== null,
-        );
+        currentStatuses = [...new Set(
+          existing.status.filter(
+            (s): s is AttendanceStatusKey => s !== null,
+          )
+        )];
       } else if (existing.status) {
         currentStatuses = [existing.status as AttendanceStatusKey];
       }
@@ -191,6 +196,7 @@ const AttendancePage = () => {
     setActiveCell({
       recordId: existing?.id,
       employeeId: employee.id,
+      employeeName: employee.full_name,
       date: day.fullDate,
       currentStatuses,
       comment: existing?.comment || "",
@@ -266,9 +272,24 @@ const AttendancePage = () => {
     if (statuses.includes("S")) return <span className="status-s">S</span>;
 
     const elements = [];
-    if (statuses.includes("+")) elements.push(<span key="+" className="status-plus">+</span>);
-    if (statuses.includes("K")) elements.push(<span key="K" className="status-k">K</span>);
-    if (statuses.includes("F")) elements.push(<span key="F" className="status-f">F</span>);
+    if (statuses.includes("+"))
+      elements.push(
+        <span key="+" className="status-plus">
+          +
+        </span>,
+      );
+    if (statuses.includes("K"))
+      elements.push(
+        <span key="K" className="status-k">
+          K
+        </span>,
+      );
+    if (statuses.includes("F"))
+      elements.push(
+        <span key="F" className="status-f">
+          F
+        </span>,
+      );
 
     return elements;
   };
@@ -332,7 +353,7 @@ const AttendancePage = () => {
         <table className="attendance-table">
           <thead>
             <tr>
-              <th className="col-id">#</th>
+              <th className="col-id">ID</th>
               <th className="col-name">{t("attendance.table.fullName")}</th>
               <th className="col-position">{t("attendance.table.position")}</th>
               {daysInMonth.map((day) => (
@@ -352,11 +373,32 @@ const AttendancePage = () => {
                 <td className="col-name">{employee?.full_name}</td>
                 <td className="col-position">{employee?.position?.name}</td>
                 {daysInMonth.map((day) => {
-                  const record = employee?.attendances?.find(
-                    (a) => a.date === day.fullDate,
-                  );
-                  const status = record?.status || null;
+                  const dayRecords =
+                    employee?.attendances?.filter(
+                      (a) => a.date === day.fullDate,
+                    ) || [];
+
+                  const allStatuses = dayRecords.reduce((acc, r) => {
+                    r.status.forEach((s) => {
+                      if (!acc.includes(s)) acc.push(s);
+                    });
+                    return acc;
+                  }, [] as string[]);
+
+                  const status = allStatuses.length > 0 ? allStatuses : null;
                   const isPast = isPastDay(day.fullDate);
+
+                  // Create tooltip label combining all records
+                  const tooltipContent = dayRecords
+                    .map((r) => {
+                      const parts = [];
+                      if (r.check_in)
+                        parts.push(`${r.check_in} - ${r.check_out || ""}`);
+                      if (r.comment) parts.push(`${r.comment}`);
+                      return parts.join(" | ");
+                    })
+                    .filter(Boolean)
+                    .join("\\n");
 
                   return (
                     <td
@@ -367,6 +409,7 @@ const AttendancePage = () => {
                       <Popover
                         opened={
                           activeCell?.employeeId === employee.id &&
+                          activeCell?.employeeName === employee.full_name &&
                           activeCell?.date === day.fullDate
                         }
                         onChange={() => setActiveCell(null)}
@@ -376,15 +419,11 @@ const AttendancePage = () => {
                         <Popover.Target>
                           <div className="tooltip-wrapper">
                             <Tooltip
-                              label={
-                                record?.comment ||
-                                (record?.check_in
-                                  ? `${record.check_in} - ${record.check_out}`
-                                  : "")
-                              }
-                              disabled={!record?.comment && !record?.check_in}
+                              label={tooltipContent}
+                              disabled={!tooltipContent}
                               position="top"
                               withArrow
+                              multiline
                             >
                               <div className="cell-status">
                                 {renderStatuses(status as any)}
