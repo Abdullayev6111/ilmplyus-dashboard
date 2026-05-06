@@ -69,7 +69,8 @@
     "course": "Курс",
     "levels": "Уровни",
     "positions": "Должности",
-    "attendance": "Посещаемость"
+    "attendance": "Посещаемость",
+    "operators": "Операторы"
   },
   "payments": {
     "mainTitle": "Платежи",

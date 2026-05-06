@@ -61,7 +61,8 @@
     "course": "Course",
     "levels": "Levels",
     "positions": "Positions",
-    "attendance": "Attendance"
+    "attendance": "Attendance",
+    "operators": "Operators"
   },
   "payments": {
     "mainTitle": "Payments",

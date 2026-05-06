@@ -69,7 +69,8 @@
     "course": "Kurs",
     "levels": "Darajalar",
     "positions": "Lavozimlar",
-    "attendance": "Davomat"
+    "attendance": "Davomat",
+    "operators": "Operatorlar"
   },
   "payments": {
     "mainTitle": "To‘lovlar",

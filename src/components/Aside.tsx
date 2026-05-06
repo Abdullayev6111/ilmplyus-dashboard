@@ -10,7 +10,6 @@ import infoGrafikIcon from "../assets/images/aside-infografik.svg";
 import usersIcon from "../assets/images/aside-users.svg";
 import settingsIcon from "../assets/images/aside-settings.svg";
 import branchesIcon from "../assets/images/aside-location.svg";
-import classesIcon from "../assets/images/aside-school.svg";
 import studentsIcon from "../assets/images/aside-students.svg";
 import teachersIcon from "../assets/images/aside-teacher.svg";
 import userRoleIcon from "../assets/images/aside-user-role.svg";
@@ -23,6 +22,7 @@ import areasIcon from "../assets/images/globe-solid-full.svg";
 import levelsIcon from "../assets/images/signal-solid-full.svg";
 import positionIcon from "../assets/images/briefcase-solid-full.svg";
 import attendanceIcon from "../assets/images/user-clock-solid-full.svg";
+import operatorsIcon from "../assets/images/headset-solid-full.svg";
 import { Accordion } from "@mantine/core";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -87,10 +87,10 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       permission: "attendance.view",
     },
     {
-      label: t("aside.groups"),
-      icon: classesIcon,
-      path: "/classes",
-      permission: "groups.view",
+      label: t("aside.operators"),
+      icon: operatorsIcon,
+      path: "/operators",
+      permission: "operators.view",
     },
     {
       label: t("aside.courses"),

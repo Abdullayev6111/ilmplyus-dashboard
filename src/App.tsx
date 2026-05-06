@@ -28,6 +28,7 @@ import AreaDistricts from "./pages/regions/areaDistricts";
 import Levels from "./pages/levels";
 import Positions from "./pages/positions";
 import AttendancePage from "./pages/attendance";
+import Operators from "./pages/operators";
 
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
@@ -69,6 +70,7 @@ const App = () => {
           <Route path="/students" element={<Students />} />
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/payments" element={<Payments />} />
+          <Route path="/operators" element={<Operators />} />
           <Route path="/payments/archive" element={<ArchivedPayments />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/levels" element={<Levels />} />

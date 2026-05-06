@@ -332,28 +332,6 @@ const Users = () => {
     deleteMutation.mutate(u.id);
   };
 
-  // const MAX_FILE_SIZE = 5 * 1024 * 1024;
-  // const ALLOWED_TYPES = ["image/png", "image/jpeg"];
-
-  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-  //   if (!file) return;
-
-  //   if (!ALLOWED_TYPES.includes(file.type)) {
-  //     alert("Only PNG or JPG format is allowed");
-  //     e.target.value = "";
-  //     return;
-  //   }
-
-  //   if (file.size > MAX_FILE_SIZE) {
-  //     alert("Maximum file size is 5MB");
-  //     e.target.value = "";
-  //     return;
-  //   }
-
-  //   setUserImage(file);
-  // };
-
   return (
     <section className="users container">
       <h1 className="main-title">{t("users.listTitle")}</h1>
