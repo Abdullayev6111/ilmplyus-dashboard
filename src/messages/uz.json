@@ -70,7 +70,8 @@
     "levels": "Darajalar",
     "positions": "Lavozimlar",
     "attendance": "Davomat",
-    "operators": "Operatorlar"
+    "operators": "Operatorlar",
+    "sources": "Manbalar"
   },
   "payments": {
     "mainTitle": "To‘lovlar",
@@ -272,6 +273,26 @@
     "confirmDelete": "O‘chirishni tasdiqlaysizmi?",
     "cancel": "Bekor qilish",
     "save": "Saqlash"
+  },
+  "sources": {
+    "title": "Manbalar",
+    "addTitle": "Manba qo‘shish",
+    "editTitle": "Manbani tahrirlash",
+    "name": "Nomi",
+    "nameUz": "Nomi (UZ)",
+    "nameRu": "Nomi (RU)",
+    "nameEn": "Nomi (EN)",
+    "link": "Havola",
+    "createdAt": "Yaratilgan sana",
+    "updatedAt": "O‘zgartirilgan sana",
+    "actions": "Amallar",
+    "notFound": "Ma’lumot mavjud emas",
+    "addBtn": "Qo‘shish",
+    "delete": "O‘chirish",
+    "confirmDelete": "O‘chirishni tasdiqlaysizmi?",
+    "cancel": "Bekor qilish",
+    "save": "Saqlash",
+    "saving": "Saqlanmoqda..."
   },
   "regions": {
     "notFound": "Viloyatlar topilmadi"

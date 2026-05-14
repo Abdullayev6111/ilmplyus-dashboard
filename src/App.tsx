@@ -29,6 +29,7 @@ import Levels from "./pages/levels";
 import Positions from "./pages/positions";
 import AttendancePage from "./pages/attendance";
 import Operators from "./pages/operators";
+import Sources from "./pages/sources";
 
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
@@ -83,6 +84,7 @@ const App = () => {
             element={<ExpenseSubCategory />}
           />
           <Route path="/rooms" element={<Rooms />} />
+          <Route path="/sources" element={<Sources />} />
           <Route path="/department" element={<Department />} />
         </Route>
         <Route path="*" element={<NotFound />} />

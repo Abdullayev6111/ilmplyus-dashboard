@@ -208,7 +208,7 @@ const Rooms = () => {
                   <option value="">{t("rooms.choose")}</option>
                   {branches?.map((b) => (
                     <option key={b.id} value={b.id}>
-                      {getLocalized(b, 'name', i18n.language)}
+                      {getLocalized(b, "name", i18n.language)}
                     </option>
                   ))}
                 </select>
@@ -355,7 +355,7 @@ const Rooms = () => {
                   {isVisible("id") && <td>{item.id}</td>}
                   {isVisible("branch") && <td>{item.branch || "-"}</td>}
                   {isVisible("floor") && <td>{item.floor}</td>}
-                  {isVisible("name") && <td>{getLocalized(item, 'name', i18n.language)}</td>}
+                  {isVisible("name") && <td>{item.name}</td>}
                   {isVisible("capacity") && <td>{item.capacity}</td>}
 
                   <td className="actions">

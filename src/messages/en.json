@@ -62,7 +62,8 @@
     "levels": "Levels",
     "positions": "Positions",
     "attendance": "Attendance",
-    "operators": "Operators"
+    "operators": "Operators",
+    "sources": "Sources"
   },
   "payments": {
     "mainTitle": "Payments",
@@ -239,6 +240,26 @@
     "confirmDelete": "Are you sure you want to delete?",
     "cancel": "Cancel",
     "save": "Save"
+  },
+  "sources": {
+    "title": "Sources",
+    "addTitle": "Add Source",
+    "editTitle": "Edit Source",
+    "name": "Name",
+    "nameUz": "Name (UZ)",
+    "nameRu": "Name (RU)",
+    "nameEn": "Name (EN)",
+    "link": "Link",
+    "createdAt": "Created Date",
+    "updatedAt": "Updated Date",
+    "actions": "Actions",
+    "notFound": "No data available",
+    "addBtn": "Add",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete?",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving..."
   },
   "expenses": {
     "expenseTitle": "Expenses",

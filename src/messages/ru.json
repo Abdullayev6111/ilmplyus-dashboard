@@ -70,7 +70,8 @@
     "levels": "Уровни",
     "positions": "Должности",
     "attendance": "Посещаемость",
-    "operators": "Операторы"
+    "operators": "Операторы",
+    "sources": "Источники"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -247,6 +248,26 @@
     "confirmDelete": "Вы уверены, что хотите удалить?",
     "cancel": "Отмена",
     "save": "Сохранить"
+  },
+  "sources": {
+    "title": "Источники",
+    "addTitle": "Добавить источник",
+    "editTitle": "Редактировать источник",
+    "name": "Название",
+    "nameUz": "Название (UZ)",
+    "nameRu": "Название (RU)",
+    "nameEn": "Название (EN)",
+    "link": "Ссылка",
+    "createdAt": "Дата создания",
+    "updatedAt": "Дата изменения",
+    "actions": "Действия",
+    "notFound": "Данные отсутствуют",
+    "addBtn": "Добавить",
+    "delete": "Удалить",
+    "confirmDelete": "Вы уверены, что хотите удалить?",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "saving": "Сохранение..."
   },
   "expenses": {
     "expenseTitle": "Расходы",

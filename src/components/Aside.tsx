@@ -129,6 +129,12 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       permission: "rooms.view",
     },
     {
+      label: t("aside.sources"),
+      icon: roomsIcon,
+      path: "/sources",
+      permission: "sources.view",
+    },
+    {
       label: t("aside.payments"),
       icon: paymentsIcon,
       path: "/payments",
