@@ -370,10 +370,11 @@
     "mainTitle": "Sozlamalar",
     "pages": "Sahifalar",
     "pageColumnsTitle": " sahifasi ustunlari",
-    "pageColumnsDesc": "Jadvalda ko'rinishi kerak bo'lgan ustunlarni belgilang",
+    "pageColumnsDesc": "Ustunlarni ko'rsatish/yashirish va tartibini o'zgartirish",
     "confirm": "Tasdiqlash",
     "saveSuccess": "Sozlamalar muvaffaqiyatli saqlandi!",
-    "close": "Yopish"
+    "close": "Yopish",
+    "dragHint": "Ustunlarni suring va tartibini o'zgartiring"
   },
   "attendance": {
     "months": {

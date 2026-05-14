@@ -21,7 +21,6 @@ const Users = () => {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState<number[]>([]);
-  const [editingId] = useState<number | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [workTimeId, setWorkTimeId] = useState<number | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -35,9 +34,76 @@ const Users = () => {
   const [showRange, setShowRange] = useState(false);
   const [userImage, setUserImage] = useState<File | null>(null);
 
-  const { settings } = useTableSettingsStore();
+  const { settings, getColumnOrder } = useTableSettingsStore();
   const userSettings = settings.users || {};
   const isVisible = (colId: string) => userSettings[colId] ?? true;
+
+  // Columns that can be reordered (excludes id, checkbox, actions)
+  const defaultDraggableColumns = [
+    "full_name",
+    "phone",
+    "role",
+    "status",
+    "branch",
+    "username",
+    "pinfl",
+    "type",
+    "created_at",
+    "updated_at",
+  ];
+
+  const getOrderedColumns = () => {
+    return getColumnOrder("users", defaultDraggableColumns);
+  };
+
+  const getColumnHeader = (colId: string): string => {
+    const headerMap: Record<string, string> = {
+      full_name: t("users.fish"),
+      phone: t("users.phone"),
+      role: t("users.role"),
+      status: t("users.status"),
+      branch: t("users.branch"),
+      username: t("users.loginText"),
+      pinfl: t("users.pinfl"),
+      type: "Turi",
+      created_at: "Yaratilgan sana",
+      updated_at: "O'zgartirilgan sana",
+    };
+    return headerMap[colId] || colId;
+  };
+
+  const renderCellValue = (u: User, colId: string) => {
+    switch (colId) {
+      case "full_name":
+        return u.full_name;
+      case "phone":
+        return u.phone;
+      case "role":
+        return u.roles?.map((r) => r.name).join(", ") || "-";
+      case "status":
+        return u.is_active ? t("users.active") : t("users.inactive");
+      case "branch":
+        return u.branches && u.branches.length > 0
+          ? u.branches
+              .map((b) => getLocalized(b, "name", i18n.language))
+              .join(", ")
+          : u.branch
+            ? getLocalized(u.branch, "name", i18n.language)
+            : "-";
+      case "username":
+        return u.username;
+      case "pinfl":
+        return u.pinfl || "-";
+      case "type":
+        return u.type || "-";
+      case "created_at":
+        return u.created_at?.slice(0, 10).replaceAll("-", ".") || "-";
+      case "updated_at":
+        return u.updated_at?.slice(0, 10).replaceAll("-", ".") || "-";
+      default:
+        return "-";
+    }
+  };
 
   const { data: apiData, isLoading } = useQuery<UsersResponse>({
     queryKey: ["users"],
@@ -720,7 +786,7 @@ const Users = () => {
         </div>
       </div>
 
-      <div className="users-table-wrapper">
+      <div className="users-table-wrapper" style={{ overflowX: "auto" }}>
         <table className="users-table">
           <thead>
             <tr>
@@ -734,13 +800,10 @@ const Users = () => {
                 />
               </th>
               {isVisible("id") && <th>ID</th>}
-              {isVisible("full_name") && <th>{t("users.fish")}</th>}
-              {isVisible("phone") && <th>{t("users.phone")}</th>}
-              {isVisible("role") && <th>{t("users.role")}</th>}
-              {isVisible("status") && <th>{t("users.status")}</th>}
-              {isVisible("branch") && <th>{t("users.branch")}</th>}
-              {isVisible("username") && <th>{t("users.loginText")}</th>}
-              {isVisible("date") && <th>{t("users.date")}</th>}
+              {getOrderedColumns().map((colId) => {
+                if (!isVisible(colId)) return null;
+                return <th key={colId}>{getColumnHeader(colId)}</th>;
+              })}
               <th>{t("users.actions")}</th>
             </tr>
           </thead>
@@ -761,48 +824,10 @@ const Users = () => {
 
                   {isVisible("id") && <td>{u.id}</td>}
 
-                  {isVisible("full_name") && (
-                    <td>
-                      {editingId === u.id ? (
-                        <input
-                          value={u.full_name}
-                          onChange={(e) =>
-                            updateMutation.mutate({
-                              id: u.id,
-                              updates: { full_name: e.target.value },
-                            })
-                          }
-                        />
-                      ) : (
-                        u.full_name
-                      )}
-                    </td>
-                  )}
-
-                  {isVisible("phone") && <td>{u.phone}</td>}
-                  {isVisible("role") && (
-                    <td>{u.roles?.map((r) => r.name).join(", ") || "-"}</td>
-                  )}
-                  {isVisible("status") && (
-                    <td>
-                      {u.is_active ? t("users.active") : t("users.inactive")}
-                    </td>
-                  )}
-                  {isVisible("branch") && (
-                    <td>
-                      {u.branches && u.branches.length > 0
-                        ? u.branches
-                            .map((b) => getLocalized(b, "name", i18n.language))
-                            .join(", ")
-                        : u.branch
-                          ? getLocalized(u.branch, "name", i18n.language)
-                          : "-"}
-                    </td>
-                  )}
-                  {isVisible("username") && <td>{u.username}</td>}
-                  {isVisible("date") && (
-                    <td>{u.created_at.slice(0, 10).replaceAll("-", ".")}</td>
-                  )}
+                  {getOrderedColumns().map((colId) => {
+                    if (!isVisible(colId)) return null;
+                    return <td key={colId}>{renderCellValue(u, colId)}</td>;
+                  })}
 
                   <td className="actions">
                     <div style={{ position: "relative" }}>

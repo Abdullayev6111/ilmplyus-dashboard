@@ -10,13 +10,16 @@
 }
 
 .settings-sidebar {
-  width: 250px;
+  width: 280px;
+  min-width: 280px;
   background-color: #fff;
   border-radius: 15px;
   border: 1px solid #003366;
   padding: 20px;
   display: flex;
   flex-direction: column;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
 }
 
 .settings-sidebar h3 {
@@ -31,17 +34,39 @@
 .settings-page-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+}
+
+.settings-page-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-page-group + .settings-page-group {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 51, 102, 0.08);
+}
+
+.settings-group-label {
+  font-family: noto-sb;
+  font-size: 12px;
+  color: #003366;
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 15px 4px;
 }
 
 .settings-page-btn {
   background: transparent;
   border: none;
   text-align: left;
-  padding: 12px 15px;
+  padding: 10px 15px;
   border-radius: 8px;
   font-family: noto-m;
-  font-size: 15px;
+  font-size: 14px;
   color: #003366;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -64,11 +89,13 @@
   padding: 30px;
   display: flex;
   flex-direction: column;
+  max-height: calc(100vh - 160px);
+  overflow: hidden;
 }
 
 .settings-content-header {
-  margin-bottom: 30px;
-  padding-bottom: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
   border-bottom: 1px solid rgba(0, 51, 102, 0.1);
 }
 
@@ -85,25 +112,129 @@
   color: #666;
 }
 
-.settings-columns-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
+/* Reorder section */
+.settings-columns-reorder {
   flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.settings-checkbox-label {
+.settings-columns-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(0, 51, 102, 0.04);
+  border-radius: 8px;
+  color: #666;
+  font-family: noto-r;
+  font-size: 13px;
+}
+
+.settings-columns-info i {
+  color: #003366;
+  opacity: 0.4;
+}
+
+.settings-columns-drag-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-drag-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #fff;
+  border: 1px solid rgba(0, 51, 102, 0.12);
+  border-radius: 10px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.settings-drag-item:hover {
+  border-color: rgba(0, 51, 102, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 51, 102, 0.06);
+}
+
+.settings-drag-item:active {
+  cursor: grabbing;
+}
+
+.settings-drag-item.dragging {
+  opacity: 0.5;
+  border-color: #003366;
+  background: rgba(0, 51, 102, 0.04);
+  box-shadow: 0 4px 12px rgba(0, 51, 102, 0.12);
+}
+
+.drag-item-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  cursor: pointer;
-  padding: 10px;
-  border-radius: 8px;
-  transition: background 0.2s;
 }
 
-.settings-checkbox-label:hover {
-  background-color: rgba(0, 51, 102, 0.03);
+.drag-handle {
+  color: #003366;
+  opacity: 0.3;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.settings-drag-item:hover .drag-handle {
+  opacity: 0.6;
+}
+
+.drag-item-order {
+  font-family: noto-sb;
+  font-size: 12px;
+  color: #003366;
+  opacity: 0.35;
+  background: rgba(0, 51, 102, 0.06);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+/* Fixed (non-draggable) column - ID */
+.settings-drag-item.fixed {
+  cursor: default;
+  background: rgba(0, 51, 102, 0.03);
+  border-color: rgba(0, 51, 102, 0.08);
+  opacity: 0.75;
+}
+
+.settings-drag-item.fixed:hover {
+  box-shadow: none;
+  border-color: rgba(0, 51, 102, 0.08);
+}
+
+.drag-handle-locked {
+  color: #003366;
+  opacity: 0.2;
+  font-size: 12px;
+}
+
+.fixed-order {
+  opacity: 0.25;
+}
+
+/* Checkbox styles */
+.settings-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
 }
 
 .settings-checkbox-label input[type="checkbox"] {
@@ -113,6 +244,7 @@
 .checkbox-custom {
   width: 20px;
   height: 20px;
+  min-width: 20px;
   border: 2px solid #003366;
   border-radius: 4px;
   display: flex;
@@ -139,12 +271,12 @@
 
 .checkbox-text {
   font-family: noto-m;
-  font-size: 16px;
+  font-size: 15px;
   color: #333;
 }
 
 .settings-actions {
-  margin-top: 30px;
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
   padding-top: 20px;
@@ -166,4 +298,26 @@
 .settings-save-btn:hover {
   background-color: #e58200;
   transform: translateY(-1px);
+}
+
+/* Scrollbar styling */
+.settings-sidebar::-webkit-scrollbar,
+.settings-columns-reorder::-webkit-scrollbar {
+  width: 5px;
+}
+
+.settings-sidebar::-webkit-scrollbar-track,
+.settings-columns-reorder::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.settings-sidebar::-webkit-scrollbar-thumb,
+.settings-columns-reorder::-webkit-scrollbar-thumb {
+  background: rgba(0, 51, 102, 0.15);
+  border-radius: 10px;
+}
+
+.settings-sidebar::-webkit-scrollbar-thumb:hover,
+.settings-columns-reorder::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 51, 102, 0.3);
 }

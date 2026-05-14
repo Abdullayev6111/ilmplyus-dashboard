@@ -364,10 +364,11 @@
     "mainTitle": "Settings",
     "pages": "Pages",
     "pageColumnsTitle": " page columns",
-    "pageColumnsDesc": "Select the columns that should be displayed in the table",
+    "pageColumnsDesc": "Show/hide columns and reorder them",
     "confirm": "Confirm",
     "saveSuccess": "Settings saved successfully!",
-    "close": "Close"
+    "close": "Close",
+    "dragHint": "Drag columns to reorder them"
   },
   "attendance": {
     "months": {
