@@ -56,7 +56,6 @@ const Courses = () => {
       const { data } = await API.get<Course[]>("/courses");
       return Array.isArray(data) ? data : (data as any)?.data || [];
     },
-    staleTime: 1000 * 60 * 5,
     placeholderData: keepPreviousData,
   });
 

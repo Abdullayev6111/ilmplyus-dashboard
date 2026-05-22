@@ -1,38 +1,39 @@
-import { Route, Routes, Navigate } from "react-router-dom";
-import useAuthStore from "./store/useAuthStore";
-import ProtectedRoute from "./components/ProtectedRoute";
+import { Route, Routes, Navigate } from 'react-router-dom';
+import useAuthStore from './store/useAuthStore';
+import ProtectedRoute from './components/ProtectedRoute';
 
-import Home from "./pages/Home";
-import LoginPage from "./pages/login";
-import Layout from "./components/Layout";
-import Users from "./pages/users";
-import Settings from "./pages/settings";
-import Branches from "./pages/branches";
-import Classes from "./pages/classes";
-import Students from "./pages/students";
-import Teachers from "./pages/teachers";
-import Roles from "./pages/roles";
-import RolePermissions from "./pages/roles/RolePermissions";
-import Payments from "./pages/payments";
-import ArchivedPayments from "./pages/archive";
-import Expenses from "./pages/expenses";
-import ExpenseCategory from "./pages/expenses/expenseCategory";
-import ExpenseSubCategory from "./pages/expenses/expenseSubCategory";
-import Courses from "./pages/courses";
-import NotFound from "./pages/notFound";
-import Rooms from "./pages/rooms";
-import Department from "./pages/department";
-import Areas from "./pages/regions";
-import AreaRegions from "./pages/regions/areaRegions";
-import AreaDistricts from "./pages/regions/areaDistricts";
-import Levels from "./pages/levels";
-import Positions from "./pages/positions";
-import AttendancePage from "./pages/attendance";
-import Operators from "./pages/operators";
-import Sources from "./pages/sources";
+import Home from './pages/Home';
+import LoginPage from './pages/login';
+import Layout from './components/Layout';
+import Users from './pages/users';
+import Settings from './pages/settings';
+import Branches from './pages/branches';
+import Classes from './pages/classes';
+import Students from './pages/students';
+import Teachers from './pages/teachers';
+import Roles from './pages/roles';
+import RolePermissions from './pages/roles/RolePermissions';
+import Payments from './pages/payments';
+import ArchivedPayments from './pages/archive';
+import Expenses from './pages/expenses';
+import ExpenseCategory from './pages/expenses/expenseCategory';
+import ExpenseSubCategory from './pages/expenses/expenseSubCategory';
+import Courses from './pages/courses';
+import NotFound from './pages/notFound';
+import Rooms from './pages/rooms';
+import Department from './pages/department';
+import Areas from './pages/regions';
+import AreaRegions from './pages/regions/areaRegions';
+import AreaDistricts from './pages/regions/areaDistricts';
+import Levels from './pages/levels';
+import Positions from './pages/positions';
+import AttendancePage from './pages/attendance';
+import Operators from './pages/operators';
+import Sources from './pages/sources';
+import RefusalReasons from './pages/refusal-reasons';
 
-import "@mantine/core/styles.css";
-import "@mantine/notifications/styles.css";
+import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 
 const App = () => {
   const isAuth = useAuthStore((state) => state.isAuth);
@@ -51,10 +52,7 @@ const App = () => {
 
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={isAuth ? <Navigate to="/" replace /> : <LoginPage />}
-      />
+      <Route path="/login" element={isAuth ? <Navigate to="/" replace /> : <LoginPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
@@ -79,13 +77,11 @@ const App = () => {
           <Route path="/positions" element={<Positions />} />
           <Route path="/expenses/create" element={<Expenses />} />
           <Route path="/expenses/category" element={<ExpenseCategory />} />
-          <Route
-            path="/expenses/subcategory"
-            element={<ExpenseSubCategory />}
-          />
+          <Route path="/expenses/subcategory" element={<ExpenseSubCategory />} />
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/sources" element={<Sources />} />
           <Route path="/department" element={<Department />} />
+          <Route path="/refusal-reasons" element={<RefusalReasons />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Route>

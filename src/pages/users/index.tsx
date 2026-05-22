@@ -111,7 +111,6 @@ const Users = () => {
       const { data } = await API.get("/users");
       return data;
     },
-    staleTime: 1000 * 60 * 5,
     placeholderData: keepPreviousData,
   });
 

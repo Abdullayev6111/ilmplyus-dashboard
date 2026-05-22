@@ -55,7 +55,6 @@ const Payments = () => {
       const { data } = await API.get("/payments");
       return Array.isArray(data) ? data : data?.data || [];
     },
-    staleTime: 1000 * 60 * 5,
     placeholderData: keepPreviousData,
   });
 

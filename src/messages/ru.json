@@ -71,7 +71,8 @@
     "positions": "Должности",
     "attendance": "Посещаемость",
     "operators": "Операторы",
-    "sources": "Источники"
+    "sources": "Источники",
+    "refusalReasons": "Причины отказов"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -418,6 +419,23 @@
       "print": "Печать",
       "edit": "Редактировать"
     }
+  },
+  "refusalReasons": {
+    "title": "Причины отказов",
+    "addTitle": "Добавить причину отказа",
+    "editTitle": "Редактировать причину отказа",
+    "name": "Название",
+    "comment": "Комментарий",
+    "createdAt": "Дата создания",
+    "updatedAt": "Дата изменения",
+    "actions": "Действия",
+    "notFound": "Данные отсутствуют",
+    "addBtn": "Добавить",
+    "delete": "Удалить",
+    "confirmDelete": "Вы уверены, что хотите удалить?",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "saving": "Сохранение..."
   },
   "regions": {
     "notFound": "Viloyatlar topilmadi (needs translation)"

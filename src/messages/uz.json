@@ -62,7 +62,7 @@
     "expenseSubCategory": "Chiqimlar podkategoriyasi",
     "expenseCreate": "Chiqim kiritish",
     "rooms": "Xonalar",
-    "departments": "Bo'limlar",
+    "departments": "Bo‘limlar",
     "areas": "Hududlar",
     "regions": "Viloyatlar",
     "districts": "Tumanlar",
@@ -71,7 +71,8 @@
     "positions": "Lavozimlar",
     "attendance": "Davomat",
     "operators": "Operatorlar",
-    "sources": "Manbalar"
+    "sources": "Manbalar",
+    "refusalReasons": "Rad etish sabablari"
   },
   "payments": {
     "mainTitle": "To‘lovlar",
@@ -116,17 +117,17 @@
     "noArchived": "Arxivlangan to‘lovlar yo‘q",
     "group": "Guruh",
     "restore": "Qaytarish",
-    "permanentDelete": "Butunlay o'chirish",
+    "permanentDelete": "Butunlay o‘chirish",
     "restoreError": "Qayta tiklashda xatolik yuz berdi!",
-    "notFound": "To'lovlar topilmadi",
+    "notFound": "To‘lovlar topilmadi",
     "restoreSelected": "Tanlanganlarni tiklash",
-    "deleteSelected": "Tanlanganlarni o'chirish",
-    "confirmBatchDelete": "Tanlangan to'lovlarni haqiqatan ham o'chirmoqchimisiz?"
+    "deleteSelected": "Tanlanganlarni o‘chirish",
+    "confirmBatchDelete": "Tanlangan to‘lovlarni haqiqatan ham o‘chirmoqchimisiz?"
   },
   "users": {
     "listTitle": "Foydaluvchilar ro‘yhati",
     "userEditTitle": "Foydalanuvchini tahrirlash",
-    "addNewUserTitle": "Yangi foydalanuvchi qo'shish",
+    "addNewUserTitle": "Yangi foydalanuvchi qo‘shish",
     "pinfl": "JSHSHR",
     "fish": "F.I.SH",
     "lastName": "Familiya",
@@ -165,7 +166,7 @@
     "notFound": "Foydalanuvchilar topilmadi",
     "generatePasswordTooltip": "Yangi parol generatsiya qilish",
     "passwordPlaceholder": "Parol kiriting yoki generatsiya qiling",
-    "pinflError": "14 ta raqam bo'lishi shart",
+    "pinflError": "14 ta raqam bo‘lishi shart",
     "imageLabel": "Profil uchun rasm png yoki jpg formatda max 5mb",
     "upload": "Yuklash"
   },
@@ -218,19 +219,19 @@
     "delete": "O‘chirish",
     "setTime": "Vaqt belgilash",
     "archive": "Arxivlash",
-    "confirmDelete": "O'chirmoqchimisiz?",
-    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz?",
+    "confirmDelete": "O‘chirmoqchimisiz?",
+    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o‘chirmoqchimisiz?",
     "back": "Ortga",
-    "listTitle": "Amallar ro'yxati",
+    "listTitle": "Amallar ro‘yxati",
     "permissionsTitle": "Huquqlarni boshqarish: ",
     "saving": "Saqlanmoqda...",
     "selectBranchPlaceholder": "Filialni tanlang",
-    "noBranches": "Filial yo'q",
+    "noBranches": "Filial yo‘q",
     "assignPermissions": "Huquqlar berish",
     "branchesList": "Filiallar",
-    "addNew": "Yangi ro'l qo'shish",
-    "addNewRole": "Yangi ro'l qo'shish",
-    "editRole": "Ro'lni tahrirlash"
+    "addNew": "Yangi ro‘l qo‘shish",
+    "addNewRole": "Yangi ro‘l qo‘shish",
+    "editRole": "Ro‘lni tahrirlash"
   },
   "expenses": {
     "expenseTitle": "Chiqimlar",
@@ -294,6 +295,23 @@
     "save": "Saqlash",
     "saving": "Saqlanmoqda..."
   },
+  "refusalReasons": {
+    "title": "Rad etish sabablari",
+    "addTitle": "Rad etish sababini qo‘shish",
+    "editTitle": "Rad etish sababini tahrirlash",
+    "name": "Nomi",
+    "comment": "Izoh",
+    "createdAt": "Yaratilgan sana",
+    "updatedAt": "O‘zgartirilgan sana",
+    "actions": "Amallar",
+    "notFound": "Ma’lumot mavjud emas",
+    "addBtn": "Qo‘shish",
+    "delete": "O‘chirish",
+    "confirmDelete": "O‘chirishni tasdiqlaysizmi?",
+    "cancel": "Bekor qilish",
+    "save": "Saqlash",
+    "saving": "Saqlanmoqda..."
+  },
   "regions": {
     "notFound": "Viloyatlar topilmadi"
   },
@@ -331,7 +349,7 @@
     "notFound": "Kurslar topilmadi",
     "levelName": "Daraja nomi",
     "editTitle": "Kursni tahrirlash",
-    "addTitle": "Kurs qo'shish",
+    "addTitle": "Kurs qo‘shish",
     "detailsTitle": "Kurs tafsilotlari",
     "availableLevels": "MAVJUD DARAJALAR",
     "back": "Qaytish"
@@ -357,9 +375,9 @@
   },
   "positions": {
     "mainTitle": "Lavozimlar",
-    "addTitle": "Lavozim qo'shish",
+    "addTitle": "Lavozim qo‘shish",
     "editTitle": "Lavozimni tahrirlash",
-    "department": "Bo'lim",
+    "department": "Bo‘lim",
     "positionName": "Lavozim nomi",
     "createdDate": "Yaratilgan sana",
     "actions": "Harakatlar",
@@ -370,11 +388,11 @@
     "mainTitle": "Sozlamalar",
     "pages": "Sahifalar",
     "pageColumnsTitle": " sahifasi ustunlari",
-    "pageColumnsDesc": "Ustunlarni ko'rsatish/yashirish va tartibini o'zgartirish",
+    "pageColumnsDesc": "Ustunlarni ko‘rsatish/yashirish va tartibini o‘zgartirish",
     "confirm": "Tasdiqlash",
     "saveSuccess": "Sozlamalar muvaffaqiyatli saqlandi!",
     "close": "Yopish",
-    "dragHint": "Ustunlarni suring va tartibini o'zgartiring"
+    "dragHint": "Ustunlarni suring va tartibini o‘zgartiring"
   },
   "attendance": {
     "months": {
@@ -404,7 +422,7 @@
       "present": "Kelgan",
       "absentNoExcuse": "Sababsiz kelmagan",
       "absentWithExcuse": "Uzrli sabab bilan kelmagan",
-      "noUniform": "Fo'rmasiz",
+      "noUniform": "Fo‘rmasiz",
       "late": "Kech qolgan"
     },
     "table": {

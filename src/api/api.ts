@@ -5,6 +5,7 @@ import { notifications } from "@mantine/notifications";
 
 export const API = axios.create({
   baseURL: "https://easypos.uz/api",
+  timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },

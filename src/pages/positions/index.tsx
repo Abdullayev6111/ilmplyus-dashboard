@@ -41,7 +41,6 @@ const Positions = () => {
       const { data } = await API.get<PositionItem[] | { data: PositionItem[] }>('/positions');
       return Array.isArray(data) ? data : (data?.data ?? []);
     },
-    staleTime: 1000 * 60 * 5,
     placeholderData: keepPreviousData,
   });
 
@@ -51,7 +50,6 @@ const Positions = () => {
       const { data } = await API.get<DepartmentType[] | { data: DepartmentType[] }>('/departments');
       return Array.isArray(data) ? data : (data?.data ?? []);
     },
-    staleTime: 1000 * 60 * 5,
   });
 
   const createMutation = useMutation({

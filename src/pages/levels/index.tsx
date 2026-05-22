@@ -44,7 +44,6 @@ const Levels = () => {
       const { data } = await API.get<Level[]>("/levels");
       return Array.isArray(data) ? data : (data as any)?.data || [];
     },
-    staleTime: 1000 * 60 * 5,
     placeholderData: keepPreviousData,
   });
 

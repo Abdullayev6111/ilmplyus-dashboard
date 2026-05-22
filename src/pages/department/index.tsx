@@ -8,6 +8,7 @@ import { API } from "../../api/api";
 import { useTranslation } from "react-i18next";
 import { getLocalized } from "../../utils/getLocalized";
 import EmptyState from "../../components/EmptyState";
+import TableSkeleton from "../../components/TableSkeleton";
 import "../branches/branches.css";
 import type { Branch, DepartmentType, DepartmentPayload } from "../../types";
 import { useEffect, useMemo, useState } from "react";
@@ -290,7 +291,6 @@ const Department = () => {
   >({
     queryKey: ["departments"],
     queryFn: getDepartments,
-    staleTime: 1000 * 60 * 5,
     placeholderData: keepPreviousData,
   });
 
@@ -360,14 +360,6 @@ const Department = () => {
     return [...departments].sort((a, b) => a.id - b.id);
   }, [departments]);
 
-  if (isLoadingDepartments) {
-    return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        {t("departments.loading")}
-      </div>
-    );
-  }
-
   return (
     <section className="branch-container container">
       <h1 className="branch-page-title">{t("departments.listTitle")}</h1>
@@ -410,7 +402,9 @@ const Department = () => {
             </tr>
           </thead>
           <tbody>
-            {tableData?.map((dept) => (
+            {isLoadingDepartments ? (
+              <TableSkeleton rowCount={8} columnCount={8} />
+            ) : tableData?.map((dept) => (
               <tr key={dept.id}>
                 <td>
                   <input
@@ -447,7 +441,7 @@ const Department = () => {
                 </td>
               </tr>
             ))}
-            {tableData.length === 0 && (
+            {!isLoadingDepartments && tableData.length === 0 && (
               <EmptyState colSpan={8} message={t("common.noData")} />
             )}
           </tbody>

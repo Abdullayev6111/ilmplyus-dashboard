@@ -25,7 +25,6 @@ const ControlCard = () => {
       return res.data;
     },
     select: (data) => data.total,
-    staleTime: 1000 * 60 * 2,
   });
 
   const { data: branchesCount = 0 } = useQuery({
@@ -35,7 +34,6 @@ const ControlCard = () => {
       return res.data;
     },
     select: (data) => data?.length ?? 0,
-    staleTime: 1000 * 60 * 2,
   });
 
   const controlData: ControlItem[] = useMemo(
