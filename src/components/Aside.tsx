@@ -11,7 +11,6 @@ import usersIcon from '../assets/images/aside-users.svg';
 import settingsIcon from '../assets/images/aside-settings.svg';
 import branchesIcon from '../assets/images/aside-location.svg';
 import studentsIcon from '../assets/images/aside-students.svg';
-import teachersIcon from '../assets/images/aside-teacher.svg';
 import userRoleIcon from '../assets/images/aside-user-role.svg';
 import paymentsIcon from '../assets/images/money-bill.svg';
 import expenseIcon from '../assets/images/walletIcon.svg';
@@ -114,12 +113,6 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       icon: studentsIcon,
       path: '/students',
       permission: 'students.view',
-    },
-    {
-      label: t('aside.teachers'),
-      icon: teachersIcon,
-      path: '/teachers',
-      permission: 'teachers.view',
     },
     {
       label: t('aside.rooms'),
