@@ -352,7 +352,18 @@
     "cancel": "Bekor qilish",
     "save": "Saqlash",
     "saving": "Saqlanmoqda...",
-    "close": "Yopish"
+    "close": "Yopish",
+    "gender": "Jinsi",
+    "male": "Erkak",
+    "female": "Ayol",
+    "fatherName": "Otasining ismi",
+    "selectBranch": "Filialni tanlang",
+    "selectGender": "Jinsni tanlang",
+    "selectStatus": "Holatni tanlang",
+    "selectContract": "Shartnomani tanlang",
+    "newPassword": "Yangi parol",
+    "passwordPlaceholder": "Parol",
+    "passwordHint": "Bo‘sh qoldiring — parol o‘zgarmaydi"
   },
   "regions": {
     "notFound": "Viloyatlar topilmadi"

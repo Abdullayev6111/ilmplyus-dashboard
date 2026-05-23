@@ -473,7 +473,17 @@
     "cancel": "Cancel",
     "save": "Save",
     "saving": "Saving...",
-    "close": "Close"
+    "close": "Close",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "fatherName": "Father's Name",
+    "selectBranch": "Select Branch",
+    "selectGender": "Select Gender",
+    "selectStatus": "Select Status",
+    "selectContract": "Select Contract",
+    "newPassword": "New Password",
+    "passwordHint": "Leave blank to keep password unchanged"
   },
   "districts": {
     "choose": "Tumanni tanlang (needs translation)",

@@ -477,7 +477,17 @@
     "cancel": "Отмена",
     "save": "Сохранить",
     "saving": "Сохранение...",
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "gender": "Пол",
+    "male": "Мужской",
+    "female": "Женский",
+    "fatherName": "Отчество",
+    "selectBranch": "Выберите филиал",
+    "selectGender": "Выберите пол",
+    "selectStatus": "Выберите статус",
+    "selectContract": "Выберите договор",
+    "newPassword": "Новый пароль",
+    "passwordHint": "Оставьте пустым, чтобы не менять пароль"
   },
   "regions": {
     "notFound": "Viloyatlar topilmadi (needs translation)"

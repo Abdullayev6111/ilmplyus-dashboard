@@ -1,6 +1,11 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { studentAPI, type Student, type StudentPayload, type StudentGroup } from '../../api/student.api';
+import {
+  studentAPI,
+  type Student,
+  type StudentPayload,
+  type StudentGroup,
+} from '../../api/student.api';
 import { API } from '../../api/api';
 import '../users/users.css';
 import '../expenses/expenses.css';
@@ -10,11 +15,31 @@ import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 
-interface BranchItem { id: number; name: string; name_uz?: string }
-interface CourseItem { id: number; name_uz: string; name_ru?: string; name_en?: string }
-interface LevelItem  { id: number; name_uz: string; name_ru?: string; name_en?: string }
-interface ContractItem { employee_id: number; employee: { id: number; full_name: string } }
-interface RoomItem   { id: number; name: string }
+interface BranchItem {
+  id: number;
+  name: string;
+  name_uz?: string;
+}
+interface CourseItem {
+  id: number;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
+}
+interface LevelItem {
+  id: number;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
+}
+interface ContractItem {
+  employee_id: number;
+  employee: { id: number; full_name: string };
+}
+interface RoomItem {
+  id: number;
+  name: string;
+}
 
 const formatDate = (iso: string) => {
   if (!iso) return '-';
@@ -39,14 +64,19 @@ const Students = () => {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
-  const [showViewModal, setShowViewModal]     = useState(false);
-  const [showEditModal, setShowEditModal]     = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget]       = useState<number | 'all' | null>(null);
-  const [selected, setSelected]               = useState<number[]>([]);
-  const [viewingItem, setViewingItem]         = useState<Student | null>(null);
-  const [editingItem, setEditingItem]         = useState<Student | null>(null);
-  const [formData, setFormData]               = useState<StudentPayload>({ full_name: '', username: '' });
+  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
+  const [selected, setSelected] = useState<number[]>([]);
+  const [viewingItem, setViewingItem] = useState<Student | null>(null);
+  const [editingItem, setEditingItem] = useState<Student | null>(null);
+  const [formData, setFormData] = useState<StudentPayload>({
+    full_name: '',
+    username: '',
+    password: '',
+  });
+  const [showPassword, setShowPassword] = useState(false);
 
   const { data: students, isLoading } = useQuery<Student[]>({
     queryKey: ['students'],
@@ -80,13 +110,13 @@ const Students = () => {
 
   const getBranchName = (id: number) => {
     const b = branches.find((x) => x.id === id);
-    return b ? (b.name || b.name_uz || String(id)) : String(id);
+    return b ? b.name || b.name_uz || String(id) : String(id);
   };
   const getCourseName = (id: number) => {
     const c = courses.find((x) => x.id === id);
     return c ? getLocalized(c, 'name', i18n.language) : String(id);
   };
-  const getLevelName  = (id: number) => {
+  const getLevelName = (id: number) => {
     const l = levels.find((x) => x.id === id);
     return l ? getLocalized(l, 'name', i18n.language) : String(id);
   };
@@ -120,9 +150,25 @@ const Students = () => {
     setShowViewModal(true);
   };
 
+  const toDateInput = (val: string | null | undefined) => {
+    if (!val) return '';
+    return val.slice(0, 10);
+  };
+
   const openEditModal = (item: Student) => {
     setEditingItem(item);
-    setFormData({ full_name: item.full_name, username: item.username });
+    setFormData({
+      full_name: item.full_name,
+      username: item.username,
+      password: '',
+      birth_date: toDateInput(item.birth_date),
+      phone: item.phone || '',
+      branch_id: item.branch_id,
+      gender: item.gender || '',
+      father_name: item.father_name || '',
+      is_active: item.is_active,
+      is_contract_confirmed: item.is_contract_confirmed,
+    });
     setShowEditModal(true);
   };
 
@@ -147,7 +193,7 @@ const Students = () => {
   const resetEditForm = () => {
     setShowEditModal(false);
     setEditingItem(null);
-    setFormData({ full_name: '', username: '' });
+    setFormData({ full_name: '', username: '', password: '' });
   };
 
   const renderGroupCard = (group: StudentGroup, idx: number) => (
@@ -190,7 +236,9 @@ const Students = () => {
         </div>
         <div className="group-info-item">
           <label>{t('students.duration')}</label>
-          <span>{group.duration} {t('students.min')}</span>
+          <span>
+            {group.duration} {t('students.min')}
+          </span>
         </div>
         <div className="group-info-item">
           <label>{t('students.startTime')}</label>
@@ -303,37 +351,148 @@ const Students = () => {
       {/* Edit Modal */}
       {showEditModal && editingItem && (
         <div className="modal-overlay">
-          <div className="expenses-subcategory">
+          <div className="student-edit-modal">
             <h1>{t('students.editTitle')}</h1>
 
             <form
-              className="subcategory-form"
               onSubmit={(e) => {
                 e.preventDefault();
-                updateMutation.mutate({ id: editingItem.id, payload: formData });
+                const payload = { ...formData };
+                if (!payload.password) delete payload.password;
+                updateMutation.mutate({ id: editingItem.id, payload });
               }}
             >
-              <div className="subcategory-form-group">
-                <label>{t('students.name')}</label>
-                <input
-                  type="text"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  required
-                />
+              <div className="student-edit-grid">
+                <div className="student-edit-group">
+                  <label>{t('students.name')}</label>
+                  <input
+                    type="text"
+                    value={formData.full_name}
+                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="student-edit-group">
+                  <label>{t('students.login')}</label>
+                  <input
+                    type="text"
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="student-edit-group">
+                  <label>{t('students.birthDate')}</label>
+                  <input
+                    type="date"
+                    value={formData.birth_date || ''}
+                    onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
+                  />
+                </div>
+
+                <div className="student-edit-group">
+                  <label>{t('students.phone')}</label>
+                  <input
+                    type="text"
+                    value={formData.phone || ''}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+
+                <div className="student-edit-group">
+                  <label>{t('students.fatherName')}</label>
+                  <input
+                    type="text"
+                    value={formData.father_name || ''}
+                    onChange={(e) => setFormData({ ...formData, father_name: e.target.value })}
+                  />
+                </div>
+
+                <div className="student-edit-group">
+                  <label>{t('students.gender')}</label>
+                  <select
+                    value={formData.gender || ''}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                  >
+                    <option value="">{t('students.selectGender')}</option>
+                    <option value="male">{t('students.male')}</option>
+                    <option value="female">{t('students.female')}</option>
+                  </select>
+                </div>
+
+                <div className="student-edit-group">
+                  <label>{t('students.branch')}</label>
+                  <select
+                    value={formData.branch_id ?? ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, branch_id: Number(e.target.value) || undefined })
+                    }
+                  >
+                    <option value="">{t('students.selectBranch')}</option>
+                    {branches.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name || b.name_uz}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="student-edit-group">
+                  <label>{t('students.status')}</label>
+                  <select
+                    value={formData.is_active === undefined ? '' : String(formData.is_active)}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_active: e.target.value === 'true' })
+                    }
+                  >
+                    <option value="">{t('students.selectStatus')}</option>
+                    <option value="true">{t('students.active')}</option>
+                    <option value="false">{t('students.inactive')}</option>
+                  </select>
+                </div>
+
+                <div className="student-edit-group">
+                  <label>{t('students.contract')}</label>
+                  <select
+                    value={
+                      formData.is_contract_confirmed === undefined
+                        ? ''
+                        : String(formData.is_contract_confirmed)
+                    }
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_contract_confirmed: e.target.value === 'true' })
+                    }
+                  >
+                    <option value="">{t('students.selectContract')}</option>
+                    <option value="true">{t('students.confirmed')}</option>
+                    <option value="false">{t('students.notConfirmed')}</option>
+                  </select>
+                </div>
+
+                <div className="student-edit-group">
+                  <label>{t('students.newPassword')}</label>
+                  <div className="password-input-wrapper">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={formData.password || ''}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder={t('students.passwordPlaceholder')}
+                    />
+                    <button
+                      type="button"
+                      className="password-eye-btn"
+                      onClick={() => setShowPassword((p) => !p)}
+                    >
+                      <i className={showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'} />
+                    </button>
+                  </div>
+                  <span className="password-hint">{t('students.passwordHint')}</span>
+                </div>
               </div>
 
-              <div className="subcategory-form-group">
-                <label>{t('students.login')}</label>
-                <input
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="modal-actions">
+              <div className="student-edit-actions">
                 <button className="primary" type="submit" disabled={updateMutation.isPending}>
                   {updateMutation.isPending ? t('students.saving') : t('students.save')}
                 </button>
@@ -385,7 +544,9 @@ const Students = () => {
               <th>
                 <input
                   type="checkbox"
-                  checked={selected.length === (students?.length || 0) && (students?.length || 0) > 0}
+                  checked={
+                    selected.length === (students?.length || 0) && (students?.length || 0) > 0
+                  }
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
@@ -422,7 +583,14 @@ const Students = () => {
                   <td>{getBranchName(item.branch_id)}</td>
                   <td>
                     {item.groups && item.groups.length > 0 ? (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: 4,
+                          justifyContent: 'center',
+                        }}
+                      >
                         {item.groups.map((g) => (
                           <span key={g.id} className="groups-tag">
                             {g.name}

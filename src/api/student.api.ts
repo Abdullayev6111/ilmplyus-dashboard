@@ -45,6 +45,14 @@ export interface Student {
 export interface StudentPayload {
   full_name: string;
   username: string;
+  password?: string;
+  birth_date?: string;
+  phone?: string;
+  branch_id?: number;
+  gender?: string;
+  father_name?: string;
+  is_active?: boolean;
+  is_contract_confirmed?: boolean;
 }
 
 export const studentAPI = {
