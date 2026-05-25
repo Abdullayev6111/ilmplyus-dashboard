@@ -43,6 +43,16 @@ export interface LoginResponse {
   };
 }
 
+interface MeResponse {
+  id: number;
+  full_name?: string;
+  name?: string;
+  username?: string;
+  role?: string;
+  roles?: { id: number; name: string; permissions?: { id: number; name: string }[] }[];
+  [key: string]: unknown;
+}
+
 const LoginPage = () => {
   const { t } = useTranslation();
   const [seconds, setSeconds] = useState(180);
@@ -80,10 +90,17 @@ const LoginPage = () => {
       return data;
     },
 
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       const store = useAuthStore.getState();
 
       store.setAuth(data.token, data.user);
+
+      try {
+        const { data: meData } = await API.get<MeResponse>('/me');
+        store.setUser(meData.user || meData);
+      } catch {
+        // /me muvaffaqiyatsiz bo'lsa login data bilan davom etadi
+      }
 
       const expiresAt = store.expiresAt;
 

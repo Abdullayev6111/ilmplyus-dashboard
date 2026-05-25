@@ -92,13 +92,16 @@ header {
   font-family: noto-b;
   font-size: 18px;
   color: #fff;
+  text-align: right;
 }
 
 .user-role {
-  font-family: noto-r;
+  font-family: noto-b;
   font-size: 14px;
   color: #fff;
   opacity: 80%;
+  text-align: right;
+  text-transform: uppercase;
 }
 
 .user-icon-circle {
@@ -109,6 +112,59 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.header-user-wrapper {
+  position: relative;
+}
+
+.header-user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.header-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  min-width: 160px;
+  padding: 8px 0;
+  z-index: 9999;
+}
+
+.header-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: noto-r;
+  font-size: 15px;
+  color: #e53935;
+  transition: background 0.15s;
+}
+
+.header-dropdown-item:hover {
+  background: #fff5f5;
+}
+
+.header-dropdown-icon {
+  font-size: 16px;
+  color: #e53935;
+}
+
+.header-dropdown-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 4px 0;
 }
 
 /* Header end */
@@ -416,7 +472,7 @@ aside {
   background: #ffffff26;
 }
 
-.sidebar-item[data-active="true"],
+.sidebar-item[data-active='true'],
 .sidebar-item.active {
   background: #ffffff26;
 }
