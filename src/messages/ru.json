@@ -229,7 +229,12 @@
     "director": "Ф.И.О. директора",
     "location": "Город/район размещения",
     "branchName": "Название филиала",
-    "notFound": "Filiallar topilmadi (needs translation)"
+    "branchCode": "Код филиала",
+    "legalAddress": "Юридический адрес",
+    "archiveQuestion": "Архивировать?",
+    "yes": "Да",
+    "no": "Нет",
+    "notFound": "Филиалы не найдены"
   },
   "roles": {
     "pageTitle": "Добавить новую роль",

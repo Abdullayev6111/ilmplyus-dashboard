@@ -32,6 +32,7 @@ const Courses = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<Course | null>(null);
   const [viewItem, setViewItem] = useState<Course | null>(null);
 
@@ -673,7 +674,7 @@ const Courses = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              {isVisible("id") && <th>ID</th>}
+              {isVisible("id") && <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>}
               {isVisible("name") && <th>{t("courses.courseName")}</th>}
               {isVisible("branches") && <th>{t("courses.branch")}</th>}
               {isVisible("levels") && <th>{t("levels.level")}</th>}
@@ -686,7 +687,7 @@ const Courses = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={7} />
             ) : courses && courses.length > 0 ? (
-              courses.map((item) => {
+              [...(courses || [])].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id).map((item) => {
                 const branchLabel =
                   item.branches && item.branches.length > 0
                     ? item.branches.map((b) => getLocalized(b, "name", i18n.language)).join(", ")

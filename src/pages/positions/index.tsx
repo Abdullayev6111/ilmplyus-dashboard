@@ -26,6 +26,7 @@ const Positions = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<PositionItem | null>(null);
 
   const [formData, setFormData] = useState<PositionPayload>({
@@ -267,7 +268,7 @@ const Positions = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
+              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
               <th>{t('positions.department')}</th>
               <th>{t('positions.positionName')}</th>
               <th>{t('positions.createdDate')}</th>
@@ -279,7 +280,7 @@ const Positions = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={6} />
             ) : positions && positions.length > 0 ? (
-              positions.map((item) => (
+              [...(positions || [])].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id).map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

@@ -30,6 +30,7 @@ const Levels = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<Level | null>(null);
 
   const [formData, setFormData] = useState<LevelPayload>({
@@ -242,7 +243,7 @@ const Levels = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
+              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
               <th>{t("levels.levelName")}</th>
               <th>{t("levels.createdDate")}</th>
               <th>{t("levels.actions")}</th>
@@ -253,7 +254,7 @@ const Levels = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={5} />
             ) : levels && levels.length > 0 ? (
-              levels?.map((item) => (
+              [...(levels || [])].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id).map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

@@ -20,6 +20,7 @@ const ExpensesCategory = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
   const [categoryName, setCategoryName] = useState("");
   const [editingItem, setEditingItem] = useState<ExpenseCategory | null>(null);
 
@@ -217,7 +218,7 @@ const ExpensesCategory = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
+              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
               <th>{t("expenses.categoryName")}</th>
               <th>{t("expenses.actions")}</th>
             </tr>
@@ -227,7 +228,7 @@ const ExpensesCategory = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={4} />
             ) : categories?.length ? (
-              categories?.map((item) => (
+              [...(categories || [])].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id).map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

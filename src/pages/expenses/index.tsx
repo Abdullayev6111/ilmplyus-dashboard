@@ -48,6 +48,7 @@ const Expenses = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<Expense | null>(null);
 
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -108,7 +109,7 @@ const Expenses = () => {
 
       return matchCategory && matchSubcategory && matchDate;
     })
-    .sort((a, b) => a.id - b.id);
+    .sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id);
 
   const createMutation = useMutation({
     mutationFn: async () => API.post("/expenses", formData),
@@ -462,7 +463,7 @@ const Expenses = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
+              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
               <th>{t("expenses.category")}</th>
               <th>{t("expenses.subCategory")}</th>
               <th>{t("expenses.cashier")}</th>

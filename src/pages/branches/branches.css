@@ -197,10 +197,17 @@
   transition: all 0.3s ease;
 }
 
-.branch-delete-btn:hover {
+.branch-delete-btn:hover:not(:disabled) {
   background-color: #fff;
   color: #e70a0a;
   font-family: noto-b;
+}
+
+.branch-delete-btn:disabled {
+  background-color: #ccc;
+  border-color: #ccc;
+  color: #fff;
+  cursor: not-allowed;
 }
 
 .branch-edit-icon {
@@ -299,6 +306,50 @@
   background: #003366;
   color: #fff;
   border-color: #003366;
+}
+
+.branch-archive-label {
+  color: #003366;
+  font-family: noto-m;
+  font-size: 14px;
+}
+
+.branch-archive-options {
+  display: flex;
+  gap: 30px;
+  margin-top: 4px;
+}
+
+.branch-archive-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #003366;
+  cursor: pointer;
+}
+
+.branch-archive-option input[type='radio'] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #003366;
+}
+
+.branch-name-row {
+  display: flex;
+  gap: 8px;
+}
+
+.branch-name-row input:first-child {
+  flex: 1;
+}
+
+.branch-code-input {
+  width: 80px;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 2px;
 }
 
 @media (max-width: 1920px) {

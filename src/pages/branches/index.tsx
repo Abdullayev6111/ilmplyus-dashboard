@@ -10,10 +10,14 @@ import EmptyState from '../../components/EmptyState';
 interface Branch {
   id: number;
   name: string;
+  branch_code?: string;
   city: string;
   has_contract: number;
   director_name: string;
   address: string;
+  legal_address_uz?: string;
+  legal_address_ru?: string;
+  legal_address_en?: string;
   postal_code: string;
   legal_name: string;
   inn: string;
@@ -28,6 +32,26 @@ interface Branch {
   updated_at: string;
 }
 
+const emptyForm = {
+  filial_nomi: '',
+  branch_code: '',
+  yuridik_nomi: '',
+  tashkilot_inn: '',
+  yuridik_manzil_uz: '',
+  yuridik_manzil_ru: '',
+  yuridik_manzil_en: '',
+  pochta_indeksi: '',
+  direktor_fio: '',
+  bank_nomi: '',
+  ishchi_raqami: '',
+  mfo: '',
+  oked: '',
+  manzil: '',
+  telefon_nomer: '',
+  holat: true,
+  arxivga_olinsin: false,
+};
+
 const Branches = () => {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
@@ -37,6 +61,8 @@ const Branches = () => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletionTarget, setDeletionTarget] = useState<number | 'all' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortAsc, setSortAsc] = useState(true);
+  const [branchFormData, setBranchFormData] = useState(emptyForm);
 
   const { data: branchesApiData, isLoading } = useQuery<Branch[]>({
     queryKey: ['branches'],
@@ -46,78 +72,47 @@ const Branches = () => {
     },
   });
 
-  const [branchFormData, setBranchFormData] = useState({
-    filial_nomi: '',
-    joylashtirish_shahri: '',
-    manzil: '',
-    direktor_fio: '',
-    email: '',
-    ishchi_raqami: '',
-    oked: '',
-    pochta_indeksi: '',
-    yurdik_nomi: '',
-    tashkilot_inn: '',
-    telefon_nomer: '',
-    bank_nomi: '',
-    mfo: '',
-    holat: true,
+  const buildPayload = (form: typeof emptyForm) => ({
+    name: form.filial_nomi,
+    branch_code: form.branch_code,
+    legal_name: form.yuridik_nomi,
+    inn: form.tashkilot_inn,
+    legal_address_uz: form.yuridik_manzil_uz,
+    legal_address_ru: form.yuridik_manzil_ru,
+    legal_address_en: form.yuridik_manzil_en,
+    postal_code: form.pochta_indeksi,
+    director_name: form.direktor_fio,
+    bank_name: form.bank_nomi,
+    account_number: form.ishchi_raqami,
+    mfo: form.mfo,
+    oked: form.oked,
+    address: form.manzil,
+    phone: form.telefon_nomer,
+    is_active: form.holat ? 1 : 0,
   });
 
   const createBranchMutation = useMutation({
-    mutationFn: async (newBranch: typeof branchFormData) => {
-      const payload = {
-        name: newBranch.filial_nomi,
-        city: newBranch.joylashtirish_shahri,
-        address: newBranch.manzil,
-        director_name: newBranch.direktor_fio,
-        email: newBranch.email,
-        account_number: newBranch.ishchi_raqami,
-        oked: newBranch.oked,
-        postal_code: newBranch.pochta_indeksi,
-        legal_name: newBranch.yurdik_nomi,
-        inn: newBranch.tashkilot_inn,
-        phone: newBranch.telefon_nomer,
-        bank_name: newBranch.bank_nomi,
-        mfo: newBranch.mfo,
-        is_active: newBranch.holat ? 1 : 0,
-      };
-      const { data } = await API.post('/branches', payload);
+    mutationFn: async (form: typeof emptyForm) => {
+      const { data } = await API.post('/branches', buildPayload(form));
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
       setShowBranchModal(false);
-      resetBranchForm();
+      setBranchFormData(emptyForm);
     },
   });
 
-  interface BranchUpdatePayload {
-    name?: string;
-    city?: string;
-    address?: string;
-    director_name?: string;
-    email?: string;
-    account_number?: string;
-    oked?: string;
-    postal_code?: string;
-    legal_name?: string;
-    inn?: string;
-    phone?: string;
-    bank_name?: string;
-    mfo?: string;
-    is_active?: number;
-  }
-
   const updateBranchMutation = useMutation({
-    mutationFn: async ({ id, updates }: { id: number; updates: BranchUpdatePayload }) => {
-      const { data } = await API.put(`/branches/${id}`, updates);
+    mutationFn: async ({ id, form }: { id: number; form: typeof emptyForm }) => {
+      const { data } = await API.put(`/branches/${id}`, buildPayload(form));
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
       setShowBranchModal(false);
       setEditingBranch(null);
-      resetBranchForm();
+      setBranchFormData(emptyForm);
     },
   });
 
@@ -130,71 +125,33 @@ const Branches = () => {
     },
   });
 
-  const resetBranchForm = () => {
-    setBranchFormData({
-      filial_nomi: '',
-      joylashtirish_shahri: '',
-      manzil: '',
-      direktor_fio: '',
-      email: '',
-      ishchi_raqami: '',
-      oked: '',
-      pochta_indeksi: '',
-      yurdik_nomi: '',
-      tashkilot_inn: '',
-      telefon_nomer: '',
-      bank_nomi: '',
-      mfo: '',
-      holat: true,
-    });
-  };
-
-  const handleBranchSubmit = () => {
-    createBranchMutation.mutate(branchFormData);
-  };
-
   const openBranchEditModal = (branch: Branch) => {
     setEditingBranch(branch);
     setBranchFormData({
-      filial_nomi: branch.name,
-      joylashtirish_shahri: branch.city,
-      manzil: branch.address,
-      direktor_fio: branch.director_name,
-      email: branch.email,
-      ishchi_raqami: branch.account_number,
-      oked: branch.oked,
-      pochta_indeksi: branch.postal_code,
-      yurdik_nomi: branch.legal_name,
-      tashkilot_inn: branch.inn,
-      telefon_nomer: branch.phone,
-      bank_nomi: branch.bank_name,
-      mfo: branch.mfo,
+      filial_nomi: branch.name || '',
+      branch_code: branch.branch_code || '',
+      yuridik_nomi: branch.legal_name || '',
+      tashkilot_inn: branch.inn || '',
+      yuridik_manzil_uz: branch.legal_address_uz || '',
+      yuridik_manzil_ru: branch.legal_address_ru || '',
+      yuridik_manzil_en: branch.legal_address_en || '',
+      pochta_indeksi: branch.postal_code || '',
+      direktor_fio: branch.director_name || '',
+      bank_nomi: branch.bank_name || '',
+      ishchi_raqami: branch.account_number || '',
+      mfo: branch.mfo || '',
+      oked: branch.oked || '',
+      manzil: branch.address || '',
+      telefon_nomer: branch.phone || '',
       holat: branch.is_active === 1,
+      arxivga_olinsin: false,
     });
     setShowBranchModal(true);
   };
 
-  const handleBranchEditSubmit = () => {
+  const handleSubmit = () => {
     if (editingBranch) {
-      updateBranchMutation.mutate({
-        id: editingBranch.id,
-        updates: {
-          name: branchFormData.filial_nomi,
-          city: branchFormData.joylashtirish_shahri,
-          address: branchFormData.manzil,
-          director_name: branchFormData.direktor_fio,
-          email: branchFormData.email,
-          account_number: branchFormData.ishchi_raqami,
-          oked: branchFormData.oked,
-          postal_code: branchFormData.pochta_indeksi,
-          legal_name: branchFormData.yurdik_nomi,
-          inn: branchFormData.tashkilot_inn,
-          phone: branchFormData.telefon_nomer,
-          bank_name: branchFormData.bank_nomi,
-          mfo: branchFormData.mfo,
-          is_active: branchFormData.holat ? 1 : 0,
-        },
-      });
+      updateBranchMutation.mutate({ id: editingBranch.id, form: branchFormData });
     } else {
       createBranchMutation.mutate(branchFormData);
     }
@@ -202,22 +159,17 @@ const Branches = () => {
 
   const filteredBranches = useMemo(() => {
     const branches = branchesApiData || [];
-
     return branches
-      .filter((branch) => {
-        const matchesSearch = getLocalized(branch, 'name', i18n.language)
+      .filter((branch) =>
+        getLocalized(branch, 'name', i18n.language)
           .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-
-        if (!matchesSearch) return false;
-
-        return true;
-      })
-      .sort((a, b) => a.id - b.id);
-  }, [branchesApiData, searchTerm, i18n.language]);
+          .includes(searchTerm.toLowerCase()),
+      )
+      .sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id);
+  }, [branchesApiData, searchTerm, i18n.language, sortAsc]);
 
   const toggleAllBranches = (checked: boolean) =>
-    setSelectedBranches(checked ? filteredBranches?.map((b) => b.id) : []);
+    setSelectedBranches(checked ? filteredBranches.map((b) => b.id) : []);
 
   const toggleSingleBranch = (id: number) =>
     setSelectedBranches((prev) =>
@@ -229,15 +181,24 @@ const Branches = () => {
       selectedBranches.forEach((id) => deleteBranchMutation.mutate(id));
       setSelectedBranches([]);
     }
-
     if (typeof deletionTarget === 'number') {
       deleteBranchMutation.mutate(deletionTarget);
       setSelectedBranches((prev) => prev.filter((x) => x !== deletionTarget));
     }
-
     setShowDeleteConfirmation(false);
     setDeletionTarget(null);
   };
+
+  const closeModal = () => {
+    setShowBranchModal(false);
+    setEditingBranch(null);
+    setBranchFormData(emptyForm);
+  };
+
+  const isPending = createBranchMutation.isPending || updateBranchMutation.isPending;
+
+  const set = (field: keyof typeof emptyForm) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setBranchFormData((prev) => ({ ...prev, [field]: e.target.value }));
 
   return (
     <section className="branch-container container">
@@ -251,132 +212,14 @@ const Branches = () => {
             </h3>
 
             <div className="branch-form-wrapper">
+              {/* Chap tomon: yuridik ma'lumotlar */}
               <div className="branch-form-left">
-                <div className="branch-input-group">
-                  <label>{t('branches.branchName')}</label>
-                  <input
-                    type="text"
-                    value={branchFormData.filial_nomi}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        filial_nomi: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="branch-input-group">
-                  <label>{t('branches.location')}</label>
-                  <input
-                    type="text"
-                    value={branchFormData.joylashtirish_shahri}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        joylashtirish_shahri: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="branch-input-group">
-                  <label>{t('branches.address')}</label>
-                  <input
-                    type="text"
-                    value={branchFormData.manzil}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        manzil: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="branch-input-group">
-                  <label>{t('branches.director')}</label>
-                  <input
-                    type="text"
-                    value={branchFormData.direktor_fio}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        direktor_fio: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="branch-input-group">
-                  <label>{t('branches.email')}</label>
-                  <input
-                    type="text"
-                    value={branchFormData.email}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        email: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="branch-input-group">
-                  <label>{t('branches.accountNumber')}</label>
-                  <input
-                    type="text"
-                    value={branchFormData.ishchi_raqami}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        ishchi_raqami: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="branch-input-group">
-                  <label>OKED</label>
-                  <input
-                    type="text"
-                    value={branchFormData.oked}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        oked: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="branch-form-right">
-                <div className="branch-input-group">
-                  <label>{t('branches.index')}</label>
-                  <input
-                    type="text"
-                    value={branchFormData.pochta_indeksi}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        pochta_indeksi: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
                 <div className="branch-input-group">
                   <label>{t('branches.legalName')}</label>
                   <input
                     type="text"
-                    value={branchFormData.yurdik_nomi}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        yurdik_nomi: e.target.value,
-                      })
-                    }
+                    value={branchFormData.yuridik_nomi}
+                    onChange={set('yuridik_nomi')}
                   />
                 </div>
 
@@ -385,13 +228,103 @@ const Branches = () => {
                   <input
                     type="text"
                     value={branchFormData.tashkilot_inn}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        tashkilot_inn: e.target.value,
-                      })
-                    }
+                    onChange={set('tashkilot_inn')}
                   />
+                </div>
+
+                <div className="branch-input-group">
+                  <label>{t('branches.index')}</label>
+                  <input
+                    type="text"
+                    value={branchFormData.pochta_indeksi}
+                    onChange={set('pochta_indeksi')}
+                  />
+                </div>
+
+                <div className="branch-input-group">
+                  <label>{t('branches.director')}</label>
+                  <input
+                    type="text"
+                    value={branchFormData.direktor_fio}
+                    onChange={set('direktor_fio')}
+                  />
+                </div>
+
+                <div className="branch-input-group">
+                  <label>{t('branches.bankName')}</label>
+                  <input type="text" value={branchFormData.bank_nomi} onChange={set('bank_nomi')} />
+                </div>
+
+                <div className="branch-input-group">
+                  <label>{t('branches.accountNumber')}</label>
+                  <input
+                    type="text"
+                    value={branchFormData.ishchi_raqami}
+                    onChange={set('ishchi_raqami')}
+                  />
+                </div>
+
+                <div className="branch-input-group">
+                  <label>MFO</label>
+                  <input type="text" value={branchFormData.mfo} onChange={set('mfo')} />
+                </div>
+
+                <div className="branch-input-group">
+                  <label>OKED</label>
+                  <input type="text" value={branchFormData.oked} onChange={set('oked')} />
+                </div>
+              </div>
+
+              {/* O'ng tomon: asosiy ma'lumotlar */}
+              <div className="branch-form-right">
+                {editingBranch ? (
+                  <>
+                    <div className="branch-input-group">
+                      <label>{t('branches.legalAddress')} (UZ)</label>
+                      <input type="text" value={branchFormData.yuridik_manzil_uz} onChange={set('yuridik_manzil_uz')} />
+                    </div>
+                    <div className="branch-input-group">
+                      <label>{t('branches.legalAddress')} (RU)</label>
+                      <input type="text" value={branchFormData.yuridik_manzil_ru} onChange={set('yuridik_manzil_ru')} />
+                    </div>
+                    <div className="branch-input-group">
+                      <label>{t('branches.legalAddress')} (EN)</label>
+                      <input type="text" value={branchFormData.yuridik_manzil_en} onChange={set('yuridik_manzil_en')} />
+                    </div>
+                  </>
+                ) : (
+                  <div className="branch-input-group">
+                    <label>{t('branches.legalAddress')}</label>
+                    <input type="text" value={branchFormData.yuridik_manzil_uz} onChange={set('yuridik_manzil_uz')} />
+                  </div>
+                )}
+
+                <div className="branch-input-group">
+                  <label>{t('branches.branchName')}</label>
+                  <div className="branch-name-row">
+                    <input
+                      type="text"
+                      placeholder={t('branches.branchName')}
+                      value={branchFormData.filial_nomi}
+                      onChange={set('filial_nomi')}
+                    />
+                    <input
+                      type="text"
+                      maxLength={4}
+                      placeholder={t('branches.branchCode')}
+                      value={branchFormData.branch_code}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                        setBranchFormData((prev) => ({ ...prev, branch_code: val }));
+                      }}
+                      className="branch-code-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="branch-input-group">
+                  <label>{t('branches.address')}</label>
+                  <input type="text" value={branchFormData.manzil} onChange={set('manzil')} />
                 </div>
 
                 <div className="branch-input-group">
@@ -399,40 +332,7 @@ const Branches = () => {
                   <input
                     type="text"
                     value={branchFormData.telefon_nomer}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        telefon_nomer: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="branch-input-group">
-                  <label>{t('branches.bankName')}</label>
-                  <input
-                    type="text"
-                    value={branchFormData.bank_nomi}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        bank_nomi: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="branch-input-group">
-                  <label>MFO</label>
-                  <input
-                    type="text"
-                    value={branchFormData.mfo}
-                    onChange={(e) =>
-                      setBranchFormData({
-                        ...branchFormData,
-                        mfo: e.target.value,
-                      })
-                    }
+                    onChange={set('telefon_nomer')}
                   />
                 </div>
 
@@ -442,40 +342,69 @@ const Branches = () => {
                     <button
                       type="button"
                       className={branchFormData.holat ? '' : 'branch-active-btn'}
-                      onClick={() => setBranchFormData({ ...branchFormData, holat: false })}
+                      onClick={() =>
+                        setBranchFormData((prev) => ({
+                          ...prev,
+                          holat: false,
+                          arxivga_olinsin: false,
+                        }))
+                      }
                     >
                       {t('branches.inactive')}
                     </button>
                     <button
                       type="button"
                       className={branchFormData.holat ? 'branch-active-btn' : ''}
-                      onClick={() => setBranchFormData({ ...branchFormData, holat: true })}
+                      onClick={() =>
+                        setBranchFormData((prev) => ({
+                          ...prev,
+                          holat: true,
+                          arxivga_olinsin: false,
+                        }))
+                      }
                     >
                       {t('branches.active')}
                     </button>
                   </div>
                 </div>
+
+                {!branchFormData.holat && (
+                  <div className="branch-input-group">
+                    <label className="branch-archive-label">{t('branches.archiveQuestion')}</label>
+                    <div className="branch-archive-options">
+                      <label className="branch-archive-option">
+                        <input
+                          type="radio"
+                          name="arxivga_olinsin"
+                          checked={branchFormData.arxivga_olinsin === true}
+                          onChange={() =>
+                            setBranchFormData((prev) => ({ ...prev, arxivga_olinsin: true }))
+                          }
+                        />
+                        {t('branches.yes')}
+                      </label>
+                      <label className="branch-archive-option">
+                        <input
+                          type="radio"
+                          name="arxivga_olinsin"
+                          checked={branchFormData.arxivga_olinsin === false}
+                          onChange={() =>
+                            setBranchFormData((prev) => ({ ...prev, arxivga_olinsin: false }))
+                          }
+                        />
+                        {t('branches.no')}
+                      </label>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="branch-modal-buttons">
-              <button
-                className="branch-save-btn"
-                onClick={editingBranch ? handleBranchEditSubmit : handleBranchSubmit}
-                disabled={createBranchMutation.isPending || updateBranchMutation.isPending}
-              >
-                {createBranchMutation.isPending || updateBranchMutation.isPending
-                  ? t('branches.saving')
-                  : t('branches.save')}
+              <button className="branch-save-btn" onClick={handleSubmit} disabled={isPending}>
+                {isPending ? t('branches.saving') : t('branches.save')}
               </button>
-              <button
-                className="branch-cancel-btn"
-                onClick={() => {
-                  setShowBranchModal(false);
-                  setEditingBranch(null);
-                  resetBranchForm();
-                }}
-              >
+              <button className="branch-cancel-btn" onClick={closeModal}>
                 {t('branches.cancel')}
               </button>
             </div>
@@ -487,12 +416,10 @@ const Branches = () => {
         <div className="branch-modal-overlay">
           <div className="branch-modal branch-small-modal">
             <h3>{t('branches.confirmDelete')}</h3>
-
             <div className="branch-modal-buttons">
               <button className="branch-danger-btn" onClick={confirmBranchDeletion}>
                 {t('branches.confirm')}
               </button>
-
               <button
                 className="branch-cancel-btn"
                 onClick={() => setShowDeleteConfirmation(false)}
@@ -511,7 +438,7 @@ const Branches = () => {
 
         <button
           className="branch-delete-btn"
-          disabled={!selectedBranches.length}
+          disabled={selectedBranches.length === 0}
           onClick={() => {
             setDeletionTarget('all');
             setShowDeleteConfirmation(true);
@@ -541,10 +468,10 @@ const Branches = () => {
                   onChange={(e) => toggleAllBranches(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
+              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
               <th>{t('branches.name')}</th>
+              <th>{t('branches.branchCode')}</th>
               <th>{t('branches.address')}</th>
-              <th>{t('branches.email')}</th>
               <th>{t('branches.accountNumber')}</th>
               <th>{t('branches.index')}</th>
               <th>{t('branches.date')}</th>
@@ -565,15 +492,13 @@ const Branches = () => {
                       onChange={() => toggleSingleBranch(branch.id)}
                     />
                   </td>
-
                   <td>{branch.id}</td>
                   <td>{getLocalized(branch, 'name', i18n.language)}</td>
+                  <td>{branch.branch_code || '-'}</td>
                   <td>{getLocalized(branch, 'address', i18n.language)}</td>
-                  <td>{branch.email}</td>
                   <td>{branch.account_number}</td>
                   <td>{branch.postal_code}</td>
                   <td>{branch.created_at.slice(0, 10).replaceAll('-', '.')}</td>
-
                   <td className="branch-action-cell">
                     <button
                       className="branch-edit-icon"
@@ -581,7 +506,6 @@ const Branches = () => {
                     >
                       <i className="fa-solid fa-pen"></i>
                     </button>
-
                     <button
                       className="branch-delete-icon"
                       onClick={() => {

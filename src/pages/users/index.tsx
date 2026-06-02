@@ -25,6 +25,7 @@ const Users = () => {
   const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
   const [search, setSearch] = useState('');
   const [role, setRole] = useState('');
+  const [sortAsc, setSortAsc] = useState(true);
   const [userImage, setUserImage] = useState<File | null>(null);
 
   const { settings, getColumnOrder } = useTableSettingsStore();
@@ -375,8 +376,8 @@ const Users = () => {
 
         return true;
       })
-      .sort((a, b) => a.id - b.id);
-  }, [apiData?.data, search, role]);
+      .sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id);
+  }, [apiData?.data, search, role, sortAsc]);
 
   const toggleAll = (checked: boolean) => setSelected(checked ? filtered?.map((u) => u.id) : []);
 
@@ -748,7 +749,7 @@ const Users = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              {isVisible('id') && <th>ID</th>}
+              {isVisible('id') && <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>}
               {getOrderedColumns().map((colId) => {
                 if (!isVisible(colId)) return null;
                 return <th key={colId}>{getColumnHeader(colId)}</th>;

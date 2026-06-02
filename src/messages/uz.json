@@ -228,6 +228,11 @@
     "director": "Direktor F.I.Sh",
     "location": "Joylashtirish shahri/tuman",
     "branchName": "Filial nomi",
+    "branchCode": "Filial kodi",
+    "legalAddress": "Yuridik manzil",
+    "archiveQuestion": "Arxivga olinsimi?",
+    "yes": "Ha",
+    "no": "Yo'q",
     "notFound": "Filiallar topilmadi",
     "archiveTitle": "Filiallar arxivi"
   },

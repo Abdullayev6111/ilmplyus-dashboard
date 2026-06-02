@@ -47,6 +47,7 @@ const RefusalReasons = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<RejectionReason | null>(null);
   const [formData, setFormData] = useState<FormData>(emptyForm);
 
@@ -55,7 +56,7 @@ const RefusalReasons = () => {
     queryFn: rejectionReasonAPI.getAll,
   });
 
-  const sorted = useMemo(() => (reasons || []).slice().sort((a, b) => a.id - b.id), [reasons]);
+  const sorted = useMemo(() => (reasons || []).slice().sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id), [reasons, sortAsc]);
 
   const createMutation = useMutation({
     mutationFn: () => {
@@ -262,7 +263,7 @@ const RefusalReasons = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
+              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
               <th>{t('refusalReasons.name')}</th>
               <th>{t('refusalReasons.comment')}</th>
               <th>{t('refusalReasons.createdAt')}</th>

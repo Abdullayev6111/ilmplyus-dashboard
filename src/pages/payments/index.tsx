@@ -29,6 +29,7 @@ const Payments = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [search, setSearch] = useState("");
+  const [sortAsc, setSortAsc] = useState(false);
   const [paymentTypeFilter, setPaymentTypeFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -259,8 +260,8 @@ const Payments = () => {
 
         return matchSearch && matchPaymentType && matchDate;
       })
-      .sort((a, b) => b.id - a.id);
-  }, [apiData, search, paymentTypeFilter, fromDate, toDate]);
+      .sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id);
+  }, [apiData, search, paymentTypeFilter, fromDate, toDate, sortAsc]);
 
   const toggleAll = (checked: boolean) =>
     setSelected(checked ? filtered?.map((u) => u.id) : []);
@@ -619,7 +620,7 @@ const Payments = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
+              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
               <th>{t("payments.fish")}</th>
               <th>{t("payments.amount")}</th>
               <th>{t("payments.paymentMethod")}</th>

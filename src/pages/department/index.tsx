@@ -277,6 +277,7 @@ const Department = () => {
   const [editingDepartment, setEditingDepartment] =
     useState<DepartmentType | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
 
   const toggleAll = (checked: boolean) =>
     setSelected(checked ? tableData?.map((r) => r.id) : []);
@@ -357,8 +358,8 @@ const Department = () => {
   };
 
   const tableData = useMemo(() => {
-    return [...departments].sort((a, b) => a.id - b.id);
-  }, [departments]);
+    return [...departments].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id);
+  }, [departments, sortAsc]);
 
   return (
     <section className="branch-container container">
@@ -392,7 +393,7 @@ const Department = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
+              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
               <th>{t("departments.name")}</th>
               <th>{t("departments.code")}</th>
               <th>{t("departments.branch")}</th>

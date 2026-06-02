@@ -69,6 +69,7 @@ const Students = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
   const [viewingItem, setViewingItem] = useState<Student | null>(null);
   const [editingItem, setEditingItem] = useState<Student | null>(null);
   const [formData, setFormData] = useState<StudentPayload>({
@@ -129,7 +130,7 @@ const Students = () => {
     return r ? r.name : String(id);
   };
 
-  const sorted = useMemo(() => (students || []).slice().sort((a, b) => a.id - b.id), [students]);
+  const sorted = useMemo(() => (students || []).slice().sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id), [students, sortAsc]);
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: number; payload: StudentPayload }) =>
@@ -550,7 +551,7 @@ const Students = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
+              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
               <th>{t('students.name')}</th>
               <th>{t('students.birthDate')}</th>
               <th>{t('students.login')}</th>

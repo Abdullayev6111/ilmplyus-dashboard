@@ -62,6 +62,7 @@ const Operators = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<IpTelefonOperator | null>(
     null,
   );
@@ -501,7 +502,7 @@ const Operators = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              {isVisible("id") && <th>ID</th>}
+              {isVisible("id") && <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>}
               {isVisible("full_name") && <th>{t("users.fish", "F.I.SH")}</th>}
               {isVisible("branch") && <th>{t("payments.branch", "Filial")}</th>}
               {isVisible("login") && <th>{t("users.loginText", "Login")}</th>}
@@ -516,7 +517,7 @@ const Operators = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={7} />
             ) : operators && operators.length > 0 ? (
-              operators.map((item) => (
+              [...(operators || [])].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id).map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input

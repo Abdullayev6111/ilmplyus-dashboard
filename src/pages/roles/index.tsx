@@ -16,6 +16,7 @@ const Roles = () => {
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
 
   const [roleFormData, setRoleFormData] = useState<{
     name: string;
@@ -276,7 +277,7 @@ const Roles = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th>ID</th>
+              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
               <th>{t("roles.name", "Nomi")}</th>
               <th>{t("roles.branchesList", "Filiallar")}</th>
               <th>{t("roles.actions", "Harakatlar")}</th>
@@ -286,7 +287,7 @@ const Roles = () => {
             {isLoading ? (
               <TableSkeleton rowCount={5} columnCount={4} />
             ) : roles && roles.length > 0 ? (
-              roles.map((role) => (
+              [...(roles || [])].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id).map((role) => (
                 <tr key={role.id}>
                   <td>
                     <input

@@ -57,6 +57,7 @@ const Sources = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
+  const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<Source | null>(null);
 
   const [formData, setFormData] = useState<SourceFormData>(emptyForm);
@@ -67,8 +68,8 @@ const Sources = () => {
   });
 
   const sortedSources = useMemo(() => {
-    return (sources || []).slice().sort((a, b) => a.id - b.id);
-  }, [sources]);
+    return (sources || []).slice().sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id);
+  }, [sources, sortAsc]);
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -343,7 +344,7 @@ const Sources = () => {
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              {isVisible("id") && <th>ID</th>}
+              {isVisible("id") && <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>}
               {isVisible("name") && <th>{t("sources.name")}</th>}
               {isVisible("link") && <th>{t("sources.link")}</th>}
               {isVisible("createdAt") && <th>{t("sources.createdAt")}</th>}

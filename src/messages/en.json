@@ -221,7 +221,12 @@
     "director": "Director full name",
     "location": "City/District",
     "branchName": "Branch name",
-    "notFound": "Filiallar topilmadi (needs translation)",
+    "branchCode": "Branch code",
+    "legalAddress": "Legal address",
+    "archiveQuestion": "Archive?",
+    "yes": "Yes",
+    "no": "No",
+    "notFound": "Branches not found",
     "archiveTitle": "Branches Archive"
   },
   "roles": {
