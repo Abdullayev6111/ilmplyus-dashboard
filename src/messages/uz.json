@@ -20,7 +20,7 @@
     "instruction": "Tizim bo‘yicha qo‘llanma",
     "authorization": "Avtorizatsiya",
     "resetPassword": "Parolni tiklash",
-    "resetPasswordSub": "8ta harfdan yoki raqamdan iborat kod qo'ying.",
+    "resetPasswordSub": "8ta harfdan yoki raqamdan iborat kod qo‘ying.",
     "loading": "Yuklanmoqda...",
     "rightReserved": "Barcha huquqlar himoyalangan"
   },
@@ -72,7 +72,29 @@
     "attendance": "Davomat",
     "operators": "Operatorlar",
     "sources": "Manbalar",
-    "refusalReasons": "Rad etish sabablari"
+    "refusalReasons": "Rad etish sabablari",
+    "organization": "Tashkilot",
+    "staffDepartment": "Xodimlar bo‘limi",
+    "salesDepartment": "Sotuv bo‘limi",
+    "test": "Test",
+    "salaries": "Oyliklar",
+    "faceId": "Face ID qurilma",
+    "contract": "Shartnoma",
+    "coursePrices": "Kurs narxlari",
+    "lessonSchedule": "Dars jadvali",
+    "demoLesson": "Demo dars",
+    "lidList": "Lid ro'yxati",
+    "ipTelephone": "Ip telefon",
+    "tasks": "Vazifalar",
+    "questions": "Savollar va variantlar",
+    "studentsAttendance": "O‘quvchi davomati",
+    "studentTasks": "O‘quvchi vazifalari",
+    "studentsContract": "O‘quvchi shartnoma",
+    "paymentsList": "To‘lovlar ro‘yhati",
+    "paymentsArchive": "To‘lov tarixi",
+    "salary": "Oylik",
+    "staffAttendance": "Xodim davomati",
+    "archive": "Arxiv"
   },
   "payments": {
     "mainTitle": "To‘lovlar",
@@ -168,7 +190,13 @@
     "passwordPlaceholder": "Parol kiriting yoki generatsiya qiling",
     "pinflError": "14 ta raqam bo‘lishi shart",
     "imageLabel": "Profil uchun rasm png yoki jpg formatda max 5mb",
-    "upload": "Yuklash"
+    "upload": "Yuklash",
+    "department": "Bo‘lim",
+    "departments": "Bo‘limlar",
+    "createdAt": "Yaratilgan sana",
+    "updatedAt": "O‘zgartirilgan sana",
+    "archiveQuestion": "Arxivga olinsimi?",
+    "archiveTitle": "Foydalanuvchilar arxivi"
   },
   "branches": {
     "listTitle": "Filiallar ro‘yhati",
@@ -200,7 +228,8 @@
     "director": "Direktor F.I.Sh",
     "location": "Joylashtirish shahri/tuman",
     "branchName": "Filial nomi",
-    "notFound": "Filiallar topilmadi"
+    "notFound": "Filiallar topilmadi",
+    "archiveTitle": "Filiallar arxivi"
   },
   "roles": {
     "pageTitle": "Yangi rol qo‘shish",
@@ -257,13 +286,14 @@
     "categoryName": "Kategoriya nomi",
     "notFound": "Ma’lumot mavjud emas",
     "categoryNotFound": "Kategoriya topilmadi",
-    "subCategoryNotFound": "Podkategoriya topilmadi"
+    "subCategoryNotFound": "Podkategoriya topilmadi",
+    "archiveTitle": "Chiqimlar arxivi"
   },
   "rooms": {
     "rooms": "Xonalar",
     "branchName": "Filial nomi",
     "roomName": "Xona",
-    "capacity": "Xona sig'imi",
+    "capacity": "Xona sig‘imi",
     "floor": "Qavati",
     "actions": "Harakatlar",
     "notFound": "Ma’lumot mavjud emas",
@@ -273,7 +303,8 @@
     "branch": "Filial",
     "confirmDelete": "O‘chirishni tasdiqlaysizmi?",
     "cancel": "Bekor qilish",
-    "save": "Saqlash"
+    "save": "Saqlash",
+    "archiveTitle": "Xonalar arxivi"
   },
   "sources": {
     "title": "Manbalar",
@@ -293,7 +324,8 @@
     "confirmDelete": "O‘chirishni tasdiqlaysizmi?",
     "cancel": "Bekor qilish",
     "save": "Saqlash",
-    "saving": "Saqlanmoqda..."
+    "saving": "Saqlanmoqda...",
+    "archiveTitle": "Manbalar arxivi"
   },
   "refusalReasons": {
     "title": "Rad etish sabablari",
@@ -310,7 +342,8 @@
     "confirmDelete": "O‘chirishni tasdiqlaysizmi?",
     "cancel": "Bekor qilish",
     "save": "Saqlash",
-    "saving": "Saqlanmoqda..."
+    "saving": "Saqlanmoqda...",
+    "archiveTitle": "Rad etish sabablari arxivi"
   },
   "students": {
     "title": "O‘quvchilar",
@@ -363,10 +396,72 @@
     "selectContract": "Shartnomani tanlang",
     "newPassword": "Yangi parol",
     "passwordPlaceholder": "Parol",
-    "passwordHint": "Bo‘sh qoldiring — parol o‘zgarmaydi"
+    "passwordHint": "Bo’sh qoldiring — parol o’zgarmaydi",
+    "archiveTitle": "O’quvchilar arxivi"
   },
   "regions": {
     "notFound": "Viloyatlar topilmadi"
+  },
+  "workSchedule": {
+    "title": "Ish jadvali",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "saving": "Saqlanmoqda...",
+    "loading": "Yuklanmoqda...",
+    "chooseDays": "Ish kunlarini tanlang",
+    "all": "Hammasi",
+    "clear": "Tozalash",
+    "startTime": "Boshlanish vaqti",
+    "endTime": "Tugash vaqti",
+    "type": "Turi",
+    "note": "Izoh",
+    "notePlaceholder": "Masalan: Asosiy ish vaqti",
+    "days": {
+      "monday": "Dushanba",
+      "tuesday": "Seshanba",
+      "wednesday": "Chorshanba",
+      "thursday": "Payshanba",
+      "friday": "Juma",
+      "saturday": "Shanba",
+      "sunday": "Yakshanba"
+    },
+    "types": {
+      "normal": "Oddiy",
+      "overtime": "Qo'shimcha",
+      "flexible": "Moslashuvchan"
+    }
+  },
+  "archive": {
+    "restore": "Tiklash",
+    "forceDelete": "Butunlay o'chirish",
+    "restoreSelected": "Tanlanganlarni tiklash",
+    "actions": "Amallar",
+    "noData": "Arxivlangan ma'lumot yo'q",
+    "confirm": "Tasdiqlash",
+    "cancel": "Bekor qilish",
+    "confirmForceDelete": "Ushbu yozuvni butunlay o'chirishni tasdiqlaysizmi?",
+    "teachersTitle": "O'qituvchilar arxivi",
+    "rolesTitle": "Ro'llar arxivi",
+    "operatorsTitle": "Operatorlar arxivi",
+    "contractsTitle": "Shartnomalar arxivi",
+    "contractNumber": "Shartnoma raqami",
+    "coursePricesTitle": "Kurs narxlari arxivi",
+    "price": "Narx",
+    "groupsTitle": "Guruhlar arxivi",
+    "groupName": "Guruh nomi",
+    "demoLessonTitle": "Demo darslar arxivi",
+    "lessonScheduleTitle": "Dars jadvali arxivi",
+    "lidTitle": "Lidlar arxivi",
+    "ipTelephoneTitle": "Ip telefon arxivi",
+    "name": "Nomi",
+    "phoneNumber": "Telefon",
+    "tasksTitle": "Vazifalar arxivi",
+    "taskTitle": "Sarlavha",
+    "questionsTitle": "Savollar arxivi",
+    "questionText": "Savol",
+    "salariesTitle": "Oyliklar arxivi",
+    "studentTasksTitle": "O'quvchi vazifalari arxivi",
+    "studentsContractTitle": "O'quvchi shartnomalar arxivi"
   },
   "departments": {
     "listTitle": "Bo‘limlar ro‘yhati",
@@ -386,9 +481,10 @@
     "loading": "Ma’lumotlar yuklanmoqda...",
     "noData": "Ma’lumot topilmadi",
     "confirmDelete": "Haqiqatan ham o‘chirmoqchimisiz?",
-    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz?",
+    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o‘chirmoqchimisiz?",
     "notFound": "Bo‘limlar topilmadi",
-    "deleteSelected": "O‘chirish"
+    "deleteSelected": "O’chirish",
+    "archiveTitle": "Bo’limlar arxivi"
   },
   "courses": {
     "mainTitle": "Kurslar",
@@ -405,7 +501,8 @@
     "addTitle": "Kurs qo‘shish",
     "detailsTitle": "Kurs tafsilotlari",
     "availableLevels": "MAVJUD DARAJALAR",
-    "back": "Qaytish"
+    "back": "Qaytish",
+    "archiveTitle": "Kurslar arxivi"
   },
   "header": {
     "administrator": "Administrator"
@@ -424,7 +521,8 @@
     "levelName": "Daraja nomi",
     "createdDate": "Yaratilgan sana",
     "actions": "Harakatlar",
-    "notFound": "Darajalar topilmadi"
+    "notFound": "Darajalar topilmadi",
+    "archiveTitle": "Darajalar arxivi"
   },
   "positions": {
     "mainTitle": "Lavozimlar",
@@ -435,7 +533,8 @@
     "createdDate": "Yaratilgan sana",
     "actions": "Harakatlar",
     "choose": "Tanlang",
-    "notFound": "Ma'lumot mavjud emas"
+    "notFound": "Ma’lumot mavjud emas",
+    "archiveTitle": "Lavozimlar arxivi"
   },
   "settingsGroup": {
     "mainTitle": "Sozlamalar",

@@ -64,7 +64,29 @@
     "attendance": "Attendance",
     "operators": "Operators",
     "sources": "Sources",
-    "refusalReasons": "Refusal Reasons"
+    "refusalReasons": "Refusal Reasons",
+    "organization": "Organization",
+    "staffDepartment": "Staff Department",
+    "salesDepartment": "Sales Department",
+    "test": "Test",
+    "salaries": "Salaries",
+    "faceId": "Face ID Device",
+    "contract": "Contract",
+    "coursePrices": "Course Prices",
+    "lessonSchedule": "Lesson Schedule",
+    "demoLesson": "Demo Lesson",
+    "lidList": "Lead List",
+    "ipTelephone": "IP Telephone",
+    "tasks": "Tasks",
+    "questions": "Questions and Options",
+    "studentsAttendance": "Student Attendance + Grade",
+    "studentTasks": "Student Tasks",
+    "studentsContract": "Student Contract",
+    "paymentsList": "Payments List",
+    "paymentsArchive": "Payment History",
+    "salary": "Salary",
+    "staffAttendance": "Employee Attendance",
+    "archive": "Archive"
   },
   "payments": {
     "mainTitle": "Payments",
@@ -161,7 +183,13 @@
     "pinflError": "Must be 14 digits",
     "imageLabel": "Profile image in png or jpg format max 5mb",
     "upload": "Upload",
-    "notFound": "Foydalanuvchilar topilmadi (needs translation)"
+    "notFound": "Users not found",
+    "department": "Department",
+    "departments": "Departments",
+    "createdAt": "Created date",
+    "updatedAt": "Updated date",
+    "archiveQuestion": "Archive?",
+    "archiveTitle": "Users Archive"
   },
   "branches": {
     "listTitle": "Branch list",
@@ -193,7 +221,8 @@
     "director": "Director full name",
     "location": "City/District",
     "branchName": "Branch name",
-    "notFound": "Filiallar topilmadi (needs translation)"
+    "notFound": "Filiallar topilmadi (needs translation)",
+    "archiveTitle": "Branches Archive"
   },
   "roles": {
     "pageTitle": "Add new role",
@@ -240,7 +269,8 @@
     "branch": "Branch",
     "confirmDelete": "Are you sure you want to delete?",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "archiveTitle": "Rooms Archive"
   },
   "sources": {
     "title": "Sources",
@@ -260,7 +290,8 @@
     "confirmDelete": "Are you sure you want to delete?",
     "cancel": "Cancel",
     "save": "Save",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "archiveTitle": "Sources Archive"
   },
   "expenses": {
     "expenseTitle": "Expenses",
@@ -286,7 +317,8 @@
     "categoryName": "Category Name",
     "notFound": "No data available",
     "categoryNotFound": "Kategoriya topilmadi (needs translation)",
-    "subCategoryNotFound": "Podkategoriya topilmadi (needs translation)"
+    "subCategoryNotFound": "Podkategoriya topilmadi (needs translation)",
+    "archiveTitle": "Expenses Archive"
   },
   "departments": {
     "listTitle": "Department List",
@@ -308,7 +340,8 @@
     "confirmDelete": "Are you sure you want to delete?",
     "notFound": "Departments not found",
     "deleteSelected": "Delete",
-    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz? (needs translation)"
+    "confirmBatchDelete": "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz? (needs translation)",
+    "archiveTitle": "Departments Archive"
   },
   "courses": {
     "mainTitle": "Courses",
@@ -325,7 +358,8 @@
     "addTitle": "Add course",
     "detailsTitle": "Course details",
     "availableLevels": "AVAILABLE LEVELS",
-    "back": "Back"
+    "back": "Back",
+    "archiveTitle": "Courses Archive"
   },
   "header": {
     "administrator": "Administrator"
@@ -340,7 +374,8 @@
     "levelName": "Level name",
     "createdDate": "Created date",
     "actions": "Actions",
-    "notFound": "Levels not found"
+    "notFound": "Levels not found",
+    "archiveTitle": "Levels Archive"
   },
   "positions": {
     "mainTitle": "Positions",
@@ -351,7 +386,8 @@
     "createdDate": "Created date",
     "actions": "Actions",
     "choose": "Select",
-    "notFound": "No data available"
+    "notFound": "No data available",
+    "archiveTitle": "Positions Archive"
   },
   "common": {
     "noData": "No data found",
@@ -431,7 +467,8 @@
     "confirmDelete": "Are you sure you want to delete?",
     "cancel": "Cancel",
     "save": "Save",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "archiveTitle": "Refusal Reasons Archive"
   },
   "students": {
     "title": "Students",
@@ -483,7 +520,8 @@
     "selectStatus": "Select Status",
     "selectContract": "Select Contract",
     "newPassword": "New Password",
-    "passwordHint": "Leave blank to keep password unchanged"
+    "passwordHint": "Leave blank to keep password unchanged",
+    "archiveTitle": "Students Archive"
   },
   "districts": {
     "choose": "Tumanni tanlang (needs translation)",
@@ -491,5 +529,66 @@
   },
   "regions": {
     "notFound": "Viloyatlar topilmadi (needs translation)"
+  },
+  "workSchedule": {
+    "title": "Work Schedule",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "loading": "Loading...",
+    "chooseDays": "Select working days",
+    "all": "All",
+    "clear": "Clear",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "type": "Type",
+    "note": "Note",
+    "notePlaceholder": "e.g. Main working hours",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "types": {
+      "normal": "Normal",
+      "overtime": "Overtime",
+      "flexible": "Flexible"
+    }
+  },
+  "archive": {
+    "restore": "Restore",
+    "forceDelete": "Delete permanently",
+    "restoreSelected": "Restore selected",
+    "actions": "Actions",
+    "noData": "No archived items",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "confirmForceDelete": "Permanently delete this item?",
+    "teachersTitle": "Teachers Archive",
+    "rolesTitle": "Roles Archive",
+    "operatorsTitle": "Operators Archive",
+    "contractsTitle": "Contracts Archive",
+    "contractNumber": "Contract No.",
+    "coursePricesTitle": "Course Prices Archive",
+    "price": "Price",
+    "groupsTitle": "Groups Archive",
+    "groupName": "Group Name",
+    "demoLessonTitle": "Demo Lessons Archive",
+    "lessonScheduleTitle": "Lesson Schedule Archive",
+    "lidTitle": "Leads Archive",
+    "ipTelephoneTitle": "IP Telephone Archive",
+    "name": "Name",
+    "phoneNumber": "Phone",
+    "tasksTitle": "Tasks Archive",
+    "taskTitle": "Title",
+    "questionsTitle": "Questions Archive",
+    "questionText": "Question",
+    "salariesTitle": "Salaries Archive",
+    "studentTasksTitle": "Student Tasks Archive",
+    "studentsContractTitle": "Students Contract Archive"
   }
 }

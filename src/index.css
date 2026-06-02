@@ -364,6 +364,11 @@ aside {
   display: none !important;
 }
 
+.layout.collapsed .nav-group-header {
+  justify-content: center;
+  padding: 0;
+}
+
 .layout.collapsed .mantine-Accordion-control {
   justify-content: center !important;
 }
@@ -475,6 +480,119 @@ aside {
 .sidebar-item[data-active='true'],
 .sidebar-item.active {
   background: #ffffff26;
+}
+
+/* Custom accordion group */
+.nav-group {
+  width: 100%;
+}
+
+.nav-group-header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  color: #fff;
+}
+
+.nav-group-header:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-group-active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-group-label {
+  flex: 1;
+  font-family: noto-b;
+  font-size: 15px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.nav-group-chevron {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+/* Font Awesome icon inside sidebar */
+.sidebar-fa-icon {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 17px;
+  width: 20px;
+  text-align: center;
+  font-family: noto-b;
+}
+
+/* Hududlar parent toggle row */
+.sidebar-area-parent {
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  user-select: none;
+}
+
+.sidebar-area-parent:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+/* Chevron icon for Hududlar */
+.area-chevron {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: auto;
+  margin-right: 16px;
+}
+
+/* Nested sub-items (Viloyatlar, Tumanlar) */
+.sidebar-subitem-nested {
+  padding-left: 34px !important;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.sidebar-subitem-nested:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-subitem-nested.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* Coming soon placeholder pages */
+.coming-soon-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 80px 20px;
+  color: #003366;
+}
+
+.coming-soon-icon {
+  font-size: 56px;
+  color: #b0c4de;
+}
+
+.coming-soon-text {
+  font-family: noto-m;
+  font-size: 18px;
+  color: #8c98a5;
+}
+
+.nav-group-label {
+  font-family: noto-b;
+  font-size: 18px;
+  color: #fff;
 }
 
 /* Aside end */
@@ -727,4 +845,40 @@ td:last-child > * {
   align-items: center;
   gap: 8px;
   flex-wrap: nowrap; /* MUHIM */
+}
+
+/* ── Work Schedule Modal ── */
+.work-schedule-modal {
+  min-width: 420px;
+  max-width: 500px;
+}
+
+.work-schedule-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ws-day-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #ccd6e0;
+  background: #f5faff;
+  color: #555;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  outline: none;
+}
+
+.ws-day-chip:hover {
+  border-color: #003366;
+  color: #003366;
+}
+
+.ws-day-chip.ws-day-chip-active {
+  background: #003366;
+  border-color: #003366;
+  color: #fff;
 }

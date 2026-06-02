@@ -1,11 +1,11 @@
-import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { API } from "../../api/api";
-import "./branches.css";
-import { useTranslation } from "react-i18next";
-import { getLocalized } from "../../utils/getLocalized";
-import TableSkeleton from "../../components/TableSkeleton";
-import EmptyState from "../../components/EmptyState";
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { API } from '../../api/api';
+import './branches.css';
+import { useTranslation } from 'react-i18next';
+import { getLocalized } from '../../utils/getLocalized';
+import TableSkeleton from '../../components/TableSkeleton';
+import EmptyState from '../../components/EmptyState';
 
 interface Branch {
   id: number;
@@ -35,36 +35,31 @@ const Branches = () => {
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
   const [showBranchModal, setShowBranchModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [deletionTarget, setDeletionTarget] = useState<number | "all" | null>(
-    null,
-  );
-  const [searchTerm, setSearchTerm] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [deletionTarget, setDeletionTarget] = useState<number | 'all' | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const { data: branchesApiData, isLoading } = useQuery<Branch[]>({
-    queryKey: ["branches"],
+    queryKey: ['branches'],
     queryFn: async () => {
-      const { data } = await API.get("/branches");
+      const { data } = await API.get('/branches');
       return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
   const [branchFormData, setBranchFormData] = useState({
-    filial_nomi: "",
-    joylashtirish_shahri: "",
-    manzil: "",
-    direktor_fio: "",
-    email: "",
-    ishchi_raqami: "",
-    oked: "",
-    pochta_indeksi: "",
-    yurdik_nomi: "",
-    tashkilot_inn: "",
-    telefon_nomer: "",
-    bank_nomi: "",
-    mfo: "",
+    filial_nomi: '',
+    joylashtirish_shahri: '',
+    manzil: '',
+    direktor_fio: '',
+    email: '',
+    ishchi_raqami: '',
+    oked: '',
+    pochta_indeksi: '',
+    yurdik_nomi: '',
+    tashkilot_inn: '',
+    telefon_nomer: '',
+    bank_nomi: '',
+    mfo: '',
     holat: true,
   });
 
@@ -86,11 +81,11 @@ const Branches = () => {
         mfo: newBranch.mfo,
         is_active: newBranch.holat ? 1 : 0,
       };
-      const { data } = await API.post("/branches", payload);
+      const { data } = await API.post('/branches', payload);
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["branches"] });
+      queryClient.invalidateQueries({ queryKey: ['branches'] });
       setShowBranchModal(false);
       resetBranchForm();
     },
@@ -114,18 +109,12 @@ const Branches = () => {
   }
 
   const updateBranchMutation = useMutation({
-    mutationFn: async ({
-      id,
-      updates,
-    }: {
-      id: number;
-      updates: BranchUpdatePayload;
-    }) => {
+    mutationFn: async ({ id, updates }: { id: number; updates: BranchUpdatePayload }) => {
       const { data } = await API.put(`/branches/${id}`, updates);
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["branches"] });
+      queryClient.invalidateQueries({ queryKey: ['branches'] });
       setShowBranchModal(false);
       setEditingBranch(null);
       resetBranchForm();
@@ -137,25 +126,25 @@ const Branches = () => {
       await API.delete(`/branches/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["branches"] });
+      queryClient.invalidateQueries({ queryKey: ['branches'] });
     },
   });
 
   const resetBranchForm = () => {
     setBranchFormData({
-      filial_nomi: "",
-      joylashtirish_shahri: "",
-      manzil: "",
-      direktor_fio: "",
-      email: "",
-      ishchi_raqami: "",
-      oked: "",
-      pochta_indeksi: "",
-      yurdik_nomi: "",
-      tashkilot_inn: "",
-      telefon_nomer: "",
-      bank_nomi: "",
-      mfo: "",
+      filial_nomi: '',
+      joylashtirish_shahri: '',
+      manzil: '',
+      direktor_fio: '',
+      email: '',
+      ishchi_raqami: '',
+      oked: '',
+      pochta_indeksi: '',
+      yurdik_nomi: '',
+      tashkilot_inn: '',
+      telefon_nomer: '',
+      bank_nomi: '',
+      mfo: '',
       holat: true,
     });
   };
@@ -216,21 +205,16 @@ const Branches = () => {
 
     return branches
       .filter((branch) => {
-        const dateValue = branch.created_at.slice(0, 10);
-        const matchesSearch = getLocalized(branch, "name", i18n.language)
+        const matchesSearch = getLocalized(branch, 'name', i18n.language)
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
 
         if (!matchesSearch) return false;
 
-        if (dateFrom && dateTo) {
-          return dateValue >= dateFrom && dateValue <= dateTo;
-        }
-
         return true;
       })
       .sort((a, b) => a.id - b.id);
-  }, [branchesApiData, searchTerm, dateFrom, dateTo]);
+  }, [branchesApiData, searchTerm, i18n.language]);
 
   const toggleAllBranches = (checked: boolean) =>
     setSelectedBranches(checked ? filteredBranches?.map((b) => b.id) : []);
@@ -241,12 +225,12 @@ const Branches = () => {
     );
 
   const confirmBranchDeletion = () => {
-    if (deletionTarget === "all") {
+    if (deletionTarget === 'all') {
       selectedBranches.forEach((id) => deleteBranchMutation.mutate(id));
       setSelectedBranches([]);
     }
 
-    if (typeof deletionTarget === "number") {
+    if (typeof deletionTarget === 'number') {
       deleteBranchMutation.mutate(deletionTarget);
       setSelectedBranches((prev) => prev.filter((x) => x !== deletionTarget));
     }
@@ -257,21 +241,19 @@ const Branches = () => {
 
   return (
     <section className="branch-container container">
-      <h1 className="branch-page-title">{t("branches.listTitle")}</h1>
+      <h1 className="branch-page-title">{t('branches.listTitle')}</h1>
 
       {showBranchModal && (
         <div className="branch-modal-overlay">
           <div className="branch-modal branch-add-modal">
             <h3 className="branch-modal-heading">
-              {editingBranch
-                ? t("branches.editBranchTitle")
-                : t("branches.addNewBranchTitle")}
+              {editingBranch ? t('branches.editBranchTitle') : t('branches.addNewBranchTitle')}
             </h3>
 
             <div className="branch-form-wrapper">
               <div className="branch-form-left">
                 <div className="branch-input-group">
-                  <label>{t("branches.branchName")}</label>
+                  <label>{t('branches.branchName')}</label>
                   <input
                     type="text"
                     value={branchFormData.filial_nomi}
@@ -285,7 +267,7 @@ const Branches = () => {
                 </div>
 
                 <div className="branch-input-group">
-                  <label>{t("branches.location")}</label>
+                  <label>{t('branches.location')}</label>
                   <input
                     type="text"
                     value={branchFormData.joylashtirish_shahri}
@@ -299,7 +281,7 @@ const Branches = () => {
                 </div>
 
                 <div className="branch-input-group">
-                  <label>{t("branches.address")}</label>
+                  <label>{t('branches.address')}</label>
                   <input
                     type="text"
                     value={branchFormData.manzil}
@@ -313,7 +295,7 @@ const Branches = () => {
                 </div>
 
                 <div className="branch-input-group">
-                  <label>{t("branches.director")}</label>
+                  <label>{t('branches.director')}</label>
                   <input
                     type="text"
                     value={branchFormData.direktor_fio}
@@ -327,7 +309,7 @@ const Branches = () => {
                 </div>
 
                 <div className="branch-input-group">
-                  <label>{t("branches.email")}</label>
+                  <label>{t('branches.email')}</label>
                   <input
                     type="text"
                     value={branchFormData.email}
@@ -341,7 +323,7 @@ const Branches = () => {
                 </div>
 
                 <div className="branch-input-group">
-                  <label>{t("branches.accountNumber")}</label>
+                  <label>{t('branches.accountNumber')}</label>
                   <input
                     type="text"
                     value={branchFormData.ishchi_raqami}
@@ -371,7 +353,7 @@ const Branches = () => {
 
               <div className="branch-form-right">
                 <div className="branch-input-group">
-                  <label>{t("branches.index")}</label>
+                  <label>{t('branches.index')}</label>
                   <input
                     type="text"
                     value={branchFormData.pochta_indeksi}
@@ -385,7 +367,7 @@ const Branches = () => {
                 </div>
 
                 <div className="branch-input-group">
-                  <label>{t("branches.legalName")}</label>
+                  <label>{t('branches.legalName')}</label>
                   <input
                     type="text"
                     value={branchFormData.yurdik_nomi}
@@ -399,7 +381,7 @@ const Branches = () => {
                 </div>
 
                 <div className="branch-input-group">
-                  <label>{t("branches.organizationInn")}</label>
+                  <label>{t('branches.organizationInn')}</label>
                   <input
                     type="text"
                     value={branchFormData.tashkilot_inn}
@@ -413,7 +395,7 @@ const Branches = () => {
                 </div>
 
                 <div className="branch-input-group">
-                  <label>{t("branches.phoneNumber")}</label>
+                  <label>{t('branches.phoneNumber')}</label>
                   <input
                     type="text"
                     value={branchFormData.telefon_nomer}
@@ -427,7 +409,7 @@ const Branches = () => {
                 </div>
 
                 <div className="branch-input-group">
-                  <label>{t("branches.bankName")}</label>
+                  <label>{t('branches.bankName')}</label>
                   <input
                     type="text"
                     value={branchFormData.bank_nomi}
@@ -455,29 +437,21 @@ const Branches = () => {
                 </div>
 
                 <div className="branch-input-group">
-                  <label>{t("branches.status")}</label>
+                  <label>{t('branches.status')}</label>
                   <div className="branch-toggle-wrapper">
                     <button
                       type="button"
-                      className={
-                        branchFormData.holat ? "" : "branch-active-btn"
-                      }
-                      onClick={() =>
-                        setBranchFormData({ ...branchFormData, holat: false })
-                      }
+                      className={branchFormData.holat ? '' : 'branch-active-btn'}
+                      onClick={() => setBranchFormData({ ...branchFormData, holat: false })}
                     >
-                      {t("branches.inactive")}
+                      {t('branches.inactive')}
                     </button>
                     <button
                       type="button"
-                      className={
-                        branchFormData.holat ? "branch-active-btn" : ""
-                      }
-                      onClick={() =>
-                        setBranchFormData({ ...branchFormData, holat: true })
-                      }
+                      className={branchFormData.holat ? 'branch-active-btn' : ''}
+                      onClick={() => setBranchFormData({ ...branchFormData, holat: true })}
                     >
-                      {t("branches.active")}
+                      {t('branches.active')}
                     </button>
                   </div>
                 </div>
@@ -487,18 +461,12 @@ const Branches = () => {
             <div className="branch-modal-buttons">
               <button
                 className="branch-save-btn"
-                onClick={
-                  editingBranch ? handleBranchEditSubmit : handleBranchSubmit
-                }
-                disabled={
-                  createBranchMutation.isPending ||
-                  updateBranchMutation.isPending
-                }
+                onClick={editingBranch ? handleBranchEditSubmit : handleBranchSubmit}
+                disabled={createBranchMutation.isPending || updateBranchMutation.isPending}
               >
-                {createBranchMutation.isPending ||
-                updateBranchMutation.isPending
-                  ? t("branches.saving")
-                  : t("branches.save")}
+                {createBranchMutation.isPending || updateBranchMutation.isPending
+                  ? t('branches.saving')
+                  : t('branches.save')}
               </button>
               <button
                 className="branch-cancel-btn"
@@ -508,7 +476,7 @@ const Branches = () => {
                   resetBranchForm();
                 }}
               >
-                {t("branches.cancel")}
+                {t('branches.cancel')}
               </button>
             </div>
           </div>
@@ -518,21 +486,18 @@ const Branches = () => {
       {showDeleteConfirmation && (
         <div className="branch-modal-overlay">
           <div className="branch-modal branch-small-modal">
-            <h3>{t("branches.confirmDelete")}</h3>
+            <h3>{t('branches.confirmDelete')}</h3>
 
             <div className="branch-modal-buttons">
-              <button
-                className="branch-danger-btn"
-                onClick={confirmBranchDeletion}
-              >
-                {t("branches.confirm")}
+              <button className="branch-danger-btn" onClick={confirmBranchDeletion}>
+                {t('branches.confirm')}
               </button>
 
               <button
                 className="branch-cancel-btn"
                 onClick={() => setShowDeleteConfirmation(false)}
               >
-                {t("branches.cancel")}
+                {t('branches.cancel')}
               </button>
             </div>
           </div>
@@ -540,56 +505,26 @@ const Branches = () => {
       )}
 
       <div className="branch-filter-panel">
-        <button
-          className="branch-add-btn"
-          onClick={() => setShowBranchModal(true)}
-        >
-          {t("branches.addNew")}
+        <button className="branch-add-btn" onClick={() => setShowBranchModal(true)}>
+          {t('branches.addNew')}
         </button>
 
         <button
           className="branch-delete-btn"
           disabled={!selectedBranches.length}
           onClick={() => {
-            setDeletionTarget("all");
+            setDeletionTarget('all');
             setShowDeleteConfirmation(true);
           }}
         >
-          {t("branches.delete")}
+          {t('branches.delete')}
         </button>
 
         <input
-          placeholder={t("branches.search")}
+          placeholder={t('branches.search')}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="branch-search-input"
         />
-
-        <div style={{ position: "relative" }}>
-          <input
-            type="text"
-            readOnly
-            placeholder={t("branches.dateFilter")}
-            value={dateFrom && dateTo ? `${dateFrom} - ${dateTo}` : ""}
-            onClick={() => setShowDatePicker(true)}
-            className="branch-date-input"
-          />
-
-          {showDatePicker && (
-            <div className="branch-date-picker">
-              <input
-                type="date"
-                onChange={(e) => setDateFrom(e.target.value)}
-              />
-              <input
-                type="date"
-                onChange={(e) => {
-                  setDateTo(e.target.value);
-                  setShowDatePicker(false);
-                }}
-              />
-            </div>
-          )}
-        </div>
       </div>
 
       <div className="branch-table-container">
@@ -607,13 +542,13 @@ const Branches = () => {
                 />
               </th>
               <th>ID</th>
-              <th>{t("branches.name")}</th>
-              <th>{t("branches.address")}</th>
-              <th>{t("branches.email")}</th>
-              <th>{t("branches.accountNumber")}</th>
-              <th>{t("branches.index")}</th>
-              <th>{t("branches.date")}</th>
-              <th>{t("branches.actions")}</th>
+              <th>{t('branches.name')}</th>
+              <th>{t('branches.address')}</th>
+              <th>{t('branches.email')}</th>
+              <th>{t('branches.accountNumber')}</th>
+              <th>{t('branches.index')}</th>
+              <th>{t('branches.date')}</th>
+              <th>{t('branches.actions')}</th>
             </tr>
           </thead>
 
@@ -637,7 +572,7 @@ const Branches = () => {
                   <td>{branch.email}</td>
                   <td>{branch.account_number}</td>
                   <td>{branch.postal_code}</td>
-                  <td>{branch.created_at.slice(0, 10).replaceAll("-", ".")}</td>
+                  <td>{branch.created_at.slice(0, 10).replaceAll('-', '.')}</td>
 
                   <td className="branch-action-cell">
                     <button
@@ -660,7 +595,7 @@ const Branches = () => {
                 </tr>
               ))
             ) : (
-              <EmptyState colSpan={9} message={t("branches.notFound")} />
+              <EmptyState colSpan={9} message={t('branches.notFound')} />
             )}
           </tbody>
         </table>

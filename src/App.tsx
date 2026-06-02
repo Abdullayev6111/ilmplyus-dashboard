@@ -32,6 +32,50 @@ import Operators from './pages/operators';
 import Sources from './pages/sources';
 import RefusalReasons from './pages/refusal-reasons';
 
+// New pages
+import FaceId from './pages/face-id';
+import Contracts from './pages/contracts';
+import CoursePrices from './pages/course-prices';
+import LessonSchedule from './pages/lesson-schedule';
+import DemoLesson from './pages/demo-lesson';
+import Groups from './pages/groups';
+import Lid from './pages/lid';
+import IpTelephone from './pages/ip-telephone';
+import Tasks from './pages/tasks';
+import Questions from './pages/questions';
+import StudentsAttendance from './pages/students-attendance';
+import StudentTasks from './pages/student-tasks';
+import StudentsContract from './pages/students-contract';
+import Salaries from './pages/salaries';
+
+// Archive pages
+import UsersArchive from './pages/users/archive';
+import BranchesArchive from './pages/branches/archive';
+import StudentsArchive from './pages/students/archive';
+import TeachersArchive from './pages/teachers/archive';
+import CoursesArchive from './pages/courses/archive';
+import LevelsArchive from './pages/levels/archive';
+import PositionsArchive from './pages/positions/archive';
+import RoomsArchive from './pages/rooms/archive';
+import DepartmentArchive from './pages/department/archive';
+import SourcesArchive from './pages/sources/archive';
+import RefusalReasonsArchive from './pages/refusal-reasons/archive';
+import RolesArchive from './pages/roles/archive';
+import OperatorsArchive from './pages/operators/archive';
+import ContractsArchive from './pages/contracts/archive';
+import CoursePricesArchive from './pages/course-prices/archive';
+import GroupsArchive from './pages/groups/archive';
+import DemoLessonArchive from './pages/demo-lesson/archive';
+import LessonScheduleArchive from './pages/lesson-schedule/archive';
+import LidArchive from './pages/lid/archive';
+import IpTelephoneArchive from './pages/ip-telephone/archive';
+import TasksArchive from './pages/tasks/archive';
+import QuestionsArchive from './pages/questions/archive';
+import SalariesArchive from './pages/salaries/archive';
+import StudentTasksArchive from './pages/student-tasks/archive';
+import StudentsContractArchive from './pages/students-contract/archive';
+import ExpensesArchive from './pages/expenses/archive';
+
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
@@ -57,31 +101,94 @@ const App = () => {
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+
+          {/* Foydalanuvchilar */}
+          <Route path="/users" element={<Users />} />
           <Route path="/roles" element={<Roles />} />
           <Route path="/roles/:id/permissions" element={<RolePermissions />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/operators" element={<Operators />} />
+
+          {/* Tashkilot */}
           <Route path="/branches" element={<Branches />} />
           <Route path="/areas" element={<Areas />} />
           <Route path="/areas/regions" element={<AreaRegions />} />
           <Route path="/areas/districts" element={<AreaDistricts />} />
-          <Route path="/classes" element={<Classes />} />
-          <Route path="/students" element={<Students />} />
-          <Route path="/teachers" element={<Teachers />} />
-          <Route path="/payments" element={<Payments />} />
-          <Route path="/operators" element={<Operators />} />
-          <Route path="/payments/archive" element={<ArchivedPayments />} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/levels" element={<Levels />} />
+          <Route path="/department" element={<Department />} />
+          <Route path="/rooms" element={<Rooms />} />
+          <Route path="/face-id" element={<FaceId />} />
+
+          {/* Xodimlar bo'limi */}
           <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/positions" element={<Positions />} />
+          <Route path="/contracts" element={<Contracts />} />
+          <Route path="/teachers" element={<Teachers />} />
+
+          {/* Kurslar */}
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/levels" element={<Levels />} />
+          <Route path="/course-prices" element={<CoursePrices />} />
+          <Route path="/lesson-schedule" element={<LessonSchedule />} />
+          <Route path="/demo-lesson" element={<DemoLesson />} />
+          <Route path="/groups" element={<Groups />} />
+          <Route path="/classes" element={<Classes />} />
+
+          {/* Sotuv bo'limi */}
+          <Route path="/lid" element={<Lid />} />
+          <Route path="/ip-telephone" element={<IpTelephone />} />
+          <Route path="/refusal-reasons" element={<RefusalReasons />} />
+          <Route path="/sources" element={<Sources />} />
+          <Route path="/tasks" element={<Tasks />} />
+
+          {/* Test */}
+          <Route path="/questions" element={<Questions />} />
+
+          {/* Chiqimlar */}
           <Route path="/expenses/create" element={<Expenses />} />
           <Route path="/expenses/category" element={<ExpenseCategory />} />
           <Route path="/expenses/subcategory" element={<ExpenseSubCategory />} />
-          <Route path="/rooms" element={<Rooms />} />
-          <Route path="/sources" element={<Sources />} />
-          <Route path="/department" element={<Department />} />
-          <Route path="/refusal-reasons" element={<RefusalReasons />} />
+
+          {/* O'quvchilar */}
+          <Route path="/students-attendance" element={<StudentsAttendance />} />
+          <Route path="/student-tasks" element={<StudentTasks />} />
+          <Route path="/students-contract" element={<StudentsContract />} />
+          <Route path="/students" element={<Students />} />
+
+          {/* To'lovlar */}
+          <Route path="/payments" element={<Payments />} />
+          <Route path="/payments/archive" element={<ArchivedPayments />} />
+
+          {/* Oyliklar */}
+          <Route path="/salaries" element={<Salaries />} />
+
+          {/* Arxivlar */}
+          <Route path="/users/archive" element={<UsersArchive />} />
+          <Route path="/branches/archive" element={<BranchesArchive />} />
+          <Route path="/students/archive" element={<StudentsArchive />} />
+          <Route path="/teachers/archive" element={<TeachersArchive />} />
+          <Route path="/courses/archive" element={<CoursesArchive />} />
+          <Route path="/levels/archive" element={<LevelsArchive />} />
+          <Route path="/positions/archive" element={<PositionsArchive />} />
+          <Route path="/rooms/archive" element={<RoomsArchive />} />
+          <Route path="/department/archive" element={<DepartmentArchive />} />
+          <Route path="/sources/archive" element={<SourcesArchive />} />
+          <Route path="/refusal-reasons/archive" element={<RefusalReasonsArchive />} />
+          <Route path="/roles/archive" element={<RolesArchive />} />
+          <Route path="/operators/archive" element={<OperatorsArchive />} />
+          <Route path="/contracts/archive" element={<ContractsArchive />} />
+          <Route path="/course-prices/archive" element={<CoursePricesArchive />} />
+          <Route path="/groups/archive" element={<GroupsArchive />} />
+          <Route path="/demo-lesson/archive" element={<DemoLessonArchive />} />
+          <Route path="/lesson-schedule/archive" element={<LessonScheduleArchive />} />
+          <Route path="/lid/archive" element={<LidArchive />} />
+          <Route path="/ip-telephone/archive" element={<IpTelephoneArchive />} />
+          <Route path="/tasks/archive" element={<TasksArchive />} />
+          <Route path="/questions/archive" element={<QuestionsArchive />} />
+          <Route path="/salaries/archive" element={<SalariesArchive />} />
+          <Route path="/student-tasks/archive" element={<StudentTasksArchive />} />
+          <Route path="/students-contract/archive" element={<StudentsContractArchive />} />
+          <Route path="/expenses/archive" element={<ExpensesArchive />} />
+
+          <Route path="/settings" element={<Settings />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Route>

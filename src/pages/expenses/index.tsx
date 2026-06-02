@@ -66,11 +66,6 @@ const Expenses = () => {
     info: "",
   });
 
-  const [archivedIds, setArchivedIds] = useState<number[]>(() => {
-    const stored = localStorage.getItem("archivedExpenseIds");
-    return stored ? JSON.parse(stored) : [];
-  });
-
   const { data: expenses, isLoading } = useQuery<Expense[]>({
     queryKey: ["expenses"],
     queryFn: async () => (await API.get("/expenses")).data,
@@ -182,15 +177,6 @@ const Expenses = () => {
 
     setShowDeleteModal(false);
     setDeleteTarget(null);
-  };
-
-  const archiveItem = (item: Expense) => {
-    const newIds = [...archivedIds, item.id];
-    setArchivedIds(newIds);
-    localStorage.setItem("archivedExpenseIds", JSON.stringify(newIds));
-
-    const all = JSON.parse(localStorage.getItem("archivedExpenses") || "[]");
-    localStorage.setItem("archivedExpenses", JSON.stringify([...all, item]));
   };
 
   const toggleAll = (checked: boolean) =>
@@ -510,13 +496,6 @@ const Expenses = () => {
                   <td>{item.branch?.address || "-"}</td>
 
                   <td className="actions">
-                    <button
-                      className="user-archive-btn"
-                      onClick={() => archiveItem(item)}
-                    >
-                      <i className="fa-solid fa-box-archive"></i>
-                    </button>
-
                     <button
                       className="user-edit-btn"
                       onClick={() => openEditModal(item)}

@@ -51,11 +51,6 @@ const Rooms = () => {
     floor: "",
   });
 
-  const [archivedIds, setArchivedIds] = useState<number[]>(() => {
-    const stored = localStorage.getItem("archivedRoomIds");
-    return stored ? JSON.parse(stored) : [];
-  });
-
   const { data: rooms, isLoading } = useQuery<Room[]>({
     queryKey: ["rooms"],
     queryFn: async () => {
@@ -145,20 +140,6 @@ const Rooms = () => {
 
     setShowDeleteModal(false);
     setDeleteTarget(null);
-  };
-
-  const archiveItem = (item: Room) => {
-    const newArchivedIds = [...archivedIds, item.id];
-    setArchivedIds(newArchivedIds);
-    localStorage.setItem("archivedRoomIds", JSON.stringify(newArchivedIds));
-
-    const allArchived = JSON.parse(
-      localStorage.getItem("archivedRooms") || "[]",
-    );
-    localStorage.setItem(
-      "archivedRooms",
-      JSON.stringify([...allArchived, item]),
-    );
   };
 
   const toggleAll = (checked: boolean) =>
@@ -359,13 +340,6 @@ const Rooms = () => {
                   {isVisible("capacity") && <td>{item.capacity}</td>}
 
                   <td className="actions">
-                    <button
-                      className="user-archive-btn"
-                      onClick={() => archiveItem(item)}
-                    >
-                      <i className="fa-solid fa-box-archive"></i>
-                    </button>
-
                     <button
                       className="user-edit-btn"
                       onClick={() => openEditModal(item)}

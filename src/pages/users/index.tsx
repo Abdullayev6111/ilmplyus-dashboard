@@ -1,18 +1,15 @@
-import { useState, useMemo } from "react";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  keepPreviousData,
-} from "@tanstack/react-query";
-import { API } from "../../api/api";
-import "./users.css";
-import { useTranslation } from "react-i18next";
-import { getLocalized } from "../../utils/getLocalized";
-import TableSkeleton from "../../components/TableSkeleton";
-import EmptyState from "../../components/EmptyState";
-import type { User, UsersResponse, Branch, Position, Role } from "../../types";
-import { useTableSettingsStore } from "../../store/useTableSettingsStore";
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { API } from '../../api/api';
+import './users.css';
+import { useTranslation } from 'react-i18next';
+import { getLocalized } from '../../utils/getLocalized';
+import TableSkeleton from '../../components/TableSkeleton';
+import EmptyState from '../../components/EmptyState';
+import WorkScheduleModal from '../../components/WorkScheduleModal';
+import type { User, UsersResponse, Branch, Role } from '../../types';
+import type { DepartmentType } from '../../types/department.types';
+import { useTableSettingsStore } from '../../store/useTableSettingsStore';
 
 const genPassword = () =>
   Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4);
@@ -25,109 +22,106 @@ const Users = () => {
   const [workTimeId, setWorkTimeId] = useState<number | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
-  const [search, setSearch] = useState("");
-  const [role, setRole] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  // const [password, setPassword] = useState(genPassword());
-  const [showRange, setShowRange] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
+  const [search, setSearch] = useState('');
+  const [role, setRole] = useState('');
   const [userImage, setUserImage] = useState<File | null>(null);
 
   const { settings, getColumnOrder } = useTableSettingsStore();
   const userSettings = settings.users || {};
   const isVisible = (colId: string) => userSettings[colId] ?? true;
 
-  // Columns that can be reordered (excludes id, checkbox, actions)
   const defaultDraggableColumns = [
-    "full_name",
-    "phone",
-    "role",
-    "status",
-    "branch",
-    "username",
-    "pinfl",
-    "type",
-    "created_at",
-    "updated_at",
+    'full_name',
+    'phone',
+    'role',
+    'status',
+    'branch',
+    'username',
+    'pinfl',
+    'department',
+    'created_at',
+    'updated_at',
   ];
 
   const getOrderedColumns = () => {
-    return getColumnOrder("users", defaultDraggableColumns);
+    return getColumnOrder('users', defaultDraggableColumns);
   };
 
   const getColumnHeader = (colId: string): string => {
     const headerMap: Record<string, string> = {
-      full_name: t("users.fish"),
-      phone: t("users.phone"),
-      role: t("users.role"),
-      status: t("users.status"),
-      branch: t("users.branch"),
-      username: t("users.loginText"),
-      pinfl: t("users.pinfl"),
-      type: "Turi",
-      created_at: "Yaratilgan sana",
-      updated_at: "O'zgartirilgan sana",
+      full_name: t('users.fish'),
+      phone: t('users.phone'),
+      role: t('users.role'),
+      status: t('users.status'),
+      branch: t('users.branch'),
+      username: t('users.loginText'),
+      pinfl: t('users.pinfl'),
+      department: t('users.department'),
+      created_at: t('users.createdAt'),
+      updated_at: t('users.updatedAt'),
     };
     return headerMap[colId] || colId;
   };
 
   const renderCellValue = (u: User, colId: string) => {
     switch (colId) {
-      case "full_name":
+      case 'full_name':
         return u.full_name;
-      case "phone":
+      case 'phone':
         return u.phone;
-      case "role":
-        return u.roles?.map((r) => r.name).join(", ") || "-";
-      case "status":
-        return u.is_active ? t("users.active") : t("users.inactive");
-      case "branch":
+      case 'role':
+        return u.roles?.map((r) => r.name).join(', ') || '-';
+      case 'status':
+        return u.is_active ? t('users.active') : t('users.inactive');
+      case 'branch':
         return u.branches && u.branches.length > 0
-          ? u.branches
-              .map((b) => getLocalized(b, "name", i18n.language))
-              .join(", ")
+          ? u.branches.map((b) => getLocalized(b, 'name', i18n.language)).join(', ')
           : u.branch
-            ? getLocalized(u.branch, "name", i18n.language)
-            : "-";
-      case "username":
+            ? getLocalized(u.branch, 'name', i18n.language)
+            : '-';
+      case 'username':
         return u.username;
-      case "pinfl":
-        return u.pinfl || "-";
-      case "type":
-        return u.type || "-";
-      case "created_at":
-        return u.created_at?.slice(0, 10).replaceAll("-", ".") || "-";
-      case "updated_at":
-        return u.updated_at?.slice(0, 10).replaceAll("-", ".") || "-";
+      case 'pinfl':
+        return u.pinfl || '-';
+      case 'department':
+        return u.departments && u.departments.length > 0
+          ? u.departments.map((d) => getLocalized(d, 'name', i18n.language)).join(', ')
+          : '-';
+      case 'created_at':
+        return u.created_at?.slice(0, 10).replaceAll('-', '.') || '-';
+      case 'updated_at':
+        return u.updated_at?.slice(0, 10).replaceAll('-', '.') || '-';
       default:
-        return "-";
+        return '-';
     }
   };
 
   const { data: apiData, isLoading } = useQuery<UsersResponse>({
-    queryKey: ["users"],
+    queryKey: ['users'],
     queryFn: async () => {
-      const { data } = await API.get("/users");
+      const { data } = await API.get('/users');
       return data;
     },
     placeholderData: keepPreviousData,
   });
 
   const [formData, setFormData] = useState({
-    familiya: "",
-    ism: "",
-    sharif: "",
-    pinfl: "",
-    phone: "",
-    username: "",
+    familiya: '',
+    ism: '',
+    sharif: '',
+    pinfl: '',
+    phone: '',
+    username: '',
     password: genPassword(),
-    start_date: "",
+    start_date: '',
     role_ids: [] as string[],
     branch_ids: [] as string[],
-    type: "",
-    position_id: "",
+    department_ids: [] as string[],
+    position_id: '',
     is_active: true,
+    created_at_edit: '',
+    updated_at_edit: '',
   });
 
   const addRole = (roleId: string) => {
@@ -159,19 +153,30 @@ const Users = () => {
     });
   };
 
+  const addDepartment = (deptId: string) => {
+    if (deptId && !formData.department_ids.includes(deptId)) {
+      setFormData({ ...formData, department_ids: [...formData.department_ids, deptId] });
+    }
+  };
+
+  const removeDepartment = (deptId: string) => {
+    setFormData({
+      ...formData,
+      department_ids: formData.department_ids.filter((id) => id !== deptId),
+    });
+  };
+
   const createMutation = useMutation({
     mutationFn: async () => {
       const payload: Record<string, unknown> = {
-        full_name:
-          `${formData.familiya} ${formData.ism} ${formData.sharif}`.trim(),
+        full_name: `${formData.familiya} ${formData.ism} ${formData.sharif}`.trim(),
         username: formData.username,
         pinfl: formData.pinfl,
         phone: formData.phone,
         password: formData.password,
-        position_id: formData.position_id
-          ? Number(formData.position_id)
-          : undefined,
+        position_id: formData.position_id ? Number(formData.position_id) : undefined,
         branch_ids: formData.branch_ids.map(Number),
+        department_ids: formData.department_ids.map(Number),
         roles: formData.role_ids.map(Number),
         is_active: formData.is_active,
       };
@@ -186,18 +191,18 @@ const Users = () => {
             fd.append(k, String(v));
           }
         });
-        fd.append("image", userImage);
-        const res = await API.post("/users", fd, {
-          headers: { "Content-Type": "multipart/form-data" },
+        fd.append('image', userImage);
+        const res = await API.post('/users', fd, {
+          headers: { 'Content-Type': 'multipart/form-data' },
         });
         return res.data;
       }
 
-      const res = await API.post("/users", payload);
+      const res = await API.post('/users', payload);
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       setShowAddModal(false);
       setUserImage(null);
       resetForm();
@@ -205,33 +210,40 @@ const Users = () => {
   });
 
   const { data: branchesData } = useQuery<Branch[]>({
-    queryKey: ["branches"],
+    queryKey: ['branches'],
     queryFn: async () => {
-      const { data } = await API.get("/branches");
+      const { data } = await API.get('/branches');
       return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
-  const { data: positionsData } = useQuery<Position[]>({
-    queryKey: ["positions"],
-    queryFn: async () => {
-      const { data } = await API.get("/positions");
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-  });
+  // const { data: positionsData } = useQuery<Position[]>({
+  //   queryKey: ['positions'],
+  //   queryFn: async () => {
+  //     const { data } = await API.get('/positions');
+  //     return Array.isArray(data) ? data : data?.data || [];
+  //   },
+  // });
 
   const { data: rolesData } = useQuery<Role[]>({
-    queryKey: ["roles"],
+    queryKey: ['roles'],
     queryFn: async () => {
-      const { data } = await API.get("/roles");
+      const { data } = await API.get('/roles');
+      return Array.isArray(data) ? data : data?.data || [];
+    },
+  });
+
+  const { data: departmentsData } = useQuery<DepartmentType[]>({
+    queryKey: ['departments'],
+    queryFn: async () => {
+      const { data } = await API.get('/departments');
       return Array.isArray(data) ? data : data?.data || [];
     },
   });
 
   const roles = rolesData || [];
-
   const branches = branchesData || [];
-  const positions = positionsData || [];
+  const departments = departmentsData || [];
 
   const handleSubmit = () => {
     createMutation.mutate();
@@ -240,13 +252,13 @@ const Users = () => {
   const openEditModal = (user: User) => {
     setEditingUser(user);
     setFormData({
-      familiya: user.full_name.split(" ")[0] || "",
-      ism: user.full_name.split(" ")[1] || "",
-      sharif: user.full_name.split(" ")[2] || "",
-      pinfl: user.pinfl || "",
+      familiya: user.full_name.split(' ')[0] || '',
+      ism: user.full_name.split(' ')[1] || '',
+      sharif: user.full_name.split(' ')[2] || '',
+      pinfl: user.pinfl || '',
       phone: user.phone,
       username: user.username,
-      password: "",
+      password: '',
       start_date: user.created_at.slice(0, 10),
       role_ids: user.roles?.map((r) => r.id.toString()),
       branch_ids:
@@ -255,35 +267,13 @@ const Users = () => {
           : user.branch
             ? [user.branch.id.toString()]
             : [],
-      type: user.type,
-      position_id: "",
+      department_ids: user.departments?.map((d) => d.id.toString()) || [],
+      position_id: user.position?.id?.toString() || '',
       is_active: user.is_active,
+      created_at_edit: user.created_at?.slice(0, 10) || '',
+      updated_at_edit: user.updated_at?.slice(0, 10) || '',
     });
     setShowAddModal(true);
-  };
-
-  const handleEditSubmit = () => {
-    if (editingUser) {
-      updateMutation.mutate({
-        id: editingUser.id,
-        updates: {
-          full_name:
-            `${formData.familiya} ${formData.ism} ${formData.sharif}`.trim(),
-          username: formData.username,
-          pinfl: formData.pinfl,
-          phone: formData.phone,
-          roles: formData.role_ids.map(Number),
-          branch_ids: formData.branch_ids.map(Number),
-          position_id: formData.position_id
-            ? Number(formData.position_id)
-            : null,
-          is_active: formData.is_active,
-          password: formData.password || undefined,
-        },
-      });
-    } else {
-      createMutation.mutate();
-    }
   };
 
   interface UpdateUserPayload {
@@ -294,23 +284,48 @@ const Users = () => {
     password?: string;
     roles?: number[];
     branch_ids?: number[];
-    position_id?: number | null;
+    department_ids?: number[];
+    position_id?: number;
     is_active?: boolean;
+    created_at?: string;
+    updated_at?: string;
   }
 
+  const handleEditSubmit = () => {
+    if (editingUser) {
+      updateMutation.mutate({
+        id: editingUser.id,
+        updates: {
+          full_name: `${formData.familiya} ${formData.ism} ${formData.sharif}`.trim(),
+          username: formData.username,
+          pinfl: formData.pinfl,
+          phone: formData.phone,
+          roles: formData.role_ids.map(Number),
+          branch_ids: formData.branch_ids.map(Number),
+          department_ids: formData.department_ids.map(Number),
+          position_id: formData.position_id ? Number(formData.position_id) : undefined,
+          is_active: formData.is_active,
+          password: formData.password || undefined,
+          created_at: formData.created_at_edit
+            ? `${formData.created_at_edit} ${new Date().toTimeString().slice(0, 8)}`
+            : undefined,
+          updated_at: formData.updated_at_edit
+            ? `${formData.updated_at_edit} ${new Date().toTimeString().slice(0, 8)}`
+            : undefined,
+        },
+      });
+    } else {
+      createMutation.mutate();
+    }
+  };
+
   const updateMutation = useMutation({
-    mutationFn: async ({
-      id,
-      updates,
-    }: {
-      id: number;
-      updates: UpdateUserPayload;
-    }) => {
+    mutationFn: async ({ id, updates }: { id: number; updates: UpdateUserPayload }) => {
       const { data } = await API.put(`/users/${id}`, updates);
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       setShowAddModal(false);
       setEditingUser(null);
       resetForm();
@@ -319,19 +334,21 @@ const Users = () => {
 
   const resetForm = () => {
     setFormData({
-      familiya: "",
-      ism: "",
-      sharif: "",
-      pinfl: "",
-      phone: "",
-      username: "",
+      familiya: '',
+      ism: '',
+      sharif: '',
+      pinfl: '',
+      phone: '',
+      username: '',
       password: genPassword(),
-      start_date: "",
+      start_date: '',
       role_ids: [],
       branch_ids: [],
-      type: "",
-      position_id: "",
+      department_ids: [],
+      position_id: '',
       is_active: true,
+      created_at_edit: '',
+      updated_at_edit: '',
     });
     setEditingUser(null);
     setUserImage(null);
@@ -342,7 +359,7 @@ const Users = () => {
       await API.delete(`/users/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
 
@@ -351,38 +368,28 @@ const Users = () => {
 
     return users
       .filter((u) => {
-        const d = u.created_at.slice(0, 10);
-        const matchSearch = u.full_name
-          .toLowerCase()
-          .includes(search.toLowerCase());
+        const matchSearch = u.full_name.toLowerCase().includes(search.toLowerCase());
         const matchRole = role ? u.roles?.some((r) => r.name === role) : true;
 
         if (!matchSearch || !matchRole) return false;
 
-        if (fromDate && toDate) {
-          return d >= fromDate && d <= toDate;
-        }
-
         return true;
       })
       .sort((a, b) => a.id - b.id);
-  }, [apiData?.data, search, role, fromDate, toDate]);
+  }, [apiData?.data, search, role]);
 
-  const toggleAll = (checked: boolean) =>
-    setSelected(checked ? filtered?.map((u) => u.id) : []);
+  const toggleAll = (checked: boolean) => setSelected(checked ? filtered?.map((u) => u.id) : []);
 
   const toggleOne = (id: number) =>
-    setSelected((p) =>
-      p.includes(id) ? p.filter((x) => x !== id) : [...p, id],
-    );
+    setSelected((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
   const confirmDelete = () => {
-    if (deleteTarget === "all") {
+    if (deleteTarget === 'all') {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
 
-    if (typeof deleteTarget === "number") {
+    if (typeof deleteTarget === 'number') {
       deleteMutation.mutate(deleteTarget);
       setSelected((p) => p.filter((x) => x !== deleteTarget));
     }
@@ -391,119 +398,96 @@ const Users = () => {
     setDeleteTarget(null);
   };
 
-  const archiveUser = (u: User) => {
-    const archived = JSON.parse(localStorage.getItem("archivedUsers") || "[]");
-    localStorage.setItem("archivedUsers", JSON.stringify([...archived, u]));
-    deleteMutation.mutate(u.id);
-  };
-
   return (
     <section className="users container">
-      <h1 className="main-title">{t("users.listTitle")}</h1>
+      <h1 className="main-title">{t('users.listTitle')}</h1>
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal add-user-modal">
             <h3 className="modal-title">
-              {editingUser
-                ? t("users.userEditTitle")
-                : t("users.addNewUserTitle")}
+              {editingUser ? t('users.userEditTitle') : t('users.addNewUserTitle')}
             </h3>
 
             <div className="add-user-form">
               <div className="form-left">
                 <div className="form-group">
-                  <label>{t("users.lastName")}</label>
+                  <label>{t('users.lastName')}</label>
                   <input
                     type="text"
                     value={formData.familiya}
-                    onChange={(e) =>
-                      setFormData({ ...formData, familiya: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, familiya: e.target.value })}
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t("users.firstName")}</label>
+                  <label>{t('users.firstName')}</label>
                   <input
                     type="text"
                     value={formData.ism}
-                    onChange={(e) =>
-                      setFormData({ ...formData, ism: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, ism: e.target.value })}
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t("users.familyName")}</label>
+                  <label>{t('users.familyName')}</label>
                   <input
                     type="text"
                     value={formData.sharif}
-                    onChange={(e) =>
-                      setFormData({ ...formData, sharif: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, sharif: e.target.value })}
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t("users.pinfl")}</label>
+                  <label>{t('users.pinfl')}</label>
                   <input
                     type="text"
                     value={formData.pinfl}
                     maxLength={14}
                     onChange={(e) => {
-                      const val = e.target.value
-                        .replace(/\D/g, "")
-                        .slice(0, 14);
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 14);
                       setFormData({ ...formData, pinfl: val });
                     }}
                   />
-                  {formData.pinfl.length > 0 &&
-                    formData.pinfl.length !== 14 && (
-                      <span
-                        className="error-text"
-                        style={{
-                          color: "red",
-                          fontSize: "12px",
-                          marginTop: "4px",
-                          display: "block",
-                        }}
-                      >
-                        {t("users.pinflError")}
-                      </span>
-                    )}
+                  {formData.pinfl.length > 0 && formData.pinfl.length !== 14 && (
+                    <span
+                      className="error-text"
+                      style={{
+                        color: 'red',
+                        fontSize: '12px',
+                        marginTop: '4px',
+                        display: 'block',
+                      }}
+                    >
+                      {t('users.pinflError')}
+                    </span>
+                  )}
                 </div>
                 <div className="form-group">
-                  <label>{t("users.phoneNumber")}</label>
+                  <label>{t('users.phoneNumber')}</label>
                   <input
                     type="text"
                     value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t("users.loginText")}</label>
+                  <label>{t('users.loginText')}</label>
                   <input
                     type="text"
                     value={formData.username}
-                    onChange={(e) =>
-                      setFormData({ ...formData, username: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   />
                 </div>
                 <div className="form-group">
-                  <label>{t("users.password")}</label>
-                  <div style={{ position: "relative" }}>
+                  <label>{t('users.password')}</label>
+                  <div style={{ position: 'relative' }}>
                     <input
                       type="text"
                       value={formData.password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
-                      }
-                      placeholder={t("users.passwordPlaceholder")}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder={t('users.passwordPlaceholder')}
                     />
                     <button
                       className="refresh-password"
                       type="button"
-                      title={t("users.generatePasswordTooltip")}
+                      title={t('users.generatePasswordTooltip')}
                       onClick={() => {
                         const newPass = genPassword();
                         setFormData({ ...formData, password: newPass });
@@ -514,44 +498,49 @@ const Users = () => {
                   </div>
                 </div>
                 <div className="form-group">
-                  <label>{t("users.startDate")}</label>
+                  <label>{t('users.startDate')}</label>
                   <input
                     type="date"
                     value={formData.start_date}
-                    onChange={(e) =>
-                      setFormData({ ...formData, start_date: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                   />
                 </div>
-                {/* <div className="form-group">
-                  <label>{t("users.imageLabel")}</label>
 
-                  <div className="file-upload-wrapper">
-                    <input
-                      id="userImage"
-                      type="file"
-                      accept="image/png, image/jpeg"
-                      onChange={handleFileChange}
-                      className="file-input"
-                    />
-                    <label htmlFor="userImage" className="file-upload-btn">
-                      {t("users.upload")}
-                    </label>
+                {editingUser && (
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <div className="form-group" style={{ flex: 1 }}>
+                      <label>{t('users.createdAt')}</label>
+                      <input
+                        type="date"
+                        value={formData.created_at_edit}
+                        onChange={(e) =>
+                          setFormData({ ...formData, created_at_edit: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="form-group" style={{ flex: 1 }}>
+                      <label>{t('users.updatedAt')}</label>
+                      <input
+                        type="date"
+                        value={formData.updated_at_edit}
+                        onChange={(e) =>
+                          setFormData({ ...formData, updated_at_edit: e.target.value })
+                        }
+                      />
+                    </div>
                   </div>
-                </div> */}
+                )}
               </div>
 
               <div className="form-right">
                 <div className="form-group">
-                  <label>{t("users.roles")}</label>
+                  <label>{t('users.roles')}</label>
                   <div className="selected-items-box">
                     {formData.role_ids?.map((roleId) => {
-                      const role = roles.find(
-                        (r) => r.id.toString() === roleId,
-                      );
+                      const r = roles.find((r) => r.id.toString() === roleId);
                       return (
                         <div key={roleId} className="selected-item">
-                          {role?.name || roleId}
+                          {r?.name || roleId}
                           <button onClick={() => removeRole(roleId)}>×</button>
                         </div>
                       );
@@ -563,34 +552,27 @@ const Users = () => {
                   <select
                     onChange={(e) => {
                       addRole(e.target.value);
-                      e.target.value = "";
+                      e.target.value = '';
                     }}
                   >
-                    <option value="">{t("users.choose")}</option>
-                    {roles?.map((role) => (
-                      <option key={role.id} value={role.id}>
-                        {role.name}
+                    <option value="">{t('users.choose')}</option>
+                    {roles?.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div className="form-group">
-                  <label>{t("users.branches")}</label>
+                  <label>{t('users.branches')}</label>
                   <div className="selected-items-box">
                     {formData.branch_ids?.map((branchId) => {
-                      const branch = branches.find(
-                        (b) => b.id.toString() === branchId,
-                      );
+                      const branch = branches.find((b) => b.id.toString() === branchId);
                       return (
                         <div key={branchId} className="selected-item">
-                          {branch
-                            ? getLocalized(branch, "name", i18n.language)
-                            : branchId}
-                          <button
-                            type="button"
-                            onClick={() => removeBranch(branchId)}
-                          >
+                          {branch ? getLocalized(branch, 'name', i18n.language) : branchId}
+                          <button type="button" onClick={() => removeBranch(branchId)}>
                             ×
                           </button>
                         </div>
@@ -603,37 +585,53 @@ const Users = () => {
                   <select
                     onChange={(e) => {
                       addBranch(e.target.value);
-                      e.target.value = "";
+                      e.target.value = '';
                     }}
                   >
-                    <option value="">{t("users.choose")}</option>
+                    <option value="">{t('users.choose')}</option>
                     {branches?.map((branch) => (
                       <option key={branch.id} value={branch.id}>
-                        {getLocalized(branch, "name", i18n.language)}
+                        {getLocalized(branch, 'name', i18n.language)}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div className="form-group">
-                  <label>{t("users.position")}</label>
+                  <label>{t('users.departments')}</label>
+                  <div className="selected-items-box">
+                    {formData.department_ids?.map((deptId) => {
+                      const dept = departments.find((d) => d.id.toString() === deptId);
+                      return (
+                        <div key={deptId} className="selected-item">
+                          {dept ? getLocalized(dept, 'name', i18n.language) : deptId}
+                          <button type="button" onClick={() => removeDepartment(deptId)}>
+                            ×
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="form-group">
                   <select
-                    value={formData.position_id}
-                    onChange={(e) =>
-                      setFormData({ ...formData, position_id: e.target.value })
-                    }
+                    onChange={(e) => {
+                      addDepartment(e.target.value);
+                      e.target.value = '';
+                    }}
                   >
-                    <option value="">{t("users.choose")}</option>
-                    {positions?.map((position) => (
-                      <option key={position.id} value={position.id}>
-                        {getLocalized(position, "name", i18n.language)}
+                    <option value="">{t('users.choose')}</option>
+                    {departments?.map((dept) => (
+                      <option key={dept.id} value={dept.id}>
+                        {getLocalized(dept, 'name', i18n.language)}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div className="form-group">
-                  <label>{t("users.endDate")}</label>
+                  <label>{t('users.endDate')}</label>
                   <input type="date" />
                 </div>
 
@@ -641,38 +639,21 @@ const Users = () => {
                   <div className="toggle-buttons">
                     <button
                       type="button"
-                      className={formData.is_active ? "" : "active"}
-                      onClick={() =>
-                        setFormData({ ...formData, is_active: false })
-                      }
+                      className={formData.is_active ? '' : 'active'}
+                      onClick={() => setFormData({ ...formData, is_active: false })}
                     >
-                      {t("users.inactive")}
+                      {t('users.inactive')}
                     </button>
                     <button
                       type="button"
-                      className={formData.is_active ? "active" : ""}
-                      onClick={() =>
-                        setFormData({ ...formData, is_active: true })
-                      }
+                      className={formData.is_active ? 'active' : ''}
+                      onClick={() => setFormData({ ...formData, is_active: true })}
                     >
-                      {t("users.active")}
+                      {t('users.active')}
                     </button>
                   </div>
                 </div>
 
-                {!formData.is_active && (
-                  <div className="form-group">
-                    <label>{t("users.isActive")}</label>
-                    <div className="checkbox-group">
-                      <label>
-                        <input type="checkbox" /> {t("users.yes")}
-                      </label>
-                      <label>
-                        <input type="checkbox" /> {t("users.no")}
-                      </label>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -687,8 +668,8 @@ const Users = () => {
                 }
               >
                 {createMutation.isPending || updateMutation.isPending
-                  ? t("users.saving")
-                  : t("users.save")}
+                  ? t('users.saving')
+                  : t('users.save')}
               </button>
 
               <button
@@ -699,7 +680,7 @@ const Users = () => {
                   resetForm();
                 }}
               >
-                {t("users.cancel")}
+                {t('users.cancel')}
               </button>
             </div>
           </div>
@@ -709,101 +690,70 @@ const Users = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t("users.confirmDelete")}</h3>
+            <h3>{t('users.confirmDelete')}</h3>
 
             <div className="modal-actions">
               <button className="danger" onClick={confirmDelete}>
-                {t("users.confirm")}
+                {t('users.confirm')}
               </button>
 
-              <button
-                className="cancel"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                {t("users.cancel")}
+              <button className="cancel" onClick={() => setShowDeleteModal(false)}>
+                {t('users.cancel')}
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {workTimeId !== null && (
+        <WorkScheduleModal userId={workTimeId} onClose={() => setWorkTimeId(null)} />
+      )}
+
       <div className="users-filters">
         <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          {t("users.addNew")}
+          {t('users.addNew')}
         </button>
 
         <button
           className="delete-all"
           disabled={!selected.length}
           onClick={() => {
-            setDeleteTarget("all");
+            setDeleteTarget('all');
             setShowDeleteModal(true);
           }}
         >
-          {t("users.delete")}
+          {t('users.delete')}
         </button>
 
         <select onChange={(e) => setRole(e.target.value)}>
-          <option value="">{t("users.employeeType")}</option>
-          {roles?.map((role) => (
-            <option key={role.id} value={role.name}>
-              {role.name}
+          <option value="">{t('users.employeeType')}</option>
+          {roles?.map((r) => (
+            <option key={r.id} value={r.name}>
+              {r.name}
             </option>
           ))}
         </select>
 
-        <input
-          placeholder={t("users.search")}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        <div style={{ position: "relative" }}>
-          <input
-            type="text"
-            readOnly
-            placeholder={t("users.dateFilter")}
-            value={fromDate && toDate ? `${fromDate} - ${toDate}` : ""}
-            onClick={() => setShowRange(true)}
-          />
-
-          {showRange && (
-            <div className="range-box">
-              <input
-                type="date"
-                onChange={(e) => setFromDate(e.target.value)}
-              />
-
-              <input
-                type="date"
-                onChange={(e) => {
-                  setToDate(e.target.value);
-                  setShowRange(false);
-                }}
-              />
-            </div>
-          )}
-        </div>
+        <input placeholder={t('users.search')} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      <div className="users-table-wrapper" style={{ overflowX: "auto" }}>
+      <div className="users-table-wrapper" style={{ overflowX: 'auto' }}>
         <table className="users-table">
           <thead>
             <tr>
               <th>
                 <input
                   type="checkbox"
-                  checked={
-                    selected.length === filtered.length && filtered.length > 0
-                  }
+                  checked={selected.length === filtered.length && filtered.length > 0}
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              {isVisible("id") && <th>ID</th>}
+              {isVisible('id') && <th>ID</th>}
               {getOrderedColumns().map((colId) => {
                 if (!isVisible(colId)) return null;
                 return <th key={colId}>{getColumnHeader(colId)}</th>;
               })}
-              <th>{t("users.actions")}</th>
+              <th>{t('users.actions')}</th>
             </tr>
           </thead>
 
@@ -821,7 +771,7 @@ const Users = () => {
                     />
                   </td>
 
-                  {isVisible("id") && <td>{u.id}</td>}
+                  {isVisible('id') && <td>{u.id}</td>}
 
                   {getOrderedColumns().map((colId) => {
                     if (!isVisible(colId)) return null;
@@ -829,44 +779,13 @@ const Users = () => {
                   })}
 
                   <td className="actions">
-                    <div style={{ position: "relative" }}>
-                      <button
-                        className="user-workTime-btn"
-                        onClick={() => setWorkTimeId(u.id)}
-                      >
+                    <div style={{ position: 'relative' }}>
+                      <button className="user-workTime-btn" onClick={() => setWorkTimeId(u.id)}>
                         <i className="fa-solid fa-clock"></i>
                       </button>
-
-                      {workTimeId === u.id && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: -60,
-                            left: -40,
-                            background: "#fff",
-                            border: "1px solid #003366",
-                            padding: 8,
-                          }}
-                        >
-                          <input type="time" step="60" lang="ru" />
-                          <button onClick={() => setWorkTimeId(null)}>
-                            OK
-                          </button>
-                        </div>
-                      )}
                     </div>
 
-                    <button
-                      className="user-archive-btn"
-                      onClick={() => archiveUser(u)}
-                    >
-                      <i className="fa-solid fa-box-archive"></i>
-                    </button>
-
-                    <button
-                      className="user-edit-btn"
-                      onClick={() => openEditModal(u)}
-                    >
+                    <button className="user-edit-btn" onClick={() => openEditModal(u)}>
                       <i className="fa-solid fa-pen"></i>
                     </button>
 
@@ -883,7 +802,7 @@ const Users = () => {
                 </tr>
               ))
             ) : (
-              <EmptyState colSpan={10} message={t("users.notFound")} />
+              <EmptyState colSpan={13} message={t('users.notFound')} />
             )}
           </tbody>
         </table>

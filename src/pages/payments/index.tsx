@@ -233,17 +233,10 @@ const Payments = () => {
     }
   };
 
-  const [archivedIds, setArchivedIds] = useState<number[]>(() => {
-    const stored = localStorage.getItem("archivedPaymentIds");
-    return stored ? JSON.parse(stored) : [];
-  });
-
   const filtered = useMemo(() => {
     const payments = apiData || [];
     return payments
       .filter((u) => {
-        if (archivedIds.includes(u.id)) return false;
-
         const fullName =
           `${u.student?.last_name ?? ""} ${u.student?.first_name ?? ""}`.toLowerCase();
         const matchSearch = fullName.includes(search.toLowerCase());
@@ -267,7 +260,7 @@ const Payments = () => {
         return matchSearch && matchPaymentType && matchDate;
       })
       .sort((a, b) => b.id - a.id);
-  }, [apiData, search, paymentTypeFilter, fromDate, toDate, archivedIds]);
+  }, [apiData, search, paymentTypeFilter, fromDate, toDate]);
 
   const toggleAll = (checked: boolean) =>
     setSelected(checked ? filtered?.map((u) => u.id) : []);
@@ -287,27 +280,6 @@ const Payments = () => {
     }
     setShowDeleteModal(false);
     setDeleteTarget(null);
-  };
-
-  const archivePayment = (u: Payment) => {
-    try {
-      const newArchivedIds = [...archivedIds, u.id];
-      setArchivedIds(newArchivedIds);
-
-      localStorage.setItem(
-        "archivedPaymentIds",
-        JSON.stringify(newArchivedIds),
-      );
-
-      const allArchived = JSON.parse(
-        localStorage.getItem("archivedPayments") || "[]",
-      );
-      const newArchived = [...allArchived, u];
-      localStorage.setItem("archivedPayments", JSON.stringify(newArchived));
-    } catch (error) {
-      console.error("❌ Arxivlash xatosi:", error);
-      alert(t("payments.archiveError", "Arxivlashda xatolik yuz berdi!"));
-    }
   };
 
   const formatAmount = (amount: string | number) => {
@@ -683,12 +655,6 @@ const Payments = () => {
                   <td>{u.cashier?.full_name}</td>
                   <td>{u.branch?.address}</td>
                   <td className="actions">
-                    <button
-                      className="user-archive-btn"
-                      onClick={() => archivePayment(u)}
-                    >
-                      <i className="fa-solid fa-box-archive"></i>
-                    </button>
                     <button
                       className="payment-edit-btn"
                       onClick={() => openEditModal(u)}

@@ -1,4 +1,5 @@
 import type { Branch, Role, Position, ApiResponse } from './common.types';
+import type { DepartmentType } from './department.types';
 
 export interface User {
   id: number;
@@ -14,6 +15,7 @@ export interface User {
   updated_at?: string;
   position?: Position | null;
   pinfl?: string;
+  departments?: DepartmentType[];
 }
 
 export type UsersResponse = ApiResponse<User[]>;
@@ -23,11 +25,13 @@ export interface UserPayload {
   username: string;
   phone: string;
   password?: string;
-  type: string;
   pinfl: string;
-  position_id?: string | number | null;
-  role_ids: string[] | number[];
-  branch_ids: string[] | number[];
+  position_id?: number | null;
+  roles: number[];
+  branch_ids: number[];
+  department_ids: number[];
   is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
   image?: File | null;
 }

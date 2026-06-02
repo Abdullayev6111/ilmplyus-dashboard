@@ -72,7 +72,29 @@
     "attendance": "Посещаемость",
     "operators": "Операторы",
     "sources": "Источники",
-    "refusalReasons": "Причины отказов"
+    "refusalReasons": "Причины отказов",
+    "organization": "Организация",
+    "staffDepartment": "Отдел сотрудников",
+    "salesDepartment": "Отдел продаж",
+    "test": "Тест",
+    "salaries": "Зарплаты",
+    "faceId": "Устройство Face ID",
+    "contract": "Договор",
+    "coursePrices": "Цены на курсы",
+    "lessonSchedule": "Расписание уроков",
+    "demoLesson": "Пробный урок",
+    "lidList": "Список лидов",
+    "ipTelephone": "IP Телефон",
+    "tasks": "Задачи",
+    "questions": "Вопросы и варианты",
+    "studentsAttendance": "Посещаемость учеников + оценка",
+    "studentTasks": "Задачи учеников",
+    "studentsContract": "Договор учеников",
+    "paymentsList": "Список платежей",
+    "paymentsArchive": "История платежей",
+    "salary": "Зарплата",
+    "staffAttendance": "Посещаемость сотрудников",
+    "archive": "Архив"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -169,7 +191,13 @@
     "pinflError": "Должно быть 14 цифр",
     "imageLabel": "Изображение профиля (png или jpg, макс. 5мб)",
     "upload": "Загрузить",
-    "notFound": "Foydalanuvchilar topilmadi (needs translation)"
+    "notFound": "Пользователи не найдены",
+    "department": "Отдел",
+    "departments": "Отделы",
+    "createdAt": "Дата создания",
+    "updatedAt": "Дата изменения",
+    "archiveQuestion": "Архивировать?",
+    "archiveTitle": "Архив пользователей"
   },
   "branches": {
     "listTitle": "Список филиалов",
@@ -487,9 +515,71 @@
     "selectStatus": "Выберите статус",
     "selectContract": "Выберите договор",
     "newPassword": "Новый пароль",
-    "passwordHint": "Оставьте пустым, чтобы не менять пароль"
+    "passwordHint": "Оставьте пустым, чтобы не менять пароль",
+    "archiveTitle": "Архив учеников"
   },
   "regions": {
     "notFound": "Viloyatlar topilmadi (needs translation)"
+  },
+  "workSchedule": {
+    "title": "Рабочий график",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "saving": "Сохранение...",
+    "loading": "Загрузка...",
+    "chooseDays": "Выберите рабочие дни",
+    "all": "Все",
+    "clear": "Очистить",
+    "startTime": "Время начала",
+    "endTime": "Время окончания",
+    "type": "Тип",
+    "note": "Заметка",
+    "notePlaceholder": "Напр: Основное рабочее время",
+    "days": {
+      "monday": "Понедельник",
+      "tuesday": "Вторник",
+      "wednesday": "Среда",
+      "thursday": "Четверг",
+      "friday": "Пятница",
+      "saturday": "Суббота",
+      "sunday": "Воскресенье"
+    },
+    "types": {
+      "normal": "Обычный",
+      "overtime": "Сверхурочный",
+      "flexible": "Гибкий"
+    }
+  },
+  "archive": {
+    "restore": "Восстановить",
+    "forceDelete": "Удалить навсегда",
+    "restoreSelected": "Восстановить выбранные",
+    "actions": "Действия",
+    "noData": "Нет архивных записей",
+    "confirm": "Подтвердить",
+    "cancel": "Отмена",
+    "confirmForceDelete": "Удалить эту запись навсегда?",
+    "teachersTitle": "Архив преподавателей",
+    "rolesTitle": "Архив ролей",
+    "operatorsTitle": "Архив операторов",
+    "contractsTitle": "Архив договоров",
+    "contractNumber": "Номер договора",
+    "coursePricesTitle": "Архив цен курсов",
+    "price": "Цена",
+    "groupsTitle": "Архив групп",
+    "groupName": "Название группы",
+    "demoLessonTitle": "Архив пробных уроков",
+    "lessonScheduleTitle": "Архив расписания",
+    "lidTitle": "Архив лидов",
+    "ipTelephoneTitle": "Архив IP телефона",
+    "name": "Название",
+    "phoneNumber": "Телефон",
+    "tasksTitle": "Архив задач",
+    "taskTitle": "Заголовок",
+    "questionsTitle": "Архив вопросов",
+    "questionText": "Вопрос",
+    "salariesTitle": "Архив зарплат",
+    "studentTasksTitle": "Архив задач учеников",
+    "studentsContractTitle": "Архив договоров учеников"
   }
 }
