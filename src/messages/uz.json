@@ -594,6 +594,7 @@
     "tooltips": {
       "print": "Printer",
       "edit": "Tahrirlash"
-    }
+    },
+    "clearFilter": "Filterni tozalash"
   }
 }

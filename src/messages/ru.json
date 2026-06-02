@@ -451,7 +451,8 @@
     "tooltips": {
       "print": "Печать",
       "edit": "Редактировать"
-    }
+    },
+    "clearFilter": "Сбросить фильтр"
   },
   "refusalReasons": {
     "title": "Причины отказов",

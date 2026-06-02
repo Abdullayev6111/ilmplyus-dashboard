@@ -36,6 +36,119 @@
   user-select: none;
 }
 
+.month-picker-label {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.month-picker-label:hover {
+  opacity: 0.7;
+}
+
+.month-picker-container {
+  position: relative;
+}
+
+.date-picker-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 200;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  padding: 14px;
+  min-width: 240px;
+}
+
+.date-picker-year-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.dp-nav-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.dp-nav-btn:hover {
+  opacity: 0.75;
+}
+
+.dp-year-select {
+  flex: 1;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: noto-m;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+  background: #fff;
+}
+
+.date-picker-months {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.dp-month-btn {
+  height: 34px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-family: noto-m;
+  font-size: 13px;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.dp-month-btn:hover {
+  background: #f1f3f5;
+}
+
+.dp-month-btn.dp-month-active {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.dp-clear-btn {
+  width: 100%;
+  height: 34px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-family: noto-m;
+  font-size: 13px;
+  color: #dc3545;
+  transition: background 0.15s;
+}
+
+.dp-clear-btn:hover {
+  background: #fff0f0;
+}
+
 .nav-btn {
   width: 28px;
   height: 28px;
@@ -150,7 +263,7 @@
 }
 
 .col-id {
-  width: 40px;
+  width: 25px !important;
 }
 .col-name {
   min-width: 280px !important;
@@ -160,13 +273,16 @@
   overflow: visible !important;
 }
 .col-position {
-  width: 140px !important;
+  width: 80px !important;
   text-align: left !important;
   padding-left: 10px !important;
   white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 80px !important;
 }
 .col-day {
-  width: 32px;
+  width: 25px !important;
 }
 
 .day-header {

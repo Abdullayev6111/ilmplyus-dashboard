@@ -6,7 +6,7 @@ export interface AttendanceRecord {
   employee_id: number;
   date: string; // YYYY-MM-DD
   status: AttendanceStatusKey | string[];
-  comment?: string;
+  comment_uz?: string;
   check_in?: string;
   check_out?: string;
 }

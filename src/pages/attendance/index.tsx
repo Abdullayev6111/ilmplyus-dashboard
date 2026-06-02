@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../api/api";
 import "./attendance.css";
@@ -11,12 +11,16 @@ import type {
   AttendanceRecord,
   FlatAttendanceRecord,
 } from "../../types/attendance.types";
+import { useEmployees } from "../../hooks/useSharedQueries";
 
 const AttendancePage = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isEditMode, setIsEditMode] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [pickerYear, setPickerYear] = useState(new Date().getFullYear());
+  const datePickerRef = useRef<HTMLDivElement>(null);
 
   // State for popover/modal
   const [activeCell, setActiveCell] = useState<{
@@ -30,6 +34,21 @@ const AttendancePage = () => {
 
   const month = selectedDate.getMonth();
   const year = selectedDate.getFullYear();
+
+  useEffect(() => {
+    setPickerYear(year);
+  }, [year]);
+
+  useEffect(() => {
+    if (!showDatePicker) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (datePickerRef.current && !datePickerRef.current.contains(e.target as Node)) {
+        setShowDatePicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showDatePicker]);
 
   // Translation helpers
   const monthNames = useMemo(
@@ -88,27 +107,49 @@ const AttendancePage = () => {
     },
   });
 
+  const { data: employeesData } = useEmployees();
+
   const employeesWithAttendances = useMemo(() => {
     const flatRecords = attendanceData?.data || [];
-    const grouped: Record<string, EmployeeAttendance> = {};
+    const employees = employeesData || [];
 
+    // Seed table with ALL employees so empty-month rows are still shown
+    const groupedById: Record<number, EmployeeAttendance> = {};
+    // Build a name → id lookup so attendance records (which lack employee_id) can be matched.
+    // Index by both full name and first-two-word variant because the API may return
+    // shortened names ("Batirova Khurshida") while /employees has full names
+    // ("Batirova Khurshida Hamidovna").
+    const nameToId: Record<string, number> = {};
+    employees.forEach((e) => {
+      groupedById[e.id] = {
+        id: e.id,
+        full_name: e.full_name,
+        position: null,
+        attendances: [],
+      };
+      nameToId[e.full_name] = e.id;
+      const twoWord = e.full_name.split(" ").slice(0, 2).join(" ");
+      if (twoWord && !nameToId[twoWord]) nameToId[twoWord] = e.id;
+    });
+
+    // Overlay attendance records — match by employee_id when present, otherwise by name
     flatRecords.forEach((r) => {
-      if (!grouped[r.employee]) {
-        grouped[r.employee] = {
-          // Use real employee_id from API for the parent object
-          id: r.employee_id,
+      const empId: number | undefined = r.employee_id ?? nameToId[r.employee];
+      if (empId == null) return;
+
+      if (!groupedById[empId]) {
+        groupedById[empId] = {
+          id: empId,
           full_name: r.employee,
-          position: { id: 0, name: r.position },
+          position: r.position ? { id: 0, name: r.position } : null,
           attendances: [],
         };
       }
 
-      // Filter and map statuses, ensuring no nulls for compatibility
       const currentStatuses = (
         Array.isArray(r.status) ? r.status : [r.status]
       ).filter((s): s is AttendanceStatusKey => s !== null);
 
-      // Map entire array to internal representation
       const mappedStatuses = currentStatuses.map((s) => {
         if (s === "present") return "+";
         if (s === "absent") return "NB";
@@ -118,19 +159,19 @@ const AttendancePage = () => {
         return s;
       }) as AttendanceStatusKey[];
 
-      grouped[r.employee].attendances.push({
+      groupedById[empId].attendances.push({
         id: r.id,
-        employee_id: r.employee_id, // Use real employee_id from API
+        employee_id: empId,
         date: r.date,
         status: mappedStatuses,
-        comment: r.comment || "",
+        comment_uz: r.comment || "",
         check_in: r.check_in,
         check_out: r.check_out,
       });
     });
 
-    return Object.values(grouped);
-  }, [attendanceData]);
+    return Object.values(groupedById);
+  }, [attendanceData, employeesData]);
 
   const saveMutation = useMutation({
     mutationFn: async (records: AttendanceRecord[]) => {
@@ -143,8 +184,8 @@ const AttendancePage = () => {
         );
         return data;
       }
-      // Else, creating new records (possibly multiple)
-      const { data } = await API.post("/attendances", { records });
+      // Send the single record directly (backend expects flat fields at root)
+      const { data } = await API.post("/attendances", records[0]);
       return data;
     },
     onSuccess: () => {
@@ -162,13 +203,23 @@ const AttendancePage = () => {
     setSelectedDate(new Date(year, month + 1, 1));
   };
 
+  const handleMonthSelect = (monthIdx: number) => {
+    setSelectedDate(new Date(pickerYear, monthIdx, 1));
+    setShowDatePicker(false);
+  };
+
+  const handleClearFilter = () => {
+    setSelectedDate(new Date());
+    setShowDatePicker(false);
+  };
+
   const handlePrint = () => {
     window.print();
   };
 
   const isPastDay = (fullDate: string) => {
     const today = new Date().toISOString().split("T")[0];
-    return fullDate < today;
+    return fullDate <= today;
   };
 
   const handleCellClick = (employee: EmployeeAttendance, day: any) => {
@@ -199,12 +250,13 @@ const AttendancePage = () => {
       employeeName: employee.full_name,
       date: day.fullDate,
       currentStatuses,
-      comment: existing?.comment || "",
+      comment: existing?.comment_uz || "",
     });
   };
 
   const handleSubmitStatus = () => {
     if (!activeCell) return;
+    if (activeCell.currentStatuses.length === 0) return;
 
     // Map internal codes back to backend-friendly verbose strings
     const backendStatuses = activeCell.currentStatuses.map((s) => {
@@ -216,11 +268,15 @@ const AttendancePage = () => {
       return s;
     });
 
+    const now = new Date();
+    const checkIn = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
     const record: AttendanceRecord = {
       employee_id: activeCell.employeeId,
       date: activeCell.date,
+      check_in: checkIn,
       status: backendStatuses,
-      comment: activeCell.comment,
+      comment_uz: activeCell.comment,
     };
 
     saveMutation.mutate([record]);
@@ -298,16 +354,65 @@ const AttendancePage = () => {
     <div className="attendance-page container">
       <div className="attendance-header">
         <div className="attendance-controls">
-          <div className="month-picker">
-            <button className="nav-btn" onClick={handlePrevMonth}>
-              <i className="fa-solid fa-chevron-left"></i>
-            </button>
-            <span>
-              {monthNames[month]} {year}
-            </span>
-            <button className="nav-btn" onClick={handleNextMonth}>
-              <i className="fa-solid fa-chevron-right"></i>
-            </button>
+          <div className="month-picker-container" ref={datePickerRef}>
+            <div className="month-picker">
+              <button className="nav-btn" onClick={handlePrevMonth}>
+                <i className="fa-solid fa-chevron-left"></i>
+              </button>
+              <span
+                className="month-picker-label"
+                onClick={() => setShowDatePicker((v) => !v)}
+              >
+                {monthNames[month]} {year}
+              </span>
+              <button className="nav-btn" onClick={handleNextMonth}>
+                <i className="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+
+            {showDatePicker && (
+              <div className="date-picker-dropdown">
+                <div className="date-picker-year-row">
+                  <button
+                    className="dp-nav-btn"
+                    onClick={() => setPickerYear((y) => y - 1)}
+                  >
+                    <i className="fa-solid fa-chevron-left"></i>
+                  </button>
+                  <select
+                    className="dp-year-select"
+                    value={pickerYear}
+                    onChange={(e) => setPickerYear(Number(e.target.value))}
+                  >
+                    {Array.from({ length: 16 }, (_, i) => 2020 + i).map((y) => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </select>
+                  <button
+                    className="dp-nav-btn"
+                    onClick={() => setPickerYear((y) => y + 1)}
+                  >
+                    <i className="fa-solid fa-chevron-right"></i>
+                  </button>
+                </div>
+
+                <div className="date-picker-months">
+                  {monthNames.map((name, idx) => (
+                    <button
+                      key={idx}
+                      className={`dp-month-btn ${idx === month && pickerYear === year ? "dp-month-active" : ""}`}
+                      onClick={() => handleMonthSelect(idx)}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+
+                <button className="dp-clear-btn" onClick={handleClearFilter}>
+                  {t("attendance.clearFilter")}
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="action-btns">

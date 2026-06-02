@@ -455,7 +455,8 @@
     "tooltips": {
       "print": "Print",
       "edit": "Edit"
-    }
+    },
+    "clearFilter": "Clear filter"
   },
   "refusalReasons": {
     "title": "Refusal Reasons",
