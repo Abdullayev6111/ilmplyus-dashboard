@@ -50,6 +50,14 @@ interface MeResponse {
   username?: string;
   role?: string;
   roles?: { id: number; name: string; permissions?: { id: number; name: string }[] }[];
+  user?: {
+    id: number;
+    full_name?: string;
+    name?: string;
+    username?: string;
+    role?: string;
+    roles?: { id: number; name: string; permissions?: { id: number; name: string }[] }[];
+  };
   [key: string]: unknown;
 }
 
