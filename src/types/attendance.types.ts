@@ -1,4 +1,14 @@
-export type AttendanceStatusKey = '+' | 'NB' | 'S' | 'F' | 'K' | 'absent' | 'present' | 'no_uniform' | 'late' | 'excused';
+export type AttendanceStatusKey =
+  | '+'
+  | 'NB'
+  | 'S'
+  | 'F'
+  | 'K'
+  | 'absent'
+  | 'present'
+  | 'no_uniform'
+  | 'late'
+  | 'excused';
 export type AttendanceStatus = AttendanceStatusKey | null;
 
 export interface AttendanceRecord {
@@ -26,12 +36,10 @@ export interface FlatAttendanceRecord {
 export interface EmployeeAttendance {
   id: number;
   full_name: string;
-  position?: {
-    id: number;
-    name: string;
-  } | null;
-  attendances: (Omit<AttendanceRecord, "status"> & {
+  position?: string | null;
+  attendances: (Omit<AttendanceRecord, 'status'> & {
     status: AttendanceStatusKey[];
+    comment?: string | null;
   })[];
 }
 

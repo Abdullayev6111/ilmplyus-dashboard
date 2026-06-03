@@ -1,0 +1,81 @@
+.group-select {
+  position: relative;
+}
+
+.group-select__trigger {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 15px !important;
+  font-size: 14px;
+  color: #003366;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+}
+
+.group-select__trigger:focus {
+  outline: none;
+  border-color: #003366;
+}
+
+.group-select__dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.group-select__option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #003366;
+  transition: background 0.15s;
+}
+
+.group-select__option:hover {
+  background: #f0f4ff;
+}
+
+.group-select__option--active {
+  background: #e6eeff;
+}
+
+.group-select__option--placeholder {
+  color: #888;
+  font-size: 13px;
+}
+
+.avail-badge {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  font-family: noto-m;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.avail-badge--free {
+  background: #d1f5e0;
+  color: #155724;
+}
+
+.avail-badge--busy {
+  background: #fde8e8;
+  color: #9b1c1c;
+}

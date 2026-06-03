@@ -35,6 +35,7 @@ import RefusalReasons from './pages/refusal-reasons';
 // New pages
 import FaceId from './pages/face-id';
 import Contracts from './pages/contracts';
+import ContractsCreate from './pages/contracts/ContractsCreate';
 import CoursePrices from './pages/course-prices';
 import LessonSchedule from './pages/lesson-schedule';
 import DemoLesson from './pages/demo-lesson';
@@ -121,6 +122,7 @@ const App = () => {
           <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/positions" element={<Positions />} />
           <Route path="/contracts" element={<Contracts />} />
+          <Route path="/contracts/create" element={<ContractsCreate />} />
           <Route path="/teachers" element={<Teachers />} />
 
           {/* Kurslar */}

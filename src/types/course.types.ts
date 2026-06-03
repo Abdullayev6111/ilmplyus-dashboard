@@ -1,5 +1,5 @@
-import type { Branch } from "./common.types";
-import type { Level } from "./level.types";
+import type { Branch } from './common.types';
+import type { Level } from './level.types';
 
 export interface Course {
   id: number;
@@ -25,4 +25,19 @@ export interface CoursePayload {
   description_en?: string;
   branch_ids: number[];
   level_ids: number[];
+}
+
+export interface CourseLevel {
+  id: number;
+  name: string;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
+  created_at?: string;
+  updated_at?: string;
+
+  pivot?: {
+    course_id: number;
+    level_id: number;
+  };
 }

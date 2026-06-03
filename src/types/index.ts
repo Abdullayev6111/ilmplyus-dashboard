@@ -8,3 +8,6 @@ export * from './course.types';
 export * from './level.types';
 export * from './position.types';
 export * from './attendance.types';
+export * from './course-price.types';
+export * from './contract.types';
+export * from './hikvision.types';

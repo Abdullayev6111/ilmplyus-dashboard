@@ -1,0 +1,51 @@
+.fid-modal {
+  width: 560px !important;
+}
+
+.fid-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 30px;
+  margin: 20px 0;
+}
+
+.fid-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.fid-form-group label {
+  font-size: 13px;
+  font-family: noto-m;
+  color: #003366;
+}
+
+.fid-form-group input,
+.fid-form-group select {
+  height: 46px;
+  padding: 0 14px;
+  border: 1.5px solid #d0d9e6;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #003366;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+  appearance: auto;
+  -webkit-appearance: auto;
+}
+
+.fid-form-group input::placeholder {
+  color: #aab4c0;
+}
+
+.fid-form-group input:focus,
+.fid-form-group select:focus {
+  border-color: #003366;
+}
+
+.fid-form-group select option {
+  color: #003366;
+  background: #fff;
+}
