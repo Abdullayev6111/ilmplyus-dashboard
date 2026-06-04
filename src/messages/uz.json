@@ -98,7 +98,7 @@
   },
   "payments": {
     "mainTitle": "To‘lovlar",
-    "editPaymenTitle": "To‘lovni tahrirlash",
+    "editPaymentTitle": "To’lovni tahrirlash",
     "addNewPaymentTitle": "Yangi To‘lov qo‘shish",
     "fish": "F.I.SH",
     "lastName": "Familiya",

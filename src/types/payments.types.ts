@@ -52,4 +52,6 @@ export interface PaymentPayload {
   group_id?: number;
   payment_date: string;
   student_id?: number;
+  created_at?: string;
+  updated_at?: string;
 }

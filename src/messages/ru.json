@@ -98,7 +98,7 @@
   },
   "payments": {
     "mainTitle": "Платежи",
-    "editPaymenTitle": "Редактировать платеж",
+    "editPaymentTitle": "Редактировать платеж",
     "addNewPaymentTitle": "Добавить новый платеж",
     "fish": "Ф.И.О",
     "lastName": "Фамилия",

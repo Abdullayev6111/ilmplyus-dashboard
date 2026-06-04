@@ -90,7 +90,7 @@
   },
   "payments": {
     "mainTitle": "Payments",
-    "editPaymenTitle": "Edit Payment",
+    "editPaymentTitle": "Edit Payment",
     "addNewPaymentTitle": "Add New Payment",
     "fish": "Full Name",
     "lastName": "Last Name",

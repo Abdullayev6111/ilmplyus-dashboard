@@ -312,6 +312,15 @@
   gap: 5px;
 }
 
+.form-datetime-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-datetime-row .form-group {
+  flex: 1;
+}
+
 .form-group label {
   font-size: 14px;
   font-family: noto-m;

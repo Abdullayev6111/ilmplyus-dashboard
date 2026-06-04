@@ -4,7 +4,7 @@ import { notifications } from '@mantine/notifications';
 import { useTranslation } from 'react-i18next';
 import { API } from '@/api/api';
 import { getLocalized } from '@/utils/getLocalized';
-import type { Group, Room, Employee } from '@/types/groups.types';
+import type { Group, Room, Teacher as Employee } from '@/types/groups.types';
 import type { DemoLesson, CreateDemoLessonPayload } from '@/types/demoLesson.types';
 import {
   useCreateDemoLesson,
