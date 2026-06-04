@@ -47,6 +47,10 @@ import Questions from './pages/questions';
 import StudentsAttendance from './pages/students-attendance';
 import StudentTasks from './pages/student-tasks';
 import StudentsContract from './pages/students-contract';
+import UnderAge from './pages/students-contract/underAge';
+import LegalEntity from './pages/students-contract/legalEntity';
+import RepresentativeEntity from './pages/students-contract/representativeEntity';
+import ContractDetails from './pages/students-contract/ContractDetails';
 import Salaries from './pages/salaries';
 
 // Archive pages
@@ -153,6 +157,15 @@ const App = () => {
           <Route path="/students-attendance" element={<StudentsAttendance />} />
           <Route path="/student-tasks" element={<StudentTasks />} />
           <Route path="/students-contract" element={<StudentsContract />} />
+          <Route path="/students-contract/adult" element={<StudentsContract />} />
+          <Route path="/students-contract/adult/edit/:id" element={<StudentsContract />} />
+          <Route path="/students-contract/minor" element={<UnderAge />} />
+          <Route path="/students-contract/minor/edit/:id" element={<UnderAge />} />
+          <Route path="/students-contract/legal" element={<LegalEntity />} />
+          <Route path="/students-contract/legal/edit/:id" element={<LegalEntity />} />
+          <Route path="/students-contract/legal-representative" element={<RepresentativeEntity />} />
+          <Route path="/students-contract/legal-representative/edit/:id" element={<RepresentativeEntity />} />
+          <Route path="/students-contract/:id" element={<ContractDetails />} />
           <Route path="/students" element={<Students />} />
 
           {/* To'lovlar */}

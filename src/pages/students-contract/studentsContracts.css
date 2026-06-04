@@ -1,0 +1,986 @@
+.students-contract {
+  margin-top: 50px !important;
+  margin-left: 40px !important;
+}
+
+.sc-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding: 0 4px;
+}
+
+.sc-page-title {
+  font-family: noto-b;
+  font-size: 26px;
+  color: #003366;
+  letter-spacing: -0.3px;
+}
+
+.sc-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ---- Search Input ---- */
+.sc-search-wrapper {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 16px;
+  gap: 10px;
+  width: 280px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.sc-search-wrapper:focus-within {
+  border-color: #fe9100;
+  box-shadow: 0 0 0 3px rgba(254, 145, 0, 0.12);
+}
+
+.sc-search-wrapper i {
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+.sc-search-wrapper input {
+  border: none;
+  outline: none;
+  font-family: noto-r;
+  font-size: 14px;
+  color: #374151;
+  background: transparent;
+  width: 100%;
+}
+
+.sc-search-wrapper input::placeholder {
+  color: #9ca3af;
+}
+
+/* ---- Filter Button ---- */
+.sc-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  font-family: noto-m;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sc-filter-btn:hover {
+  border-color: #003366;
+  color: #003366;
+}
+
+.sc-filter-btn i {
+  font-size: 14px;
+}
+
+/* ---- Create Button ---- */
+.sc-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #fe9100, #e07e00);
+  border: none;
+  border-radius: 10px;
+  font-family: noto-sb;
+  font-size: 14px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(254, 145, 0, 0.35);
+}
+
+.sc-create-btn:hover {
+  background: linear-gradient(135deg, #e07e00, #c96f00);
+  box-shadow: 0 6px 18px rgba(254, 145, 0, 0.45);
+  transform: translateY(-1px);
+}
+
+.sc-create-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(254, 145, 0, 0.3);
+}
+
+/* ---- Table Card ---- */
+.sc-table-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e8f0fb;
+  box-shadow: 0 2px 12px rgba(0, 51, 102, 0.06);
+  overflow: hidden;
+}
+
+.sc-table-card-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.sc-table-section-title {
+  font-family: noto-sb;
+  font-size: 15px;
+  color: #fe9100;
+}
+
+/* ---- Column widths ---- */
+.sc-table .sc-th-id {
+  width: 80px !important;
+  min-width: 80px !important;
+  font-size: 15px !important;
+}
+
+.sc-table .sc-th-name {
+  width: 240px !important;
+  min-width: 240px !important;
+  font-size: 15px !important;
+  text-align: left !important;
+}
+
+/* ---- Table ---- */
+.sc-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.sc-table thead tr {
+  background: #f8fafd;
+}
+
+.sc-table thead th {
+  padding: 13px 20px;
+  font-family: noto-sb;
+  font-size: 13px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center !important;
+  border-bottom: 1px solid #e8f0fb;
+  white-space: nowrap;
+}
+
+.sc-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s ease;
+}
+
+.sc-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.sc-table tbody tr:hover {
+  background: #f8faff;
+}
+
+.sc-table tbody td {
+  padding: 14px 20px;
+  font-family: noto-r;
+  font-size: 14px;
+  color: #374151;
+  vertical-align: middle;
+  white-space: nowrap;
+  text-align: center !important;
+}
+
+/* ---- Student Cell ---- */
+.sc-student-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center !important;
+  gap: 12px;
+}
+
+.sc-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fe9100, #ffb347);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: noto-b;
+  font-size: 14px;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(254, 145, 0, 0.3);
+}
+
+.sc-student-name {
+  font-family: noto-sb;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.sc-student-phone {
+  font-family: noto-r;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* ---- Course Badge ---- */
+.sc-course-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: noto-m;
+  font-size: 12px;
+}
+
+.sc-course-badge .badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #9b59b6;
+}
+
+.sc-course-badge.purple {
+  background: rgba(155, 89, 182, 0.1);
+  color: #9b59b6;
+}
+
+.sc-course-badge.blue {
+  background: rgba(0, 51, 102, 0.08);
+  color: #003366;
+}
+
+.sc-course-badge.orange {
+  background: rgba(254, 145, 0, 0.1);
+  color: #fe9100;
+}
+
+/* ---- Status Badge ---- */
+.sc-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-family: noto-m;
+  font-size: 12px;
+}
+
+.sc-status-badge.active {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.sc-status-badge.active::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+}
+
+.sc-status-badge.pending {
+  background: rgba(254, 145, 0, 0.12);
+  color: #d97706;
+}
+
+.sc-status-badge.pending::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d97706;
+}
+
+.sc-status-badge.cancelled {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.sc-status-badge.cancelled::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #dc2626;
+}
+
+.sc-status-badge.tasdiq {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.sc-status-badge.tasdiq::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+}
+
+/* ---- Action Buttons ---- */
+.sc-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center !important;
+  gap: 6px;
+}
+
+.sc-action-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.sc-action-btn.print {
+  background: rgba(0, 51, 102, 0.08);
+  color: #003366;
+}
+
+.sc-action-btn.print:hover {
+  background: #003366;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 51, 102, 0.25);
+}
+
+.sc-action-btn.view {
+  background: rgba(155, 89, 182, 0.1);
+  color: #9b59b6;
+}
+
+.sc-action-btn.view:hover {
+  background: #9b59b6;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(155, 89, 182, 0.3);
+}
+
+.sc-action-btn.edit {
+  background: rgba(254, 145, 0, 0.1);
+  color: #fe9100;
+}
+
+.sc-action-btn.edit:hover {
+  background: #fe9100;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(254, 145, 0, 0.3);
+}
+
+.sc-action-btn.delete {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+}
+
+.sc-action-btn.delete:hover {
+  background: #ef4444;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+}
+
+/* ---- Table Footer / Pagination ---- */
+.sc-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-top: 1px solid #f1f5f9;
+  background: #fafbfe;
+}
+
+.sc-table-info {
+  font-family: noto-r;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.sc-pagination {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sc-page-btn {
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: noto-m;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sc-page-btn:hover:not(:disabled) {
+  border-color: #003366;
+  color: #003366;
+}
+
+.sc-page-btn.active {
+  background: #003366;
+  border-color: #003366;
+  color: #fff;
+  font-family: noto-b;
+}
+
+.sc-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sc-page-dots {
+  font-family: noto-r;
+  font-size: 13px;
+  color: #94a3b8;
+  padding: 0 4px;
+}
+
+/* ============================================
+   MODAL - Shartnoma tuzish turini tanlang
+   ============================================ */
+.sc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: sc-overlay-in 0.2s ease;
+}
+
+@keyframes sc-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sc-modal {
+  background: #fff;
+  border-radius: 20px;
+  padding: 0;
+  width: 460px;
+  box-shadow: 0 24px 60px rgba(0, 51, 102, 0.18);
+  animation: sc-modal-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+@keyframes sc-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.sc-modal-header {
+  background: linear-gradient(135deg, #003366 0%, #004f9e 100%);
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sc-modal-header-title {
+  font-family: noto-sb;
+  font-size: 16px;
+  color: #fff;
+  letter-spacing: 0.2px;
+}
+
+.sc-modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.sc-modal-close:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.sc-modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---- Contract Type Option Button ---- */
+.sc-contract-option {
+  width: 100%;
+  padding: 16px 22px;
+  border: 2px solid #e8eef6;
+  border-radius: 12px;
+  background: #f8faff;
+  font-family: noto-m;
+  font-size: 15px;
+  color: #1e293b;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sc-contract-option::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: transparent;
+  transition: background 0.22s ease;
+}
+
+.sc-contract-option:hover {
+  border-color: #003366;
+  background: #f0f5ff;
+  color: #003366;
+  transform: translateX(3px);
+}
+
+.sc-contract-option:hover::before {
+  background: #003366;
+}
+
+.sc-contract-option:nth-child(2):hover {
+  border-color: #9b59b6;
+  background: #faf5ff;
+  color: #9b59b6;
+}
+
+.sc-contract-option:nth-child(2):hover::before {
+  background: #9b59b6;
+}
+
+.sc-contract-option:nth-child(3):hover {
+  border-color: #fe9100;
+  background: #fff8f0;
+  color: #fe9100;
+}
+
+.sc-contract-option:nth-child(3):hover::before {
+  background: #fe9100;
+}
+
+.sc-contract-option:nth-child(4):hover {
+  border-color: #16a34a;
+  background: #f0fff5;
+  color: #16a34a;
+}
+
+.sc-contract-option:nth-child(4):hover::before {
+  background: #16a34a;
+}
+
+.sc-contract-option-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  transition: all 0.22s ease;
+}
+
+.sc-contract-option:nth-child(1) .sc-contract-option-icon {
+  background: rgba(0, 51, 102, 0.1);
+  color: #003366;
+}
+
+.sc-contract-option:nth-child(2) .sc-contract-option-icon {
+  background: rgba(155, 89, 182, 0.1);
+  color: #9b59b6;
+}
+
+.sc-contract-option:nth-child(3) .sc-contract-option-icon {
+  background: rgba(254, 145, 0, 0.1);
+  color: #fe9100;
+}
+
+.sc-contract-option:nth-child(4) .sc-contract-option-icon {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+.sc-contract-option-text {
+  flex: 1;
+}
+
+.sc-contract-option-arrow {
+  color: #cbd5e1;
+  font-size: 13px;
+  transition: all 0.22s ease;
+}
+
+.sc-contract-option:hover .sc-contract-option-arrow {
+  color: inherit;
+  transform: translateX(3px);
+}
+
+/* ============================================
+   CONTRACT FORM PAGES (shared layout)
+   ============================================ */
+.sc-form-page {
+  padding: 24px;
+}
+
+.sc-form-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.sc-form-back-btn {
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sc-form-back-btn:hover {
+  border-color: #003366;
+  color: #003366;
+}
+
+.sc-form-page-title {
+  font-family: noto-b;
+  font-size: 22px;
+  color: #003366;
+}
+
+.sc-form-page-subtitle {
+  font-family: noto-r;
+  font-size: 13px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* ---- Section Card ---- */
+.sc-section-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e8f0fb;
+  box-shadow: 0 2px 10px rgba(0, 51, 102, 0.05);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.sc-section-card-header {
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #f8faff 0%, #f0f5ff 100%);
+  border-bottom: 1px solid #e8f0fb;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sc-section-card-header i {
+  color: #fe9100;
+  font-size: 16px;
+}
+
+.sc-section-card-title {
+  font-family: noto-sb;
+  font-size: 15px;
+  color: #003366;
+}
+
+.sc-section-card-body {
+  padding: 24px;
+}
+
+/* ---- Form Grid ---- */
+.sc-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.sc-form-grid.cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.sc-form-grid.cols-1 {
+  grid-template-columns: 1fr;
+}
+
+.sc-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sc-form-group.span-2 {
+  grid-column: span 2;
+}
+
+.sc-form-group.span-3 {
+  grid-column: span 3;
+}
+
+.sc-form-label {
+  font-family: noto-m;
+  font-size: 13px;
+  color: #475569;
+}
+
+.sc-form-label span {
+  color: #ef4444;
+}
+
+.sc-form-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-family: noto-r;
+  font-size: 14px;
+  color: #1e293b;
+  background: #f8faff;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.sc-form-input:focus {
+  outline: none;
+  border-color: #003366;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.08);
+}
+
+.sc-form-input::placeholder {
+  color: #cbd5e1;
+}
+
+.sc-form-select {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-family: noto-r;
+  font-size: 14px;
+  color: #1e293b;
+  background: #f8faff;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  box-sizing: border-box;
+}
+
+.sc-form-select:focus {
+  outline: none;
+  border-color: #003366;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.08);
+}
+
+/* ---- Form Submit Area ---- */
+.sc-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.sc-form-cancel-btn {
+  padding: 10px 24px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  font-family: noto-m;
+  font-size: 14px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sc-form-cancel-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.sc-form-submit-btn {
+  padding: 10px 28px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #003366, #004f9e);
+  font-family: noto-sb;
+  font-size: 14px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 51, 102, 0.3);
+}
+
+.sc-form-submit-btn:hover {
+  background: linear-gradient(135deg, #002952, #003d7a);
+  box-shadow: 0 6px 18px rgba(0, 51, 102, 0.4);
+  transform: translateY(-1px);
+}
+
+/* ---- Placeholder page styles ---- */
+.sc-placeholder-page {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #94a3b8;
+}
+
+.sc-placeholder-page i {
+  font-size: 48px;
+  opacity: 0.3;
+}
+/* ---- Contract Details Page ---- */
+.sc-details-page {
+  background: #fff;
+  border-radius: 14px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  margin-bottom: 24px;
+}
+
+.sc-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.sc-details-title {
+  font-family: noto-b;
+  font-size: 18px;
+  color: #1e293b;
+  text-transform: uppercase;
+}
+
+.sc-details-section {
+  margin-bottom: 32px;
+}
+
+.sc-details-section:last-child {
+  margin-bottom: 0;
+}
+
+.sc-details-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: noto-b;
+  font-size: 15px;
+  color: #fe9100;
+  margin-bottom: 20px;
+}
+
+.sc-details-section-title i {
+  color: #003366;
+}
+
+.sc-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.sc-details-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #f1f5f9;
+}
+
+.sc-details-label {
+  font-family: noto-sb;
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sc-details-value {
+  font-family: noto-m;
+  font-size: 14px;
+  color: #334155;
+  word-break: break-word;
+}
+
+.sc-details-student-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #fe9100;
+  border-radius: 8px;
+  padding: 24px;
+}
+.sc-placeholder-page p {
+  font-family: noto-m;
+  font-size: 15px;
+}
