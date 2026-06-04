@@ -27,6 +27,7 @@
     "react-i18next": "^16.5.4",
     "react-router-dom": "^7.13.0",
     "recharts": "^3.7.0",
+    "sip.js": "^0.21.2",
     "vite-plugin-svgr": "^4.5.0",
     "zustand": "^5.0.11"
   },
