@@ -18,6 +18,7 @@ interface User {
   username?: string;
   role?: string;
   roles?: UserRole[];
+  pinfl?: string;
 }
 
 interface AuthState {

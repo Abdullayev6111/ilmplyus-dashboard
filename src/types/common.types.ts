@@ -23,6 +23,10 @@ export interface ApiResponse<T> extends Pagination {
   data: T;
 }
 
+export interface PaginatedResponse<T> extends PaginationMeta {
+  data: T;
+}
+
 export interface Branch {
   id: number;
   name_uz: string;

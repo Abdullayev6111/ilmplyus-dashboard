@@ -1,0 +1,74 @@
+.dcm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dcm-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 28px 24px;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.dcm-modal__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
+  text-align: center;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.dcm-modal__actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.dcm-btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.dcm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dcm-btn--cancel {
+  background: #fff;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.dcm-btn--cancel:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.dcm-btn--confirm {
+  background: #e53e3e;
+  color: #fff;
+  border-color: #e53e3e;
+}
+
+.dcm-btn--confirm:hover:not(:disabled) {
+  background: #c53030;
+  border-color: #c53030;
+}

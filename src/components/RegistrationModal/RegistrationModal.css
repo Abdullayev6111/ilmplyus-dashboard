@@ -1,0 +1,432 @@
+/* ═══════════════════════════════════════════════════════
+   Overlay & Modal shell
+═══════════════════════════════════════════════════════ */
+
+.rm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(2px);
+  animation: rm-overlay-in 0.18s ease;
+}
+
+@keyframes rm-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.rm-modal {
+  background: #f4f6f9;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 920px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+  animation: rm-modal-in 0.2s ease;
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+
+.rm-modal::-webkit-scrollbar {
+  width: 5px;
+}
+.rm-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.rm-modal::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+@keyframes rm-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Header
+═══════════════════════════════════════════════════════ */
+
+.rm-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px 20px;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+}
+
+.rm-modal__title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.rm-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  border-radius: 8px;
+  transition:
+    background 0.14s ease,
+    color 0.14s ease;
+}
+
+.rm-modal__close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Form
+═══════════════════════════════════════════════════════ */
+
+.rm-form {
+  padding: 28px 32px 32px;
+}
+
+.rm-form__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px 24px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Field wrapper
+═══════════════════════════════════════════════════════ */
+
+.rm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rm-field__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.rm-field__required {
+  color: #f97316;
+  font-weight: 700;
+}
+
+.rm-field__error {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 2px;
+}
+
+.rm-field:has(.rm-textarea) {
+  grid-column: span 2;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Input
+═══════════════════════════════════════════════════════ */
+
+.rm-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rm-input__icon {
+  position: absolute;
+  left: 12px;
+  color: #9ca3af;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.rm-input__icon--left {
+  left: 12px;
+}
+
+.rm-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px 0 38px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  color: #111827;
+  font-family: inherit;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.rm-input::placeholder {
+  color: #bdbdbd;
+}
+
+.rm-input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+.rm-input--error {
+  border-color: #fca5a5;
+}
+
+.rm-input--error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Select
+═══════════════════════════════════════════════════════ */
+
+.rm-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rm-select-wrapper .rm-input__icon {
+  left: 12px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.rm-select {
+  width: 100%;
+  height: 44px;
+  padding: 0 36px 0 38px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  color: #374151;
+  font-family: inherit;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.rm-select:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+.rm-select--error {
+  border-color: #fca5a5;
+}
+
+.rm-select--error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.rm-select:disabled {
+  background: #f9fafb;
+  color: #bdbdbd;
+  cursor: not-allowed;
+}
+
+.rm-select option[value=""] {
+  color: #bdbdbd;
+}
+
+.rm-select--date {
+  padding-left: 38px;
+  color: #374151;
+}
+
+.rm-select__arrow {
+  position: absolute;
+  right: 12px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Gender radio group
+═══════════════════════════════════════════════════════ */
+
+.rm-gender-group {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 44px;
+  padding: 0 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.rm-gender-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  user-select: none;
+}
+
+.rm-gender-radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.rm-gender-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  background: #fff;
+  transition:
+    border-color 0.14s ease,
+    background 0.14s ease;
+  flex-shrink: 0;
+}
+
+.rm-gender-box--checked {
+  background: #f97316;
+  border-color: #f97316;
+}
+
+.rm-gender-box--checked::after {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: translate(0, -1px) rotate(-45deg);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Textarea
+═══════════════════════════════════════════════════════ */
+
+.rm-textarea {
+  width: 100% !important;
+  height: 44px !important;
+  padding: 5px;
+  grid-column: span 2;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  color: #111827;
+  font-family: inherit;
+  outline: none;
+  resize: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.rm-textarea:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Form actions
+═══════════════════════════════════════════════════════ */
+
+.rm-form__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.rm-btn {
+  height: 46px;
+  padding: 0 40px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.1s ease;
+}
+
+.rm-btn:active {
+  transform: scale(0.97);
+}
+
+.rm-btn--cancel {
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+}
+
+.rm-btn--cancel:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.rm-btn--submit {
+  border: none;
+  background: #f97316;
+  color: #fff;
+}
+
+.rm-btn--submit:hover {
+  background: #ea6a0a;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Responsive
+═══════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .rm-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rm-modal__header,
+  .rm-form {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}

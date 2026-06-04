@@ -1,0 +1,349 @@
+/* ═══════════════════════════════════════════════════════
+   Trigger button
+═══════════════════════════════════════════════════════ */
+
+.fd-container {
+  position: relative;
+  display: inline-flex;
+}
+
+.fd-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 18px;
+  border: 1px solid #bdbdbd;
+  border-radius: 12px;
+  background: #fff;
+  color: #3f3f3f;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition:
+    border-color 0.18s ease,
+    color 0.18s ease,
+    background 0.18s ease;
+}
+
+.fd-trigger:hover {
+  border-color: #f97316;
+  color: #f97316;
+}
+
+.fd-trigger--active {
+  border-color: #f97316;
+  background: #fff5ee;
+  color: #f97316;
+}
+
+.fd-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #f97316;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Panel
+═══════════════════════════════════════════════════════ */
+
+.fd-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  z-index: 200;
+  width: 300px;
+  max-height: 480px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 6px 0;
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+
+.fd-panel--right {
+  right: 0;
+}
+
+.fd-panel--left {
+  left: 0;
+}
+
+.fd-panel::-webkit-scrollbar {
+  width: 5px;
+}
+
+.fd-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.fd-panel::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Sections
+═══════════════════════════════════════════════════════ */
+
+.fd-section {
+  padding: 12px 16px;
+}
+
+.fd-section__title {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.fd-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fd-divider {
+  height: 1px;
+  background: #f3f4f6;
+  margin: 2px 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Checkbox
+═══════════════════════════════════════════════════════ */
+
+.fd-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.14s ease;
+  user-select: none;
+}
+
+.fd-checkbox:hover {
+  background: #f9fafb;
+}
+
+.fd-checkbox input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.fd-checkbox__box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 5px;
+  background: #fff;
+  flex-shrink: 0;
+  transition:
+    border-color 0.14s ease,
+    background 0.14s ease;
+}
+
+.fd-checkbox input:checked + .fd-checkbox__box {
+  background: #f97316;
+  border-color: #f97316;
+}
+
+.fd-checkbox input:checked + .fd-checkbox__box::after {
+  content: '';
+  display: block;
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: translate(0, -1px) rotate(-45deg);
+}
+
+.fd-checkbox input:indeterminate + .fd-checkbox__box {
+  background: #fff5ee;
+  border-color: #f97316;
+}
+
+.fd-checkbox input:indeterminate + .fd-checkbox__box::after {
+  content: '';
+  display: block;
+  width: 9px;
+  height: 2px;
+  background: #f97316;
+  border-radius: 1px;
+}
+
+.fd-checkbox input:focus-visible + .fd-checkbox__box {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+}
+
+.fd-checkbox__label {
+  font-size: 14px;
+  color: #374151;
+  flex: 1;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Direction nested sections
+═══════════════════════════════════════════════════════ */
+
+.fd-direction-section {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.fd-direction-section__header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fd-direction-section__header .fd-checkbox {
+  flex: 1;
+  border-radius: 0;
+}
+
+.fd-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition:
+    color 0.14s ease,
+    background 0.14s ease;
+}
+
+.fd-expand-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.fd-expand-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.fd-expand-btn--open svg {
+  transform: rotate(180deg);
+}
+
+.fd-direction-section__subs {
+  padding-left: 24px;
+  border-left: 2px solid #f3f4f6;
+  margin-left: 16px;
+  display: flex;
+  flex-direction: column;
+  animation: fd-subs-in 0.15s ease;
+}
+
+@keyframes fd-subs-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fd-direction-section__subs .fd-checkbox__label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Footer
+═══════════════════════════════════════════════════════ */
+
+.fd-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+}
+
+.fd-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid #fbd5b5;
+  border-radius: 8px;
+  background: #fff5ee;
+  color: #f97316;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease;
+}
+
+.fd-reset-btn:hover {
+  background: #ffedd5;
+  border-color: #f97316;
+}
+
+.fd-footer__count {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Date inputs
+═══════════════════════════════════════════════════════ */
+
+.fd-date-input {
+  flex: 1;
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #374151;
+  background: #fff;
+  transition: border-color 0.14s ease, box-shadow 0.14s ease;
+  outline: none;
+}
+
+.fd-date-input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
