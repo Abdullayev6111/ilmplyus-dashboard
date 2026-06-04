@@ -1,25 +1,5 @@
 import { create } from "zustand";
-
-interface Permission {
-  id: number;
-  name: string;
-}
-
-interface UserRole {
-  id: number;
-  name: string;
-  permissions?: Permission[];
-}
-
-interface User {
-  id: number;
-  name?: string;
-  full_name?: string;
-  username?: string;
-  role?: string;
-  roles?: UserRole[];
-  pinfl?: string;
-}
+import type { User } from "@/types/users.types";
 
 interface AuthState {
   token: string | null;

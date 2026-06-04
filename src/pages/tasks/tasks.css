@@ -1,0 +1,786 @@
+/* ─── Page Layout ─────────────────────────────────────────── */
+
+.tasks {
+  width: 100%;
+  margin-left: 40px !important;
+  margin-top: 50px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.tasks-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tasks-top--operator {
+  justify-content: space-between;
+}
+
+.tasks-top-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tasks-top-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tasks-title {
+  font-family: noto-b;
+  font-size: 30px;
+  color: #003366;
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+}
+
+.tasks-content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ─── Filter Buttons ──────────────────────────────────────── */
+
+.tasks-filters {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border-radius: 24px;
+  padding: 4px 6px;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.07);
+}
+
+.tasks-filter-btn {
+  border: none;
+  border-radius: 20px;
+  padding: 7px 18px;
+  font-family: noto-sb;
+  font-size: 13px;
+  cursor: pointer;
+  background: transparent;
+  color: #555;
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+
+.tasks-filter-btn.active {
+  background: #fe9100;
+  color: #fff;
+}
+
+/* ─── Operator Select ─────────────────────────────────────── */
+
+.tasks-operator-select {
+  border: 1.5px solid #d0d7e2;
+  border-radius: 20px;
+  padding: 7px 32px 7px 14px;
+  font-family: noto-r;
+  font-size: 13px;
+  color: #333;
+  background: #fff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E")
+    no-repeat right 10px center;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  min-width: 160px;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.07);
+}
+
+.tasks-operator-select:focus {
+  border-color: #fe9100;
+}
+
+/* ─── Create Button ───────────────────────────────────────── */
+
+.tasks-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #003366;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 22px;
+  font-family: noto-sb;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.tasks-create-btn:hover {
+  opacity: 0.88;
+}
+
+/* ─── Role Toggle (dev) ───────────────────────────────────── */
+
+.tasks-role-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: noto-r;
+  font-size: 13px;
+  color: #555;
+}
+
+.tasks-role-toggle select {
+  border: 1.5px solid #d0d7e2;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-family: noto-r;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* ─── State Messages ──────────────────────────────────────── */
+
+.tasks-state {
+  text-align: center;
+  margin-top: 60px;
+  font-family: noto-r;
+  font-size: 15px;
+  color: #aaa;
+}
+
+.tasks-state.loading {
+  color: #888;
+  font-size: 16px;
+}
+
+.tasks-state.error {
+  color: #ff0000;
+  font-size: 16px;
+}
+
+/* ─── TaskCard ────────────────────────────────────────────── */
+
+.task-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1.5px solid #e5eaf0;
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.05);
+  max-width: 550px;
+}
+
+/* ─── Card Header ─────────────────────────────────────────── */
+
+.task-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.task-card__header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-card__lid {
+  font-family: noto-m;
+  font-size: 12px;
+  color: #555;
+}
+
+.task-card__deadline {
+  font-family: noto-r;
+  font-size: 12px;
+  color: #888;
+}
+
+/* ─── Priority Badge ──────────────────────────────────────── */
+
+.task-card__priority {
+  font-family: noto-b;
+  font-size: 12px;
+  border-radius: 6px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+
+.task-card__priority--shoshilinch {
+  background: #ffdddb;
+  color: #ff0000;
+}
+
+.task-card__priority--orta {
+  background: #d6ecfc;
+  color: #003366;
+}
+
+.task-card__priority--bemalol {
+  background: #ccffc3;
+  color: #1bb200;
+}
+
+/* ─── Card Meta Row ───────────────────────────────────────── */
+
+.task-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.task-card__name {
+  font-family: noto-b;
+  font-size: 16px;
+  color: #181c2e;
+  margin: 0;
+}
+
+.task-card__operator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: noto-m;
+  font-size: 13px;
+  color: #fe9100;
+  white-space: nowrap;
+}
+
+.task-card__operator-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e5eaf0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+/* ─── Comment Boxes ───────────────────────────────────────── */
+
+.task-card__comment-box {
+  background: #f4f7fb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: noto-r;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.task-card__comment-label {
+  font-family: noto-b;
+}
+
+.task-card__comment-time {
+  display: block;
+  text-align: right;
+  font-family: noto-r;
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* ─── Comment Input ───────────────────────────────────────── */
+
+.task-card__comment-form {
+  display: flex;
+  gap: 6px;
+}
+
+.task-card__comment-input {
+  flex: 1;
+  border: 1px solid #d0d7e2;
+  border-radius: 7px;
+  padding: 6px 10px;
+  font-family: noto-r;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.task-card__comment-input:focus {
+  border-color: #fe9100;
+}
+
+.task-card__comment-submit {
+  background: #1bb200;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 12px;
+  font-family: noto-sb;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.task-card__comment-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ─── Status Buttons (operator) ──────────────────────────── */
+
+.task-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.task-card__btn {
+  flex: 1;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-family: noto-b;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #fff;
+  transition: opacity 0.15s;
+}
+
+.task-card__btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.task-card__btn--bajarish {
+  background: #fe9100;
+}
+
+.task-card__btn--bajarildi {
+  background: #1bb200;
+}
+
+.task-card__btn--bajarilmadi {
+  background: #ff0000;
+}
+
+/* ─── Manager Action Buttons ──────────────────────────────── */
+
+.task-card__btn--tahrirlash {
+  background: #fe9100;
+}
+
+.task-card__btn--ochirish {
+  background: #ff0000;
+}
+
+.task-card__btn--bekor {
+  background: #ff0000;
+  flex: 0 0 auto;
+  padding: 10px 24px !important;
+}
+
+.task-card__btn--yakunlangan-long {
+  background: #003366;
+  width: 100%;
+  cursor: default !important;
+}
+
+.task-card__btn--bajarilmadi-long {
+  background: #ff0000;
+  width: 100%;
+  cursor: default !important;
+}
+
+.task-card__actions-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-card__status-in-progress {
+  width: 100%;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-family: noto-b;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 2px solid #fe9100;
+  color: #fe9100;
+}
+
+.task-card__comment-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ─── Status Labels (non-yangi states) ───────────────────── */
+
+.task-card__status-label {
+  width: 100%;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-family: noto-b;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  cursor: default;
+}
+
+.task-card__status-label--bajarilmoqda {
+  background: #fff;
+  border: 2px solid #fe9100;
+  color: #fe9100;
+}
+
+.task-card__status-label--yakunlangan {
+  background: #003366;
+  color: #fff;
+  border: none;
+}
+
+.task-card__status-label--bajarilmadi {
+  background: #ff0000;
+  color: #fff;
+  border: none;
+}
+
+/* ─── Modal Overlay ───────────────────────────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px 32px 32px;
+  width: 100%;
+  max-width: 560px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.18);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal__title {
+  font-family: noto-b;
+  font-size: 18px;
+  color: #181c2e;
+  margin: 0;
+  background: #003366;
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+  margin: -28px -32px 0;
+  padding: 18px 28px;
+}
+
+.modal__close {
+  background: #fff;
+  border: none;
+  border-radius: 15px;
+  padding: 14px 30px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  z-index: 1;
+}
+
+.modal__close:hover {
+  background: #f0f0f0;
+}
+
+/* ─── Modal Form Fields ───────────────────────────────────── */
+
+.modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.modal__label {
+  font-family: noto-sb;
+  font-size: 13px;
+  color: #181c2e;
+}
+
+.modal__input {
+  border: 1.5px solid #d0d7e2;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: noto-r;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal__input--error {
+  border: 1px solid red;
+}
+
+.modal__input:focus {
+  border-color: #003366;
+}
+
+.modal__textarea {
+  border: 1.5px solid #d0d7e2;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: noto-r;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  resize: vertical;
+  min-height: 100px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.modal__textarea:focus {
+  border-color: #003366;
+}
+
+.modal__select {
+  border: 1.5px solid #d0d7e2;
+  border-radius: 8px;
+  padding: 10px 36px 10px 14px;
+  font-family: noto-r;
+  font-size: 14px;
+  color: #333;
+  background: #fff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E")
+    no-repeat right 12px center;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.modal__select:focus {
+  border-color: #003366;
+}
+
+/* ─── Date + Time Row ─────────────────────────────────────── */
+
+.modal__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.modal__input-icon-wrap {
+  position: relative;
+}
+
+.modal__input-icon-wrap .modal__input {
+  padding-right: 38px;
+}
+
+.modal__input-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+  font-size: 16px;
+}
+
+/* ─── Priority Selector ───────────────────────────────────── */
+
+.modal__priority-group {
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid #d0d7e2;
+}
+
+.modal__priority-btn {
+  flex: 1;
+  border: none;
+  padding: 10px 0;
+  font-family: noto-sb;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+  color: #555;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.modal__priority-btn + .modal__priority-btn {
+  border-left: 1.5px solid #d0d7e2;
+}
+
+.modal__priority-btn.active {
+  background: #003366;
+  color: #fff;
+}
+
+/* ─── Lid Search ──────────────────────────────────────────── */
+
+.modal__search-wrap {
+  position: relative;
+}
+
+.modal__search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  pointer-events: none;
+}
+
+.modal__suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid #d0d7e2;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.modal__suggestion-item {
+  padding: 10px 14px;
+  font-family: noto-r;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.modal__suggestion-item:hover {
+  background: #f4f7fb;
+}
+
+/* ─── Save Button ─────────────────────────────────────────── */
+
+.modal__save-btn {
+  background: #fe9100;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 0;
+  font-family: noto-b;
+  font-size: 15px;
+  cursor: pointer;
+  width: 30%;
+  transition: opacity 0.15s;
+}
+
+.modal__save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.modal__save-btn:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+/* Responsive Scaling: 1920px -> 1200px */
+@media (max-width: 1600px) {
+  .tasks {
+    margin-left: 100px !important;
+    gap: 40px;
+  }
+  .tasks-content {
+    gap: 16px;
+  }
+  .task-card {
+    padding: 12px 14px 14px;
+    max-width: 500px;
+  }
+  .modal {
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 1400px) {
+  .tasks {
+    margin-left: 80px !important;
+    gap: 30px;
+  }
+  .tasks-title {
+    font-size: 26px;
+  }
+  .tasks-content {
+    gap: 12px;
+  }
+  .task-card {
+    padding: 10px 12px 12px;
+    max-width: 450px;
+  }
+  .modal {
+    max-width: 480px;
+    padding: 24px 28px 28px;
+  }
+  .modal__title {
+    margin: -24px -28px 0;
+    padding: 16px 24px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .tasks {
+    margin-left: 60px !important;
+    gap: 20px;
+  }
+  .tasks-title {
+    font-size: 24px;
+  }
+  .tasks-content {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .task-card {
+    max-width: 100%;
+  }
+  .tasks-operator-select {
+    min-width: 130px;
+  }
+}

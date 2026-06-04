@@ -1356,5 +1356,63 @@
       "save": "Saqlash",
       "saving": "Saqlanmoqda..."
     }
+  },
+  "taskCard": {
+    "priority": {
+      "urgent": "Shoshilinch",
+      "medium": "O‘rta",
+      "low": "Bemalol"
+    },
+    "lidId": "Lid id",
+    "managerComment": "Menejer izohi",
+    "operatorComment": "Operator izohi",
+    "editBtn": "Tahrirlash",
+    "deleteBtn": "O‘chirish",
+    "status": {
+      "completed": "Yakunlangan",
+      "failed": "Bajarilmadi",
+      "inProgress": "Bajarilmoqda"
+    },
+    "btn": {
+      "start": "Bajarish",
+      "done": "Bajarildi",
+      "notDone": "Bajarilmadi",
+      "cancel": "Bekor"
+    },
+    "writeCommentPlaceholder": "Izoh yozing..."
+  },
+  "taskModal": {
+    "editTitle": "Vazifani tahrirlash",
+    "createTitle": "Yangi vazifa yaratish",
+    "selectLid": "Lidni tanlang",
+    "lidPlaceholder": "FISH yoki lid id raqami yozing...",
+    "priority": "Vazifa ustuvorligi",
+    "priorityOptions": {
+      "shoshilinch": "Shoshilinch",
+      "orta": "O‘rta",
+      "sekin": "Bemalol"
+    },
+    "date": "Sana",
+    "time": "Vaqt",
+    "operator": "Mas’ul operator",
+    "selectOperator": "Operatorni tanlang",
+    "comment": "Izoh",
+    "saving": "Saqlanmoqda...",
+    "saveBtn": "Vazifani saqlash"
+  },
+  "tasks": {
+    "filter": {
+      "barchasi": "Barchasi",
+      "bajarish": "Bajarilmoqda",
+      "bajarildi": "Yakunlangan",
+      "bajarilmadi": "Bajarilmadi"
+    },
+    "allOperators": "Barcha operatorlar",
+    "role": "Rol",
+    "createTask": "Vazifa yaratish",
+    "taskList": "Vazifalar ro‘yhati",
+    "loading": "Yuklanmoqda...",
+    "error": "Ma’lumotlarni yuklashda xatolik yuz berdi.",
+    "noTasks": "Vazifalar topilmadi."
   }
 }

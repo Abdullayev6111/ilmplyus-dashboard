@@ -1347,5 +1347,63 @@
       "save": "Сохранить",
       "saving": "Сохранение..."
     }
+  },
+  "taskCard": {
+    "priority": {
+      "urgent": "Срочный",
+      "medium": "Средний",
+      "low": "Низкий"
+    },
+    "lidId": "ID Лида",
+    "managerComment": "Комм. менеджера",
+    "operatorComment": "Комм. оператора",
+    "editBtn": "Редактировать",
+    "deleteBtn": "Удалить",
+    "status": {
+      "completed": "Выполнено",
+      "failed": "Провалено",
+      "inProgress": "В процессе"
+    },
+    "btn": {
+      "start": "Начать",
+      "done": "Готово",
+      "notDone": "Не готово",
+      "cancel": "Отмена"
+    },
+    "writeCommentPlaceholder": "Напишите комментарий..."
+  },
+  "taskModal": {
+    "editTitle": "Редактировать задачу",
+    "createTitle": "Создать новую задачу",
+    "selectLid": "Выберите лида",
+    "lidPlaceholder": "Введите ФИО или ID лида...",
+    "priority": "Приоритет задачи",
+    "priorityOptions": {
+      "shoshilinch": "Срочный",
+      "orta": "Средний",
+      "sekin": "Низкий"
+    },
+    "date": "Дата",
+    "time": "Время",
+    "operator": "Отв. оператор",
+    "selectOperator": "Выберите оператора",
+    "comment": "Комментарий",
+    "saving": "Сохранение...",
+    "saveBtn": "Сохранить задачу"
+  },
+  "tasks": {
+    "filter": {
+      "barchasi": "Все",
+      "bajarish": "В процессе",
+      "bajarildi": "Выполнено",
+      "bajarilmadi": "Провалено"
+    },
+    "allOperators": "Все операторы",
+    "role": "Роль",
+    "createTask": "Создать задачу",
+    "taskList": "Список задач",
+    "loading": "Загрузка...",
+    "error": "Произошла ошибка при загрузке данных.",
+    "noTasks": "Задачи не найдены."
   }
 }

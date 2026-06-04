@@ -6,6 +6,10 @@
   scrollbar-color: #032140 transparent;
 }
 
+.mantine-Notification-root {
+  box-shadow: none;
+}
+
 .th-sortable {
   cursor: pointer;
   user-select: none;

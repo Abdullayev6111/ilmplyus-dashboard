@@ -1356,5 +1356,63 @@
       "save": "Save",
       "saving": "Saving..."
     }
+  },
+  "taskCard": {
+    "priority": {
+      "urgent": "Urgent",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "lidId": "Lead ID",
+    "managerComment": "Manager's Comment",
+    "operatorComment": "Operator's Comment",
+    "editBtn": "Edit",
+    "deleteBtn": "Delete",
+    "status": {
+      "completed": "Completed",
+      "failed": "Failed",
+      "inProgress": "In Progress"
+    },
+    "btn": {
+      "start": "Start",
+      "done": "Done",
+      "notDone": "Not Done",
+      "cancel": "Cancel"
+    },
+    "writeCommentPlaceholder": "Write a comment..."
+  },
+  "taskModal": {
+    "editTitle": "Edit Task",
+    "createTitle": "Create New Task",
+    "selectLid": "Select Lead",
+    "lidPlaceholder": "Enter full name or lead ID...",
+    "priority": "Task Priority",
+    "priorityOptions": {
+      "shoshilinch": "Urgent",
+      "orta": "Medium",
+      "sekin": "Low"
+    },
+    "date": "Date",
+    "time": "Time",
+    "operator": "Assigned Operator",
+    "selectOperator": "Select Operator",
+    "comment": "Comment",
+    "saving": "Saving...",
+    "saveBtn": "Save Task"
+  },
+  "tasks": {
+    "filter": {
+      "barchasi": "All",
+      "bajarish": "In Progress",
+      "bajarildi": "Completed",
+      "bajarilmadi": "Failed"
+    },
+    "allOperators": "All Operators",
+    "role": "Role",
+    "createTask": "Create Task",
+    "taskList": "Task List",
+    "loading": "Loading...",
+    "error": "An error occurred while loading data.",
+    "noTasks": "No tasks found."
   }
 }
