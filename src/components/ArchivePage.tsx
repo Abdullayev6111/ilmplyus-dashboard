@@ -28,9 +28,9 @@ const ArchivePage = ({ endpoint, title, columns, queryKey }: Props) => {
 
   const { data, isLoading } = useQuery<Record<string, unknown>[]>({
     queryKey: [queryKey, 'archive'],
-    queryFn: async () => {
+    queryFn: async (): Promise<Record<string, unknown>[]> => {
       const { data } = await API.get(`/${endpoint}?only_trashed=1`);
-      return Array.isArray(data) ? data : (data as Record<string, unknown>)?.data || [];
+      return Array.isArray(data) ? data : ((data as Record<string, unknown>)?.data as Record<string, unknown>[] | undefined) ?? [];
     },
   });
 

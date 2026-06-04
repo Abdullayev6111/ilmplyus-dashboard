@@ -28,6 +28,7 @@ import { useTranslation } from "react-i18next";
 import { useMutation } from "@tanstack/react-query";
 import { API } from "../../api/api";
 import useAuthStore from "../../store/useAuthStore";
+import type { User } from "../../types/users.types";
 
 export interface LoginPayload {
   username: string;
@@ -101,11 +102,11 @@ const LoginPage = () => {
     onSuccess: async (data) => {
       const store = useAuthStore.getState();
 
-      store.setAuth(data.token, data.user);
+      store.setAuth(data.token, data.user as unknown as User);
 
       try {
         const { data: meData } = await API.get<MeResponse>('/me');
-        store.setUser(meData.user || meData);
+        store.setUser((meData.user || meData) as unknown as User);
       } catch {
         // /me muvaffaqiyatsiz bo'lsa login data bilan davom etadi
       }

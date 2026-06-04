@@ -79,7 +79,7 @@ const DirectionSection = ({
   const handleToggleExpand = useCallback(() => setExpanded((v) => !v), []);
   const handleMainToggle = useCallback(() => onMainToggle(course.id), [onMainToggle, course.id]);
 
-  const courseName = getLocalized(course, 'name', lang) || course.name;
+  const courseName = getLocalized(course, 'name', lang) || course.name_uz;
 
   return (
     <div className="fd-direction-section">
@@ -118,7 +118,7 @@ const DirectionSection = ({
           aria-label={t('filterDropdown.subDirections', { name: courseName })}
         >
           {course.levels.map((level) => {
-            const levelName = getLocalized(level, 'name', lang) || level.name;
+            const levelName = getLocalized(level, 'name', lang) || level.name_uz;
             return (
               <CheckboxItem
                 key={level.id}

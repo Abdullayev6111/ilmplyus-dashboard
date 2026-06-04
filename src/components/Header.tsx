@@ -11,8 +11,8 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const fullName = user?.full_name || user?.name || user?.username || '';
-  const roleName = user?.roles?.[0]?.name || user?.role || '';
+  const fullName = user?.full_name || user?.username || '';
+  const roleName = user?.roles?.[0]?.name || '';
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {

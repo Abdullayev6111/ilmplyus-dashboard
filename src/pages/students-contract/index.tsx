@@ -766,8 +766,8 @@ const AdultContractForm = () => {
                 <option value="">Tanlang</option>
                 {(
                   (allCourses || []).find((c: Course) => String(c.id) === formData.course_id)
-                    ?.levels || []
-                ).map((l) => (
+                    ?.levels ?? []
+                ).map((l: Course['levels'][number]) => (
                   <option key={l.id} value={l.id}>
                     {l.name_uz}
                   </option>

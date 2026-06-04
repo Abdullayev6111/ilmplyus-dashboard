@@ -1,4 +1,4 @@
-import type { Position, ApiResponse, BaseEntity } from './common.types';
+import type { Position, ApiResponse, Branch, Role } from './common.types';
 import type { DepartmentType } from './department.types';
 
 export interface User {
@@ -36,28 +36,4 @@ export interface UserPayload {
   image?: File | null;
 }
 
-export interface Role extends BaseEntity {
-  name: string;
-  guard_name?: string;
-  permissions?: Permissions[];
-}
-
-export interface Branch extends BaseEntity {
-  name_uz: string;
-  name_ru?: string;
-  name_en?: string;
-  address?: string;
-  city?: string;
-  has_contract?: number;
-  director_name?: string;
-  postal_code?: string;
-  legal_name?: string;
-  inn?: string;
-  phone?: string;
-  email?: string;
-  bank_name?: string;
-  account_number?: string;
-  mfo?: string;
-  oked?: string;
-  is_active?: number;
-}
+export type { Branch, Role };

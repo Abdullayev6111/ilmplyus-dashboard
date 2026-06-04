@@ -32,8 +32,22 @@ export interface Branch {
   name_uz: string;
   name_ru?: string;
   name_en?: string;
-  address: string;
-  city: string;
+  address?: string;
+  city?: string;
+  has_contract?: number;
+  director_name?: string;
+  postal_code?: string;
+  legal_name?: string;
+  inn?: string;
+  phone?: string;
+  email?: string;
+  bank_name?: string;
+  account_number?: string;
+  mfo?: string;
+  oked?: string;
+  is_active?: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Position {
@@ -41,6 +55,11 @@ export interface Position {
   name_uz: string;
   name_ru?: string;
   name_en?: string;
+}
+
+export interface Permissions {
+  id: number;
+  name: string;
 }
 
 export interface Role {
@@ -51,6 +70,9 @@ export interface Role {
   name_en?: string;
   guard_name?: string;
   branches?: Branch[];
+  permissions?: Permissions[];
+  created_at?: string;
+  updated_at?: string;
 }
 
 export type PermissionItem = { id: number; action: string };
