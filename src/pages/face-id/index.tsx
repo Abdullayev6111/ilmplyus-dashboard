@@ -46,9 +46,6 @@ function DeleteModal({ deviceName, onConfirm, onCancel, loading }: DeleteModalPr
           <strong>{deviceName}</strong> {t('faceId.deleteModalText')}
         </p>
         <div className="modal-actions">
-          <button type="button" className="cancel" onClick={onCancel} disabled={loading}>
-            {t('faceId.cancel')}
-          </button>
           <button
             type="button"
             className="danger"
@@ -57,6 +54,9 @@ function DeleteModal({ deviceName, onConfirm, onCancel, loading }: DeleteModalPr
             disabled={loading}
           >
             {loading ? t('faceId.deleting') : t('faceId.delete')}
+          </button>
+          <button type="button" className="cancel" onClick={onCancel} disabled={loading}>
+            {t('faceId.cancel')}
           </button>
         </div>
       </div>

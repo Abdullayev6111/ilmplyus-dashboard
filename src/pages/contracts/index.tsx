@@ -14,11 +14,6 @@ function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('ru-RU');
 }
 
-function formatNarx(val: string | number): string {
-  const n = typeof val === 'string' ? parseFloat(val) : val;
-  return isNaN(n) ? String(val) : n.toLocaleString('uz-UZ');
-}
-
 interface PaginationProps {
   currentPage: number;
   lastPage: number;
@@ -50,7 +45,9 @@ function Pagination({ currentPage, lastPage, from, to, total, onPageChange }: Pa
         </button>
         {pages.map((p, i) =>
           p === '...' ? (
-            <span key={`el-${i}`} className="cp-pagination__ellipsis">...</span>
+            <span key={`el-${i}`} className="cp-pagination__ellipsis">
+              ...
+            </span>
           ) : (
             <button
               key={p}
@@ -85,7 +82,15 @@ interface TableRowProps {
   onTerminate: (row: Contract) => void;
 }
 
-function TableRow({ row, isSelected, onToggle, onView, onEdit, onDelete, onTerminate }: TableRowProps) {
+function TableRow({
+  row,
+  isSelected,
+  onToggle,
+  onView,
+  onEdit,
+  onDelete,
+  onTerminate,
+}: TableRowProps) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const emp = row.employee;
@@ -107,13 +112,25 @@ function TableRow({ row, isSelected, onToggle, onView, onEdit, onDelete, onTermi
       </td>
       <td style={{ fontWeight: 600, color: '#003366' }}>{row.id}</td>
       <td style={{ textAlign: 'left' }}>
-        {emp?.full_name || `${emp?.last_name ?? ''} ${emp?.first_name ?? ''} ${emp?.middle_name ?? ''}`.trim() || '-'}
+        {emp?.full_name ||
+          `${emp?.last_name ?? ''} ${emp?.first_name ?? ''} ${emp?.middle_name ?? ''}`.trim() ||
+          '-'}
       </td>
       <td>{emp?.phone || '-'}</td>
       <td>{getLocalized(row.department, 'name', lang) || '-'}</td>
       <td style={{ fontWeight: 600 }}>#{row.contract_number}</td>
       <td>
-        <span style={{ background: statusBg, color: statusColor, padding: '3px 10px', borderRadius: 5, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap' }}>
+        <span
+          style={{
+            background: statusBg,
+            color: statusColor,
+            padding: '3px 10px',
+            borderRadius: 5,
+            fontSize: 12,
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+          }}
+        >
           {statusLabel}
         </span>
       </td>
@@ -123,7 +140,13 @@ function TableRow({ row, isSelected, onToggle, onView, onEdit, onDelete, onTermi
         <div className="actions">
           <button
             type="button"
-            style={{ color: '#fe9100', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18 }}
+            style={{
+              color: '#fe9100',
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              fontSize: 18,
+            }}
             title={t('contracts.viewTooltip')}
             onClick={() => onView(row)}
           >
@@ -131,7 +154,13 @@ function TableRow({ row, isSelected, onToggle, onView, onEdit, onDelete, onTermi
           </button>
           <button
             type="button"
-            style={{ color: '#1a73e8', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18 }}
+            style={{
+              color: '#1a73e8',
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              fontSize: 18,
+            }}
             title={t('contracts.editTooltip')}
             onClick={() => onEdit(row)}
           >
@@ -148,7 +177,13 @@ function TableRow({ row, isSelected, onToggle, onView, onEdit, onDelete, onTermi
           {isActive && (
             <button
               type="button"
-              style={{ color: '#eab308', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18 }}
+              style={{
+                color: '#eab308',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                fontSize: 18,
+              }}
               title={t('contracts.terminateTooltip')}
               onClick={() => onTerminate(row)}
             >
@@ -174,7 +209,18 @@ interface TableProps {
   onToggleSort: () => void;
 }
 
-function Table({ rows, selectedIds, onToggleOne, onToggleAll, onView, onEdit, onDelete, onTerminate, sortAsc, onToggleSort }: TableProps) {
+function Table({
+  rows,
+  selectedIds,
+  onToggleOne,
+  onToggleAll,
+  onView,
+  onEdit,
+  onDelete,
+  onTerminate,
+  sortAsc,
+  onToggleSort,
+}: TableProps) {
   const { t } = useTranslation();
   const allSelected = rows.length > 0 && rows.every((r) => selectedIds.has(r.id));
   const someSelected = rows.some((r) => selectedIds.has(r.id)) && !allSelected;
@@ -241,17 +287,26 @@ export default function Contracts() {
   const [sortAsc, setSortAsc] = useState(true);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [viewContract, setViewContract] = useState<Contract | null>(null);
-  const [editContract, setEditContract] = useState<{ employeeId: number; contractId: number } | null>(null);
+  const [editContract, setEditContract] = useState<{
+    employeeId: number;
+    contractId: number;
+  } | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
 
   useEffect(() => {
     const isOpen = !!viewContract || !!confirmAction;
     document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [viewContract, confirmAction]);
 
-  const { data: contracts, isLoading, isError } = useQuery<Contract[]>({
+  const {
+    data: contracts,
+    isLoading,
+    isError,
+  } = useQuery<Contract[]>({
     queryKey: ['contracts'],
     queryFn: async () => {
       const { data } = await API.get('/contracts');
@@ -273,7 +328,7 @@ export default function Contracts() {
 
   const sortedData = useMemo(() => {
     if (!contracts) return [];
-    return [...contracts].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id);
+    return [...contracts].sort((a, b) => (sortAsc ? a.id - b.id : b.id - a.id));
   }, [contracts, sortAsc]);
 
   const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize));
@@ -322,7 +377,11 @@ export default function Contracts() {
       } else {
         const row = confirmAction.row;
         deleteMutation.mutate({ employeeId: row.employee.id, contractId: row.id });
-        setSelectedIds((prev) => { const next = new Set(prev); next.delete(row.id); return next; });
+        setSelectedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(row.id);
+          return next;
+        });
       }
     } else {
       const row = confirmAction.row;
@@ -332,7 +391,12 @@ export default function Contracts() {
   }, [confirmAction, selectedIds, sortedData, deleteMutation, terminateMutation]);
 
   if (isCreating) {
-    return <ContractsCreate onCancel={() => setIsCreating(false)} onSuccess={() => setIsCreating(false)} />;
+    return (
+      <ContractsCreate
+        onCancel={() => setIsCreating(false)}
+        onSuccess={() => setIsCreating(false)}
+      />
+    );
   }
 
   if (editContract) {
@@ -365,13 +429,19 @@ export default function Contracts() {
       </div>
 
       {isLoading && (
-        <div style={{ padding: 40, textAlign: 'center', color: '#7a8fa6' }}>{t('contracts.loading')}</div>
+        <div style={{ padding: 40, textAlign: 'center', color: '#7a8fa6' }}>
+          {t('contracts.loading')}
+        </div>
       )}
       {isError && (
-        <div style={{ padding: 40, textAlign: 'center', color: '#e70a0a' }}>{t('contracts.error')}</div>
+        <div style={{ padding: 40, textAlign: 'center', color: '#e70a0a' }}>
+          {t('contracts.error')}
+        </div>
       )}
       {!isLoading && !isError && sortedData.length === 0 && (
-        <div style={{ padding: 48, textAlign: 'center', color: '#7a8fa6' }}>{t('contracts.noData')}</div>
+        <div style={{ padding: 48, textAlign: 'center', color: '#7a8fa6' }}>
+          {t('contracts.noData')}
+        </div>
       )}
 
       {!isLoading && !isError && sortedData.length > 0 && (
@@ -382,7 +452,10 @@ export default function Contracts() {
           onToggleAll={handleToggleAll}
           onView={setViewContract}
           onEdit={(row) => setEditContract({ employeeId: row.employee.id, contractId: row.id })}
-          onDelete={(row) => { setSelectedIds(new Set([row.id])); setConfirmAction({ type: 'delete', row }); }}
+          onDelete={(row) => {
+            setSelectedIds(new Set([row.id]));
+            setConfirmAction({ type: 'delete', row });
+          }}
           onTerminate={(row) => setConfirmAction({ type: 'terminate', row })}
           sortAsc={sortAsc}
           onToggleSort={() => setSortAsc((p) => !p)}
@@ -414,11 +487,15 @@ export default function Contracts() {
                 : t('contracts.terminateConfirmText')}
             </p>
             <div className="ct-modal-actions">
-              <button type="button" className="ct-cancel-btn" onClick={() => setConfirmAction(null)}>
-                {t('contracts.cancel')}
-              </button>
               <button type="button" className="ct-danger-btn" onClick={handleConfirm}>
                 {t('contracts.confirm')}
+              </button>
+              <button
+                type="button"
+                className="ct-cancel-btn"
+                onClick={() => setConfirmAction(null)}
+              >
+                {t('contracts.cancel')}
               </button>
             </div>
           </div>

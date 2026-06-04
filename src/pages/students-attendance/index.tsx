@@ -15,8 +15,13 @@ import type {
 import type { Group } from '../../types/groups.types';
 
 const DAY_SHORT: Record<string, string> = {
-  monday: 'Du', tuesday: 'Se', wednesday: 'Ch',
-  thursday: 'Pa', friday: 'Ju', saturday: 'Sh', sunday: 'Ya',
+  monday: 'Du',
+  tuesday: 'Se',
+  wednesday: 'Ch',
+  thursday: 'Pa',
+  friday: 'Ju',
+  saturday: 'Sh',
+  sunday: 'Ya',
 };
 
 const DAY_INDEX: Record<string, number> = {
@@ -122,11 +127,11 @@ const Popover = ({
               {t('studentsAttendance.delete')}
             </button>
           )}
-          <button className="pop-cancel" onClick={onCancel}>
-            {t('studentsAttendance.cancel')}
-          </button>
           <button className="pop-save" onClick={handleSave}>
             {t('studentsAttendance.save')}
+          </button>
+          <button className="pop-cancel" onClick={onCancel}>
+            {t('studentsAttendance.cancel')}
           </button>
         </div>
       </div>
@@ -145,9 +150,7 @@ const GroupSelector: React.FC = () => {
 
   const groups: Group[] = data?.data ?? [];
 
-  const filtered = groups.filter((g) =>
-    g.name?.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filtered = groups.filter((g) => g.name?.toLowerCase().includes(search.toLowerCase()));
 
   const formatDate = (d?: string) => {
     if (!d) return '';
@@ -199,9 +202,7 @@ const GroupSelector: React.FC = () => {
                 </div>
                 <div className="group-card__item-content">
                   <span className="group-card__item-label">Bosqich</span>
-                  <span className="group-card__item-value">
-                    {g.level?.name_uz ?? '—'}
-                  </span>
+                  <span className="group-card__item-value">{g.level?.name_uz ?? '—'}</span>
                 </div>
               </div>
 
@@ -247,9 +248,7 @@ const GroupSelector: React.FC = () => {
                 </div>
                 <div className="group-card__item-content">
                   <span className="group-card__item-label">Kurs</span>
-                  <span className="group-card__item-value">
-                    {g.course?.name_uz ?? '—'}
-                  </span>
+                  <span className="group-card__item-value">{g.course?.name_uz ?? '—'}</span>
                 </div>
               </div>
             </div>
@@ -286,7 +285,9 @@ const StudentsAttendance: React.FC = () => {
       API.get('/students').then((res) => {
         const all: Student[] = Array.isArray(res.data) ? res.data : (res.data?.data ?? []);
         return {
-          data: all.filter((s) => s.groups?.some((g: { id: number }) => String(g.id) === String(groupId))),
+          data: all.filter((s) =>
+            s.groups?.some((g: { id: number }) => String(g.id) === String(groupId)),
+          ),
         };
       }),
     enabled: !!groupId,
@@ -397,8 +398,18 @@ const StudentsAttendance: React.FC = () => {
   };
 
   const monthKeys = [
-    'jan', 'feb', 'mar', 'apr', 'may', 'jun',
-    'jul', 'aug', 'sept', 'oct', 'nov', 'dec',
+    'jan',
+    'feb',
+    'mar',
+    'apr',
+    'may',
+    'jun',
+    'jul',
+    'aug',
+    'sept',
+    'oct',
+    'nov',
+    'dec',
   ];
 
   const popoverAttendance: PopoverState = selectedCell?.attendance
@@ -590,7 +601,6 @@ const StudentsAttendance: React.FC = () => {
           </div>
         ))}
       </div>
-
 
       {selectedCell && (
         <Popover

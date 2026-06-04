@@ -48,6 +48,7 @@ export interface CreateDemoLessonPayload {
   end_time: string;
   room_id: number;
   teacher_id: number;
+  lid_ids: number[];
 }
 
 export interface UpdateDemoLessonPayload {

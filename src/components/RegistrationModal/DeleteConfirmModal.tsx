@@ -61,19 +61,19 @@ export const DeleteConfirmationModal = ({ lidId, onClose }: DeleteConfirmationMo
         <div className="dcm-modal__actions">
           <button
             type="button"
-            className="dcm-btn dcm-btn--cancel"
-            onClick={onClose}
-            disabled={mutation.isPending}
-          >
-            {t('lid.modals.cancel')}
-          </button>
-          <button
-            type="button"
             className="dcm-btn dcm-btn--confirm"
             onClick={handleConfirm}
             disabled={mutation.isPending}
           >
             {t('lid.modals.confirm')}
+          </button>
+          <button
+            type="button"
+            className="dcm-btn dcm-btn--cancel"
+            onClick={onClose}
+            disabled={mutation.isPending}
+          >
+            {t('lid.modals.cancel')}
           </button>
         </div>
       </div>

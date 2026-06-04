@@ -6,6 +6,7 @@ import { API } from '@/api/api';
 import { getLocalized } from '@/utils/getLocalized';
 import type { Group, Room, Teacher as Employee } from '@/types/groups.types';
 import type { DemoLesson, CreateDemoLessonPayload } from '@/types/demoLesson.types';
+import type { Lid } from '@/types/lid.types';
 import {
   useCreateDemoLesson,
   useUpdateDemoLesson,
@@ -324,10 +325,12 @@ function GroupSelect({
   value,
   onChange,
   groups,
+  lidsMap,
 }: {
   value: string;
   onChange: (v: string) => void;
   groups: Group[];
+  lidsMap: Record<number, number>;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -335,7 +338,10 @@ function GroupSelect({
   const ref = useRef<HTMLDivElement>(null);
 
   const selected = groups.find((g) => String(g.id) === value);
-  const filtered = groups.filter((g) => g.name.toLowerCase().includes(search.toLowerCase()));
+  // faqat lid bog'langan guruhlarni ko'rsatish
+  const filtered = groups
+    .filter((g) => (lidsMap[g.id] || 0) > 0)
+    .filter((g) => g.name.toLowerCase().includes(search.toLowerCase()));
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -374,14 +380,15 @@ function GroupSelect({
             filtered.map((g) => (
               <div
                 key={g.id}
-                className={`dl-dropdown-item${String(g.id) === value ? ' dl-dropdown-item--active' : ''}`}
+                className={`dl-dropdown-item dl-dropdown-item--between${String(g.id) === value ? ' dl-dropdown-item--active' : ''}`}
                 onClick={() => {
                   onChange(String(g.id));
                   setOpen(false);
                   setSearch('');
                 }}
               >
-                {g.name}
+                <span>{g.name}</span>
+                <span className="dl-lid-count">{lidsMap[g.id] ?? 0} lid</span>
               </div>
             ))
           )}
@@ -697,6 +704,7 @@ interface FormState {
   end_time: string;
   room_id: string;
   teacher_id: string;
+  lid_ids: number[];
 }
 
 const EMPTY_FORM: FormState = {
@@ -706,6 +714,7 @@ const EMPTY_FORM: FormState = {
   end_time: '',
   room_id: '',
   teacher_id: '',
+  lid_ids: [],
 };
 
 const PER_PAGE = 10;
@@ -769,6 +778,36 @@ const DemoLessonPage = () => {
     ? rawEmployees
     : ((rawEmployees as { data: Employee[] })?.data ?? []);
 
+  const { data: rawLids } = useQuery<Lid[]>({
+    queryKey: ['lids', 1, 1000],
+    queryFn: async () => {
+      const { data } = await API.get('/lids', { params: { page: 1, per_page: 1000 } });
+      return Array.isArray(data) ? data : (data?.data ?? []);
+    },
+    staleTime: 1000 * 60 * 2,
+  });
+  const lids: Lid[] = useMemo(() => rawLids ?? [], [rawLids]);
+
+  // group_id → lid IDs array
+  const groupLidIds = useMemo<Record<number, number[]>>(() => {
+    const map: Record<number, number[]> = {};
+    lids.forEach((l) => {
+      if (l.group_id != null) {
+        (map[l.group_id] ??= []).push(l.id);
+      }
+    });
+    return map;
+  }, [lids]);
+
+  // group_id → lid count
+  const lidsMap = useMemo<Record<number, number>>(() => {
+    const map: Record<number, number> = {};
+    Object.entries(groupLidIds).forEach(([gid, ids]) => {
+      map[Number(gid)] = ids.length;
+    });
+    return map;
+  }, [groupLidIds]);
+
   // ── mutations ──
   const create = useCreateDemoLesson();
   const update = useUpdateDemoLesson();
@@ -809,6 +848,7 @@ const DemoLessonPage = () => {
       end_time: lesson.end_time ? lesson.end_time.slice(0, 5) : '',
       room_id: String(lesson.room_id ?? ''),
       teacher_id: String(lesson.teacher_id ?? ''),
+      lid_ids: lesson.group_id ? (groupLidIds[lesson.group_id] ?? []) : [],
     });
     setModalOpen(true);
   };
@@ -835,13 +875,17 @@ const DemoLessonPage = () => {
       return;
     }
 
+    // H:i format: leading zero qo'shish (9:30 → 09:30)
+    const padTime = (t: string) => t.replace(/^(\d):/, '0$1:');
+
     const payload: CreateDemoLessonPayload = {
       group_id: parseInt(form.group_id),
       date: formDateToApi(form.date),
-      start_time: form.start_time,
-      end_time: form.end_time,
+      start_time: padTime(form.start_time),
+      end_time: padTime(form.end_time),
       room_id: parseInt(form.room_id),
       teacher_id: parseInt(form.teacher_id),
+      lid_ids: form.lid_ids,
     };
 
     if (editing) {
@@ -1016,13 +1060,16 @@ const DemoLessonPage = () => {
                     value={form.group_id}
                     onChange={(v) => {
                       const g = groups.find((gr) => String(gr.id) === v);
+                      const gid = Number(v);
                       setForm((f) => ({
                         ...f,
                         group_id: v,
                         teacher_id: g?.teacher?.id ? String(g.teacher.id) : f.teacher_id,
+                        lid_ids: groupLidIds[gid] ?? [],
                       }));
                     }}
                     groups={groups}
+                    lidsMap={lidsMap}
                   />
                 </div>
 
@@ -1081,11 +1128,11 @@ const DemoLessonPage = () => {
             </div>
 
             <div className="dl-modal-footer">
-              <button className="dl-btn-cancel" onClick={() => setModalOpen(false)}>
-                {t('demoLesson.modal.cancel')}
-              </button>
               <button className="dl-btn-save" onClick={handleSave} disabled={isSaving}>
                 {isSaving ? t('demoLesson.modal.saving') : t('demoLesson.modal.save')}
+              </button>
+              <button className="dl-btn-cancel" onClick={() => setModalOpen(false)}>
+                {t('demoLesson.modal.cancel')}
               </button>
             </div>
           </div>
