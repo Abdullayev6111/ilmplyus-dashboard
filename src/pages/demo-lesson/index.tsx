@@ -459,7 +459,7 @@ function RoomSelect({
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const roomName = (r: Room) => r.name_uz || r.name || String(r.id);
+  const roomName = (r: Room) => r.name || r.name || String(r.id);
 
   return (
     <div className="dl-select-wrap" ref={ref}>
