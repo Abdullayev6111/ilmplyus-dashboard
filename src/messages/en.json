@@ -1307,5 +1307,54 @@
       "fri": "FRI",
       "sat": "SAT"
     }
+  },
+  "studentTasks": {
+    "pageTitle": "Student Tasks",
+    "selectGroup": "Select group",
+    "selectGroupPlaceholder": "Select a group...",
+    "nextLessonDate": "Next lesson date",
+    "noDateAvailable": "No dates available",
+    "selectDatePlaceholder": "Select a date...",
+    "addLesson": "Add lesson",
+    "table": {
+      "id": "ID",
+      "date": "DATE",
+      "topic": "LESSON TOPIC",
+      "lessonFile": "LESSON FILE",
+      "homework": "HOMEWORK",
+      "homeworkFile": "HOMEWORK FILE",
+      "actions": "ACTIONS"
+    },
+    "selectGroupHint": "Please select a group to view lessons...",
+    "loading": "Loading...",
+    "noLessonForDate": "No task assigned for this lesson date",
+    "noLessons": "No lessons or tasks assigned to this group yet",
+    "view": "View",
+    "notification": {
+      "warningTitle": "Warning",
+      "selectGroupFirst": "Please select a group first!",
+      "successTitle": "Success",
+      "lessonSaved": "Lesson and task saved!"
+    },
+    "modal": {
+      "viewTitle": "View details",
+      "addTitle": "Enter details",
+      "groupFallback": "Group",
+      "noDate": "Date not specified",
+      "lessonSection": "+ LESSON MATERIALS",
+      "topicLabel": "Lesson topic",
+      "topicPlaceholder": "Enter today's lesson topic",
+      "lessonFileLabel": "Lesson file",
+      "chooseFile": "Choose file",
+      "homeworkSection": "+ HOMEWORK",
+      "homeworkTitleLabel": "Homework title",
+      "homeworkTitlePlaceholder": "Complete exercises 1-2 and memorize vocabulary",
+      "homeworkDescLabel": "Homework description and requirements",
+      "homeworkDescPlaceholder": "Study without artificial intelligence.",
+      "homeworkFileLabel": "Homework file",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
+    }
   }
 }

@@ -1298,5 +1298,54 @@
       "fri": "ПТ",
       "sat": "СБ"
     }
+  },
+  "studentTasks": {
+    "pageTitle": "Задания учеников",
+    "selectGroup": "Выберите группу",
+    "selectGroupPlaceholder": "Выберите группу...",
+    "nextLessonDate": "Дата следующего урока",
+    "noDateAvailable": "Дата недоступна",
+    "selectDatePlaceholder": "Выберите дату...",
+    "addLesson": "Добавить урок",
+    "table": {
+      "id": "ID",
+      "date": "ДАТА",
+      "topic": "ТЕМА УРОКА",
+      "lessonFile": "ФАЙЛ УРОКА",
+      "homework": "ДОМАШНЕЕ ЗАДАНИЕ",
+      "homeworkFile": "ФАЙЛ ДОМАШНЕГО ЗАДАНИЯ",
+      "actions": "ДЕЙСТВИЯ"
+    },
+    "selectGroupHint": "Пожалуйста, выберите группу для просмотра уроков...",
+    "loading": "Загрузка...",
+    "noLessonForDate": "Для этой даты урока задание не назначено",
+    "noLessons": "Группе ещё не назначены уроки и задания",
+    "view": "Просмотр",
+    "notification": {
+      "warningTitle": "Предупреждение",
+      "selectGroupFirst": "Сначала выберите группу!",
+      "successTitle": "Успешно",
+      "lessonSaved": "Урок и задание сохранены!"
+    },
+    "modal": {
+      "viewTitle": "Просмотр данных",
+      "addTitle": "Ввод данных",
+      "groupFallback": "Группа",
+      "noDate": "Дата не указана",
+      "lessonSection": "+ МАТЕРИАЛЫ УРОКА",
+      "topicLabel": "Тема урока",
+      "topicPlaceholder": "Введите тему сегодняшнего урока",
+      "lessonFileLabel": "Файл урока",
+      "chooseFile": "Выбрать файл",
+      "homeworkSection": "+ ДОМАШНЕЕ ЗАДАНИЕ",
+      "homeworkTitleLabel": "Название задания",
+      "homeworkTitlePlaceholder": "Выполнить упражнения 1-2 и выучить слова",
+      "homeworkDescLabel": "Описание и условия задания",
+      "homeworkDescPlaceholder": "Занимайтесь без искусственного интеллекта.",
+      "homeworkFileLabel": "Файл задания",
+      "cancel": "Отмена",
+      "save": "Сохранить",
+      "saving": "Сохранение..."
+    }
   }
 }

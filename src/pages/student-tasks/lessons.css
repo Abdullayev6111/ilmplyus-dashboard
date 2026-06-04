@@ -1,0 +1,357 @@
+/* lessons.css */
+
+.lessons-container {
+  padding: 0;
+  margin-left: 40px !important;
+  margin-top: 50px !important;
+}
+
+.lessons-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 15px 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  margin-bottom: 25px;
+  border: 1px solid #e1e5ea;
+}
+
+.lessons-filters {
+  display: flex;
+  gap: 40px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-item label {
+  font-weight: 700;
+  color: #1a365d; /* Dark blue label */
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.custom-select {
+  padding: 8px 15px;
+  border: 1px solid #ced4da;
+  border-radius: 15px;
+  min-width: 280px;
+  color: #495057;
+  background-color: #fff;
+  outline: none;
+  font-size: 14px;
+  font-weight: 500;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a365d' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.add-lesson-btn {
+  background-color: #003366;
+  color: #ffffff;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.add-lesson-btn:hover {
+  background-color: #002244;
+}
+
+/* Table */
+.lessons-table-wrapper {
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  border: 1px solid #e1e5ea;
+}
+
+.lessons-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lessons-table thead {
+  background-color: #d8d8d8; /* Gray background for table header */
+}
+
+.lessons-table th {
+  padding: 20px 25px;
+  text-align: left;
+  font-size: 12px;
+  color: #797979;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lessons-table th:nth-child(1) {
+  width: 70px;
+  min-width: 70px;
+}
+
+.lessons-table th:nth-child(2) {
+  width: 130px;
+  min-width: 130px;
+}
+
+.lessons-table td {
+  padding: 20px 25px;
+  border-bottom: 1px solid #f1f3f5;
+  font-size: 15px;
+  color: #111;
+}
+
+.fw-700 {
+  font-weight: 700;
+}
+
+.table-link {
+  color: #111;
+  text-decoration: underline;
+  font-weight: 700;
+}
+
+.table-link:hover {
+  color: #0b3b60;
+}
+
+.view-btn {
+  background: none;
+  border: none;
+  color: #111;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.view-btn:hover {
+  text-decoration: underline;
+}
+
+/* Modal */
+.lt-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.lt-modal {
+  background-color: #fff;
+  width: 950px;
+  max-height: 90vh;
+  max-width: 95%;
+  border-radius: 15px;
+  border: 1px solid #ced4da;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.lt-modal-header {
+  background-color: #d1d5da;
+  padding: 25px 30px;
+  border-radius: 15px 15px 0 0;
+}
+
+.lt-modal-header h2 {
+  margin: 0 0 5px 0;
+  color: #0b3b60;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.lt-modal-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.lt-modal-body {
+  padding: 30px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.lt-form-sections {
+  display: flex;
+  gap: 30px;
+  flex: 1;
+}
+
+.lt-form-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.lt-section-title {
+  color: #0b3b60;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid #e2e8f0;
+  text-transform: uppercase;
+}
+
+.lt-form-group {
+  margin-bottom: 18px;
+}
+
+.lt-form-group label {
+  display: block;
+  color: #0b3b60;
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.lt-required {
+  color: red;
+  margin-left: 3px;
+}
+
+.lt-input,
+.lt-textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ced4da;
+  border-radius: 15px;
+  font-size: 14px;
+  box-sizing: border-box;
+  font-family: inherit;
+  color: #333;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.lt-input::placeholder,
+.lt-textarea::placeholder {
+  color: #a0a0a0;
+  font-weight: 500;
+}
+
+.lt-input:focus,
+.lt-textarea:focus {
+  border-color: #0b3b60;
+  outline: none;
+}
+
+.lt-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* File Upload */
+.lt-file-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 15px;
+  height: 48px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.lt-file-btn {
+  background-color: #fe9100;
+  color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  padding: 13px 65px;
+  cursor: pointer;
+  font-weight: 700;
+  border-radius: 15px;
+  font-family: noto-b;
+  font-size: 20px;
+  transition: 0.3s;
+  flex-shrink: 0;
+}
+
+.lt-file-btn:hover {
+  background-color: #e58200;
+}
+
+.lt-file-btn input[type='file'] {
+  display: none;
+}
+
+.lt-file-name {
+  padding-left: 20px;
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.lt-modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 20px 30px 40px;
+  border-top: 1px solid #f1f3f5;
+}
+
+.lt-cancel-btn,
+.lt-save-btn {
+  padding: 12px 60px;
+  border-radius: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 15px;
+  border: none;
+  transition: 0.3s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.lt-cancel-btn {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ced4da;
+}
+
+.lt-cancel-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.lt-save-btn {
+  background-color: #fe9100;
+  color: #ffffff;
+}
+
+.lt-save-btn:hover {
+  background-color: #e58200;
+}
+
+.lt-save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
