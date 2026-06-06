@@ -52,6 +52,7 @@ import LegalEntity from './pages/students-contract/legalEntity';
 import RepresentativeEntity from './pages/students-contract/representativeEntity';
 import ContractDetails from './pages/students-contract/ContractDetails';
 import Salaries from './pages/salaries';
+import Employees from './pages/employees';
 
 // Archive pages
 import UsersArchive from './pages/users/archive';
@@ -163,8 +164,14 @@ const App = () => {
           <Route path="/students-contract/minor/edit/:id" element={<UnderAge />} />
           <Route path="/students-contract/legal" element={<LegalEntity />} />
           <Route path="/students-contract/legal/edit/:id" element={<LegalEntity />} />
-          <Route path="/students-contract/legal-representative" element={<RepresentativeEntity />} />
-          <Route path="/students-contract/legal-representative/edit/:id" element={<RepresentativeEntity />} />
+          <Route
+            path="/students-contract/legal-representative"
+            element={<RepresentativeEntity />}
+          />
+          <Route
+            path="/students-contract/legal-representative/edit/:id"
+            element={<RepresentativeEntity />}
+          />
           <Route path="/students-contract/:id" element={<ContractDetails />} />
           <Route path="/students" element={<Students />} />
 
@@ -174,6 +181,9 @@ const App = () => {
 
           {/* Oyliklar */}
           <Route path="/salaries" element={<Salaries />} />
+
+          {/* Xodimlar */}
+          <Route path="/employees" element={<Employees />} />
 
           {/* Arxivlar */}
           <Route path="/users/archive" element={<UsersArchive />} />

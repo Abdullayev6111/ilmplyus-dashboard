@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { API } from '../../api/api';
 import '../users/users.css';
 import './face-id.css';
@@ -189,10 +190,167 @@ function DeviceModal({ initial, branches, onClose, onSave, loading }: DeviceModa
   );
 }
 
+// ─── Clear confirm modal ──────────────────────────────────────────────────────
+
+interface ClearConfirmModalProps {
+  deviceName: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  loading: boolean;
+}
+
+function ClearConfirmModal({ deviceName, onConfirm, onCancel, loading }: ClearConfirmModalProps) {
+  const { t } = useTranslation();
+  return (
+    <div className="modal-overlay">
+      <div className="modal small" style={{ width: 380 }}>
+        <h2 className="modal-title" style={{ marginTop: 0, color: '#b91c1c' }}>
+          {t('faceId.clearModalTitle')}
+        </h2>
+        <p style={{ textAlign: 'center', color: '#444', marginBottom: 0 }}>
+          <strong>{deviceName}</strong> {t('faceId.clearModalText')}
+        </p>
+        <div className="modal-actions">
+          <button
+            type="button"
+            style={{ background: '#b91c1c', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 22px', fontWeight: 600, cursor: 'pointer' }}
+            onClick={onConfirm}
+            disabled={loading}
+          >
+            {loading ? t('faceId.clearing') : t('faceId.clearConfirmBtn')}
+          </button>
+          <button type="button" className="cancel" onClick={onCancel} disabled={loading}>
+            {t('faceId.cancel')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Debug modal ──────────────────────────────────────────────────────────────
+
+interface DebugModalProps {
+  device: HikvisionDevice;
+  onClose: () => void;
+}
+
+function DebugModal({ device, onClose }: DebugModalProps) {
+  const { t } = useTranslation();
+  const [employeeNo, setEmployeeNo] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleDebug = async () => {
+    if (!employeeNo.trim()) return;
+    setLoading(true);
+    setResult(null);
+    setError(null);
+    try {
+      const { data } = await API.get(
+        `/hikvision-devices/${device.id}/debug/${employeeNo.trim()}`,
+      );
+      setResult(JSON.stringify(data, null, 2));
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Xatolik yuz berdi';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal" style={{ width: 560 }}>
+        <h2 className="modal-title" style={{ marginTop: 0 }}>
+          {t('faceId.debugTitle')} — {device.name}
+        </h2>
+
+        <input
+          value={employeeNo}
+          onChange={(e) => setEmployeeNo(e.target.value)}
+          placeholder={t('faceId.debugInputPlaceholder')}
+          onKeyDown={(e) => e.key === 'Enter' && handleDebug()}
+          style={{
+            width: '100%',
+            height: 42,
+            padding: '0 14px',
+            border: '1.5px solid #d0d9e6',
+            borderRadius: 10,
+            fontSize: 14,
+            color: '#003366',
+            outline: 'none',
+            boxSizing: 'border-box',
+            marginBottom: 16,
+          }}
+        />
+
+        {result && (
+          <pre
+            style={{
+              background: '#f4f7fb',
+              border: '1px solid #d0d9e6',
+              borderRadius: 10,
+              padding: 16,
+              fontSize: 12,
+              color: '#003366',
+              maxHeight: 280,
+              overflowY: 'auto',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-all',
+              marginBottom: 16,
+            }}
+          >
+            {result}
+          </pre>
+        )}
+        {error && (
+          <div
+            style={{
+              background: '#fef2f2',
+              border: '1px solid #fca5a5',
+              borderRadius: 10,
+              padding: '12px 16px',
+              color: '#b91c1c',
+              fontSize: 13,
+              marginBottom: 16,
+            }}
+          >
+            {error}
+          </div>
+        )}
+        {!result && !error && !loading && (
+          <div style={{ padding: '12px 0 16px', textAlign: 'center', color: '#a0b0c8', fontSize: 13 }}>
+            {t('faceId.debugEmptyHint')}
+          </div>
+        )}
+
+        <div className="modal-actions">
+          <button
+            type="button"
+            className="primary"
+            onClick={handleDebug}
+            disabled={loading || !employeeNo.trim()}
+            style={{ display: 'flex', alignItems: 'center', gap: 7, opacity: loading || !employeeNo.trim() ? 0.6 : 1 }}
+          >
+            {loading ? <i className="fa-solid fa-spinner fa-spin" /> : <i className="fa-solid fa-magnifying-glass" />}
+            {t('faceId.debugSearch')}
+          </button>
+          <button type="button" className="cancel" onClick={onClose}>
+            {t('faceId.debugClose')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function FaceId() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
   const [editDevice, setEditDevice] = useState<HikvisionDevice | null>(null);
@@ -200,6 +358,10 @@ export default function FaceId() {
   const [showBulkDelete, setShowBulkDelete] = useState(false);
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [syncingId, setSyncingId] = useState<number | null>(null);
+  const [clearingId, setClearingId] = useState<number | null>(null);
+  const [clearConfirmDevice, setClearConfirmDevice] = useState<HikvisionDevice | null>(null);
+  const [syncConfirmDevice, setSyncConfirmDevice] = useState<HikvisionDevice | null>(null);
+  const [debugDevice, setDebugDevice] = useState<HikvisionDevice | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState('');
   const checkboxAllRef = useRef<HTMLInputElement | null>(null);
@@ -340,25 +502,42 @@ export default function FaceId() {
     }
   }, [selectedIds, queryClient, t]);
 
-  const handleSyncAll = useCallback(
-    async (device: HikvisionDevice) => {
-      setSyncingId(device.id);
-      try {
-        await API.post(`/hikvision-devices/${device.id}/sync-all`);
-        notifications.show({
-          color: 'green',
-          title: 'Sync',
-          message: `${device.name} ${t('faceId.notifySynced')}`,
-        });
-        queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      } catch {
-        // API interceptor handles notification
-      } finally {
-        setSyncingId(null);
-      }
-    },
-    [queryClient, t],
-  );
+  const handleSyncAll = useCallback(async () => {
+    if (!syncConfirmDevice) return;
+    setSyncingId(syncConfirmDevice.id);
+    setSyncConfirmDevice(null);
+    try {
+      await API.post(`/hikvision-devices/${syncConfirmDevice.id}/sync-all`);
+      notifications.show({
+        color: 'green',
+        title: t('faceId.notifySuccess'),
+        message: `${syncConfirmDevice.name} ${t('faceId.notifySynced')}`,
+      });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    } catch {
+      // API interceptor handles notification
+    } finally {
+      setSyncingId(null);
+    }
+  }, [syncConfirmDevice, queryClient, t]);
+
+  const handleClear = useCallback(async () => {
+    if (!clearConfirmDevice) return;
+    setClearingId(clearConfirmDevice.id);
+    try {
+      await API.post(`/hikvision-devices/${clearConfirmDevice.id}/clear`);
+      notifications.show({
+        color: 'green',
+        title: t('faceId.notifySuccess'),
+        message: `${clearConfirmDevice.name} ${t('faceId.notifyCleared')}`,
+      });
+      setClearConfirmDevice(null);
+    } catch {
+      // API interceptor handles notification
+    } finally {
+      setClearingId(null);
+    }
+  }, [clearConfirmDevice, t]);
 
   return (
     <section className="users container">
@@ -465,14 +644,44 @@ export default function FaceId() {
                     <div className="actions">
                       <button
                         type="button"
+                        title={t('faceId.employeesTooltip')}
+                        className="archive-restore-btn"
+                        onClick={() => navigate('/employees')}
+                        style={{ fontSize: 17, color: '#003366' }}
+                      >
+                        <i className="fa-solid fa-eye" />
+                      </button>
+                      <button
+                        type="button"
                         title={t('faceId.syncTooltip')}
                         className="archive-restore-btn"
-                        onClick={() => handleSyncAll(device)}
+                        onClick={() => setSyncConfirmDevice(device)}
                         disabled={syncingId === device.id}
                         style={{ fontSize: 17, color: '#003366' }}
                       >
                         <i
                           className={`fa-solid fa-rotate${syncingId === device.id ? ' fa-spin' : ''}`}
+                        />
+                      </button>
+                      <button
+                        type="button"
+                        title={t('faceId.debugTooltip')}
+                        className="archive-restore-btn"
+                        onClick={() => setDebugDevice(device)}
+                        style={{ fontSize: 17, color: '#7c3aed' }}
+                      >
+                        <i className="fa-solid fa-bug" />
+                      </button>
+                      <button
+                        type="button"
+                        title={t('faceId.clearTooltip')}
+                        className="archive-restore-btn"
+                        onClick={() => setClearConfirmDevice(device)}
+                        disabled={clearingId === device.id}
+                        style={{ fontSize: 17, color: '#b91c1c' }}
+                      >
+                        <i
+                          className={`fa-solid fa-eraser${clearingId === device.id ? ' fa-spin' : ''}`}
                         />
                       </button>
                       <button
@@ -544,6 +753,43 @@ export default function FaceId() {
           onCancel={() => setShowBulkDelete(false)}
           loading={bulkDeleting}
         />
+      )}
+
+      {syncConfirmDevice && (
+        <div className="modal-overlay">
+          <div className="modal small" style={{ width: 380 }}>
+            <h2 className="modal-title" style={{ marginTop: 0 }}>{t('faceId.syncConfirmTitle')}</h2>
+            <p style={{ textAlign: 'center', color: '#444', marginBottom: 0 }}>
+              <strong>{syncConfirmDevice.name}</strong> {t('faceId.syncConfirmText')}
+            </p>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="primary"
+                onClick={handleSyncAll}
+                disabled={syncingId === syncConfirmDevice.id}
+              >
+                {syncingId === syncConfirmDevice.id ? t('faceId.syncing') : t('faceId.syncConfirmBtn')}
+              </button>
+              <button type="button" className="cancel" onClick={() => setSyncConfirmDevice(null)}>
+                {t('faceId.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {clearConfirmDevice && (
+        <ClearConfirmModal
+          deviceName={clearConfirmDevice.name}
+          onConfirm={handleClear}
+          onCancel={() => setClearConfirmDevice(null)}
+          loading={clearingId === clearConfirmDevice.id}
+        />
+      )}
+
+      {debugDevice && (
+        <DebugModal device={debugDevice} onClose={() => setDebugDevice(null)} />
       )}
     </section>
   );
