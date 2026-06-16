@@ -15,8 +15,6 @@ import { useTableSettingsStore } from "../../store/useTableSettingsStore";
 
 interface SourceFormData {
   name_uz: string;
-  name_ru: string;
-  name_en: string;
   link: string;
   created_at: string;
   updated_at: string;
@@ -24,8 +22,6 @@ interface SourceFormData {
 
 const emptyForm: SourceFormData = {
   name_uz: "",
-  name_ru: "",
-  name_en: "",
   link: "",
   created_at: "",
   updated_at: "",
@@ -75,8 +71,6 @@ const Sources = () => {
     mutationFn: async () => {
       const payload: SourcePayload = {
         name_uz: formData.name_uz,
-        name_ru: formData.name_ru || undefined,
-        name_en: formData.name_en || undefined,
         link: formData.link,
       };
       return sourceAPI.createSource(payload);
@@ -99,8 +93,6 @@ const Sources = () => {
     }) => {
       const apiPayload: SourcePayload = {
         name_uz: payload.name_uz,
-        name_ru: payload.name_ru || undefined,
-        name_en: payload.name_en || undefined,
         link: payload.link,
       };
       if (payload.created_at) {
@@ -130,8 +122,6 @@ const Sources = () => {
     setEditingItem(item);
     setFormData({
       name_uz: item.name_uz || "",
-      name_ru: item.name_ru || "",
-      name_en: item.name_en || "",
       link: item.link || "",
       created_at: toLocalDateTimeInput(item.created_at),
       updated_at: toLocalDateTimeInput(item.updated_at),
@@ -195,46 +185,22 @@ const Sources = () => {
               }}
             >
               <div className="subcategory-form-group">
-                <label>{t("sources.nameUz")}</label>
+                <label>{t("sources.name")}</label>
                 <input
                   type="text"
                   value={formData.name_uz}
                   onChange={(e) =>
                     setFormData({ ...formData, name_uz: e.target.value })
                   }
-                  placeholder={t("sources.nameUz")}
+                  placeholder={t("sources.name")}
                   required
-                />
-              </div>
-
-              <div className="subcategory-form-group">
-                <label>{t("sources.nameRu")}</label>
-                <input
-                  type="text"
-                  value={formData.name_ru}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name_ru: e.target.value })
-                  }
-                  placeholder={t("sources.nameRu")}
-                />
-              </div>
-
-              <div className="subcategory-form-group">
-                <label>{t("sources.nameEn")}</label>
-                <input
-                  type="text"
-                  value={formData.name_en}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name_en: e.target.value })
-                  }
-                  placeholder={t("sources.nameEn")}
                 />
               </div>
 
               <div className="subcategory-form-group">
                 <label>{t("sources.link")}</label>
                 <input
-                  type="url"
+                  type="text"
                   value={formData.link}
                   onChange={(e) =>
                     setFormData({ ...formData, link: e.target.value })

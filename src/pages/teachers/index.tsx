@@ -23,6 +23,7 @@ interface PaginationProps {
 }
 
 function Pagination({ currentPage, lastPage, from, to, total, onPageChange }: PaginationProps) {
+  const { t } = useTranslation();
   const pages = useMemo<(number | '...')[]>(() => {
     if (lastPage <= 6) return Array.from({ length: lastPage }, (_, i) => i + 1);
     return [1, 2, 3, '...', lastPage];
@@ -31,7 +32,7 @@ function Pagination({ currentPage, lastPage, from, to, total, onPageChange }: Pa
   return (
     <div className="cp-pagination">
       <span className="cp-pagination__info">
-        Jami: {total} ta, {from}-{to} ko'rsatilmoqda
+        {t('teachers.paginationInfo', { total, from, to })}
       </span>
       <div className="cp-pagination__controls">
         <button
@@ -85,7 +86,6 @@ function TableRow({ row, isSelected, onToggle, branchName }: TableRowProps) {
   const isActive = row.status === 'active';
   const statusColor = isActive ? '#16a34a' : '#dc2626';
   const statusBg = isActive ? '#dcfce7' : '#fef2f2';
-  const statusLabel = isActive ? t('contracts.statusActive') : t('contracts.statusInactive');
 
   return (
     <tr style={isSelected ? { background: '#eef4ff' } : undefined}>
@@ -117,17 +117,17 @@ function TableRow({ row, isSelected, onToggle, branchName }: TableRowProps) {
             whiteSpace: 'nowrap',
           }}
         >
-          {statusLabel}
+          {isActive ? t('teachers.statusActive') : t('teachers.statusInactive')}
         </span>
       </td>
       <td>{formatDate(row.created_at)}</td>
       <td>{formatDate(row.updated_at)}</td>
       <td>
         <div className="actions">
-          <button type="button" className="user-edit-btn" title={t('contracts.editTooltip')}>
+          <button type="button" className="user-edit-btn" title={t('teachers.editTooltip')}>
             <i className="fa-solid fa-pen" />
           </button>
-          <button type="button" className="user-delete-btn" title={t('contracts.deleteTooltip')}>
+          <button type="button" className="user-delete-btn" title={t('teachers.deleteTooltip')}>
             <i className="fa-solid fa-trash" />
           </button>
         </div>
@@ -179,15 +179,15 @@ function Table({
               />
             </th>
             <th style={{ cursor: 'pointer', userSelect: 'none' }} onClick={onToggleSort}>
-              {t('contracts.tableId')} {sortAsc ? '↑' : '↓'}
+              {t('teachers.tableId')} {sortAsc ? '↑' : '↓'}
             </th>
-            <th>{t('contracts.tableFullName')}</th>
-            <th>Filial</th>
-            <th>{t('contracts.tablePhone')}</th>
-            <th>{t('contracts.tableStatus')}</th>
-            <th>Yaratilgan</th>
-            <th>Yangilangan</th>
-            <th>{t('contracts.tableActions')}</th>
+            <th>{t('teachers.tableFullName')}</th>
+            <th>{t('teachers.tableBranch')}</th>
+            <th>{t('teachers.tablePhone')}</th>
+            <th>{t('teachers.tableStatus')}</th>
+            <th>{t('teachers.tableCreated')}</th>
+            <th>{t('teachers.tableUpdated')}</th>
+            <th>{t('teachers.tableActions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -280,7 +280,7 @@ export default function Teachers() {
 
   return (
     <section className="users container">
-      <h1 className="main-title">O'qituvchilar</h1>
+      <h1 className="main-title">{t('teachers.title')}</h1>
 
       <div className="users-filters">
         <button
@@ -288,23 +288,23 @@ export default function Teachers() {
           className="add-new-user"
           onClick={() => navigate('/contracts/create')}
         >
-          {t('contracts.add')}
+          {t('teachers.add')}
         </button>
       </div>
 
       {isLoading && (
         <div style={{ padding: 40, textAlign: 'center', color: '#7a8fa6' }}>
-          {t('contracts.loading')}
+          {t('teachers.loading')}
         </div>
       )}
       {isError && (
         <div style={{ padding: 40, textAlign: 'center', color: '#e70a0a' }}>
-          {t('contracts.error')}
+          {t('teachers.error')}
         </div>
       )}
       {!isLoading && !isError && sortedData.length === 0 && (
         <div style={{ padding: 48, textAlign: 'center', color: '#7a8fa6' }}>
-          {t('contracts.noData')}
+          {t('teachers.noData')}
         </div>
       )}
 

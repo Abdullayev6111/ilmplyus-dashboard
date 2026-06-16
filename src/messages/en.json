@@ -1568,5 +1568,25 @@
       "status": "Status",
       "actions": "Actions"
     }
+  },
+  "teachers": {
+    "title": "Teachers",
+    "add": "Add",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "noData": "No data found",
+    "tableId": "ID",
+    "tableFullName": "Full Name",
+    "tableBranch": "Branch",
+    "tablePhone": "Phone",
+    "tableStatus": "Status",
+    "tableCreated": "Created",
+    "tableUpdated": "Updated",
+    "tableActions": "Actions",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "editTooltip": "Edit",
+    "deleteTooltip": "Delete",
+    "paginationInfo": "Total: {{total}}, showing {{from}}-{{to}}"
   }
 }

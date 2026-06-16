@@ -273,9 +273,8 @@
   font-family: noto-sb !important;
   color: #111827 !important;
   font-size: 14px !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-  max-width: 220px !important;
+  white-space: nowrap !important;
+  word-break: normal !important;
   display: inline-block !important;
   text-align: center !important;
 }

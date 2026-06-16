@@ -137,123 +137,117 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
             : t("departments.addNewTitle")}
         </h3>
 
-        <div className="branch-form-wrapper">
-          <div className="branch-form-left">
-            <div className="branch-input-group">
-              <label htmlFor="name_uz">{t("departments.name")} (UZ)</label>
-              <input
-                id="name_uz"
-                type="text"
-                value={nameUz}
-                onChange={(e) => {
-                  const newName = e.target.value;
-                  setNameUz(newName);
-                  if (!isCodeModified && !initialData) {
-                    setCode(newName.toUpperCase().replace(/\s+/g, "_"));
-                  }
-                }}
-                required
-                style={inputStyle}
-              />
-            </div>
+        <div className="dept-form-grid">
+          <div className="branch-input-group">
+            <label htmlFor="name_uz">{t("departments.name")} (UZ)</label>
+            <input
+              id="name_uz"
+              type="text"
+              value={nameUz}
+              onChange={(e) => {
+                const newName = e.target.value;
+                setNameUz(newName);
+                if (!isCodeModified && !initialData) {
+                  setCode(newName.toUpperCase().replace(/\s+/g, "_"));
+                }
+              }}
+              required
+              style={inputStyle}
+            />
+          </div>
 
-            {initialData && (
-              <>
-                <div className="branch-input-group">
-                  <label htmlFor="name_ru">{t("departments.name")} (RU)</label>
-                  <input
-                    id="name_ru"
-                    type="text"
-                    value={nameRu}
-                    onChange={(e) => setNameRu(e.target.value)}
-                    style={inputStyle}
-                  />
-                </div>
+          <div className="branch-input-group">
+            <label htmlFor="manager">{t("departments.manager")}</label>
+            <input
+              id="manager"
+              type="text"
+              value={manager}
+              onChange={(e) => setManager(e.target.value)}
+              required
+              style={inputStyle}
+            />
+          </div>
 
-                <div className="branch-input-group">
-                  <label htmlFor="name_en">{t("departments.name")} (EN)</label>
-                  <input
-                    id="name_en"
-                    type="text"
-                    value={nameEn}
-                    onChange={(e) => setNameEn(e.target.value)}
-                    style={inputStyle}
-                  />
-                </div>
-              </>
-            )}
+          <div className="branch-input-group">
+            <label htmlFor="code">{t("departments.code")}</label>
+            <input
+              id="code"
+              type="text"
+              value={code}
+              onChange={(e) => {
+                setCode(e.target.value);
+                setIsCodeModified(true);
+              }}
+              required
+              style={inputStyle}
+            />
+          </div>
 
-            <div className="branch-input-group">
-              <label htmlFor="code">{t("departments.code")}</label>
-              <input
-                id="code"
-                type="text"
-                value={code}
-                onChange={(e) => {
-                  setCode(e.target.value);
-                  setIsCodeModified(true);
-                }}
-                required
-                style={inputStyle}
-              />
-            </div>
-
-            <div className="branch-input-group">
-              <label htmlFor="branch">{t("departments.branch")}</label>
-              <select
-                id="branch"
-                value={branchId}
-                onChange={(e) => setBranchId(Number(e.target.value))}
-                required
-                style={inputStyle}
+          <div className="branch-input-group">
+            <label>{t("departments.status")}</label>
+            <div className="branch-toggle-wrapper">
+              <button
+                type="button"
+                className={isActive ? "" : "branch-active-btn"}
+                onClick={() => setIsActive(false)}
               >
-                <option value="" disabled>
-                  {t("departments.selectBranch")}
+                {t("departments.inactive")}
+              </button>
+              <button
+                type="button"
+                className={isActive ? "branch-active-btn" : ""}
+                onClick={() => setIsActive(true)}
+              >
+                {t("departments.active")}
+              </button>
+            </div>
+          </div>
+
+          <div className="branch-input-group dept-full-width">
+            <label htmlFor="branch">{t("departments.branch")}</label>
+            <select
+              id="branch"
+              value={branchId}
+              onChange={(e) => setBranchId(Number(e.target.value))}
+              required
+              style={inputStyle}
+            >
+              <option value="" disabled>
+                {t("departments.selectBranch")}
+              </option>
+              {branches?.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {getLocalized(b, 'name', i18n.language)}
                 </option>
-                {branches?.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {getLocalized(b, 'name', i18n.language)}
-                  </option>
-                ))}
-              </select>
-            </div>
+              ))}
+            </select>
           </div>
 
-          <div className="branch-form-right">
-            <div className="branch-input-group">
-              <label htmlFor="manager">{t("departments.manager")}</label>
-              <input
-                id="manager"
-                type="text"
-                value={manager}
-                onChange={(e) => setManager(e.target.value)}
-                required
-                style={inputStyle}
-              />
-            </div>
-
-            <div className="branch-input-group">
-              <label htmlFor="status">{t("departments.status")}</label>
-              <div className="branch-toggle-wrapper">
-                <button
-                  type="button"
-                  className={isActive ? "" : "branch-active-btn"}
-                  onClick={() => setIsActive(false)}
-                  aria-label={t("departments.inactive")}
-                >
-                  {t("departments.inactive")}
-                </button>
-                <button
-                  type="button"
-                  className={isActive ? "branch-active-btn" : ""}
-                  onClick={() => setIsActive(true)}
-                  aria-label={t("departments.active")}
-                >
-                  {t("departments.active")}
-                </button>
+          {initialData && (
+            <>
+              <div className="branch-input-group">
+                <label htmlFor="name_ru">{t("departments.name")} (RU)</label>
+                <input
+                  id="name_ru"
+                  type="text"
+                  value={nameRu}
+                  onChange={(e) => setNameRu(e.target.value)}
+                  style={inputStyle}
+                />
               </div>
-            </div>
-          </div>
+
+              <div className="branch-input-group">
+                <label htmlFor="name_en">{t("departments.name")} (EN)</label>
+                <input
+                  id="name_en"
+                  type="text"
+                  value={nameEn}
+                  onChange={(e) => setNameEn(e.target.value)}
+                  style={inputStyle}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         <div className="branch-modal-buttons">

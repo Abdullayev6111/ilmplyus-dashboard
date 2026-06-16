@@ -8,7 +8,9 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
-  padding: 0 10px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: #003366 !important;
 }
 
 .attendance-controls {
@@ -201,6 +203,7 @@
   gap: 8px;
   font-size: 13px;
   font-family: noto-m;
+  color: #fff;
 }
 
 .legend-item b {
@@ -247,8 +250,7 @@
 
 .attendance-table th:last-child,
 .attendance-table td:last-child {
-  height: 40px !important;
-  width: 40px !important;
+  width: 25px !important;
 }
 
 .attendance-table th:nth-child(2),
@@ -257,9 +259,13 @@
 }
 
 .attendance-table th {
-  background: #fff;
+  color: #000;
   padding: 4px;
   font-family: noto-m;
+}
+
+.attendance-table .day-name {
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .col-id {

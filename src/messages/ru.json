@@ -1560,5 +1560,25 @@
       "status": "Статус",
       "actions": "Действия"
     }
+  },
+  "teachers": {
+    "title": "Преподаватели",
+    "add": "Добавить",
+    "loading": "Загрузка...",
+    "error": "Произошла ошибка",
+    "noData": "Данные не найдены",
+    "tableId": "ID",
+    "tableFullName": "Ф.И.О",
+    "tableBranch": "Филиал",
+    "tablePhone": "Телефон",
+    "tableStatus": "Статус",
+    "tableCreated": "Создано",
+    "tableUpdated": "Обновлено",
+    "tableActions": "Действия",
+    "statusActive": "Активный",
+    "statusInactive": "Неактивный",
+    "editTooltip": "Редактировать",
+    "deleteTooltip": "Удалить",
+    "paginationInfo": "Всего: {{total}}, показано {{from}}-{{to}}"
   }
 }

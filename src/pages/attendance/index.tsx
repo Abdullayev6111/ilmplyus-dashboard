@@ -144,6 +144,8 @@ const AttendancePage = () => {
           position: r.position || null,
           attendances: [],
         };
+      } else if (r.position && !groupedById[empId].position) {
+        groupedById[empId].position = r.position;
       }
 
       const currentStatuses = (Array.isArray(r.status) ? r.status : [r.status]).filter(

@@ -1561,5 +1561,25 @@
       "status": "Holat",
       "actions": "Amallar"
     }
+  },
+  "teachers": {
+    "title": "O‘qituvchilar",
+    "add": "Qo‘shish",
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik yuz berdi",
+    "noData": "Ma’lumotlar topilmadi",
+    "tableId": "ID",
+    "tableFullName": "F.I.Sh",
+    "tableBranch": "Filial",
+    "tablePhone": "Telefon",
+    "tableStatus": "Status",
+    "tableCreated": "Yaratilgan",
+    "tableUpdated": "Yangilangan",
+    "tableActions": "Amallar",
+    "statusActive": "Faol",
+    "statusInactive": "Faol emas",
+    "editTooltip": "Tahrirlash",
+    "deleteTooltip": "O‘chirish",
+    "paginationInfo": "Jami: {{total}} ta, {{from}}-{{to}} ko‘rsatilmoqda"
   }
 }
