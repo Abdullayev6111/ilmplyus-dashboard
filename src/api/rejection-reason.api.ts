@@ -12,7 +12,7 @@ export interface RejectionReason {
 }
 
 export interface RejectionReasonPayload {
-  name: string;
+  name_uz: string;
   comment?: string;
   is_active?: boolean;
   created_at?: string;

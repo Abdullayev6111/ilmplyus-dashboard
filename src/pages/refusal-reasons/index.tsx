@@ -61,7 +61,7 @@ const RefusalReasons = () => {
   const createMutation = useMutation({
     mutationFn: () => {
       const payload: RejectionReasonPayload = {
-        name: formData.name,
+        name_uz: formData.name,
         comment: formData.comment || undefined,
       };
       return rejectionReasonAPI.create(payload);
@@ -75,7 +75,7 @@ const RefusalReasons = () => {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: FormData }) => {
       const payload: RejectionReasonPayload = {
-        name: data.name,
+        name_uz: data.name,
         comment: data.comment || undefined,
       };
       if (data.created_at) {
@@ -165,18 +165,18 @@ const RefusalReasons = () => {
                 />
               </div>
 
+              <div className="subcategory-form-group">
+                <label>{t('refusalReasons.comment')}</label>
+                <input
+                  type="text"
+                  value={formData.comment}
+                  onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+                  placeholder={t('refusalReasons.comment')}
+                />
+              </div>
+
               {editingItem && (
                 <>
-                  <div className="subcategory-form-group">
-                    <label>{t('refusalReasons.comment')}</label>
-                    <input
-                      type="text"
-                      value={formData.comment}
-                      onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                      placeholder={t('refusalReasons.comment')}
-                    />
-                  </div>
-
                   <div className="subcategory-form-group">
                     <label>{t('refusalReasons.createdAt')}</label>
                     <input
