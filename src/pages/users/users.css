@@ -26,6 +26,7 @@
   border: 1px solid #003366;
   outline: none;
   min-width: 200px;
+  font-family: noto-m;
 }
 
 .users-filters input::placeholder {
@@ -47,6 +48,7 @@
   border: 1px solid #d9d9d9;
   padding: 10px;
   text-align: center;
+  font-family: noto-r;
 }
 
 .users-table th:last-child {
@@ -81,7 +83,7 @@
   z-index: 2;
 }
 
-.users-table input[type="checkbox"] {
+.users-table input[type='checkbox'] {
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -314,7 +316,7 @@
 .user-delete-btn {
   font-size: 18px !important;
   font-family: noto-b;
-  color: #FA2A00;
+  color: #fa2a00;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -451,7 +453,7 @@
   gap: 6px;
 }
 
-.checkbox-group input[type="checkbox"] {
+.checkbox-group input[type='checkbox'] {
   width: auto;
   margin: 0;
 }

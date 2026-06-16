@@ -340,7 +340,13 @@
     "categoryName": "Название категории",
     "notFound": "Данные отсутствуют",
     "categoryNotFound": "Категория не найдена",
-    "subCategoryNotFound": "Подкатегория не найдена"
+    "subCategoryNotFound": "Подкатегория не найдена",
+    "archiveTitle": "Архив расходов",
+    "editCategory": "Редактировать категорию",
+    "editSubCategory": "Редактировать подкатегорию",
+    "createdAt": "Дата создания",
+    "updatedAt": "Дата изменения",
+    "saving": "Сохранение..."
   },
   "departments": {
     "listTitle": "Список отделов",

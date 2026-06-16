@@ -10,12 +10,16 @@ import EmptyState from "../../components/EmptyState";
 
 interface Category {
   id: number;
-  name: string;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
 }
 
 interface Subcategory {
   id: number;
-  name: string;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
   expense_category_id: number;
 }
 
@@ -34,11 +38,33 @@ interface Expense {
   amount: string;
   expense_date: string;
   info: string;
+  created_at: string;
+  updated_at: string;
   category?: Category;
   subcategory?: Subcategory;
   cashier?: Cashier;
   branch?: Branch;
 }
+
+const toApiDateTime = (dt: string) => {
+  if (!dt) return undefined;
+  const base = dt.replace('T', ' ');
+  return base.length === 16 ? base + ':00' : base;
+};
+
+const formatDateTime = (iso: string) => {
+  if (!iso) return '-';
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+const toLocalDateTimeInput = (iso: string) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 
 const Expenses = () => {
   const { t, i18n } = useTranslation();
@@ -65,6 +91,8 @@ const Expenses = () => {
     expense_date: "",
     branch_id: "",
     info: "",
+    created_at: "",
+    updated_at: "",
   });
 
   const { data: expenses, isLoading } = useQuery<Expense[]>({
@@ -126,7 +154,12 @@ const Expenses = () => {
     }: {
       id: number;
       payload: typeof formData;
-    }) => API.put(`/expenses/${id}`, payload),
+    }) => {
+      const body: any = { ...payload };
+      if (body.created_at) body.created_at = toApiDateTime(body.created_at);
+      if (body.updated_at) body.updated_at = toApiDateTime(body.updated_at);
+      return API.put(`/expenses/${id}`, body);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
       closeModal();
@@ -148,6 +181,8 @@ const Expenses = () => {
       expense_date: item.expense_date,
       branch_id: String(item.branch?.id || ""),
       info: item.info,
+      created_at: toLocalDateTimeInput(item.created_at),
+      updated_at: toLocalDateTimeInput(item.updated_at),
     });
     setShowAddModal(true);
   };
@@ -163,6 +198,8 @@ const Expenses = () => {
       expense_date: "",
       branch_id: "",
       info: "",
+      created_at: "",
+      updated_at: "",
     });
   };
 
@@ -341,6 +378,33 @@ const Expenses = () => {
                 />
               </div>
 
+              {editingItem && (
+                <div className="create-form">
+                  <div className="form-group">
+                    <label>{t("expenses.createdAt")}</label>
+                    <input
+                      type="datetime-local"
+                      className="create-form-input"
+                      value={formData.created_at}
+                      onChange={(e) =>
+                        setFormData({ ...formData, created_at: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>{t("expenses.updatedAt")}</label>
+                    <input
+                      type="datetime-local"
+                      className="create-form-input"
+                      value={formData.updated_at}
+                      onChange={(e) =>
+                        setFormData({ ...formData, updated_at: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="modal-actions">
                 <button className="primary">{t("expenses.save")}</button>
                 <button type="button" className="cancel" onClick={closeModal}>
@@ -423,22 +487,42 @@ const Expenses = () => {
         </select>
 
         <div style={{ position: "relative" }}>
-          <input
-            readOnly
-            placeholder={t("expenses.date")}
-            value={fromDate && toDate ? `${fromDate} - ${toDate}` : ""}
-            onClick={() => setShowRange(true)}
-          />
+          <div className="date-filter-input-wrapper">
+            <input
+              readOnly
+              placeholder={t("expenses.date")}
+              value={fromDate && toDate ? `${fromDate} - ${toDate}` : ""}
+              onClick={() => setShowRange(true)}
+              style={{ paddingRight: fromDate && toDate ? "56px" : "12px" }}
+            />
+            {(fromDate || toDate) && (
+              <button
+                className="date-filter-clear-btn"
+                onClick={() => { setFromDate(""); setToDate(""); setShowRange(false); }}
+                title="Tozalash"
+              >
+                ✕
+              </button>
+            )}
+          </div>
 
           {showRange && (
             <div className="range-box">
+              <button
+                className="date-filter-close-btn"
+                onClick={() => setShowRange(false)}
+                title="Yopish"
+              >
+                ✕
+              </button>
               <input
                 type="date"
+                value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
               />
-
               <input
                 type="date"
+                value={toDate}
                 onChange={(e) => {
                   setToDate(e.target.value);
                   setShowRange(false);
@@ -470,13 +554,15 @@ const Expenses = () => {
               <th>{t("expenses.amount")}</th>
               <th>{t("expenses.date")}</th>
               <th>{t("expenses.branch")}</th>
+              <th>{t("expenses.createdAt")}</th>
+              <th>{t("expenses.updatedAt")}</th>
               <th>{t("expenses.actions")}</th>
             </tr>
           </thead>
 
           <tbody>
             {isLoading ? (
-              <TableSkeleton rowCount={8} columnCount={9} />
+              <TableSkeleton rowCount={8} columnCount={11} />
             ) : filteredExpenses?.length ? (
               filteredExpenses?.map((item) => (
                 <tr key={item.id}>
@@ -495,6 +581,8 @@ const Expenses = () => {
                   <td>{item.amount}</td>
                   <td>{item.expense_date}</td>
                   <td>{item.branch?.address || "-"}</td>
+                  <td>{formatDateTime(item.created_at)}</td>
+                  <td>{formatDateTime(item.updated_at)}</td>
 
                   <td className="actions">
                     <button
@@ -517,7 +605,7 @@ const Expenses = () => {
                 </tr>
               ))
             ) : (
-              <EmptyState colSpan={9} message={t("expenses.notFound")} />
+              <EmptyState colSpan={11} message={t("expenses.notFound")} />
             )}
           </tbody>
         </table>

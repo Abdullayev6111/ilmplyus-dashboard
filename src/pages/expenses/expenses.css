@@ -135,3 +135,59 @@
 }
 
 /* Expenses create end */
+
+/* Date filter */
+.date-filter-input-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.date-filter-input-wrapper input {
+  padding-right: 12px;
+}
+
+.date-filter-clear-btn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 14px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.date-filter-clear-btn:hover {
+  color: #e70a0a;
+  background: #f5f5f5;
+}
+
+.range-box {
+  position: relative;
+}
+
+.date-filter-close-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e70a0a;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: noto-b;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.date-filter-close-btn:hover {
+  background: #c00;
+}

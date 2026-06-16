@@ -79,10 +79,12 @@ const RefusalReasons = () => {
         comment: data.comment || undefined,
       };
       if (data.created_at) {
-        payload.created_at = new Date(data.created_at).toISOString();
+        const base = data.created_at.replace('T', ' ');
+        payload.created_at = base.length === 16 ? base + ':00' : base;
       }
       if (data.updated_at) {
-        payload.updated_at = new Date(data.updated_at).toISOString();
+        const base = data.updated_at.replace('T', ' ');
+        payload.updated_at = base.length === 16 ? base + ':00' : base;
       }
       return rejectionReasonAPI.update(id, payload);
     },

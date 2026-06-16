@@ -305,7 +305,12 @@
     "notFound": "Ma’lumot mavjud emas",
     "categoryNotFound": "Kategoriya topilmadi",
     "subCategoryNotFound": "Podkategoriya topilmadi",
-    "archiveTitle": "Chiqimlar arxivi"
+    "archiveTitle": "Chiqimlar arxivi",
+    "editCategory": "Kategoriyani tahrirlash",
+    "editSubCategory": "Podkategoriyani tahrirlash",
+    "createdAt": "Yaratilgan sana",
+    "updatedAt": "O‘zgartirilgan sana",
+    "saving": "Saqlanmoqda..."
   },
   "rooms": {
     "rooms": "Xonalar",

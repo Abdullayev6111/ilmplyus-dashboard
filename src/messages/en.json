@@ -334,9 +334,14 @@
     "expenseCategoryName": "Expense Category Name",
     "categoryName": "Category Name",
     "notFound": "No data available",
-    "categoryNotFound": "Kategoriya topilmadi (needs translation)",
-    "subCategoryNotFound": "Podkategoriya topilmadi (needs translation)",
-    "archiveTitle": "Expenses Archive"
+    "categoryNotFound": "Category not found",
+    "subCategoryNotFound": "Subcategory not found",
+    "archiveTitle": "Expenses Archive",
+    "editCategory": "Edit Category",
+    "editSubCategory": "Edit Subcategory",
+    "createdAt": "Created date",
+    "updatedAt": "Updated date",
+    "saving": "Saving..."
   },
   "departments": {
     "listTitle": "Department List",
