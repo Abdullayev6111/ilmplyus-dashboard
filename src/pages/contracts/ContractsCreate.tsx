@@ -463,7 +463,11 @@ export function ContractsCreate({
         return;
       }
 
-      setErrors((prev) => { const next = { ...prev }; delete next.photo; return next; });
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.photo;
+        return next;
+      });
 
       setFormData((prev) => ({
         ...prev,
@@ -479,7 +483,7 @@ export function ContractsCreate({
   };
 
   return (
-    <div className="contracts-container">
+    <div className="contracts-container container">
       <div className="contracts-header">
         <h1>
           <div className="icon-box">
@@ -523,7 +527,9 @@ export function ContractsCreate({
             </label>
             <select
               value={formData.language}
-              onChange={(e) => setFormData({ ...formData, language: e.target.value as 'UZ' | 'RU' })}
+              onChange={(e) =>
+                setFormData({ ...formData, language: e.target.value as 'UZ' | 'RU' })
+              }
             >
               <option value="UZ">UZ</option>
               <option value="RU">RU</option>
@@ -536,7 +542,12 @@ export function ContractsCreate({
             </label>
             <select
               value={formData.citizenship}
-              onChange={(e) => setFormData({ ...formData, citizenship: e.target.value as 'citizen' | 'no_citizenship' | 'foreign_citizen' })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  citizenship: e.target.value as 'citizen' | 'no_citizenship' | 'foreign_citizen',
+                })
+              }
             >
               <option value="citizen">O'zbekiston fuqarosi</option>
               <option value="no_citizenship">Fuqaroligi yo'q</option>
@@ -1123,14 +1134,27 @@ export function ContractsCreate({
             {formData.phones.map((phone, idx) => (
               <div
                 key={idx}
-                style={{ display: 'grid', gridTemplateColumns: idx > 0 ? '1fr 50px' : '1fr', gap: '10px', alignItems: 'center' }}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: idx > 0 ? '1fr 50px' : '1fr',
+                  gap: '10px',
+                  alignItems: 'center',
+                }}
               >
                 <input
                   className="phone-input"
                   type="text"
                   value={phone}
                   onChange={(e) => updatePhone(idx, e.target.value)}
-                  style={{ padding: '12px 16px', border: '1.5px solid #7a7473', borderRadius: '12px', fontSize: '15px', outline: 'none', color: '#000000', backgroundColor: '#ffffff' }}
+                  style={{
+                    padding: '12px 16px',
+                    border: '1.5px solid #7a7473',
+                    borderRadius: '12px',
+                    fontSize: '15px',
+                    outline: 'none',
+                    color: '#000000',
+                    backgroundColor: '#ffffff',
+                  }}
                 />
                 {idx > 0 && (
                   <button
@@ -1180,6 +1204,9 @@ export function ContractsCreate({
         </div>
 
         <div className="ct-form-actions">
+          <button type="submit" className="ct-btn ct-btn-save" disabled={saveMutation.isPending}>
+            {saveMutation.isPending ? 'Saqlanmoqda...' : 'Saqlash'}
+          </button>
           <button
             type="button"
             className="ct-btn ct-btn-cancel"
@@ -1189,9 +1216,6 @@ export function ContractsCreate({
             }}
           >
             Bekor qilish
-          </button>
-          <button type="submit" className="ct-btn ct-btn-save" disabled={saveMutation.isPending}>
-            {saveMutation.isPending ? 'Saqlanmoqda...' : 'Saqlash'}
           </button>
         </div>
       </form>
