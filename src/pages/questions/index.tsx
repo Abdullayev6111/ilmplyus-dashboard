@@ -75,7 +75,7 @@ const emptyForm = (): TestPayload => ({
 });
 
 const Questions = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const [selected, setSelected] = useState<number[]>([]);
@@ -217,35 +217,35 @@ const Questions = () => {
 
   return (
     <section className="users container">
-      <h1 className="main-title">Savollar va variantlar</h1>
+      <h1 className="main-title">{t('questions.title')}</h1>
 
       {showModal && (
         <div className="modal-overlay">
           <div className="modal" style={{ maxWidth: 600, width: '100%' }}>
             <h3 className="modal-title">
-              {editingItem ? 'Testni tahrirlash' : "Yangi test qo'shish"}
+              {editingItem ? t('questions.modal.editTitle') : t('questions.modal.createTitle')}
             </h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 24px' }}>
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label>Test nomi</label>
+                <label>{t('questions.modal.nameLabel')}</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Test nomini kiriting"
+                  placeholder={t('questions.modal.namePlaceholder')}
                 />
               </div>
 
               <div className="form-group">
-                <label>Kurs</label>
+                <label>{t('questions.modal.courseLabel')}</label>
                 <select
                   value={formData.course_id}
                   onChange={(e) =>
                     setFormData({ ...formData, course_id: e.target.value ? Number(e.target.value) : '' })
                   }
                 >
-                  <option value="">Tanlang</option>
+                  <option value="">{t('questions.modal.selectPlaceholder')}</option>
                   {courses.map((c) => (
                     <option key={c.id} value={c.id}>
                       {getLocalized(c, 'name', i18n.language)}
@@ -255,14 +255,14 @@ const Questions = () => {
               </div>
 
               <div className="form-group">
-                <label>Daraja</label>
+                <label>{t('questions.modal.levelLabel')}</label>
                 <select
                   value={formData.level_id}
                   onChange={(e) =>
                     setFormData({ ...formData, level_id: e.target.value ? Number(e.target.value) : '' })
                   }
                 >
-                  <option value="">Tanlang</option>
+                  <option value="">{t('questions.modal.selectPlaceholder')}</option>
                   {levels.map((l) => (
                     <option key={l.id} value={l.id}>
                       {getLocalized(l, 'name', i18n.language)}
@@ -272,14 +272,14 @@ const Questions = () => {
               </div>
 
               <div className="form-group">
-                <label>Filial</label>
+                <label>{t('questions.modal.branchLabel')}</label>
                 <select
                   value={formData.branch_id}
                   onChange={(e) =>
                     setFormData({ ...formData, branch_id: e.target.value ? Number(e.target.value) : '' })
                   }
                 >
-                  <option value="">Tanlang</option>
+                  <option value="">{t('questions.modal.selectPlaceholder')}</option>
                   {branches.map((b) => (
                     <option key={b.id} value={b.id}>
                       {getLocalized(b, 'name', i18n.language)}
@@ -289,7 +289,7 @@ const Questions = () => {
               </div>
 
               <div className="form-group">
-                <label>Savollar soni</label>
+                <label>{t('questions.modal.questionsCountLabel')}</label>
                 <input
                   type="number"
                   min={1}
@@ -300,12 +300,12 @@ const Questions = () => {
                       questions_count: e.target.value ? Number(e.target.value) : '',
                     })
                   }
-                  placeholder="Masalan: 20"
+                  placeholder={t('questions.modal.questionsCountPlaceholder')}
                 />
               </div>
 
               <div className="form-group">
-                <label>O'tish foizi (%)</label>
+                <label>{t('questions.modal.passPercentageLabel')}</label>
                 <input
                   type="number"
                   min={0}
@@ -317,12 +317,12 @@ const Questions = () => {
                       pass_percentage: e.target.value ? Number(e.target.value) : '',
                     })
                   }
-                  placeholder="Masalan: 60"
+                  placeholder={t('questions.modal.passPercentagePlaceholder')}
                 />
               </div>
 
               <div className="form-group">
-                <label>Vaqt limiti (daqiqa)</label>
+                <label>{t('questions.modal.timeLimitLabel')}</label>
                 <input
                   type="number"
                   min={1}
@@ -333,26 +333,26 @@ const Questions = () => {
                       time_limit: e.target.value ? Number(e.target.value) : '',
                     })
                   }
-                  placeholder="Masalan: 30"
+                  placeholder={t('questions.modal.timeLimitPlaceholder')}
                 />
               </div>
 
               <div className="form-group">
-                <label>Holat</label>
+                <label>{t('questions.modal.statusLabel')}</label>
                 <div className="toggle-buttons">
                   <button
                     type="button"
                     className={formData.status === 'inactive' ? 'active' : ''}
                     onClick={() => setFormData({ ...formData, status: 'inactive' })}
                   >
-                    Nofaol
+                    {t('questions.statusInactive')}
                   </button>
                   <button
                     type="button"
                     className={formData.status === 'active' ? 'active' : ''}
                     onClick={() => setFormData({ ...formData, status: 'active' })}
                   >
-                    Faol
+                    {t('questions.statusActive')}
                   </button>
                 </div>
               </div>
@@ -364,7 +364,7 @@ const Questions = () => {
                 onClick={handleSubmit}
                 disabled={isPending || !formData.name.trim()}
               >
-                {isPending ? 'Saqlanmoqda...' : 'Saqlash'}
+                {isPending ? t('questions.modal.saving') : t('questions.modal.save')}
               </button>
               <button
                 className="cancel"
@@ -373,7 +373,7 @@ const Questions = () => {
                   resetForm();
                 }}
               >
-                Bekor qilish
+                {t('questions.modal.cancel')}
               </button>
             </div>
           </div>
@@ -383,13 +383,13 @@ const Questions = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>O'chirishni tasdiqlaysizmi?</h3>
+            <h3>{t('questions.deleteModal.title')}</h3>
             <div className="modal-actions">
               <button className="danger" onClick={confirmDelete}>
-                Tasdiqlash
+                {t('questions.deleteModal.confirm')}
               </button>
               <button className="cancel" onClick={() => setShowDeleteModal(false)}>
-                Bekor qilish
+                {t('questions.deleteModal.cancel')}
               </button>
             </div>
           </div>
@@ -404,7 +404,7 @@ const Questions = () => {
             setShowModal(true);
           }}
         >
-          Qo'shish
+          {t('questions.addBtn')}
         </button>
 
         <button
@@ -415,11 +415,11 @@ const Questions = () => {
             setShowDeleteModal(true);
           }}
         >
-          O'chirish
+          {t('questions.deleteBtn')}
         </button>
 
         <input
-          placeholder="Qidirish..."
+          placeholder={t('questions.search')}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
@@ -438,16 +438,16 @@ const Questions = () => {
               <th className="th-sortable" onClick={() => setSortAsc((p) => !p)}>
                 ID {sortAsc ? '↑' : '↓'}
               </th>
-              <th>Test nomi</th>
-              <th>Kurs</th>
-              <th>Daraja</th>
-              <th>Test sanasi</th>
-              <th>Vaqt limiti</th>
-              <th>O'tish foizi</th>
-              <th>Savollar soni</th>
-              <th>Filial</th>
-              <th>Holat</th>
-              <th>Amallar</th>
+              <th>{t('questions.table.name')}</th>
+              <th>{t('questions.table.course')}</th>
+              <th>{t('questions.table.level')}</th>
+              <th>{t('questions.table.date')}</th>
+              <th>{t('questions.table.timeLimit')}</th>
+              <th>{t('questions.table.passPercentage')}</th>
+              <th>{t('questions.table.questionsCount')}</th>
+              <th>{t('questions.table.branch')}</th>
+              <th>{t('questions.table.status')}</th>
+              <th>{t('questions.table.actions')}</th>
             </tr>
           </thead>
 
@@ -467,32 +467,21 @@ const Questions = () => {
                   <td>{item.id}</td>
                   <td>{item.name}</td>
                   <td>
-                    {item.course
-                      ? getLocalized(item.course, 'name', i18n.language)
-                      : '-'}
+                    {item.course ? getLocalized(item.course, 'name', i18n.language) : '-'}
                   </td>
                   <td>
-                    {item.level
-                      ? getLocalized(item.level, 'name', i18n.language)
-                      : '-'}
+                    {item.level ? getLocalized(item.level, 'name', i18n.language) : '-'}
                   </td>
                   <td>{item.created_at?.slice(0, 10).replaceAll('-', '.') || '-'}</td>
-                  <td>{item.time_limit ? `${item.time_limit} daq` : '-'}</td>
+                  <td>{item.time_limit ? `${item.time_limit} ${t('questions.timeLimitUnit')}` : '-'}</td>
                   <td>{item.pass_percentage != null ? `${item.pass_percentage}%` : '-'}</td>
                   <td>{item.questions_count ?? '-'}</td>
                   <td>
-                    {item.branch
-                      ? getLocalized(item.branch, 'name', i18n.language)
-                      : '-'}
+                    {item.branch ? getLocalized(item.branch, 'name', i18n.language) : '-'}
                   </td>
                   <td>
-                    <span
-                      style={{
-                        color: item.status === 'active' ? '#22a76f' : '#888',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {item.status === 'active' ? 'Faol' : 'Nofaol'}
+                    <span style={{ color: item.status === 'active' ? '#22a76f' : '#888', fontWeight: 600 }}>
+                      {item.status === 'active' ? t('questions.statusActive') : t('questions.statusInactive')}
                     </span>
                   </td>
                   <td className="actions">
@@ -512,7 +501,7 @@ const Questions = () => {
                 </tr>
               ))
             ) : (
-              <EmptyState colSpan={12} message="Ma'lumot topilmadi" />
+              <EmptyState colSpan={12} message={t('questions.notFound')} />
             )}
           </tbody>
         </table>

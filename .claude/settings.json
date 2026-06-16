@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const f=require\\('./src/messages/uz.json'\\); console.log\\(JSON.stringify\\(f.archive, null, 2\\)\\)\")",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

@@ -50,13 +50,18 @@ const Lessons = () => {
   const [homeworkFile, setHomeworkFile] = useState<File | null>(null);
   const [lessonDate, setLessonDate] = useState('');
 
-  const { data: groups = [] } = useQuery({
+  const { data: rawGroups } = useQuery({
     queryKey: ['groups'],
     queryFn: async () => {
       const res = await API.get('/groups');
       return Array.isArray(res.data) ? res.data : res.data?.data || [];
     },
   });
+
+  const groups = useMemo<Group[]>(
+    () => (Array.isArray(rawGroups) ? rawGroups : (rawGroups as any)?.data ?? []),
+    [rawGroups],
+  );
 
   const selectedGroup = useMemo(() => {
     return groups.find((g: Group) => g.id === selectedGroupId);

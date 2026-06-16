@@ -70,10 +70,12 @@ export default function TaskModal({
   const isEdit = !!editTask;
 
   const firstComment = editTask?.comments?.[0];
-  const [comment, setComment] = useState(isEdit ? (firstComment?.comment ?? '') : '');
+  const [comment, setComment] = useState(isEdit ? (firstComment?.comment_uz ?? '') : '');
 
   const [lidSearch, setLidSearch] = useState(
-    isEdit ? `${editTask.lid.first_name} ${editTask.lid.last_name}` : (initialLidName ?? ''),
+    isEdit
+      ? `${editTask.lid?.first_name ?? ''} ${editTask.lid?.last_name ?? ''}`.trim()
+      : (initialLidName ?? ''),
   );
 
   const [selectedLidId, setSelectedLidId] = useState<number | null>(
@@ -128,15 +130,26 @@ export default function TaskModal({
 
   const operatorId = overrideOperatorId ?? derivedOperatorId;
 
-  const { data: lidResults = [], isLoading: isLidsLoading } = useQuery<LidResult[], Error>({
-    queryKey: ['lids', lidSearch],
+  const { data: allLids = [], isLoading: isLidsLoading } = useQuery<LidResult[], Error>({
+    queryKey: ['lids'],
     queryFn: async () => {
-      const res = await API.get('/lids', { params: { search: lidSearch } });
+      const res = await API.get('/lids');
       const d = res.data;
       return Array.isArray(d) ? d : Array.isArray(d?.data) ? d.data : (d?.data?.data ?? []);
     },
-    enabled: !selectedLidId,
+    enabled: !isEdit,
   });
+
+  const lidResults = useMemo(() => {
+    if (!lidSearch.trim()) return allLids;
+    const q = lidSearch.toLowerCase();
+    return allLids.filter(
+      (lid) =>
+        lid.first_name?.toLowerCase().includes(q) ||
+        lid.last_name?.toLowerCase().includes(q) ||
+        String(lid.id).includes(q),
+    );
+  }, [allLids, lidSearch]);
 
   const createMutation = useCreateMutation<Task, Error, CreateTaskPayload>(
     async (payload) => {
@@ -203,20 +216,26 @@ export default function TaskModal({
       return;
     }
 
-    const selectedUser = operators.find((u) => u.id === operatorId);
-    const matchedEmployee = employees.find(
-      (e) => e.pinfl && selectedUser?.pinfl && e.pinfl === selectedUser.pinfl,
-    );
-    const finalOperatorId = matchedEmployee?.id ?? 0;
+    let finalOperatorId: number;
 
-    if (!finalOperatorId) {
-      notifications.show({
-        title: 'Xatolik',
-        message:
-          'Ushbu operatorga mos keluvchi Xodim (Employee) bazadan topilmadi (PINFL mos kelmadi).',
-        color: 'red',
-      });
-      return; // Still basic guard
+    if (isEdit && overrideOperatorId === null) {
+      finalOperatorId = editTask!.operator_id;
+    } else {
+      const selectedUser = operators.find((u) => u.id === operatorId);
+      const matchedEmployee = employees.find(
+        (e) => e.pinfl && selectedUser?.pinfl && e.pinfl === selectedUser.pinfl,
+      );
+      finalOperatorId = matchedEmployee?.id ?? 0;
+
+      if (!finalOperatorId) {
+        notifications.show({
+          title: 'Xatolik',
+          message:
+            'Ushbu operatorga mos keluvchi Xodim (Employee) bazadan topilmadi (PINFL mos kelmadi).',
+          color: 'red',
+        });
+        return;
+      }
     }
 
     const deadline = buildDeadline(date, time);
@@ -227,7 +246,7 @@ export default function TaskModal({
           priority,
           deadline,
           operator_id: finalOperatorId,
-          description: comment,
+          description_uz: comment,
         },
         { onSuccess: onClose },
       );
@@ -249,7 +268,7 @@ export default function TaskModal({
         operator_id: finalOperatorId,
         deadline,
         priority,
-        description: comment,
+        description_uz: comment,
       },
       { onSuccess: onClose },
     );
@@ -387,12 +406,12 @@ export default function TaskModal({
           />
         </div>
         <div style={{ display: 'flex', gap: 20, justifyContent: 'center' }}>
-          <button className="modal__close" onClick={onClose}>
-            Bekor qilish
-          </button>
-
           <button className="modal__save-btn" onClick={handleSubmit} disabled={isSaving}>
             {isSaving ? t('taskModal.saving') : t('taskModal.saveBtn')}
+          </button>
+
+          <button className="modal__close" onClick={onClose}>
+            Bekor qilish
           </button>
         </div>
       </div>

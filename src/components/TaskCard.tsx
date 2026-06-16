@@ -80,7 +80,7 @@ export default function TaskCard({ task, role, onEdit }: TaskCardProps) {
     if (!pendingStatus) return;
     const targetStatus = pendingStatus;
     commentMutation.mutate(
-      { task_id: task.id, comment, user_id: task.operator_id },
+      { task_id: task.id, comment_uz: comment, user_id: task.operator_id },
       {
         onSuccess: () => {
           statusMutation.mutate({ taskId: task.id, status: targetStatus });
@@ -116,7 +116,7 @@ export default function TaskCard({ task, role, onEdit }: TaskCardProps) {
         </span>
       </div>
 
-      {task.description ? (
+      {task.description_uz ? (
         <div className="task-card__comment-box">
           <span className="task-card__comment-label">{t('taskCard.managerComment')}:</span>{' '}
           {getLocalized(task, 'description', lang)}
@@ -127,7 +127,7 @@ export default function TaskCard({ task, role, onEdit }: TaskCardProps) {
       {comments.map((c) => (
         <div key={c.id} className="task-card__comment-box">
           <span className="task-card__comment-label">{t('taskCard.operatorComment')}:</span>{' '}
-          {c?.comment}
+          {getLocalized(c, 'comment', lang)}
           <span className="task-card__comment-time">{formatDeadline(c?.created_at)}</span>
         </div>
       ))}

@@ -168,23 +168,27 @@
 }
 
 .lt-modal-header {
-  background-color: #d1d5da;
+  background-color: #003366;
   padding: 25px 30px;
   border-radius: 15px 15px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .lt-modal-header h2 {
-  margin: 0 0 5px 0;
-  color: #0b3b60;
+  margin: 0;
+  color: #ffffff;
   font-size: 22px;
   font-weight: 700;
+  font-family: noto-b;
 }
 
 .lt-modal-header p {
   margin: 0;
-  color: #6c757d;
+  color: #b0c4de;
   font-size: 14px;
-  font-weight: 500;
+  font-family: noto-m;
 }
 
 .lt-modal-body {
@@ -197,33 +201,39 @@
 
 .lt-form-sections {
   display: flex;
-  gap: 30px;
+  flex-direction: column;
+  gap: 10px;
   flex: 1;
 }
 
 .lt-form-section {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .lt-section-title {
-  color: #0b3b60;
+  flex: 0 0 100%;
+  color: #fe9100;
   font-size: 15px;
   font-weight: 700;
-  margin-bottom: 20px;
+  font-family: noto-b;
+  margin-bottom: 5px;
   padding-bottom: 12px;
   border-bottom: 1.5px solid #e2e8f0;
   text-transform: uppercase;
 }
 
 .lt-form-group {
-  margin-bottom: 18px;
+  flex: 0 0 calc(50% - 8px);
+  margin-bottom: 0;
 }
 
 .lt-form-group label {
   display: block;
   color: #0b3b60;
-  font-weight: 700;
+  font-family: noto-b;
   margin-bottom: 8px;
   font-size: 14px;
 }
@@ -241,16 +251,16 @@
   border-radius: 15px;
   font-size: 14px;
   box-sizing: border-box;
-  font-family: inherit;
+  font-family: noto-sb;
   color: #333;
-  font-weight: 600;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  display: block;
 }
 
 .lt-input::placeholder,
 .lt-textarea::placeholder {
   color: #a0a0a0;
-  font-weight: 500;
+  font-family: noto-m;
 }
 
 .lt-input:focus,

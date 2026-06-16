@@ -1514,5 +1514,52 @@
     "loading": "Yuklanmoqda...",
     "error": "Ma’lumotlarni yuklashda xatolik yuz berdi.",
     "noTasks": "Vazifalar topilmadi."
+  },
+  "questions": {
+    "title": "Savollar va variantlar",
+    "addBtn": "Qo‘shish",
+    "deleteBtn": "O‘chirish",
+    "search": "Qidirish...",
+    "notFound": "Ma’lumot topilmadi",
+    "timeLimitUnit": "daq",
+    "statusActive": "Faol",
+    "statusInactive": "Nofaol",
+    "modal": {
+      "createTitle": "Yangi test qo‘shish",
+      "editTitle": "Testni tahrirlash",
+      "nameLabel": "Test nomi",
+      "namePlaceholder": "Test nomini kiriting",
+      "courseLabel": "Kurs",
+      "levelLabel": "Daraja",
+      "branchLabel": "Filial",
+      "questionsCountLabel": "Savollar soni",
+      "questionsCountPlaceholder": "Masalan: 20",
+      "passPercentageLabel": "O‘tish foizi (%)",
+      "passPercentagePlaceholder": "Masalan: 60",
+      "timeLimitLabel": "Vaqt limiti (daqiqa)",
+      "timeLimitPlaceholder": "Masalan: 30",
+      "statusLabel": "Holat",
+      "selectPlaceholder": "Tanlang",
+      "save": "Saqlash",
+      "saving": "Saqlanmoqda...",
+      "cancel": "Bekor qilish"
+    },
+    "deleteModal": {
+      "title": "O‘chirishni tasdiqlaysizmi?",
+      "confirm": "Tasdiqlash",
+      "cancel": "Bekor qilish"
+    },
+    "table": {
+      "name": "Test nomi",
+      "course": "Kurs",
+      "level": "Daraja",
+      "date": "Test sanasi",
+      "timeLimit": "Vaqt limiti",
+      "passPercentage": "O‘tish foizi",
+      "questionsCount": "Savollar soni",
+      "branch": "Filial",
+      "status": "Holat",
+      "actions": "Amallar"
+    }
   }
 }

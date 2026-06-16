@@ -1249,7 +1249,14 @@
       "busyLabel": "BUSY",
       "freeLabel": "FREE",
       "freePlan": "Can schedule a lesson",
-      "days": { "mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu", "fri": "Fri", "sat": "Sat" }
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      }
     },
     "settings": {
       "title": "Dashboard Settings",
@@ -1514,5 +1521,52 @@
     "loading": "Loading...",
     "error": "An error occurred while loading data.",
     "noTasks": "No tasks found."
+  },
+  "questions": {
+    "title": "Questions and Variants",
+    "addBtn": "Add",
+    "deleteBtn": "Delete",
+    "search": "Search...",
+    "notFound": "No data found",
+    "timeLimitUnit": "min",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "modal": {
+      "createTitle": "Add New Test",
+      "editTitle": "Edit Test",
+      "nameLabel": "Test Name",
+      "namePlaceholder": "Enter test name",
+      "courseLabel": "Course",
+      "levelLabel": "Level",
+      "branchLabel": "Branch",
+      "questionsCountLabel": "Number of Questions",
+      "questionsCountPlaceholder": "E.g.: 20",
+      "passPercentageLabel": "Pass Percentage (%)",
+      "passPercentagePlaceholder": "E.g.: 60",
+      "timeLimitLabel": "Time Limit (minutes)",
+      "timeLimitPlaceholder": "E.g.: 30",
+      "statusLabel": "Status",
+      "selectPlaceholder": "Select",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "deleteModal": {
+      "title": "Confirm deletion?",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "table": {
+      "name": "Test Name",
+      "course": "Course",
+      "level": "Level",
+      "date": "Test Date",
+      "timeLimit": "Time Limit",
+      "passPercentage": "Pass %",
+      "questionsCount": "Questions",
+      "branch": "Branch",
+      "status": "Status",
+      "actions": "Actions"
+    }
   }
 }

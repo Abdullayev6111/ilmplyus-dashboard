@@ -1241,7 +1241,14 @@
       "busyLabel": "ЗАНЯТО",
       "freeLabel": "СВОБОДНО",
       "freePlan": "Можно запланировать занятие",
-      "days": { "mon": "Пн", "tue": "Вт", "wed": "Ср", "thu": "Чт", "fri": "Пт", "sat": "Сб" }
+      "days": {
+        "mon": "Пн",
+        "tue": "Вт",
+        "wed": "Ср",
+        "thu": "Чт",
+        "fri": "Пт",
+        "sat": "Сб"
+      }
     },
     "settings": {
       "title": "Настройки Dashboard",
@@ -1506,5 +1513,52 @@
     "loading": "Загрузка...",
     "error": "Произошла ошибка при загрузке данных.",
     "noTasks": "Задачи не найдены."
+  },
+  "questions": {
+    "title": "Вопросы и варианты",
+    "addBtn": "Добавить",
+    "deleteBtn": "Удалить",
+    "search": "Поиск...",
+    "notFound": "Данные не найдены",
+    "timeLimitUnit": "мин",
+    "statusActive": "Активный",
+    "statusInactive": "Неактивный",
+    "modal": {
+      "createTitle": "Добавить новый тест",
+      "editTitle": "Редактировать тест",
+      "nameLabel": "Название теста",
+      "namePlaceholder": "Введите название теста",
+      "courseLabel": "Курс",
+      "levelLabel": "Уровень",
+      "branchLabel": "Филиал",
+      "questionsCountLabel": "Количество вопросов",
+      "questionsCountPlaceholder": "Например: 20",
+      "passPercentageLabel": "Процент прохождения (%)",
+      "passPercentagePlaceholder": "Например: 60",
+      "timeLimitLabel": "Лимит времени (минуты)",
+      "timeLimitPlaceholder": "Например: 30",
+      "statusLabel": "Статус",
+      "selectPlaceholder": "Выберите",
+      "save": "Сохранить",
+      "saving": "Сохранение...",
+      "cancel": "Отмена"
+    },
+    "deleteModal": {
+      "title": "Подтвердить удаление?",
+      "confirm": "Подтвердить",
+      "cancel": "Отмена"
+    },
+    "table": {
+      "name": "Название теста",
+      "course": "Курс",
+      "level": "Уровень",
+      "date": "Дата теста",
+      "timeLimit": "Лимит времени",
+      "passPercentage": "Процент",
+      "questionsCount": "Вопросы",
+      "branch": "Филиал",
+      "status": "Статус",
+      "actions": "Действия"
+    }
   }
 }
