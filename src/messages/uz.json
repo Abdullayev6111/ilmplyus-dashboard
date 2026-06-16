@@ -237,9 +237,9 @@
     "archiveTitle": "Filiallar arxivi"
   },
   "roles": {
-    "pageTitle": "Yangi rol qo‘shish",
-    "roleName": "Rol nomi",
-    "rolePlaceholder": "Rol nomini kiriting",
+    "pageTitle": "Yangi ro‘l qo‘shish",
+    "roleName": "Ro‘l nomi",
+    "rolePlaceholder": "Ro‘l nomini kiriting",
     "save": "Saqlash",
     "adminPanel": "Admin panel",
     "accessPanel": "Panelga kirish",
@@ -265,7 +265,20 @@
     "branchesList": "Filiallar",
     "addNew": "Yangi ro‘l qo‘shish",
     "addNewRole": "Yangi ro‘l qo‘shish",
-    "editRole": "Ro‘lni tahrirlash"
+    "editRole": "Ro‘lni tahrirlash",
+    "cancel": "Bekor qilish",
+    "name": "Nomi",
+    "harakatlar": "Harakatlar",
+    "notFound": "Ro‘llar topilmadi",
+    "selectPermissions": "Ruxsatlarni tanlang",
+    "createRoleTitle": "Yangi ro‘l yaratish",
+    "permissionActions": {
+      "view": "Ko‘rish",
+      "create": "Qo‘shish",
+      "edit": "Tahrirlash",
+      "delete": "O‘chirish",
+      "attach_group": "Guruh biriktirish"
+    }
   },
   "expenses": {
     "expenseTitle": "Chiqimlar",

@@ -263,9 +263,22 @@
     "noBranches": "Filial yo'q (needs translation)",
     "assignPermissions": "Huquqlar berish (needs translation)",
     "branchesList": "Filiallar (needs translation)",
-    "addNew": "Yangi ro'l qo'shish (needs translation)",
-    "addNewRole": "Yangi ro'l qo'shish (needs translation)",
-    "editRole": "Ro'lni tahrirlash (needs translation)"
+    "addNew": "Добавить новую роль",
+    "addNewRole": "Добавить новую роль",
+    "editRole": "Редактировать роль",
+    "cancel": "Отмена",
+    "name": "Название",
+    "harakatlar": "Действия",
+    "notFound": "Роли не найдены",
+    "selectPermissions": "Выбрать разрешения",
+    "createRoleTitle": "Создать новую роль",
+    "permissionActions": {
+      "view": "Просмотр",
+      "create": "Добавить",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "attach_group": "Прикрепить группу"
+    }
   },
   "rooms": {
     "rooms": "Комнаты",

@@ -348,3 +348,56 @@
 .branch-chip button:hover {
   color: #d9363e;
 }
+
+/* CREATE ROLE - name input */
+.create-role-name-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 24px;
+  max-width: 400px;
+}
+
+.create-role-name-label {
+  font-size: 14px;
+  font-family: noto-m;
+  color: #003366;
+}
+
+.create-role-name-input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #003366;
+  outline: none;
+}
+
+.create-role-name-input:focus {
+  border-color: #003366;
+}
+
+/* PERMISSION CHECKBOXES */
+.permission-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.permission-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  user-select: none;
+}
+
+.permission-checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #003366;
+  flex-shrink: 0;
+}

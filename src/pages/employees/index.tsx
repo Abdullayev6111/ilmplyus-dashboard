@@ -188,7 +188,9 @@ function EmployeeModal({ initial, branches, onClose, onSave, loading }: Employee
               )}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <span style={{ fontSize: 13, color: '#003366', fontWeight: 500 }}>{t('employees.photoLabel')}</span>
+              <span style={{ fontSize: 13, color: '#003366', fontWeight: 500 }}>
+                {t('employees.photoLabel')}
+              </span>
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
@@ -207,7 +209,11 @@ function EmployeeModal({ initial, branches, onClose, onSave, loading }: Employee
                 }}
               >
                 <i className="fa-solid fa-upload" style={{ fontSize: 12 }} />
-                {photoFile ? t('employees.photoChange') : isEdit ? t('employees.photoUpdate') : t('employees.photoAdd')}
+                {photoFile
+                  ? t('employees.photoChange')
+                  : isEdit
+                    ? t('employees.photoUpdate')
+                    : t('employees.photoAdd')}
               </button>
               {photoFile && (
                 <span style={{ fontSize: 12, color: '#7a8fa6' }}>{photoFile.name}</span>
@@ -233,40 +239,86 @@ function EmployeeModal({ initial, branches, onClose, onSave, loading }: Employee
           >
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldLastName')}</label>
-              <input style={fieldStyle} required value={form.last_name} onChange={set('last_name')} placeholder={t('employees.fieldLastName')} />
+              <input
+                style={fieldStyle}
+                required
+                value={form.last_name}
+                onChange={set('last_name')}
+                placeholder={t('employees.fieldLastName')}
+              />
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldFirstName')}</label>
-              <input style={fieldStyle} required value={form.first_name} onChange={set('first_name')} placeholder={t('employees.fieldFirstName')} />
+              <input
+                style={fieldStyle}
+                required
+                value={form.first_name}
+                onChange={set('first_name')}
+                placeholder={t('employees.fieldFirstName')}
+              />
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldMiddleName')}</label>
-              <input style={fieldStyle} value={form.middle_name} onChange={set('middle_name')} placeholder={t('employees.fieldMiddleName')} />
+              <input
+                style={fieldStyle}
+                value={form.middle_name}
+                onChange={set('middle_name')}
+                placeholder={t('employees.fieldMiddleName')}
+              />
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldBranch')}</label>
-              <select required value={form.branch_id || ''} onChange={set('branch_id')} style={fieldStyle}>
+              <select
+                required
+                value={form.branch_id || ''}
+                onChange={set('branch_id')}
+                style={fieldStyle}
+              >
                 <option value="">{t('employees.selectBranch')}</option>
                 {branches.map((b) => (
-                  <option key={b.id} value={b.id}>{b.name_uz}</option>
+                  <option key={b.id} value={b.id}>
+                    {b.name_uz}
+                  </option>
                 ))}
               </select>
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldPhone')}</label>
-              <input style={fieldStyle} required value={form.phone} onChange={set('phone')} placeholder="+998901234567" />
+              <input
+                style={fieldStyle}
+                required
+                value={form.phone}
+                onChange={set('phone')}
+                placeholder="+998901234567"
+              />
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldPinfl')}</label>
-              <input style={fieldStyle} value={form.pinfl} onChange={set('pinfl')} placeholder="14 raqam" maxLength={14} />
+              <input
+                style={fieldStyle}
+                value={form.pinfl}
+                onChange={set('pinfl')}
+                placeholder="14 raqam"
+                maxLength={14}
+              />
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldPassportSeries')}</label>
-              <input style={fieldStyle} value={form.passport_series} onChange={set('passport_series')} placeholder="AB" />
+              <input
+                style={fieldStyle}
+                value={form.passport_series}
+                onChange={set('passport_series')}
+                placeholder="AB"
+              />
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldPassportNumber')}</label>
-              <input style={fieldStyle} value={form.passport_number} onChange={set('passport_number')} placeholder="1234567" />
+              <input
+                style={fieldStyle}
+                value={form.passport_number}
+                onChange={set('passport_number')}
+                placeholder="1234567"
+              />
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldPassportDate')}</label>
@@ -279,7 +331,12 @@ function EmployeeModal({ initial, branches, onClose, onSave, loading }: Employee
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldPassportGiven')}</label>
-              <input style={fieldStyle} value={form.passport_given_by} onChange={set('passport_given_by')} placeholder="IIB" />
+              <input
+                style={fieldStyle}
+                value={form.passport_given_by}
+                onChange={set('passport_given_by')}
+                placeholder="IIB"
+              />
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldBirthDate')}</label>
@@ -292,11 +349,21 @@ function EmployeeModal({ initial, branches, onClose, onSave, loading }: Employee
             </div>
             <div style={groupStyle}>
               <label style={labelStyle}>{t('employees.fieldAddressReg')}</label>
-              <input style={fieldStyle} value={form.address_registration} onChange={set('address_registration')} placeholder={t('employees.fieldAddressReg')} />
+              <input
+                style={fieldStyle}
+                value={form.address_registration}
+                onChange={set('address_registration')}
+                placeholder={t('employees.fieldAddressReg')}
+              />
             </div>
             <div style={{ ...groupStyle, gridColumn: '1 / -1' }}>
               <label style={labelStyle}>{t('employees.fieldAddressLiving')}</label>
-              <input style={fieldStyle} value={form.address_living} onChange={set('address_living')} placeholder={t('employees.fieldAddressLiving')} />
+              <input
+                style={fieldStyle}
+                value={form.address_living}
+                onChange={set('address_living')}
+                placeholder={t('employees.fieldAddressLiving')}
+              />
             </div>
           </div>
 
@@ -398,8 +465,14 @@ function IdTooltip({
           { icon: 'fa-phone', text: employee.phone },
           { icon: 'fa-calendar', text: formatDate(employee.birth_date) },
         ].map(({ icon, text }) => (
-          <div key={icon} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#444' }}>
-            <i className={`fa-solid ${icon}`} style={{ width: 14, color: '#7a8fa6', fontSize: 11 }} />
+          <div
+            key={icon}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#444' }}
+          >
+            <i
+              className={`fa-solid ${icon}`}
+              style={{ width: 14, color: '#7a8fa6', fontSize: 11 }}
+            />
             {text}
           </div>
         ))}
@@ -410,13 +483,7 @@ function IdTooltip({
 
 // ─── Employee detail card ─────────────────────────────────────────────────────
 
-function EmployeeDetailCard({
-  employee,
-  onClose,
-}: {
-  employee: Employee;
-  onClose: () => void;
-}) {
+function EmployeeDetailCard({ employee, onClose }: { employee: Employee; onClose: () => void }) {
   const { t } = useTranslation();
   const row = (label: string, value: string | number | null | undefined) => (
     <div
@@ -448,10 +515,19 @@ function EmployeeDetailCard({
           <img
             src={employee.photo_url}
             alt={employee.full_name}
-            style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '2px solid #d0d9e6', flexShrink: 0 }}
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
+              objectFit: 'cover',
+              border: '2px solid #d0d9e6',
+              flexShrink: 0,
+            }}
           />
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#003366' }}>{employee.full_name}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#003366' }}>
+              {employee.full_name}
+            </div>
             <div style={{ fontSize: 12, color: '#7a8fa6', marginTop: 3 }}>ID: {employee.id}</div>
             <div style={{ fontSize: 12, color: '#16a34a', fontWeight: 600, marginTop: 2 }}>
               {employee.branch?.name_uz ?? '—'}
@@ -479,7 +555,10 @@ function EmployeeDetailCard({
         <div>
           {row(t('employees.detailPhone'), employee.phone)}
           {row(t('employees.fieldPinfl'), employee.pinfl)}
-          {row(t('employees.detailPassport'), `${employee.passport_series ?? ''} ${employee.passport_number ?? ''}`.trim())}
+          {row(
+            t('employees.detailPassport'),
+            `${employee.passport_series ?? ''} ${employee.passport_number ?? ''}`.trim(),
+          )}
           {row(t('employees.fieldPassportGiven'), employee.passport_given_by)}
           {row(t('employees.detailPassportDate'), formatDate(employee.passport_given_date))}
           {row(t('employees.detailBirthDate'), formatDate(employee.birth_date))}
@@ -561,7 +640,9 @@ export default function Employees() {
   const [syncingId, setSyncingId] = useState<number | null>(null);
   const [syncConfirmEmployee, setSyncConfirmEmployee] = useState<Employee | null>(null);
   const [detailEmployee, setDetailEmployee] = useState<Employee | null>(null);
-  const [tooltipAnchor, setTooltipAnchor] = useState<{ employee: Employee; rect: DOMRect } | null>(null);
+  const [tooltipAnchor, setTooltipAnchor] = useState<{ employee: Employee; rect: DOMRect } | null>(
+    null,
+  );
   const [lightboxUrl, setLightboxUrl] = useState<{ url: string; name: string } | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState('');
@@ -645,7 +726,7 @@ export default function Employees() {
     { id: number; body: EmployeePayload | FormData }
   >({
     mutationFn: ({ id, body }) =>
-      API.post(`/employees/${id}?_method=PUT`, body, {
+      API.post(`/employees/${id}/sync-hikvision`, body, {
         headers: body instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
       }).then((r) => r.data),
     onSuccess: () => {
@@ -664,37 +745,49 @@ export default function Employees() {
       try {
         if (id) {
           await updateMutation.mutateAsync({ id, body });
-          notifications.show({ color: 'green', title: t('employees.notifySuccess'), message: t('employees.notifyUpdated') });
+          notifications.show({
+            color: 'green',
+            title: t('employees.notifySuccess'),
+            message: t('employees.notifyUpdated'),
+          });
           setEditEmployee(null);
         } else {
           await createMutation.mutateAsync(body);
-          notifications.show({ color: 'green', title: t('employees.notifySuccess'), message: t('employees.notifyAdded') });
+          notifications.show({
+            color: 'green',
+            title: t('employees.notifySuccess'),
+            message: t('employees.notifyAdded'),
+          });
           setShowAdd(false);
         }
       } catch {
         // API interceptor shows error notification
       }
     },
-    [createMutation, updateMutation],
+    [createMutation, updateMutation, t],
   );
 
   const handleDelete = useCallback(async () => {
     if (!deleteEmployee) return;
     try {
       await deleteMutation.mutateAsync(deleteEmployee.id);
-      notifications.show({ color: 'green', title: t('employees.notifySuccess'), message: t('employees.notifyDeleted') });
+      notifications.show({
+        color: 'green',
+        title: t('employees.notifySuccess'),
+        message: t('employees.notifyDeleted'),
+      });
       setDeleteEmployee(null);
     } catch {
       // API interceptor handles notification
     }
-  }, [deleteEmployee, deleteMutation]);
+  }, [deleteEmployee, deleteMutation, t]);
 
   const handleSyncEmployee = useCallback(async () => {
     if (!syncConfirmEmployee) return;
     setSyncingId(syncConfirmEmployee.id);
     setSyncConfirmEmployee(null);
     try {
-      await API.post(`/employees/${syncConfirmEmployee.id}/sync`);
+      await API.post(`/employees/${syncConfirmEmployee.id}/sync-hikvision`);
       notifications.show({
         color: 'green',
         title: t('employees.notifySuccess'),
@@ -705,7 +798,7 @@ export default function Employees() {
     } finally {
       setSyncingId(null);
     }
-  }, [syncConfirmEmployee]);
+  }, [syncConfirmEmployee, t]);
 
   const handleBulkDelete = useCallback(async () => {
     setBulkDeleting(true);
@@ -724,7 +817,7 @@ export default function Employees() {
     } finally {
       setBulkDeleting(false);
     }
-  }, [selectedIds, queryClient]);
+  }, [selectedIds, queryClient, t]);
 
   return (
     <section className="users container">
@@ -751,10 +844,14 @@ export default function Employees() {
       </div>
 
       {isLoading && (
-        <div style={{ padding: 40, textAlign: 'center', color: '#7a8fa6' }}>{t('employees.loading')}</div>
+        <div style={{ padding: 40, textAlign: 'center', color: '#7a8fa6' }}>
+          {t('employees.loading')}
+        </div>
       )}
       {isError && (
-        <div style={{ padding: 40, textAlign: 'center', color: '#e70a0a' }}>{t('employees.error')}</div>
+        <div style={{ padding: 40, textAlign: 'center', color: '#e70a0a' }}>
+          {t('employees.error')}
+        </div>
       )}
       {!isLoading && !isError && list.length === 0 && (
         <div style={{ padding: 48, textAlign: 'center', color: '#7a8fa6' }}>
@@ -806,10 +903,18 @@ export default function Employees() {
                         setTooltipAnchor(
                           tooltipAnchor?.employee.id === employee.id
                             ? null
-                            : { employee, rect: (e.currentTarget as HTMLElement).getBoundingClientRect() },
+                            : {
+                                employee,
+                                rect: (e.currentTarget as HTMLElement).getBoundingClientRect(),
+                              },
                         );
                       }}
-                      style={{ fontWeight: 600, color: '#003366', cursor: 'pointer', textDecoration: 'underline dotted' }}
+                      style={{
+                        fontWeight: 600,
+                        color: '#003366',
+                        cursor: 'pointer',
+                        textDecoration: 'underline dotted',
+                      }}
                     >
                       {employee.id}
                     </span>
@@ -819,7 +924,9 @@ export default function Employees() {
                       <img
                         src={employee.photo_url}
                         alt={employee.full_name}
-                        onClick={() => setLightboxUrl({ url: employee.photo_url, name: employee.full_name })}
+                        onClick={() =>
+                          setLightboxUrl({ url: employee.photo_url, name: employee.full_name })
+                        }
                         style={{
                           width: 32,
                           height: 32,
@@ -937,7 +1044,9 @@ export default function Employees() {
       {syncConfirmEmployee && (
         <div className="modal-overlay">
           <div className="modal small" style={{ width: 380 }}>
-            <h2 className="modal-title" style={{ marginTop: 0 }}>{t('employees.syncConfirmTitle')}</h2>
+            <h2 className="modal-title" style={{ marginTop: 0 }}>
+              {t('employees.syncConfirmTitle')}
+            </h2>
             <p style={{ textAlign: 'center', color: '#444', marginBottom: 0 }}>
               <strong>{syncConfirmEmployee.full_name}</strong> {t('employees.syncConfirmText')}
             </p>
@@ -948,7 +1057,9 @@ export default function Employees() {
                 onClick={handleSyncEmployee}
                 disabled={syncingId === syncConfirmEmployee.id}
               >
-                {syncingId === syncConfirmEmployee.id ? t('employees.syncing') : t('employees.syncConfirmBtn')}
+                {syncingId === syncConfirmEmployee.id
+                  ? t('employees.syncing')
+                  : t('employees.syncConfirmBtn')}
               </button>
               <button type="button" className="cancel" onClick={() => setSyncConfirmEmployee(null)}>
                 {t('employees.cancel')}
@@ -967,10 +1078,7 @@ export default function Employees() {
       )}
 
       {detailEmployee && (
-        <EmployeeDetailCard
-          employee={detailEmployee}
-          onClose={() => setDetailEmployee(null)}
-        />
+        <EmployeeDetailCard employee={detailEmployee} onClose={() => setDetailEmployee(null)} />
       )}
 
       {lightboxUrl && (

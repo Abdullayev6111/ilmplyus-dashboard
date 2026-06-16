@@ -13,6 +13,7 @@ import Students from './pages/students';
 import Teachers from './pages/teachers';
 import Roles from './pages/roles';
 import RolePermissions from './pages/roles/RolePermissions';
+import CreateRole from './pages/roles/CreateRole';
 import Payments from './pages/payments';
 import ArchivedPayments from './pages/archive';
 import Expenses from './pages/expenses';
@@ -111,6 +112,7 @@ const App = () => {
           {/* Foydalanuvchilar */}
           <Route path="/users" element={<Users />} />
           <Route path="/roles" element={<Roles />} />
+          <Route path="/roles/create" element={<CreateRole />} />
           <Route path="/roles/:id/permissions" element={<RolePermissions />} />
           <Route path="/operators" element={<Operators />} />
 
