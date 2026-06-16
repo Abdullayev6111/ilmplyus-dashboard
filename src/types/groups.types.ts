@@ -6,6 +6,7 @@ import type { Branch } from './common.types';
 export interface Room {
   id: number;
   name: string;
+  name_uz?: string;
   branch: string;
   capacity: number;
   floor: number;
@@ -18,6 +19,29 @@ export interface Teacher extends BaseEntity {
   full_name?: string;
   branch_id: number;
   phone: string;
+}
+
+export interface Employee {
+  id: number;
+  first_name?: string;
+  last_name?: string;
+  middle_name?: string;
+  full_name?: string;
+  role?: string;
+}
+
+export interface GroupStudent {
+  id: number;
+  first_name: string;
+  last_name: string;
+  father_name?: string | null;
+  group_id: number;
+  course_completion_pct: number;
+  attendance_pct: number;
+  debt: number;
+  manager_permission: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 
@@ -70,6 +94,7 @@ export interface ScheduleRoom {
 
 export interface GroupsApiResponse {
   data: Group[];
+  total?: number;
   meta?: {
     last_page: number;
     total: number;

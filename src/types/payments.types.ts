@@ -20,6 +20,7 @@ export interface Payment {
   amount: string | number;
   payment_method: string;
   payment_period: string;
+  paid_at?: string;
   created_at: string;
   updated_at: string;
   student_id: number;
@@ -36,6 +37,7 @@ export interface Payment {
 }
 
 export type PaymentsResponse = ApiResponse<Payment[]>;
+export type PaymentListResponse = PaymentsResponse;
 
 export interface PaymentPayload {
   full_name?: string;
