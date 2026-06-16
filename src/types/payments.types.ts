@@ -9,7 +9,7 @@ export interface Student {
   phone?: string;
 }
 
-export interface Employee {
+interface PaymentEmployee {
   id: number;
   full_name: string;
   role?: string;
@@ -29,11 +29,11 @@ export interface Payment {
   branch_id: number;
   user_id: number;
   branch?: Branch;
-  cashier?: Employee;
+  cashier?: PaymentEmployee;
   student?: Student;
   group?: Group;
   course?: Course;
-  teacher?: Employee;
+  teacher?: PaymentEmployee;
 }
 
 export type PaymentsResponse = ApiResponse<Payment[]>;

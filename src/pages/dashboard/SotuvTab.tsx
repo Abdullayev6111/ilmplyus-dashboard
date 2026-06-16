@@ -117,7 +117,6 @@ export default function SotuvTab() {
     { key: 'rad', label: t('dashboard.sotuv.tabs.rad') },
   ];
 
-
   // ── Voronka aggregation ──────────────────────────────────────────────────
   const voronkaHolat = useMemo(() => {
     const counts: Record<number, number> = {};
@@ -133,7 +132,7 @@ export default function SotuvTab() {
   const voronkaKurslar = useMemo(() => {
     const counts: Record<string, number> = {};
     lids.forEach((l) => {
-      const name = l.course?.name_uz || l.course?.name || 'Boshqa';
+      const name = l.course?.name_uz || l.course?.name_uz || 'Boshqa';
       counts[name] = (counts[name] ?? 0) + 1;
     });
     return Object.entries(counts)

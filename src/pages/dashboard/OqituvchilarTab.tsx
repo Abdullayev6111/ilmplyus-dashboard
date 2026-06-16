@@ -39,8 +39,8 @@ export default function OqituvchilarTab() {
   const [roomFilter, setRoomFilter] = useState<'all' | 'bosh' | 'band'>('all');
 
   const ATT_LEGEND = [
-    { label: t('dashboard.oqituvchi.attLegend.came'),   color: '#22c55e' },
-    { label: t('dashboard.oqituvchi.attLegend.late'),   color: '#f59e0b' },
+    { label: t('dashboard.oqituvchi.attLegend.came'), color: '#22c55e' },
+    { label: t('dashboard.oqituvchi.attLegend.late'), color: '#f59e0b' },
     { label: t('dashboard.oqituvchi.attLegend.absent'), color: '#ef4444' },
     { label: t('dashboard.oqituvchi.attLegend.reason'), color: '#3b82f6' },
   ];
@@ -113,7 +113,7 @@ export default function OqituvchilarTab() {
       const presentCount = weekDays.filter((s) => s === 'present' || s === 'late').length;
       const totalDays = weekDays.filter((s) => s !== 'none').length || 1;
       const pct = Math.round((presentCount / totalDays) * 100);
-      const courseName = empGroups[0]?.course?.name_uz || empGroups[0]?.course?.name || '—';
+      const courseName = empGroups[0]?.course?.name_uz || empGroups[0]?.course?.name_uz || '—';
       return { emp, weekDays, workload, pct, courseName, groups: empGroups };
     });
   }, [employees, groups, attendances]);
@@ -123,7 +123,7 @@ export default function OqituvchilarTab() {
     const reason = attendances.filter((a) => a.status === 'reason').length;
     const absent = attendances.filter((a) => a.status === 'absent').length;
     return [
-      { name: t('dashboard.oqituvchi.leaveKeys.late'),   value: late },
+      { name: t('dashboard.oqituvchi.leaveKeys.late'), value: late },
       { name: t('dashboard.oqituvchi.leaveKeys.reason'), value: reason },
       { name: t('dashboard.oqituvchi.leaveKeys.absent'), value: absent },
     ];
@@ -165,7 +165,9 @@ export default function OqituvchilarTab() {
         <div className="dash-stat-card">
           <div className="dash-stat-card__bg dash-stat-card__bg--blue" />
           <p className="dash-stat-card__label">{t('dashboard.oqituvchi.avgWorkload')}</p>
-          <p className="dash-stat-card__value">{avgHours} {t('dashboard.common.soat')}</p>
+          <p className="dash-stat-card__value">
+            {avgHours} {t('dashboard.common.soat')}
+          </p>
         </div>
         <div className="dash-stat-card">
           <div className="dash-stat-card__bg dash-stat-card__bg--green" />
@@ -186,6 +188,7 @@ export default function OqituvchilarTab() {
           <h3 className="dash-card__title">{t('dashboard.oqituvchi.matrixTitle')}</h3>
           {empMatrix.length > 0 ? (
             <>
+              <div style={{ overflowX: 'auto' }}>
               <table className="oqit-table">
                 <thead>
                   <tr>
@@ -204,12 +207,12 @@ export default function OqituvchilarTab() {
                         <td>
                           <div className="oqit-emp-cell">
                             <span className="oqit-emp-cell__avatar">{initials}</span>
-                            <span>
+                            <span style={{ whiteSpace: 'nowrap' }}>
                               {emp.first_name} {emp.last_name}
                             </span>
                           </div>
                         </td>
-                        <td className="oqit-table__sub">{courseName}</td>
+                        <td className="oqit-table__sub" style={{ whiteSpace: 'nowrap' }}>{courseName}</td>
                         <td>
                           <div className="oqit-dots">
                             {weekDays.map((s, i) => (
@@ -227,14 +230,18 @@ export default function OqituvchilarTab() {
                             <span
                               className="oquv-badge"
                               style={{
-                                background: pct >= 90 ? '#dcfce7' : pct >= 70 ? '#fef9c3' : '#fee2e2',
+                                background:
+                                  pct >= 90 ? '#dcfce7' : pct >= 70 ? '#fef9c3' : '#fee2e2',
                                 color: pct >= 90 ? '#16a34a' : pct >= 70 ? '#ca8a04' : '#dc2626',
                               }}
                             >
                               {pct}%
                             </span>
                           ) : (
-                            <span className="oquv-badge" style={{ background: '#f1f5f9', color: '#64748b' }}>
+                            <span
+                              className="oquv-badge"
+                              style={{ background: '#f1f5f9', color: '#64748b' }}
+                            >
                               {t('dashboard.oqituvchi.excused')}
                             </span>
                           )}
@@ -247,6 +254,7 @@ export default function OqituvchilarTab() {
                   })}
                 </tbody>
               </table>
+              </div>
               <div className="oqit-legend">
                 {ATT_LEGEND.map((l) => (
                   <span key={l.label} className="oqit-legend__item">
@@ -279,7 +287,12 @@ export default function OqituvchilarTab() {
                   <Cell key={i} fill={LEAVE_COLORS[i]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(v: number | undefined, name: string | undefined) => [`${v ?? 0} ta`, name ?? '']} />
+              <Tooltip
+                formatter={(v: number | undefined, name: string | undefined) => [
+                  `${v ?? 0} ta`,
+                  name ?? '',
+                ]}
+              />
             </PieChart>
           </div>
           <ul className="demo-legend" style={{ marginTop: 8 }}>
@@ -333,8 +346,8 @@ export default function OqituvchilarTab() {
                   {f === 'all'
                     ? t('dashboard.oqituvchi.all')
                     : f === 'bosh'
-                    ? t('dashboard.oqituvchi.free')
-                    : t('dashboard.oqituvchi.busy')}
+                      ? t('dashboard.oqituvchi.free')
+                      : t('dashboard.oqituvchi.busy')}
                 </button>
               ))}
             </div>
@@ -353,13 +366,15 @@ export default function OqituvchilarTab() {
                   <span
                     className={`room-card__badge${isBusy ? ' room-card__badge--band' : ' room-card__badge--bosh'}`}
                   >
-                    {isBusy ? t('dashboard.oqituvchi.busyLabel') : t('dashboard.oqituvchi.freeLabel')}
+                    {isBusy
+                      ? t('dashboard.oqituvchi.busyLabel')
+                      : t('dashboard.oqituvchi.freeLabel')}
                   </span>
                 </div>
                 {isBusy && group ? (
                   <>
                     <p className="room-card__course">
-                      {group.course?.name_uz || group.course?.name}
+                      {group.course?.name_uz || group.course?.name_uz}
                     </p>
                     <p className="room-card__teacher">
                       <i className="fa-solid fa-user" />

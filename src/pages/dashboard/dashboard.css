@@ -775,6 +775,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 12px;
+  table-layout: auto !important;
 }
 .oqit-table thead th {
   font-family: noto-m;
@@ -782,8 +783,8 @@
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 10px 12px;
-  text-align: left;
+  padding: 10px 12px !important;
+  text-align: center;
   border-bottom: 1px solid #f1f5f9;
 }
 .oqit-table tbody tr {
@@ -806,6 +807,29 @@
 .oqit-table__sub {
   font-size: 13px;
   color: #64748b;
+}
+.oqit-table th:first-child,
+.oqit-table td:first-child {
+  width: 220px !important;
+  min-width: 220px !important;
+  max-width: none !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+.oqit-table th:nth-child(2),
+.oqit-table td:nth-child(2) {
+  width: 140px !important;
+  min-width: 140px !important;
+  max-width: none !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+.oqit-table th,
+.oqit-table td {
+  overflow: visible !important;
+  text-overflow: clip !important;
 }
 .oqit-emp-cell {
   display: flex;

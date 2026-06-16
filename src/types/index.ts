@@ -1,7 +1,6 @@
 export * from './common.types';
 export * from './users.types';
 export * from './groups.types';
-export * from './payments.types';
 export * from './tasks.types';
 export * from './department.types';
 export * from './course.types';
@@ -11,3 +10,4 @@ export * from './attendance.types';
 export * from './course-price.types';
 export * from './contract.types';
 export * from './hikvision.types';
+export * from './payments.types';
