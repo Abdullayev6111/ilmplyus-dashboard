@@ -1294,65 +1294,76 @@
 
 /* Table */
 .dsm-table {
-  width: 100%;
-  border-collapse: collapse;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  table-layout: auto !important;
 }
 .dsm-table th {
-  font-family: 'noto-m', sans-serif;
-  font-size: 12px;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  text-align: left;
-  padding: 8px 10px;
-  border-bottom: 1.5px solid #f1f5f9;
+  font-family: 'noto-m', sans-serif !important;
+  font-size: 12px !important;
+  color: #94a3b8 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  text-align: left !important;
+  padding: 8px 10px !important;
+  border-bottom: 1.5px solid #f1f5f9 !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
 }
 .dsm-table td {
-  padding: 10px 10px;
-  border-bottom: 1px solid #f8fafc;
-  vertical-align: middle;
+  padding: 10px 10px !important;
+  border-bottom: 1px solid #f8fafc !important;
+  vertical-align: middle !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
 }
 .dsm-table tr:last-child td {
-  border-bottom: none;
+  border-bottom: none !important;
 }
 
 /* Tab dot indicator */
 .dsm-tab-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 7px;
-  vertical-align: middle;
-  flex-shrink: 0;
+  display: inline-block !important;
+  width: 8px !important;
+  height: 8px !important;
+  min-width: 8px !important;
+  border-radius: 50% !important;
+  margin-right: 7px !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
 }
 
 .dsm-default-label {
-  font-family: 'noto-m', sans-serif;
-  font-size: 14px;
-  color: #334155;
-  display: flex;
-  align-items: center;
+  font-family: 'noto-m', sans-serif !important;
+  font-size: 14px !important;
+  color: #334155 !important;
+  display: flex !important;
+  align-items: center !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  min-width: 160px !important;
 }
 
 /* Name input */
 .dsm-input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
-  font-family: 'noto-r', sans-serif;
-  font-size: 13.5px;
-  color: #1e293b;
-  outline: none;
-  transition: border-color 0.15s;
-  box-sizing: border-box;
+  width: 100% !important;
+  min-width: 160px !important;
+  padding: 8px 12px !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  font-family: 'noto-r', sans-serif !important;
+  font-size: 13.5px !important;
+  color: #1e293b !important;
+  outline: none !important;
+  transition: border-color 0.15s !important;
+  box-sizing: border-box !important;
 }
 .dsm-input:focus {
-  border-color: #6366f1;
+  border-color: #6366f1 !important;
 }
 .dsm-input::placeholder {
-  color: #cbd5e1;
+  color: #cbd5e1 !important;
 }
 
 /* Reset button */
@@ -1379,67 +1390,73 @@
 
 /* Visibility table */
 .dsm-vis-wrap {
-  overflow-x: visible;
+  overflow-x: auto !important;
 }
 .dsm-vis-table {
-  width: 100%;
-  table-layout: fixed;
+  width: 100% !important;
+  table-layout: auto !important;
+  border-collapse: collapse !important;
 }
 .dsm-vis-th {
   text-align: center !important;
-  white-space: normal;
-  word-break: break-word;
-  font-size: 11px;
-  padding: 8px 4px;
+  white-space: normal !important;
+  word-break: break-word !important;
+  font-size: 11px !important;
+  padding: 8px 6px !important;
+  min-width: 80px !important;
 }
 .dsm-vis-row {
   transition: background 0.12s;
 }
 .dsm-vis-row:hover td {
-  background: #f8fafc;
+  background: #f8fafc !important;
 }
 .dsm-vis-row--admin td {
-  background: #f8fafc;
+  background: #f8fafc !important;
 }
 
 .dsm-role-cell {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: 110px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  min-width: 130px !important;
+  width: auto !important;
 }
 .dsm-role-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  background: #f1f5f9;
-  border-radius: 20px;
-  font-family: 'noto-m', sans-serif;
-  font-size: 12.5px;
-  color: #475569;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 3px 10px !important;
+  background: #f1f5f9 !important;
+  border-radius: 20px !important;
+  font-family: 'noto-m', sans-serif !important;
+  font-size: 12.5px !important;
+  color: #475569 !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
 }
 .dsm-role-badge--admin {
-  background: #ede9fe;
-  color: #6366f1;
+  background: #ede9fe !important;
+  color: #6366f1 !important;
 }
 .dsm-locked-note {
-  font-size: 11px;
-  color: #94a3b8;
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  flex-shrink: 0 !important;
 }
 
 .dsm-check-cell {
-  text-align: center;
-  vertical-align: middle;
+  text-align: center !important;
+  vertical-align: middle !important;
 }
 .dsm-check--locked {
-  color: #22c55e;
-  font-size: 15px;
+  color: #22c55e !important;
+  font-size: 15px !important;
 }
 .dsm-checkbox {
-  width: 17px;
-  height: 17px;
-  cursor: pointer;
-  accent-color: #6366f1;
+  width: 17px !important;
+  height: 17px !important;
+  cursor: pointer !important;
+  accent-color: #6366f1 !important;
 }
 
 .dsm-empty {

@@ -74,6 +74,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
 
   const handleResetOpen = () => {
     resetHandlers.open();
@@ -100,34 +101,40 @@ const LoginPage = () => {
     },
 
     onSuccess: async (data) => {
-      const store = useAuthStore.getState();
-
-      store.setAuth(data.token, data.user as unknown as User);
-
       try {
-        const { data: meData } = await API.get<MeResponse>('/me');
-        store.setUser((meData.user || meData) as unknown as User);
-      } catch {
-        // /me muvaffaqiyatsiz bo'lsa login data bilan davom etadi
-      }
+        const { data: meData } = await API.get<MeResponse>('/me', {
+          headers: { Authorization: `Bearer ${data.token}` },
+        });
 
-      const expiresAt = store.expiresAt;
+        const roles = (meData.user?.roles || meData.roles) ?? [];
+        const isAdmin = roles.some((r) => r.name === "admin");
 
-      if (expiresAt) {
-        const timeout = expiresAt - Date.now();
-
-        if (timeout > 0) {
-          setTimeout(() => {
-            store.logout();
-          }, timeout);
+        if (!isAdmin) {
+          setLoginError(t("login.noPermission"));
+          return;
         }
-      }
 
-      window.location.href = "/";
+        const store = useAuthStore.getState();
+        const userData = (meData.user || meData) as unknown as User;
+        store.setAuth(data.token, data.user as unknown as User);
+        store.setUser(userData);
+
+        const expiresAt = store.expiresAt;
+        if (expiresAt) {
+          const timeout = expiresAt - Date.now();
+          if (timeout > 0) {
+            setTimeout(() => store.logout(), timeout);
+          }
+        }
+
+        window.location.href = "/";
+      } catch {
+        setLoginError(t("login.loginError"));
+      }
     },
 
-    onError: (error) => {
-      console.error(error);
+    onError: () => {
+      setLoginError(t("login.loginError"));
     },
   });
 
@@ -295,14 +302,14 @@ const LoginPage = () => {
             <input
               type="text"
               value={login}
-              onChange={(e) => setLogin(e.target.value)}
+              onChange={(e) => { setLogin(e.target.value); setLoginError(""); }}
               placeholder={t("login.loginPlaceHolder")}
             />
             <div className="password-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => { setPassword(e.target.value); setLoginError(""); }}
                 placeholder={t("login.passwordPlaceHolder")}
               />
 
@@ -326,6 +333,12 @@ const LoginPage = () => {
             >
               {t("login.resetPassword")}
             </Link>
+
+            {loginError && (
+              <p style={{ color: "#e03131", fontSize: 14, margin: "4px 0 0", textAlign: "center" }}>
+                {loginError}
+              </p>
+            )}
 
             <button
               type="submit"

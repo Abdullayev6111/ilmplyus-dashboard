@@ -14,7 +14,9 @@
     "resetPassword": "Reset password",
     "rightReserved": "All rights reserved",
     "resetPasswordSub": "8ta harfdan yoki raqamdan iborat kod qo'ying. (needs translation)",
-    "loading": "Yuklanmoqda... (needs translation)"
+    "loading": "Loading...",
+    "noPermission": "Access denied",
+    "loginError": "Invalid username or password"
   },
   "home": {
     "weeklySales": "Weekly sales",
@@ -270,7 +272,16 @@
       "create": "Add",
       "edit": "Edit",
       "delete": "Delete",
-      "attach_group": "Attach group"
+      "attach_group": "Attach group",
+      "submit_for_approval": "Submit for approval",
+      "approve": "Approve",
+      "reject": "Reject",
+      "set_active": "Set active",
+      "set_inactive": "Set inactive",
+      "terminate": "Terminate",
+      "sync": "Synchronize",
+      "mark_attendance": "Mark attendance",
+      "add_questions": "Add questions"
     }
   },
   "rooms": {

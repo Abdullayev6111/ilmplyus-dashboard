@@ -22,7 +22,9 @@
     "resetPassword": "Восстановить пароль",
     "rightReserved": "Все права защищены",
     "resetPasswordSub": "8ta harfdan yoki raqamdan iborat kod qo'ying. (needs translation)",
-    "loading": "Yuklanmoqda... (needs translation)"
+    "loading": "Загрузка...",
+    "noPermission": "Нет доступа",
+    "loginError": "Неверный логин или пароль"
   },
   "home": {
     "weeklySales": "Еженедельные продажи",
@@ -277,7 +279,16 @@
       "create": "Добавить",
       "edit": "Редактировать",
       "delete": "Удалить",
-      "attach_group": "Прикрепить группу"
+      "attach_group": "Прикрепить группу",
+      "submit_for_approval": "Отправить на утверждение",
+      "approve": "Утвердить",
+      "reject": "Отклонить",
+      "set_active": "Активировать",
+      "set_inactive": "Деактивировать",
+      "terminate": "Завершить",
+      "sync": "Синхронизировать",
+      "mark_attendance": "Отметить посещаемость",
+      "add_questions": "Добавить вопросы"
     }
   },
   "rooms": {

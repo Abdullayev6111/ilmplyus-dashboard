@@ -22,7 +22,9 @@
     "resetPassword": "Parolni tiklash",
     "resetPasswordSub": "8ta harfdan yoki raqamdan iborat kod qo‘ying.",
     "loading": "Yuklanmoqda...",
-    "rightReserved": "Barcha huquqlar himoyalangan"
+    "rightReserved": "Barcha huquqlar himoyalangan",
+    "noPermission": "Ruxsat yo'q",
+    "loginError": "Login yoki parol noto'g'ri"
   },
   "home": {
     "weeklySales": "Haftalik savdo",
@@ -273,11 +275,20 @@
     "selectPermissions": "Ruxsatlarni tanlang",
     "createRoleTitle": "Yangi ro‘l yaratish",
     "permissionActions": {
-      "view": "Ko‘rish",
-      "create": "Qo‘shish",
+      "view": "Ko’rish",
+      "create": "Qo’shish",
       "edit": "Tahrirlash",
-      "delete": "O‘chirish",
-      "attach_group": "Guruh biriktirish"
+      "delete": "O’chirish",
+      "attach_group": "Guruh biriktirish",
+      "submit_for_approval": "Tasdiqlashga yuborish",
+      "approve": "Tasdiqlash",
+      "reject": "Rad etish",
+      "set_active": "Faollashtirish",
+      "set_inactive": "Nofaollashtirish",
+      "terminate": "Tugatish",
+      "sync": "Sinxronlashtirish",
+      "mark_attendance": "Davomat belgilash",
+      "add_questions": "Savol qo’shish"
     }
   },
   "expenses": {
