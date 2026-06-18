@@ -110,7 +110,7 @@ const LoginPage = () => {
         const isAdmin = roles.some((r) => r.name === "admin");
 
         if (!isAdmin) {
-          setLoginError(t("login.noPermission"));
+          window.location.href = "https://test.easypos.uz";
           return;
         }
 

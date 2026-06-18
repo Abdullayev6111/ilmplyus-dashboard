@@ -1,24 +1,41 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { API } from "../../api/api";
-import { useTranslation } from "react-i18next";
-import PermissionCard from "../../components/roles/PermissionCard";
-import type { PermissionItem } from "../../types/common.types";
-import "./roles.css";
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { API } from '../../api/api';
+import { useTranslation } from 'react-i18next';
+import PermissionCard from '../../components/roles/PermissionCard';
+import type { PermissionItem } from '../../types/common.types';
+import { ALL_TABS, type MainTab } from '@/store/useDashboardSettings';
+import { fetchDashboardSettings, saveDashboardSettings } from '@/pages/dashboard/dashboard.service';
+import './roles.css';
+
+const TAB_LABELS: Record<MainTab, string> = {
+  umumiy: 'Umumiy Dashboard',
+  sotuv: 'Sotuv va Lidlar',
+  oquvchi: "O'quvchilar Analitikasi",
+  oqituvchi: "O'qituvchilar & Xonalar",
+  moliya: 'Kompleks Moliya',
+};
 
 const CreateRole = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const [roleName, setRoleName] = useState("");
+  const [roleName, setRoleName] = useState('');
   const [permissionsState, setPermissionsState] = useState<Record<string, PermissionItem[]>>({});
+  const [visibleTabs, setVisibleTabs] = useState<MainTab[]>([...ALL_TABS]);
 
-  const { data: allPermissions, isLoading } = useQuery<any[]>({
-    queryKey: ["permissions-all"],
+  const { data: dashboardSettings, isLoading: isLoadingDash } = useQuery({
+    queryKey: ['dashboard-settings'],
+    queryFn: fetchDashboardSettings,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: allPermissions, isLoading: isLoadingPerms } = useQuery<any[]>({
+    queryKey: ['permissions-all'],
     queryFn: async () => {
-      const { data } = await API.get("/permissions");
+      const { data } = await API.get('/permissions');
       return Array.isArray(data) ? data : data?.data || [];
     },
     staleTime: Infinity,
@@ -31,10 +48,10 @@ const CreateRole = () => {
 
     allPermissions.forEach((perm: any) => {
       const permId = perm.id;
-      const permName = typeof perm === "string" ? perm : perm.name;
+      const permName = typeof perm === 'string' ? perm : perm.name;
       if (!permName || !permId) return;
 
-      const [moduleName, action] = permName.split(".");
+      const [moduleName, action] = permName.split('.');
       if (moduleName && action) {
         if (!modulesMap[moduleName]) {
           modulesMap[moduleName] = [];
@@ -44,7 +61,7 @@ const CreateRole = () => {
     });
 
     const validModules = Object.keys(modulesMap).filter((moduleName) =>
-      modulesMap[moduleName].some((p) => p.action === "view")
+      modulesMap[moduleName].some((p) => p.action === 'view'),
     );
 
     return validModules.map((moduleName) => ({
@@ -55,7 +72,7 @@ const CreateRole = () => {
 
   const createRoleMutation = useMutation({
     mutationFn: async (name: string) => {
-      const { data } = await API.post("/roles", { name });
+      const { data } = await API.post('/roles', { name });
       return data?.data || data;
     },
   });
@@ -65,21 +82,36 @@ const CreateRole = () => {
       const { data } = await API.post(`/roles/${roleId}/permissions`, { permissions });
       return data;
     },
-    onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["roles"], type: "all" });
-      navigate("/roles");
+  });
+
+  const saveDashMutation = useMutation({
+    mutationFn: async (newVis: Record<string, string[]>) => {
+      await saveDashboardSettings({
+        tabNames: dashboardSettings?.tabNames ?? {},
+        roleVisibility: newVis,
+      });
     },
   });
 
   const handleSave = async () => {
     if (!roleName.trim()) return;
 
-    const permissionIds: number[] = Object.values(permissionsState).flat().map((p) => p.id);
+    const permissionIds: number[] = Object.values(permissionsState)
+      .flat()
+      .map((p) => p.id);
 
     const newRole = await createRoleMutation.mutateAsync(roleName.trim());
     const roleId = newRole?.id;
+    const roleName_ = newRole?.name ?? roleName.trim();
     if (roleId) {
-      assignPermissionsMutation.mutate({ roleId, permissions: permissionIds });
+      await assignPermissionsMutation.mutateAsync({ roleId, permissions: permissionIds });
+      const newVis: Record<string, string[]> = {
+        ...(dashboardSettings?.roleVisibility ?? {}),
+        [roleName_]: visibleTabs,
+      };
+      await saveDashMutation.mutateAsync(newVis);
+      await queryClient.refetchQueries({ queryKey: ['roles'], type: 'all' });
+      navigate('/roles');
     }
   };
 
@@ -90,9 +122,9 @@ const CreateRole = () => {
     }));
   };
 
-  const isPending = createRoleMutation.isPending || assignPermissionsMutation.isPending;
+  const isPending = createRoleMutation.isPending || assignPermissionsMutation.isPending || saveDashMutation.isPending;
 
-  if (isLoading) {
+  if (isLoadingPerms || isLoadingDash) {
     return (
       <div className="role-container container">
         <div className="permissions-header">
@@ -113,37 +145,31 @@ const CreateRole = () => {
 
   return (
     <section className="role-container container">
-      <h1 className="role-page-title">
-        {t("roles.createRoleTitle", "Yangi rol yaratish")}
-      </h1>
+      <h1 className="role-page-title">{t('roles.createRoleTitle', 'Yangi rol yaratish')}</h1>
 
       <div className="role-header-actions">
         <button
           className="role-cancel-btn"
-          onClick={() => navigate("/roles")}
-          style={{ marginRight: "10px" }}
+          onClick={() => navigate('/roles')}
+          style={{ marginRight: '10px' }}
         >
-          {t("roles.back", "Ortga")}
+          {t('roles.back', 'Ortga')}
         </button>
         <button
           className="role-save-btn"
           onClick={handleSave}
           disabled={isPending || !roleName.trim()}
         >
-          {isPending
-            ? t("roles.saving", "Saqlanmoqda...")
-            : t("roles.save", "Saqlash")}
+          {isPending ? t('roles.saving', 'Saqlanmoqda...') : t('roles.save', 'Saqlash')}
         </button>
       </div>
 
       <div className="create-role-name-section">
-        <label className="create-role-name-label">
-          {t("roles.roleName", "Rol nomi")}
-        </label>
+        <label className="create-role-name-label">{t('roles.roleName', 'Rol nomi')}</label>
         <input
           type="text"
           className="create-role-name-input"
-          placeholder={t("roles.rolePlaceholder", "Nomini kiriting")}
+          placeholder={t('roles.rolePlaceholder', 'Nomini kiriting')}
           value={roleName}
           onChange={(e) => setRoleName(e.target.value)}
         />
@@ -159,6 +185,28 @@ const CreateRole = () => {
             onChange={(selected) => handleActionChange(moduleName, selected)}
           />
         ))}
+
+        <div className="permission-card">
+          <h3 className="permission-card-title">
+            {t('roles.dashboardSections', "Dashboard bo'limlari")}
+          </h3>
+          <div className="permission-checkboxes">
+            {ALL_TABS.map((tab) => (
+              <label key={tab} className="permission-checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={visibleTabs.includes(tab)}
+                  onChange={() =>
+                    setVisibleTabs((prev) =>
+                      prev.includes(tab) ? prev.filter((t) => t !== tab) : [...prev, tab],
+                    )
+                  }
+                />
+                {(dashboardSettings?.tabNames?.[tab] ?? '').trim() || TAB_LABELS[tab]}
+              </label>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

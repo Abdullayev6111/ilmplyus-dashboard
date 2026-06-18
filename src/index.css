@@ -48,12 +48,6 @@ body {
   font-weight: 700;
 }
 
-@font-face {
-  font-family: noto-bl;
-  src: url(./assets/fonts/NotoSansJP-Black.ttf);
-  font-weight: 900;
-}
-
 .container {
   max-width: 1440px;
   width: 100%;
