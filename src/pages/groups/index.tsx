@@ -10,6 +10,7 @@ import EmptyState from '../../components/EmptyState';
 import type { Group, GroupPayload, GroupsApiResponse, Room, ScheduleTeacher } from '../../types/groups.types';
 import type { Branch } from '../../types/common.types';
 import type { Course } from '../../types/course.types';
+import { Protected } from '../../components/Protected';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
 
@@ -725,14 +726,18 @@ const Groups = () => {
 
       {/* ── Filters ── */}
       <div className="users-filters">
-        <button className="add-new-user" onClick={openCreateModal}>{t('groups.addNew')}</button>
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => { selected.forEach((id) => deleteMutation.mutate(id)); setSelected([]); }}
-        >
-          {t('groups.delete')}
-        </button>
+        <Protected permission="groups.create">
+          <button className="add-new-user" onClick={openCreateModal}>{t('groups.addNew')}</button>
+        </Protected>
+        <Protected permission="groups.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => { selected.forEach((id) => deleteMutation.mutate(id)); setSelected([]); }}
+          >
+            {t('groups.delete')}
+          </button>
+        </Protected>
         <input placeholder={t('groups.search')} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
@@ -801,15 +806,19 @@ const Groups = () => {
                     >
                       <i className="fa-solid fa-eye" />
                     </button>
-                    <button className="user-edit-btn" onClick={() => openEditModal(g)}>
-                      <i className="fa-solid fa-pen" />
-                    </button>
-                    <button
-                      className="user-delete-btn"
-                      onClick={() => { setDeleteTarget(g.id); setShowDeleteModal(true); }}
-                    >
-                      <i className="fa-solid fa-trash" />
-                    </button>
+                    <Protected permission="groups.edit">
+                      <button className="user-edit-btn" onClick={() => openEditModal(g)}>
+                        <i className="fa-solid fa-pen" />
+                      </button>
+                    </Protected>
+                    <Protected permission="groups.delete">
+                      <button
+                        className="user-delete-btn"
+                        onClick={() => { setDeleteTarget(g.id); setShowDeleteModal(true); }}
+                      >
+                        <i className="fa-solid fa-trash" />
+                      </button>
+                    </Protected>
                   </td>
                 </tr>
               ))

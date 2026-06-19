@@ -14,6 +14,7 @@ import {
   useAttendanceDemoLesson,
 } from './useDemoLesson';
 import './demoLesson.css';
+import { Protected } from '../../components/Protected';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -951,9 +952,11 @@ const DemoLessonPage = () => {
             <i className="fa-solid fa-sliders" />
             {t('demoLesson.filter')}
           </button>
-          <button className="dl-create-btn" onClick={openCreate}>
-            {t('demoLesson.createBtn')}
-          </button>
+          <Protected permission="demo_lessons.create">
+            <button className="dl-create-btn" onClick={openCreate}>
+              {t('demoLesson.createBtn')}
+            </button>
+          </Protected>
         </div>
       </div>
 
@@ -1004,13 +1007,15 @@ const DemoLessonPage = () => {
                   <td>{formatCreatedAt(lesson.created_at)}</td>
                   <td>
                     <div className="dl-actions">
-                      <button
-                        className="dl-action dl-action--edit"
-                        title={t('demoLesson.editTitle')}
-                        onClick={() => openEdit(lesson)}
-                      >
-                        <i className="fa-solid fa-pen-to-square" />
-                      </button>
+                      <Protected permission="demo_lessons.edit">
+                        <button
+                          className="dl-action dl-action--edit"
+                          title={t('demoLesson.editTitle')}
+                          onClick={() => openEdit(lesson)}
+                        >
+                          <i className="fa-solid fa-pen-to-square" />
+                        </button>
+                      </Protected>
                       <button
                         className="dl-action dl-action--attendance"
                         title={t('demoLesson.attendanceTitle')}
@@ -1018,13 +1023,15 @@ const DemoLessonPage = () => {
                       >
                         <i className="fa-solid fa-clipboard-list" />
                       </button>
-                      <button
-                        className="dl-action dl-action--delete"
-                        title={t('demoLesson.deleteTitle')}
-                        onClick={() => handleDelete(lesson.id)}
-                      >
-                        <i className="fa-solid fa-trash" />
-                      </button>
+                      <Protected permission="demo_lessons.delete">
+                        <button
+                          className="dl-action dl-action--delete"
+                          title={t('demoLesson.deleteTitle')}
+                          onClick={() => handleDelete(lesson.id)}
+                        >
+                          <i className="fa-solid fa-trash" />
+                        </button>
+                      </Protected>
                     </div>
                   </td>
                 </tr>

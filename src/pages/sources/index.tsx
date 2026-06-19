@@ -12,6 +12,7 @@ import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import { useTableSettingsStore } from "../../store/useTableSettingsStore";
+import { Protected } from "../../components/Protected";
 
 interface SourceFormData {
   name_uz: string;
@@ -280,20 +281,24 @@ const Sources = () => {
       )}
 
       <div className="users-filters">
-        <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          {t("sources.addBtn")}
-        </button>
+        <Protected permission="sources.create">
+          <button className="add-new-user" onClick={() => setShowAddModal(true)}>
+            {t("sources.addBtn")}
+          </button>
+        </Protected>
 
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => {
-            setDeleteTarget("all");
-            setShowDeleteModal(true);
-          }}
-        >
-          {t("sources.delete")}
-        </button>
+        <Protected permission="sources.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => {
+              setDeleteTarget("all");
+              setShowDeleteModal(true);
+            }}
+          >
+            {t("sources.delete")}
+          </button>
+        </Protected>
       </div>
 
       <div className="users-table-wrapper">
@@ -360,22 +365,26 @@ const Sources = () => {
                   )}
 
                   <td className="actions">
-                    <button
-                      className="user-edit-btn"
-                      onClick={() => openEditModal(item)}
-                    >
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
+                    <Protected permission="sources.edit">
+                      <button
+                        className="user-edit-btn"
+                        onClick={() => openEditModal(item)}
+                      >
+                        <i className="fa-solid fa-pen"></i>
+                      </button>
+                    </Protected>
 
-                    <button
-                      className="user-delete-btn"
-                      onClick={() => {
-                        setDeleteTarget(item.id);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <Protected permission="sources.delete">
+                      <button
+                        className="user-delete-btn"
+                        onClick={() => {
+                          setDeleteTarget(item.id);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </Protected>
                   </td>
                 </tr>
               ))

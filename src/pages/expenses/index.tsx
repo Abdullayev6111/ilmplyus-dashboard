@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
+import { Protected } from "../../components/Protected";
 
 interface Category {
   id: number;
@@ -438,20 +439,24 @@ const Expenses = () => {
       )}
 
       <div className="users-filters">
-        <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          {t("expenses.addBtn")}
-        </button>
+        <Protected permission="expenses.create">
+          <button className="add-new-user" onClick={() => setShowAddModal(true)}>
+            {t("expenses.addBtn")}
+          </button>
+        </Protected>
 
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => {
-            setDeleteTarget("all");
-            setShowDeleteModal(true);
-          }}
-        >
-          {t("expenses.delete")}
-        </button>
+        <Protected permission="expenses.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => {
+              setDeleteTarget("all");
+              setShowDeleteModal(true);
+            }}
+          >
+            {t("expenses.delete")}
+          </button>
+        </Protected>
 
         <select
           value={categoryFilter}
@@ -585,22 +590,26 @@ const Expenses = () => {
                   <td>{formatDateTime(item.updated_at)}</td>
 
                   <td className="actions">
-                    <button
-                      className="user-edit-btn"
-                      onClick={() => openEditModal(item)}
-                    >
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
+                    <Protected permission="expenses.edit">
+                      <button
+                        className="user-edit-btn"
+                        onClick={() => openEditModal(item)}
+                      >
+                        <i className="fa-solid fa-pen"></i>
+                      </button>
+                    </Protected>
 
-                    <button
-                      className="user-delete-btn"
-                      onClick={() => {
-                        setDeleteTarget(item.id);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <Protected permission="expenses.delete">
+                      <button
+                        className="user-delete-btn"
+                        onClick={() => {
+                          setDeleteTarget(item.id);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </Protected>
                   </td>
                 </tr>
               ))

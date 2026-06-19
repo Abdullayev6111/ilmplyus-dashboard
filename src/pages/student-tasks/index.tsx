@@ -6,6 +6,7 @@ import './lessons.css';
 import type { Group, Lesson } from '@/types/lesson.types';
 import { useTranslation } from 'react-i18next';
 import { getLocalized } from '@/utils/getLocalized';
+import { Protected } from '../../components/Protected';
 
 const uzDays: Record<string, string> = {
   monday: 'dushanba',
@@ -273,9 +274,11 @@ const Lessons = () => {
             </select>
           </div>
         </div>
-        <button className="add-lesson-btn" onClick={handleOpenAdd}>
-          {t('studentTasks.addLesson')}
-        </button>
+        <Protected permission="homework_submissions.create">
+          <button className="add-lesson-btn" onClick={handleOpenAdd}>
+            {t('studentTasks.addLesson')}
+          </button>
+        </Protected>
       </div>
 
       <div className="lessons-table-wrapper">

@@ -69,7 +69,7 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         { label: t('aside.users'), path: '/users', permission: 'users.view' },
         { label: t('aside.roles'), path: '/roles', permission: 'roles.view' },
         { label: t('aside.operators'), path: '/operators', permission: 'operators.view' },
-        { label: t('aside.archive'), path: '/users/archive' },
+        { label: t('aside.archive'), path: '/users/archive', permission: 'users.view' },
       ],
     },
     {
@@ -82,8 +82,8 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         { label: t('aside.areas'), path: '/areas', permission: 'regions.view', isNested: true },
         { label: t('aside.departments'), path: '/department', permission: 'departments.view' },
         { label: t('aside.rooms'), path: '/rooms', permission: 'rooms.view' },
-        { label: t('aside.faceId'), path: '/face-id' },
-        { label: t('aside.archive'), path: '/branches/archive' },
+        { label: t('aside.faceId'), path: '/face-id', permission: 'hikvision_devices.view' },
+        { label: t('aside.archive'), path: '/branches/archive', permission: 'branches.view' },
       ],
     },
     {
@@ -94,9 +94,9 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       children: [
         { label: t('aside.staffAttendance'), path: '/attendance', permission: 'attendance.view' },
         { label: t('aside.positions'), path: '/positions', permission: 'positions.view' },
-        { label: t('aside.contract'), path: '/contracts' },
-        { label: t('aside.teachers'), path: '/teachers' },
-        { label: t('aside.archive'), path: '/teachers/archive' },
+        { label: t('aside.contract'), path: '/contracts', permission: 'employee_contracts.view' },
+        { label: t('aside.teachers'), path: '/teachers', permission: 'teachers.view' },
+        { label: t('aside.archive'), path: '/teachers/archive', permission: 'teachers.view' },
       ],
     },
     {
@@ -114,11 +114,19 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       children: [
         { label: t('aside.courses'), path: '/courses', permission: 'courses.view' },
         { label: t('aside.levels'), path: '/levels', permission: 'levels.view' },
-        { label: t('aside.coursePrices'), path: '/course-prices' },
-        { label: t('aside.lessonSchedule'), path: '/lesson-schedule' },
-        { label: t('aside.demoLesson'), path: '/demo-lesson' },
-        { label: t('aside.groups'), path: '/groups' },
-        { label: t('aside.archive'), path: '/courses/archive' },
+        {
+          label: t('aside.coursePrices'),
+          path: '/course-prices',
+          permission: 'course_prices.view',
+        },
+        {
+          label: t('aside.lessonSchedule'),
+          path: '/lesson-schedule',
+          permission: 'lesson_schedule.view',
+        },
+        { label: t('aside.demoLesson'), path: '/demo-lesson', permission: 'demo_lessons.view' },
+        { label: t('aside.groups'), path: '/groups', permission: 'groups.view' },
+        { label: t('aside.archive'), path: '/courses/archive', permission: 'courses.view' },
       ],
     },
     {
@@ -127,16 +135,16 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       imgIcon: salesDepartmentIcon,
       paths: ['/lid', '/ip-telephone', '/refusal-reasons', '/sources', '/tasks'],
       children: [
-        { label: t('aside.lidList'), path: '/lid' },
-        { label: t('aside.ipTelephone'), path: '/ip-telephone' },
+        { label: t('aside.lidList'), path: '/lid', permission: 'lids.view' },
+        { label: t('aside.ipTelephone'), path: '/ip-telephone', permission: 'ip-telephone.view' },
         {
           label: t('aside.refusalReasons'),
           path: '/refusal-reasons',
-          permission: 'refusal-reasons.view',
+          permission: 'rejection_reasons.view',
         },
         { label: t('aside.sources'), path: '/sources', permission: 'sources.view' },
-        { label: t('aside.tasks'), path: '/tasks' },
-        { label: t('aside.archive'), path: '/lid/archive' },
+        { label: t('aside.tasks'), path: '/tasks', permission: 'tasks.view' },
+        { label: t('aside.archive'), path: '/lid/archive', permission: 'lids.view' },
       ],
     },
     {
@@ -145,8 +153,8 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       imgIcon: testIcon,
       paths: ['/questions'],
       children: [
-        { label: t('aside.questions'), path: '/questions' },
-        { label: t('aside.archive'), path: '/questions/archive' },
+        { label: t('aside.questions'), path: '/questions', permission: 'questions.view' },
+        { label: t('aside.archive'), path: '/questions/archive', permission: 'questions.view' },
       ],
     },
     {
@@ -158,15 +166,15 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         {
           label: t('aside.expenseCategory'),
           path: '/expenses/category',
-          permission: 'expenses.view',
+          permission: 'expense_categories.view',
         },
         {
           label: t('aside.expenseSubCategory'),
           path: '/expenses/subcategory',
-          permission: 'expenses.view',
+          permission: 'expense_subcategories.view',
         },
         { label: t('aside.expenseCreate'), path: '/expenses/create', permission: 'expenses.view' },
-        { label: t('aside.archive'), path: '/expenses/archive' },
+        { label: t('aside.archive'), path: '/expenses/archive', permission: 'expenses.view' },
       ],
     },
     {
@@ -175,11 +183,23 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       imgIcon: studentsIcon,
       paths: ['/students-attendance', '/student-tasks', '/students-contract', '/students'],
       children: [
-        { label: t('aside.studentsAttendance'), path: '/students-attendance' },
-        { label: t('aside.studentTasks'), path: '/student-tasks' },
-        { label: t('aside.studentsContract'), path: '/students-contract' },
+        {
+          label: t('aside.studentsAttendance'),
+          path: '/students-attendance',
+          permission: 'student_attendance.view',
+        },
+        {
+          label: t('aside.studentTasks'),
+          path: '/student-tasks',
+          permission: 'homework_submissions.view',
+        },
+        {
+          label: t('aside.studentsContract'),
+          path: '/students-contract',
+          permission: 'student_contracts.view',
+        },
         { label: t('aside.students'), path: '/students', permission: 'students.view' },
-        { label: t('aside.archive'), path: '/students/archive' },
+        { label: t('aside.archive'), path: '/students/archive', permission: 'students.view' },
       ],
     },
     {
@@ -189,7 +209,11 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       paths: ['/payments'],
       children: [
         { label: t('aside.paymentsList'), path: '/payments', permission: 'payments.view' },
-        { label: t('aside.paymentsArchive'), path: '/payments/archive' },
+        {
+          label: t('aside.paymentsArchive'),
+          path: '/payments/archive',
+          permission: 'payments.view',
+        },
       ],
     },
     {
@@ -198,9 +222,16 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       imgIcon: salariesIcon,
       paths: ['/salaries'],
       children: [
-        { label: t('aside.salary'), path: '/salaries' },
-        { label: t('aside.archive'), path: '/salaries/archive' },
+        { label: t('aside.salary'), path: '/salaries', permission: 'salaries.view' },
+        { label: t('aside.archive'), path: '/salaries/archive', permission: 'salaries.view' },
       ],
+    },
+    {
+      id: 'trash-group',
+      label: t('aside.trash'),
+      faIcon: 'fa-solid fa-trash-can',
+      paths: ['/trash'],
+      children: [{ label: t('aside.trash'), path: '/trash', permission: 'trash.view' }],
     },
   ];
 
@@ -247,14 +278,14 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
             <span className="sidebar-icon">
               <img src={infoGrafikIcon} alt="dashboard" />
             </span>
-            <span className={`sidebar-label ${collapsed ? 'hidden' : ''}`}>{t('aside.controlPanel')}</span>
+            <span className={`sidebar-label ${collapsed ? 'hidden' : ''}`}>
+              {t('aside.controlPanel')}
+            </span>
           </NavLink>
 
           {/* Accordion groups */}
           {groups.map((group) => {
-            const filteredChildren = group.children.filter(
-              (c) => hasPermission(c.permission) && !c.path.endsWith('/archive'),
-            );
+            const filteredChildren = group.children.filter((c) => hasPermission(c.permission));
             if (!filteredChildren.length) return null;
 
             const active = isGroupActive(group.paths);

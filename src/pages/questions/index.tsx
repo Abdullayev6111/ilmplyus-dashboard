@@ -6,6 +6,7 @@ import '../users/users.css';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import { getLocalized } from '../../utils/getLocalized';
+import { Protected } from '../../components/Protected';
 
 interface TestCourse {
   id: number;
@@ -397,26 +398,30 @@ const Questions = () => {
       )}
 
       <div className="users-filters">
-        <button
-          className="add-new-user"
-          onClick={() => {
-            resetForm();
-            setShowModal(true);
-          }}
-        >
-          {t('questions.addBtn')}
-        </button>
+        <Protected permission="questions.create">
+          <button
+            className="add-new-user"
+            onClick={() => {
+              resetForm();
+              setShowModal(true);
+            }}
+          >
+            {t('questions.addBtn')}
+          </button>
+        </Protected>
 
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => {
-            setDeleteTarget('all');
-            setShowDeleteModal(true);
-          }}
-        >
-          {t('questions.deleteBtn')}
-        </button>
+        <Protected permission="questions.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => {
+              setDeleteTarget('all');
+              setShowDeleteModal(true);
+            }}
+          >
+            {t('questions.deleteBtn')}
+          </button>
+        </Protected>
 
         <input
           placeholder={t('questions.search')}
@@ -485,18 +490,22 @@ const Questions = () => {
                     </span>
                   </td>
                   <td className="actions">
-                    <button className="user-edit-btn" onClick={() => openEditModal(item)}>
-                      <i className="fa-solid fa-pen" />
-                    </button>
-                    <button
-                      className="user-delete-btn"
-                      onClick={() => {
-                        setDeleteTarget(item.id);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash" />
-                    </button>
+                    <Protected permission="questions.edit">
+                      <button className="user-edit-btn" onClick={() => openEditModal(item)}>
+                        <i className="fa-solid fa-pen" />
+                      </button>
+                    </Protected>
+                    <Protected permission="questions.delete">
+                      <button
+                        className="user-delete-btn"
+                        onClick={() => {
+                          setDeleteTarget(item.id);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash" />
+                      </button>
+                    </Protected>
                   </td>
                 </tr>
               ))

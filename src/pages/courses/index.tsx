@@ -15,6 +15,7 @@ import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import type { Course, CoursePayload, Level } from "../../types";
 import { useTableSettingsStore } from "../../store/useTableSettingsStore";
+import { Protected } from "../../components/Protected";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -645,19 +646,23 @@ const Courses = () => {
       )}
 
       <div className="users-filters">
-        <button className="add-new-user" onClick={() => setShowModal(true)}>
-          {t("expenses.addBtn")}
-        </button>
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => {
-            setDeleteTarget("all");
-            setShowDeleteModal(true);
-          }}
-        >
-          {t("expenses.delete")}
-        </button>
+        <Protected permission="courses.create">
+          <button className="add-new-user" onClick={() => setShowModal(true)}>
+            {t("expenses.addBtn")}
+          </button>
+        </Protected>
+        <Protected permission="courses.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => {
+              setDeleteTarget("all");
+              setShowDeleteModal(true);
+            }}
+          >
+            {t("expenses.delete")}
+          </button>
+        </Protected>
       </div>
 
       <div className="users-table-wrapper">
@@ -721,21 +726,25 @@ const Courses = () => {
                       >
                         <i className="fa-solid fa-eye"></i>
                       </button>
-                      <button
-                        className="user-edit-btn"
-                        onClick={() => openEditModal(item)}
-                      >
-                        <i className="fa-solid fa-pen"></i>
-                      </button>
-                      <button
-                        className="user-delete-btn"
-                        onClick={() => {
-                          setDeleteTarget(item.id);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
+                      <Protected permission="courses.edit">
+                        <button
+                          className="user-edit-btn"
+                          onClick={() => openEditModal(item)}
+                        >
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+                      </Protected>
+                      <Protected permission="courses.delete">
+                        <button
+                          className="user-delete-btn"
+                          onClick={() => {
+                            setDeleteTarget(item.id);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </Protected>
                     </td>
                   </tr>
                 );

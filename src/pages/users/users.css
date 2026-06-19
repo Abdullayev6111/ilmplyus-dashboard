@@ -496,6 +496,35 @@
   color: #ff0000;
 }
 
+.trash-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.trash-tab {
+  padding: 7px 16px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: noto-m;
+  font-size: 13px;
+  color: #64748b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.trash-tab:hover {
+  background: #f1f5f9;
+  color: #03213f;
+}
+
+.trash-tab.active {
+  background: #003366;
+  color: #fff;
+  font-family: noto-b;
+  border-color: #003366;
+}
+
 .toggle-buttons {
   display: flex;
   gap: 10px;
@@ -559,4 +588,23 @@
     max-width: 1750px !important;
     width: 100%;
   }
+}
+
+.trash-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  background: rgba(255, 255, 255, 0.25);
+  color: inherit;
+  font-size: 11px;
+  font-family: noto-b;
+  border-radius: 20px;
+  padding: 1px 7px;
+  min-width: 18px;
+}
+
+.trash-tab.active .trash-tab-count {
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
 }

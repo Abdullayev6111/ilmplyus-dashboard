@@ -14,6 +14,7 @@ import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import { useTableSettingsStore } from "../../store/useTableSettingsStore";
 import type { Branch, UsersResponse } from "../../types";
+import { Protected } from "../../components/Protected";
 
 export interface IpTelefonOperator {
   id: number;
@@ -473,19 +474,23 @@ const Operators = () => {
       )}
 
       <div className="users-filters">
-        <button className="add-new-user" onClick={() => setShowModal(true)}>
-          {t("users.addNew", "Qo'shish")}
-        </button>
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => {
-            setDeleteTarget("all");
-            setShowDeleteModal(true);
-          }}
-        >
-          {t("common.delete", "O'chirish")}
-        </button>
+        <Protected permission="operators.create">
+          <button className="add-new-user" onClick={() => setShowModal(true)}>
+            {t("users.addNew", "Qo'shish")}
+          </button>
+        </Protected>
+        <Protected permission="operators.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => {
+              setDeleteTarget("all");
+              setShowDeleteModal(true);
+            }}
+          >
+            {t("common.delete", "O'chirish")}
+          </button>
+        </Protected>
       </div>
 
       <div className="users-table-wrapper">
@@ -550,21 +555,25 @@ const Operators = () => {
                     >
                       <i className="fa-solid fa-eye"></i>
                     </button>
-                    <button
-                      className="user-edit-btn"
-                      onClick={() => openEditModal(item)}
-                    >
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
-                    <button
-                      className="user-delete-btn"
-                      onClick={() => {
-                        setDeleteTarget(item.id);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <Protected permission="operators.edit">
+                      <button
+                        className="user-edit-btn"
+                        onClick={() => openEditModal(item)}
+                      >
+                        <i className="fa-solid fa-pen"></i>
+                      </button>
+                    </Protected>
+                    <Protected permission="operators.delete">
+                      <button
+                        className="user-delete-btn"
+                        onClick={() => {
+                          setDeleteTarget(item.id);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </Protected>
                   </td>
                 </tr>
               ))

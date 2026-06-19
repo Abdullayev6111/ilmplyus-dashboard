@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import { getLocalized } from '../../utils/getLocalized';
+import { Protected } from '../../components/Protected';
 
 interface ExpenseCategory {
   id: number;
@@ -215,16 +216,20 @@ const ExpensesCategory = () => {
       )}
 
       <div className="users-filters">
-        <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          {t('expenses.addBtn')}
-        </button>
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => { setDeleteTarget('all'); setShowDeleteModal(true); }}
-        >
-          {t('expenses.delete')}
-        </button>
+        <Protected permission="expense_categories.create">
+          <button className="add-new-user" onClick={() => setShowAddModal(true)}>
+            {t('expenses.addBtn')}
+          </button>
+        </Protected>
+        <Protected permission="expense_categories.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => { setDeleteTarget('all'); setShowDeleteModal(true); }}
+          >
+            {t('expenses.delete')}
+          </button>
+        </Protected>
       </div>
 
       <div className="users-table-wrapper">
@@ -268,15 +273,19 @@ const ExpensesCategory = () => {
                     <td>{formatDateTime(item.created_at)}</td>
                     <td>{formatDateTime(item.updated_at)}</td>
                     <td className="actions">
-                      <button className="user-edit-btn" onClick={() => openEditModal(item)}>
-                        <i className="fa-solid fa-pen"></i>
-                      </button>
-                      <button
-                        className="user-delete-btn"
-                        onClick={() => { setDeleteTarget(item.id); setShowDeleteModal(true); }}
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
+                      <Protected permission="expense_categories.edit">
+                        <button className="user-edit-btn" onClick={() => openEditModal(item)}>
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+                      </Protected>
+                      <Protected permission="expense_categories.delete">
+                        <button
+                          className="user-delete-btn"
+                          onClick={() => { setDeleteTarget(item.id); setShowDeleteModal(true); }}
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </Protected>
                     </td>
                   </tr>
                 ))

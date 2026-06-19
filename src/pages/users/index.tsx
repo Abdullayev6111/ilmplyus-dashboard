@@ -10,6 +10,7 @@ import WorkScheduleModal from '../../components/WorkScheduleModal';
 import type { User, UsersResponse, Branch, Role } from '../../types';
 import type { DepartmentType } from '../../types/department.types';
 import { useTableSettingsStore } from '../../store/useTableSettingsStore';
+import { Protected } from '../../components/Protected';
 
 const genPassword = () =>
   Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4);
@@ -711,20 +712,24 @@ const Users = () => {
       )}
 
       <div className="users-filters">
-        <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          {t('users.addNew')}
-        </button>
+        <Protected permission="users.create">
+          <button className="add-new-user" onClick={() => setShowAddModal(true)}>
+            {t('users.addNew')}
+          </button>
+        </Protected>
 
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => {
-            setDeleteTarget('all');
-            setShowDeleteModal(true);
-          }}
-        >
-          {t('users.delete')}
-        </button>
+        <Protected permission="users.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => {
+              setDeleteTarget('all');
+              setShowDeleteModal(true);
+            }}
+          >
+            {t('users.delete')}
+          </button>
+        </Protected>
 
         <select onChange={(e) => setRole(e.target.value)}>
           <option value="">{t('users.employeeType')}</option>
@@ -786,19 +791,23 @@ const Users = () => {
                       </button>
                     </div>
 
-                    <button className="user-edit-btn" onClick={() => openEditModal(u)}>
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
+                    <Protected permission="users.edit">
+                      <button className="user-edit-btn" onClick={() => openEditModal(u)}>
+                        <i className="fa-solid fa-pen"></i>
+                      </button>
+                    </Protected>
 
-                    <button
-                      className="user-delete-btn"
-                      onClick={() => {
-                        setDeleteTarget(u.id);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <Protected permission="users.delete">
+                      <button
+                        className="user-delete-btn"
+                        onClick={() => {
+                          setDeleteTarget(u.id);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </Protected>
                   </td>
                 </tr>
               ))

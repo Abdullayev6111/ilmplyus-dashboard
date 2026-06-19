@@ -96,7 +96,8 @@
     "paymentsArchive": "История платежей",
     "salary": "Зарплата",
     "staffAttendance": "Посещаемость сотрудников",
-    "archive": "Архив"
+    "archive": "Архив",
+    "trash": "Корзина"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -274,6 +275,9 @@
     "notFound": "Роли не найдены",
     "selectPermissions": "Выбрать разрешения",
     "createRoleTitle": "Создать новую роль",
+    "standalonePermissions": {
+      "admin_access": "Доступ администратора"
+    },
     "permissionActions": {
       "view": "Просмотр",
       "create": "Добавить",
@@ -1591,5 +1595,61 @@
     "editTooltip": "Редактировать",
     "deleteTooltip": "Удалить",
     "paginationInfo": "Всего: {{total}}, показано {{from}}-{{to}}"
+  },
+  "trash": {
+    "title": "Корзина",
+    "restore": "Восстановить",
+    "restoreSelected": "Восстановить выбранные",
+    "destroy": "Удалить навсегда",
+    "confirmDestroy": "Вы уверены, что хотите безвозвратно удалить эту запись?",
+    "confirm": "Подтвердить",
+    "cancel": "Отмена",
+    "noData": "Удалённых данных нет",
+    "id": "ID",
+    "name": "Название",
+    "deletedAt": "Дата удаления",
+    "actions": "Действия",
+    "tabs": {
+      "all": "Все",
+      "incoming": "Входящие",
+      "outgoing": "Исходящие",
+      "unanswered": "Без ответа",
+      "rejected": "Отклоненные"
+    },
+    "types": {
+      "payments": "Платежи",
+      "expenses": "Расходы",
+      "expense_categories": "Категории расходов",
+      "expense_subcategories": "Подкатегории расходов",
+      "student_contracts": "Договоры учеников",
+      "students": "Ученики",
+      "users": "Пользователи",
+      "courses": "Курсы",
+      "groups": "Группы",
+      "levels": "Уровни",
+      "branches": "Филиалы",
+      "employees": "Сотрудники",
+      "departments": "Отделы",
+      "positions": "Должности",
+      "rooms": "Комнаты",
+      "lessons": "Уроки",
+      "tasks": "Задачи",
+      "task_comments": "Комментарии к задачам",
+      "tests": "Тесты",
+      "questions": "Вопросы",
+      "question_options": "Варианты ответов",
+      "exam_sessions": "Экзаменационные сессии",
+      "exam_attempts": "Попытки экзамена",
+      "demo_lessons": "Пробные уроки",
+      "employee_contracts": "Договоры сотрудников",
+      "course_prices": "Цены на курсы",
+      "homework_submissions": "Ответы на домашние задания",
+      "lids": "Лиды",
+      "sources": "Источники",
+      "rejection_reasons": "Причины отказа",
+      "ip_telefon_operators": "Операторы IP телефонии",
+      "hikvision_devices": "Устройства Hikvision",
+      "level_promotions": "Переводы на уровень"
+    }
   }
 }

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
+import { Protected } from '../../components/Protected';
 
 interface Branch {
   id: number;
@@ -432,20 +433,24 @@ const Branches = () => {
       )}
 
       <div className="branch-filter-panel">
-        <button className="branch-add-btn" onClick={() => setShowBranchModal(true)}>
-          {t('branches.addNew')}
-        </button>
+        <Protected permission="branches.create">
+          <button className="branch-add-btn" onClick={() => setShowBranchModal(true)}>
+            {t('branches.addNew')}
+          </button>
+        </Protected>
 
-        <button
-          className="branch-delete-btn"
-          disabled={selectedBranches.length === 0}
-          onClick={() => {
-            setDeletionTarget('all');
-            setShowDeleteConfirmation(true);
-          }}
-        >
-          {t('branches.delete')}
-        </button>
+        <Protected permission="branches.delete">
+          <button
+            className="branch-delete-btn"
+            disabled={selectedBranches.length === 0}
+            onClick={() => {
+              setDeletionTarget('all');
+              setShowDeleteConfirmation(true);
+            }}
+          >
+            {t('branches.delete')}
+          </button>
+        </Protected>
 
         <input
           placeholder={t('branches.search')}
@@ -500,21 +505,25 @@ const Branches = () => {
                   <td>{branch.postal_code}</td>
                   <td>{branch.created_at.slice(0, 10).replaceAll('-', '.')}</td>
                   <td className="branch-action-cell">
-                    <button
-                      className="branch-edit-icon"
-                      onClick={() => openBranchEditModal(branch)}
-                    >
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
-                    <button
-                      className="branch-delete-icon"
-                      onClick={() => {
-                        setDeletionTarget(branch.id);
-                        setShowDeleteConfirmation(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <Protected permission="branches.edit">
+                      <button
+                        className="branch-edit-icon"
+                        onClick={() => openBranchEditModal(branch)}
+                      >
+                        <i className="fa-solid fa-pen"></i>
+                      </button>
+                    </Protected>
+                    <Protected permission="branches.delete">
+                      <button
+                        className="branch-delete-icon"
+                        onClick={() => {
+                          setDeletionTarget(branch.id);
+                          setShowDeleteConfirmation(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </Protected>
                   </td>
                 </tr>
               ))

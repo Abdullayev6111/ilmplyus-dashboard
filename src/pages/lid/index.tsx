@@ -365,7 +365,7 @@ const Registration = () => {
                                 <i className="fa-solid fa-box-archive" />
                               </button>
                             </Protected>
-                            <Protected permission="students.delete">
+                            <Protected permission="lids.delete">
                               <button
                                 type="button"
                                 className="db-action-btn db-action-btn--danger"

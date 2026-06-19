@@ -23,8 +23,8 @@
     "resetPasswordSub": "8ta harfdan yoki raqamdan iborat kod qo‘ying.",
     "loading": "Yuklanmoqda...",
     "rightReserved": "Barcha huquqlar himoyalangan",
-    "noPermission": "Ruxsat yo'q",
-    "loginError": "Login yoki parol noto'g'ri"
+    "noPermission": "Ruxsat yo‘q",
+    "loginError": "Login yoki parol noto‘g‘ri"
   },
   "home": {
     "weeklySales": "Haftalik savdo",
@@ -96,7 +96,8 @@
     "paymentsArchive": "To‘lov tarixi",
     "salary": "Oylik",
     "staffAttendance": "Xodim davomati",
-    "archive": "Arxiv"
+    "archive": "Arxiv",
+    "trash": "Arxiv"
   },
   "payments": {
     "mainTitle": "To‘lovlar",
@@ -274,6 +275,9 @@
     "notFound": "Ro‘llar topilmadi",
     "selectPermissions": "Ruxsatlarni tanlang",
     "createRoleTitle": "Yangi ro‘l yaratish",
+    "standalonePermissions": {
+      "admin_access": "Adminga kirish"
+    },
     "permissionActions": {
       "view": "Ko’rish",
       "create": "Qo’shish",
@@ -1571,6 +1575,62 @@
       "branch": "Filial",
       "status": "Holat",
       "actions": "Amallar"
+    }
+  },
+  "trash": {
+    "title": "Arxiv",
+    "restore": "Tiklash",
+    "restoreSelected": "Tanlanganlarni tiklash",
+    "destroy": "Butunlay o‘chirish",
+    "confirmDestroy": "Bu yozuvni butunlay o‘chirishni tasdiqlaysizmi?",
+    "confirm": "Tasdiqlash",
+    "cancel": "Bekor qilish",
+    "noData": "O‘chirilgan ma’lumot yo‘q",
+    "id": "ID",
+    "name": "Nomi",
+    "deletedAt": "O‘chirilgan sana",
+    "actions": "Amallar",
+    "tabs": {
+      "all": "Barchasi",
+      "incoming": "Kiruvchi",
+      "outgoing": "Chiquvchi",
+      "unanswered": "Javobsiz",
+      "rejected": "Rad etilgan"
+    },
+    "types": {
+      "payments": "To‘lovlar",
+      "expenses": "Xarajatlar",
+      "expense_categories": "Xarajat kategoriyalari",
+      "expense_subcategories": "Xarajat subkategoriyalari",
+      "student_contracts": "Talabalar shartnomasi",
+      "students": "Talabalar",
+      "users": "Foydalanuvchilar",
+      "courses": "Kurslar",
+      "groups": "Guruhlar",
+      "levels": "Darajalar",
+      "branches": "Filiallar",
+      "employees": "Xodimlar",
+      "departments": "Bo‘limlar",
+      "positions": "Lavozimlar",
+      "rooms": "Xonalar",
+      "lessons": "Darslar",
+      "tasks": "Vazifalar",
+      "task_comments": "Vazifa izohlari",
+      "tests": "Testlar",
+      "questions": "Savollar",
+      "question_options": "Savol variantlari",
+      "exam_sessions": "Imtihon sessiyalari",
+      "exam_attempts": "Imtihon urinishlari",
+      "demo_lessons": "Demo darslar",
+      "employee_contracts": "Xodim shartnomalari",
+      "course_prices": "Kurs narxlari",
+      "homework_submissions": "Uy vazifasi topshiriqlari",
+      "lids": "Lidlar",
+      "sources": "Manbalar",
+      "rejection_reasons": "Rad etish sabablari",
+      "ip_telefon_operators": "IP telefon operatorlari",
+      "hikvision_devices": "Hikvision qurilmalari",
+      "level_promotions": "Daraja o‘tishlar"
     }
   },
   "teachers": {

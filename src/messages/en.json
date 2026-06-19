@@ -88,7 +88,8 @@
     "paymentsArchive": "Payment History",
     "salary": "Salary",
     "staffAttendance": "Employee Attendance",
-    "archive": "Archive"
+    "archive": "Archive",
+    "trash": "Trash"
   },
   "payments": {
     "mainTitle": "Payments",
@@ -267,6 +268,9 @@
     "notFound": "No roles found",
     "selectPermissions": "Select permissions",
     "createRoleTitle": "Create new role",
+    "standalonePermissions": {
+      "admin_access": "Admin access"
+    },
     "permissionActions": {
       "view": "View",
       "create": "Add",
@@ -1599,5 +1603,61 @@
     "editTooltip": "Edit",
     "deleteTooltip": "Delete",
     "paginationInfo": "Total: {{total}}, showing {{from}}-{{to}}"
+  },
+  "trash": {
+    "title": "Trash",
+    "restore": "Restore",
+    "restoreSelected": "Restore Selected",
+    "destroy": "Permanently Delete",
+    "confirmDestroy": "Are you sure you want to permanently delete this record?",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "noData": "No deleted data found",
+    "id": "ID",
+    "name": "Name",
+    "deletedAt": "Deleted At",
+    "actions": "Actions",
+    "tabs": {
+      "all": "All",
+      "incoming": "Incoming",
+      "outgoing": "Outgoing",
+      "unanswered": "Unanswered",
+      "rejected": "Rejected"
+    },
+    "types": {
+      "payments": "Payments",
+      "expenses": "Expenses",
+      "expense_categories": "Expense Categories",
+      "expense_subcategories": "Expense Subcategories",
+      "student_contracts": "Student Contracts",
+      "students": "Students",
+      "users": "Users",
+      "courses": "Courses",
+      "groups": "Groups",
+      "levels": "Levels",
+      "branches": "Branches",
+      "employees": "Employees",
+      "departments": "Departments",
+      "positions": "Positions",
+      "rooms": "Rooms",
+      "lessons": "Lessons",
+      "tasks": "Tasks",
+      "task_comments": "Task Comments",
+      "tests": "Tests",
+      "questions": "Questions",
+      "question_options": "Question Options",
+      "exam_sessions": "Exam Sessions",
+      "exam_attempts": "Exam Attempts",
+      "demo_lessons": "Demo Lessons",
+      "employee_contracts": "Employee Contracts",
+      "course_prices": "Course Prices",
+      "homework_submissions": "Homework Submissions",
+      "lids": "Leads",
+      "sources": "Sources",
+      "rejection_reasons": "Rejection Reasons",
+      "ip_telefon_operators": "IP Phone Operators",
+      "hikvision_devices": "Hikvision Devices",
+      "level_promotions": "Level Promotions"
+    }
   }
 }

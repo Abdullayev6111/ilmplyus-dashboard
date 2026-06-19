@@ -258,16 +258,11 @@
 }
 
 .skeleton::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   animation: shimmer 1.4s infinite;
 }
 
@@ -394,10 +389,41 @@
   user-select: none;
 }
 
-.permission-checkbox-label input[type="checkbox"] {
+.permission-checkbox-label input[type='checkbox'] {
   width: 16px;
   height: 16px;
   cursor: pointer;
   accent-color: #003366;
   flex-shrink: 0;
+}
+
+.create-role-top-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.create-role-top-row .create-role-name-section {
+  margin-bottom: 0;
+}
+
+.permission-card-standalone-header {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 40px;
+  min-height: unset;
+  margin-left: 10px;
+}
+
+.permission-card-standalone-header .permission-checkbox-label {
+  white-space: nowrap;
+}
+
+.permission-standalone-name {
+  font-family: noto-m;
+  color: #003366;
+  font-size: 14px;
 }

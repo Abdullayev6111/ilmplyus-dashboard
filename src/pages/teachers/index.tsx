@@ -7,6 +7,7 @@ import './teachers.css';
 import { useTranslation } from 'react-i18next';
 import { getLocalized } from '../../utils/getLocalized';
 import type { Contract, Branch } from '../../types';
+import { Protected } from '../../components/Protected';
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return '-';
@@ -124,12 +125,16 @@ function TableRow({ row, isSelected, onToggle, branchName }: TableRowProps) {
       <td>{formatDate(row.updated_at)}</td>
       <td>
         <div className="actions">
-          <button type="button" className="user-edit-btn" title={t('teachers.editTooltip')}>
-            <i className="fa-solid fa-pen" />
-          </button>
-          <button type="button" className="user-delete-btn" title={t('teachers.deleteTooltip')}>
-            <i className="fa-solid fa-trash" />
-          </button>
+          <Protected permission="teachers.edit">
+            <button type="button" className="user-edit-btn" title={t('teachers.editTooltip')}>
+              <i className="fa-solid fa-pen" />
+            </button>
+          </Protected>
+          <Protected permission="teachers.delete">
+            <button type="button" className="user-delete-btn" title={t('teachers.deleteTooltip')}>
+              <i className="fa-solid fa-trash" />
+            </button>
+          </Protected>
         </div>
       </td>
     </tr>
@@ -283,13 +288,15 @@ export default function Teachers() {
       <h1 className="main-title">{t('teachers.title')}</h1>
 
       <div className="users-filters">
-        <button
-          type="button"
-          className="add-new-user"
-          onClick={() => navigate('/contracts/create')}
-        >
-          {t('teachers.add')}
-        </button>
+        <Protected permission="teachers.create">
+          <button
+            type="button"
+            className="add-new-user"
+            onClick={() => navigate('/contracts/create')}
+          >
+            {t('teachers.add')}
+          </button>
+        </Protected>
       </div>
 
       {isLoading && (

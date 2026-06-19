@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
+import { Protected } from '../../components/Protected';
 
 interface BranchItem {
   id: number;
@@ -525,16 +526,18 @@ const Students = () => {
 
       {/* Toolbar */}
       <div className="users-filters">
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => {
-            setDeleteTarget('all');
-            setShowDeleteModal(true);
-          }}
-        >
-          {t('students.delete')}
-        </button>
+        <Protected permission="students.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => {
+              setDeleteTarget('all');
+              setShowDeleteModal(true);
+            }}
+          >
+            {t('students.delete')}
+          </button>
+        </Protected>
       </div>
 
       {/* Table */}
@@ -615,18 +618,22 @@ const Students = () => {
                     <button className="user-view-btn" onClick={() => openViewModal(item)}>
                       <i className="fa-solid fa-eye"></i>
                     </button>
-                    <button className="user-edit-btn" onClick={() => openEditModal(item)}>
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
-                    <button
-                      className="user-delete-btn"
-                      onClick={() => {
-                        setDeleteTarget(item.id);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <Protected permission="students.edit">
+                      <button className="user-edit-btn" onClick={() => openEditModal(item)}>
+                        <i className="fa-solid fa-pen"></i>
+                      </button>
+                    </Protected>
+                    <Protected permission="students.delete">
+                      <button
+                        className="user-delete-btn"
+                        onClick={() => {
+                          setDeleteTarget(item.id);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </Protected>
                   </td>
                 </tr>
               ))

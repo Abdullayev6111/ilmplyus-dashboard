@@ -7,6 +7,7 @@ import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import type { Payment, PaymentPayload, Branch, Employee, Course, Group } from '../../types';
+import { Protected } from '../../components/Protected';
 
 const Payments = () => {
   const { t, i18n } = useTranslation();
@@ -486,19 +487,23 @@ const Payments = () => {
       )}
 
       <div className="payments-filters">
-        <button className="add-new-payment" onClick={() => setShowAddModal(true)}>
-          {t('payments.addPayment')}
-        </button>
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => {
-            setDeleteTarget('all');
-            setShowDeleteModal(true);
-          }}
-        >
-          {t('payments.delete')}
-        </button>
+        <Protected permission="payments.create">
+          <button className="add-new-payment" onClick={() => setShowAddModal(true)}>
+            {t('payments.addPayment')}
+          </button>
+        </Protected>
+        <Protected permission="payments.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => {
+              setDeleteTarget('all');
+              setShowDeleteModal(true);
+            }}
+          >
+            {t('payments.delete')}
+          </button>
+        </Protected>
         <select
           className="payment-type-select"
           value={paymentTypeFilter}
@@ -569,18 +574,22 @@ const Payments = () => {
                       : '-'}
                   </td>
                   <td className="actions">
-                    <button className="payment-edit-btn" onClick={() => openEditModal(u)}>
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
-                    <button
-                      className="payment-delete-btn"
-                      onClick={() => {
-                        setDeleteTarget(u.id);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <Protected permission="payments.edit">
+                      <button className="payment-edit-btn" onClick={() => openEditModal(u)}>
+                        <i className="fa-solid fa-pen"></i>
+                      </button>
+                    </Protected>
+                    <Protected permission="payments.delete">
+                      <button
+                        className="payment-delete-btn"
+                        onClick={() => {
+                          setDeleteTarget(u.id);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </Protected>
                   </td>
                 </tr>
               ))

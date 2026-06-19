@@ -12,6 +12,7 @@ import type { Lid } from '@/types/lid.types';
 import type { Course } from '@/types/course.types';
 import type { Group } from '@/types/groups.types';
 import { API } from '@/api/api';
+import { Protected } from '../../components/Protected';
 
 const getStatusType = (status: string) => {
   switch (status) {
@@ -1045,9 +1046,11 @@ const StudentsContract = () => {
             <i className="fa-solid fa-sliders"></i>
             Saralash
           </button>
-          <button className="sc-create-btn" onClick={() => setShowModal(true)}>
-            Shartnoma tuzish
-          </button>
+          <Protected permission="student_contracts.create">
+            <button className="sc-create-btn" onClick={() => setShowModal(true)}>
+              Shartnoma tuzish
+            </button>
+          </Protected>
         </div>
       </div>
 
@@ -1138,20 +1141,24 @@ const StudentsContract = () => {
                           >
                             <i className="fa-solid fa-eye"></i>
                           </button>
-                          <button
-                            className="sc-action-btn edit"
-                            title="Tahrirlash"
-                            onClick={() => handleEdit(item)}
-                          >
-                            <i className="fa-solid fa-pen"></i>
-                          </button>
-                          <button
-                            className="sc-action-btn delete"
-                            title="O‘chirish"
-                            onClick={() => handleDelete(item.id)}
-                          >
-                            <i className="fa-solid fa-trash"></i>
-                          </button>
+                          <Protected permission="student_contracts.edit">
+                            <button
+                              className="sc-action-btn edit"
+                              title="Tahrirlash"
+                              onClick={() => handleEdit(item)}
+                            >
+                              <i className="fa-solid fa-pen"></i>
+                            </button>
+                          </Protected>
+                          <Protected permission="student_contracts.delete">
+                            <button
+                              className="sc-action-btn delete"
+                              title="O’chirish"
+                              onClick={() => handleDelete(item.id)}
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </Protected>
                         </div>
                       </td>
                     </tr>

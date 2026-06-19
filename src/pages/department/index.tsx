@@ -12,6 +12,7 @@ import TableSkeleton from "../../components/TableSkeleton";
 import "../branches/branches.css";
 import type { Branch, DepartmentType, DepartmentPayload } from "../../types";
 import { useEffect, useMemo, useState } from "react";
+import { Protected } from "../../components/Protected";
 
 // --- API FUNCTIONS ---
 const getBranches = async (): Promise<Branch[]> => {
@@ -360,18 +361,22 @@ const Department = () => {
       <h1 className="branch-page-title">{t("departments.listTitle")}</h1>
 
       <div className="branch-filter-panel">
-        <button className="branch-add-btn" onClick={() => handleOpenModal()}>
-          {t("departments.addNewTitle")}
-        </button>
+        <Protected permission="departments.create">
+          <button className="branch-add-btn" onClick={() => handleOpenModal()}>
+            {t("departments.addNewTitle")}
+          </button>
+        </Protected>
 
-        <button
-          className="branch-delete-btn"
-          disabled={!selected.length}
-          onClick={handleDeleteSelected}
-          style={{ opacity: selected.length ? 1 : 0.5, cursor: selected.length ? "pointer" : "not-allowed" }}
-        >
-          {t("departments.deleteSelected")}
-        </button>
+        <Protected permission="departments.delete">
+          <button
+            className="branch-delete-btn"
+            disabled={!selected.length}
+            onClick={handleDeleteSelected}
+            style={{ opacity: selected.length ? 1 : 0.5, cursor: selected.length ? "pointer" : "not-allowed" }}
+          >
+            {t("departments.deleteSelected")}
+          </button>
+        </Protected>
       </div>
 
       <div className="branch-table-container">
@@ -419,20 +424,24 @@ const Department = () => {
                     : t("departments.inactive")}
                 </td>
                 <td className="branch-action-cell">
-                  <button
-                    className="branch-edit-icon"
-                    onClick={() => handleOpenModal(dept)}
-                    aria-label={t("common.edit", "Tahrirlash")}
-                  >
-                    <i className="fa-solid fa-pen"></i>
-                  </button>
-                  <button
-                    className="branch-delete-icon"
-                    onClick={() => handleDelete(dept.id)}
-                    aria-label={t("common.delete", "O‘chirish")}
-                  >
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
+                  <Protected permission="departments.edit">
+                    <button
+                      className="branch-edit-icon"
+                      onClick={() => handleOpenModal(dept)}
+                      aria-label={t("common.edit", "Tahrirlash")}
+                    >
+                      <i className="fa-solid fa-pen"></i>
+                    </button>
+                  </Protected>
+                  <Protected permission="departments.delete">
+                    <button
+                      className="branch-delete-icon"
+                      onClick={() => handleDelete(dept.id)}
+                      aria-label={t("common.delete", "O’chirish")}
+                    >
+                      <i className="fa-solid fa-trash"></i>
+                    </button>
+                  </Protected>
                 </td>
               </tr>
             ))}

@@ -7,6 +7,7 @@ import '../payments/payments.css';
 import './course-prices.css';
 import { useTranslation } from 'react-i18next';
 import type { CoursePrice, CoursePriceListResponse, CoursePricePayload } from '../../types';
+import { Protected } from '../../components/Protected';
 
 function formatDate(iso: string): string {
   if (!iso) return '';
@@ -132,22 +133,26 @@ function TableRow({ row, isSelected, onToggle, onEdit, onDelete }: TableRowProps
       <td>{formatDate(row.created_at)}</td>
       <td>
         <div className="actions">
-          <button
-            type="button"
-            className="user-edit-btn"
-            title={t('coursePrices.editTooltip')}
-            onClick={() => onEdit(row)}
-          >
-            <i className="fa-solid fa-pen" />
-          </button>
-          <button
-            type="button"
-            className="payment-delete-btn"
-            title={t('coursePrices.deleteTooltip')}
-            onClick={() => onDelete(row.id)}
-          >
-            <i className="fa-solid fa-trash" />
-          </button>
+          <Protected permission="course_prices.edit">
+            <button
+              type="button"
+              className="user-edit-btn"
+              title={t('coursePrices.editTooltip')}
+              onClick={() => onEdit(row)}
+            >
+              <i className="fa-solid fa-pen" />
+            </button>
+          </Protected>
+          <Protected permission="course_prices.delete">
+            <button
+              type="button"
+              className="payment-delete-btn"
+              title={t('coursePrices.deleteTooltip')}
+              onClick={() => onDelete(row.id)}
+            >
+              <i className="fa-solid fa-trash" />
+            </button>
+          </Protected>
         </div>
       </td>
     </tr>
@@ -356,24 +361,28 @@ export default function CoursePrices() {
       <h1 className="main-title">{t('coursePrices.mainTitle')}</h1>
 
       <div className="payments-filters">
-        <button
-          type="button"
-          className="add-new-payment"
-          onClick={() => {
-            setEditItem(null);
-            setIsModalOpen(true);
-          }}
-        >
-          {t('coursePrices.add')}
-        </button>
-        <button
-          type="button"
-          className="delete-all"
-          onClick={handleDeleteSelected}
-          disabled={selectedIds.size === 0}
-        >
-          {t('coursePrices.delete')}
-        </button>
+        <Protected permission="course_prices.create">
+          <button
+            type="button"
+            className="add-new-payment"
+            onClick={() => {
+              setEditItem(null);
+              setIsModalOpen(true);
+            }}
+          >
+            {t('coursePrices.add')}
+          </button>
+        </Protected>
+        <Protected permission="course_prices.delete">
+          <button
+            type="button"
+            className="delete-all"
+            onClick={handleDeleteSelected}
+            disabled={selectedIds.size === 0}
+          >
+            {t('coursePrices.delete')}
+          </button>
+        </Protected>
       </div>
 
       {isLoading && (

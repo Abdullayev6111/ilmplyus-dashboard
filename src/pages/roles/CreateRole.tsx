@@ -41,8 +41,8 @@ const CreateRole = () => {
     staleTime: Infinity,
   });
 
-  const groupedModules = useMemo(() => {
-    if (!allPermissions) return [];
+  const { groupedModules, standalonePermissions } = useMemo(() => {
+    if (!allPermissions) return { groupedModules: [], standalonePermissions: [] };
 
     const modulesMap: Record<string, PermissionItem[]> = {};
 
@@ -60,14 +60,22 @@ const CreateRole = () => {
       }
     });
 
-    const validModules = Object.keys(modulesMap).filter((moduleName) =>
-      modulesMap[moduleName].some((p) => p.action === 'view'),
-    );
+    const groupedModules = Object.keys(modulesMap)
+      .filter((moduleName) => modulesMap[moduleName].some((p) => p.action === 'view'))
+      .map((moduleName) => ({ moduleName, availableActions: modulesMap[moduleName] }));
 
-    return validModules.map((moduleName) => ({
-      moduleName,
-      availableActions: modulesMap[moduleName],
-    }));
+    const standalonePermissions = Object.keys(modulesMap)
+      .filter((moduleName) => !modulesMap[moduleName].some((p) => p.action === 'view'))
+      .flatMap((moduleName) =>
+        modulesMap[moduleName].map((p) => ({
+          id: p.id,
+          action: p.action,
+          moduleName,
+          fullName: `${moduleName}.${p.action}`,
+        })),
+      );
+
+    return { groupedModules, standalonePermissions };
   }, [allPermissions]);
 
   const createRoleMutation = useMutation({
@@ -164,15 +172,42 @@ const CreateRole = () => {
         </button>
       </div>
 
-      <div className="create-role-name-section">
-        <label className="create-role-name-label">{t('roles.roleName', 'Rol nomi')}</label>
-        <input
-          type="text"
-          className="create-role-name-input"
-          placeholder={t('roles.rolePlaceholder', 'Nomini kiriting')}
-          value={roleName}
-          onChange={(e) => setRoleName(e.target.value)}
-        />
+      <div className="create-role-top-row">
+        <div className="create-role-name-section">
+          <label className="create-role-name-label">{t('roles.roleName', 'Rol nomi')}</label>
+          <input
+            type="text"
+            className="create-role-name-input"
+            placeholder={t('roles.rolePlaceholder', 'Nomini kiriting')}
+            value={roleName}
+            onChange={(e) => setRoleName(e.target.value)}
+          />
+        </div>
+
+        {standalonePermissions.map((perm) => {
+          const isChecked = (permissionsState[perm.moduleName] || []).some((a) => a.id === perm.id);
+          return (
+            <div key={perm.id} className="permission-card permission-card-standalone-header">
+              <label className="permission-checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={(e) => {
+                    const current = permissionsState[perm.moduleName] || [];
+                    if (e.target.checked) {
+                      handleActionChange(perm.moduleName, [...current, { id: perm.id, action: perm.action }]);
+                    } else {
+                      handleActionChange(perm.moduleName, current.filter((a) => a.id !== perm.id));
+                    }
+                  }}
+                />
+                <span className="permission-standalone-name">
+                  {t(`roles.standalonePermissions.${perm.moduleName}_${perm.action}`, perm.fullName)}
+                </span>
+              </label>
+            </div>
+          );
+        })}
       </div>
 
       <div className="permission-grid">

@@ -108,8 +108,11 @@ const LoginPage = () => {
 
         const roles = (meData.user?.roles || meData.roles) ?? [];
         const isAdmin = roles.some((r) => r.name === "admin");
+        const hasAdminAccess = roles.some((r) =>
+          r.permissions?.some((p) => p.name === "admin.access")
+        );
 
-        if (!isAdmin) {
+        if (!isAdmin && !hasAdminAccess) {
           window.location.href = "https://test.easypos.uz";
           return;
         }

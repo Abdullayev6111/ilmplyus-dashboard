@@ -8,6 +8,7 @@ import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import { useTableSettingsStore } from "../../store/useTableSettingsStore";
+import { Protected } from "../../components/Protected";
 
 interface Branch {
   id: number;
@@ -281,20 +282,24 @@ const Rooms = () => {
       )}
 
       <div className="users-filters">
-        <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-          {t("rooms.addBtn")}
-        </button>
+        <Protected permission="rooms.create">
+          <button className="add-new-user" onClick={() => setShowAddModal(true)}>
+            {t("rooms.addBtn")}
+          </button>
+        </Protected>
 
-        <button
-          className="delete-all"
-          disabled={!selected.length}
-          onClick={() => {
-            setDeleteTarget("all");
-            setShowDeleteModal(true);
-          }}
-        >
-          {t("rooms.delete")}
-        </button>
+        <Protected permission="rooms.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => {
+              setDeleteTarget("all");
+              setShowDeleteModal(true);
+            }}
+          >
+            {t("rooms.delete")}
+          </button>
+        </Protected>
       </div>
 
       <div className="users-table-wrapper">
@@ -341,22 +346,26 @@ const Rooms = () => {
                   {isVisible("capacity") && <td>{item.capacity}</td>}
 
                   <td className="actions">
-                    <button
-                      className="user-edit-btn"
-                      onClick={() => openEditModal(item)}
-                    >
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
+                    <Protected permission="rooms.edit">
+                      <button
+                        className="user-edit-btn"
+                        onClick={() => openEditModal(item)}
+                      >
+                        <i className="fa-solid fa-pen"></i>
+                      </button>
+                    </Protected>
 
-                    <button
-                      className="user-delete-btn"
-                      onClick={() => {
-                        setDeleteTarget(item.id);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <Protected permission="rooms.delete">
+                      <button
+                        className="user-delete-btn"
+                        onClick={() => {
+                          setDeleteTarget(item.id);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </Protected>
                   </td>
                 </tr>
               ))

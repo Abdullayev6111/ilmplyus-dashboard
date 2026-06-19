@@ -8,6 +8,7 @@ import { getLocalized } from '../../utils/getLocalized';
 import ContractDetail from './ContractDetail';
 import ContractsCreate from './ContractsCreate';
 import type { Contract } from '../../types';
+import { Protected } from '../../components/Protected';
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return '-';
@@ -152,28 +153,32 @@ function TableRow({
           >
             <i className="fa-regular fa-eye" />
           </button>
-          <button
-            type="button"
-            style={{
-              color: '#1a73e8',
-              border: 'none',
-              background: 'transparent',
-              cursor: 'pointer',
-              fontSize: 18,
-            }}
-            title={t('contracts.editTooltip')}
-            onClick={() => onEdit(row)}
-          >
-            <i className="fa-regular fa-pen-to-square" />
-          </button>
-          <button
-            type="button"
-            className="payment-delete-btn"
-            title={t('contracts.deleteTooltip')}
-            onClick={() => onDelete(row)}
-          >
-            <i className="fa-regular fa-trash-can" />
-          </button>
+          <Protected permission="employee_contracts.edit">
+            <button
+              type="button"
+              style={{
+                color: '#1a73e8',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                fontSize: 18,
+              }}
+              title={t('contracts.editTooltip')}
+              onClick={() => onEdit(row)}
+            >
+              <i className="fa-regular fa-pen-to-square" />
+            </button>
+          </Protected>
+          <Protected permission="employee_contracts.delete">
+            <button
+              type="button"
+              className="payment-delete-btn"
+              title={t('contracts.deleteTooltip')}
+              onClick={() => onDelete(row)}
+            >
+              <i className="fa-regular fa-trash-can" />
+            </button>
+          </Protected>
           {isActive && (
             <button
               type="button"
@@ -415,17 +420,21 @@ export default function Contracts() {
       <h1 className="main-title">{t('contracts.mainTitle')}</h1>
 
       <div className="payments-filters">
-        <button type="button" className="add-new-payment" onClick={() => setIsCreating(true)}>
-          {t('contracts.add')}
-        </button>
-        <button
-          type="button"
-          className="delete-all"
-          onClick={handleDeleteSelected}
-          disabled={selectedIds.size === 0}
-        >
-          {t('contracts.delete')}
-        </button>
+        <Protected permission="employee_contracts.create">
+          <button type="button" className="add-new-payment" onClick={() => setIsCreating(true)}>
+            {t('contracts.add')}
+          </button>
+        </Protected>
+        <Protected permission="employee_contracts.delete">
+          <button
+            type="button"
+            className="delete-all"
+            onClick={handleDeleteSelected}
+            disabled={selectedIds.size === 0}
+          >
+            {t('contracts.delete')}
+          </button>
+        </Protected>
       </div>
 
       {isLoading && (

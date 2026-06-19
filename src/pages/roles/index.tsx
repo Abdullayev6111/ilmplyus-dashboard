@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import type { Role } from '../../types/common.types';
+import { Protected } from '../../components/Protected';
 
 const Roles = () => {
   const { t } = useTranslation();
@@ -54,18 +55,22 @@ const Roles = () => {
 
       <div className="role-header-actions">
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button className="role-add-btn" onClick={() => navigate('/roles/create')}>
-            {t('roles.add')}
-          </button>
+          <Protected permission="roles.create">
+            <button className="role-add-btn" onClick={() => navigate('/roles/create')}>
+              {t('roles.add')}
+            </button>
+          </Protected>
 
-          <button
-            className="delete-all"
-            disabled={!selected.length}
-            onClick={handleBatchDelete}
-            style={{ width: 'auto', padding: '0 15px', borderRadius: '10px' }}
-          >
-            {t('roles.delete')}
-          </button>
+          <Protected permission="roles.delete">
+            <button
+              className="delete-all"
+              disabled={!selected.length}
+              onClick={handleBatchDelete}
+              style={{ width: 'auto', padding: '0 15px', borderRadius: '10px' }}
+            >
+              {t('roles.delete')}
+            </button>
+          </Protected>
         </div>
       </div>
 
@@ -105,24 +110,28 @@ const Roles = () => {
                     <td>{role.id}</td>
                     <td>{role.name}</td>
                     <td className="role-action-cell">
-                      <button
-                        className="role-edit-icon"
-                        onClick={() => navigate(`/roles/${role.id}/permissions`)}
-                        title={t('roles.edit', 'Tahrirlash')}
-                      >
-                        <i className="fa-solid fa-pen"></i>
-                      </button>
-                      <button
-                        className="role-delete-icon"
-                        onClick={() => {
-                          if (window.confirm(t('roles.confirmDelete'))) {
-                            deleteRoleMutation.mutate(role.id);
-                          }
-                        }}
-                        title={t('roles.delete')}
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
+                      <Protected permission="roles.edit">
+                        <button
+                          className="role-edit-icon"
+                          onClick={() => navigate(`/roles/${role.id}/permissions`)}
+                          title={t('roles.edit', 'Tahrirlash')}
+                        >
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+                      </Protected>
+                      <Protected permission="roles.delete">
+                        <button
+                          className="role-delete-icon"
+                          onClick={() => {
+                            if (window.confirm(t('roles.confirmDelete'))) {
+                              deleteRoleMutation.mutate(role.id);
+                            }
+                          }}
+                          title={t('roles.delete')}
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </Protected>
                       <button
                         className="role-permission-icon"
                         onClick={() => navigate(`/roles/${role.id}/permissions`)}
