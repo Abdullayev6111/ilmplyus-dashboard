@@ -37,6 +37,8 @@ import testIcon from '../assets/images/clipboard-check-solid-full.svg';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
+import { useQuery } from '@tanstack/react-query';
+import { fetchDashboardSettings } from '../pages/dashboard/dashboard.service';
 
 const pathMatches = (path: string, current: string) => {
   if (path === '/') return current === '/';
@@ -52,11 +54,27 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
     (r) => r.name.toLowerCase() === 'admin' || r.name.toLowerCase() === 'superadmin',
   );
 
+  const { data: dashboardSettings } = useQuery({
+    queryKey: ['dashboard-settings'],
+    queryFn: fetchDashboardSettings,
+    staleTime: 5 * 60 * 1000,
+    enabled: !!user && !isAdmin,
+  });
+
   const hasPermission = (permission?: string) => {
     if (!permission) return true;
     if (isAdmin) return true;
     if (!user?.roles) return false;
-    return user.roles.some((role) => role.permissions?.some((p) => p.name === permission));
+
+    const hasBackendPerm = user.roles.some((role) =>
+      role.permissions?.some((p) => p.name === permission),
+    );
+    if (hasBackendPerm) return true;
+
+    const roleName = user.roles[0]?.name;
+    if (!roleName || !dashboardSettings) return false;
+    const virtualPerms = dashboardSettings.pagePermissions?.[roleName] ?? [];
+    return virtualPerms.includes(permission);
   };
 
   const groups: NavGroup[] = [
@@ -125,7 +143,7 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
           permission: 'lesson_schedule.view',
         },
         { label: t('aside.demoLesson'), path: '/demo-lesson', permission: 'demo_lessons.view' },
-        { label: t('aside.groups'), path: '/groups', permission: 'groups.view' },
+        { label: t('aside.groups'), path: '/groups', permission: 'lesson_schedules.view' },
         { label: t('aside.archive'), path: '/courses/archive', permission: 'courses.view' },
       ],
     },

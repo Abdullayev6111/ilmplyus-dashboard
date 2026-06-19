@@ -27,6 +27,9 @@ const RolePermissions = () => {
   const [visibleTabs, setVisibleTabs] = useState<MainTab[]>([...ALL_TABS]);
   const [tabsInitialized, setTabsInitialized] = useState(false);
 
+  const [pagePermissions, setPagePermissions] = useState<string[]>([]);
+  const [pagePermsInitialized, setPagePermsInitialized] = useState(false);
+
   // Fetch all available permissions from the backend
   const { data: allPermissions, isLoading: isLoadingAll } = useQuery<any[]>({
     queryKey: ['permissions-all'],
@@ -64,6 +67,17 @@ const RolePermissions = () => {
       setTabsInitialized(true);
     }
   }, [roleData, dashboardSettings, tabsInitialized]);
+
+  // Initialize page permissions from saved settings
+  useEffect(() => {
+    if (roleData && dashboardSettings && !pagePermsInitialized) {
+      if (roleData.name !== 'admin') {
+        const stored = dashboardSettings.pagePermissions?.[roleData.name] ?? [];
+        setPagePermissions([...stored]);
+      }
+      setPagePermsInitialized(true);
+    }
+  }, [roleData, dashboardSettings, pagePermsInitialized]);
 
   // Initialize state based on role's existing permissions
   useEffect(() => {
@@ -137,10 +151,11 @@ const RolePermissions = () => {
   });
 
   const saveDashMutation = useMutation({
-    mutationFn: async (newVis: Record<string, string[]>) => {
+    mutationFn: async (settings: { roleVisibility: Record<string, string[]>; pagePermissions: Record<string, string[]> }) => {
       await saveDashboardSettings({
         tabNames: dashboardSettings?.tabNames ?? {},
-        roleVisibility: newVis,
+        roleVisibility: settings.roleVisibility,
+        pagePermissions: settings.pagePermissions,
       });
     },
   });
@@ -164,7 +179,11 @@ const RolePermissions = () => {
         ...(dashboardSettings?.roleVisibility ?? {}),
         [roleData.name]: visibleTabs,
       };
-      await saveDashMutation.mutateAsync(newVis);
+      const newPagePerms: Record<string, string[]> = {
+        ...(dashboardSettings?.pagePermissions ?? {}),
+        [roleData.name]: pagePermissions,
+      };
+      await saveDashMutation.mutateAsync({ roleVisibility: newVis, pagePermissions: newPagePerms });
     }
 
     navigate('/roles');
@@ -253,6 +272,33 @@ const RolePermissions = () => {
             onChange={(selected) => handleActionChange(moduleName, selected)}
           />
         ))}
+
+        {/* Sahifa ruxsatlari (virtual) card */}
+        <div className="permission-card">
+          <h3 className="permission-card-title">
+            {t('roles.pagePermissions', 'Sahifa ruxsatlari')}
+          </h3>
+          <div className="permission-checkboxes">
+            <label className="permission-checkbox-label">
+              {roleData?.name === 'admin' ? (
+                <input type="checkbox" checked disabled />
+              ) : (
+                <input
+                  type="checkbox"
+                  checked={pagePermissions.includes('lesson_schedules.view')}
+                  onChange={() =>
+                    setPagePermissions((prev) =>
+                      prev.includes('lesson_schedules.view')
+                        ? prev.filter((p) => p !== 'lesson_schedules.view')
+                        : [...prev, 'lesson_schedules.view'],
+                    )
+                  }
+                />
+              )}
+              {t('roles.pageGroups', 'Guruhlar sahifasi')}
+            </label>
+          </div>
+        </div>
 
         {/* Dashboard bo'limlari visibility card */}
         <div className="permission-card">

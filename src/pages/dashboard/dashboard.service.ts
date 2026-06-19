@@ -9,6 +9,7 @@ import type { Expense, ExpenseListResponse } from "@/types/expense.types";
 export interface DashboardSettings {
   tabNames: Record<string, string>;
   roleVisibility: Record<string, string[]>;
+  pagePermissions: Record<string, string[]>;
 }
 
 export async function fetchDashboardSettings(): Promise<DashboardSettings> {
@@ -16,6 +17,7 @@ export async function fetchDashboardSettings(): Promise<DashboardSettings> {
   return {
     tabNames: data.tabNames ?? {},
     roleVisibility: data.roleVisibility ?? {},
+    pagePermissions: data.pagePermissions ?? {},
   };
 }
 

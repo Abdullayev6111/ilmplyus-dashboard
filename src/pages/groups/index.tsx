@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Navigate } from 'react-router-dom';
 import { API } from '../../api/api';
 import '../users/users.css';
 import './groups.css';
@@ -11,6 +12,8 @@ import type { Group, GroupPayload, GroupsApiResponse, Room, ScheduleTeacher } fr
 import type { Branch } from '../../types/common.types';
 import type { Course } from '../../types/course.types';
 import { Protected } from '../../components/Protected';
+import useAuthStore from '../../store/useAuthStore';
+import { fetchDashboardSettings } from '../dashboard/dashboard.service';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
 
@@ -145,6 +148,26 @@ const emptyForm = (): GroupFormData => ({
 const Groups = () => {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
+
+  const isAdmin = user?.roles?.some(
+    (r) => r.name.toLowerCase() === 'admin' || r.name.toLowerCase() === 'superadmin',
+  );
+
+  const { data: dashboardSettings, isLoading: isLoadingSettings } = useQuery({
+    queryKey: ['dashboard-settings'],
+    queryFn: fetchDashboardSettings,
+    staleTime: 5 * 60 * 1000,
+    enabled: !isAdmin,
+  });
+
+  if (!isAdmin && !isLoadingSettings) {
+    const roleName = user?.roles?.[0]?.name;
+    const virtualPerms = roleName ? (dashboardSettings?.pagePermissions?.[roleName] ?? []) : [];
+    if (!virtualPerms.includes('lesson_schedules.view')) {
+      return <Navigate to="/" replace />;
+    }
+  }
 
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
