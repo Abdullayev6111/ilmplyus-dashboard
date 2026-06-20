@@ -1783,7 +1783,8 @@
     "employees": "Employees",
     "tests": "Tests",
     "lessons": "Lessons",
-    "permissions": "Permissions"
+    "permissions": "Permissions",
+    "lessons_schedules": "Lesson Schedules"
   }
 ,
   "studentsContract": {

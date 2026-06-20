@@ -27,8 +27,6 @@ const RolePermissions = () => {
   const [visibleTabs, setVisibleTabs] = useState<MainTab[]>([...ALL_TABS]);
   const [tabsInitialized, setTabsInitialized] = useState(false);
 
-  const [pagePermissions, setPagePermissions] = useState<string[]>([]);
-  const [pagePermsInitialized, setPagePermsInitialized] = useState(false);
 
   // Fetch all available permissions from the backend
   const { data: allPermissions, isLoading: isLoadingAll } = useQuery<any[]>({
@@ -67,17 +65,6 @@ const RolePermissions = () => {
       setTabsInitialized(true);
     }
   }, [roleData, dashboardSettings, tabsInitialized]);
-
-  // Initialize page permissions from saved settings
-  useEffect(() => {
-    if (roleData && dashboardSettings && !pagePermsInitialized) {
-      if (roleData.name !== 'admin') {
-        const stored = dashboardSettings.pagePermissions?.[roleData.name] ?? [];
-        setPagePermissions([...stored]);
-      }
-      setPagePermsInitialized(true);
-    }
-  }, [roleData, dashboardSettings, pagePermsInitialized]);
 
   // Initialize state based on role's existing permissions
   useEffect(() => {
@@ -182,11 +169,10 @@ const RolePermissions = () => {
         ...(dashboardSettings?.roleVisibility ?? {}),
         [roleData.name]: visibleTabs,
       };
-      const newPagePerms: Record<string, string[]> = {
-        ...(dashboardSettings?.pagePermissions ?? {}),
-        [roleData.name]: pagePermissions,
-      };
-      await saveDashMutation.mutateAsync({ roleVisibility: newVis, pagePermissions: newPagePerms });
+      await saveDashMutation.mutateAsync({
+        roleVisibility: newVis,
+        pagePermissions: dashboardSettings?.pagePermissions ?? {},
+      });
     }
 
     navigate('/roles');
@@ -279,43 +265,17 @@ const RolePermissions = () => {
           <PermissionCard
             key={moduleName}
             moduleName={moduleName}
-            availableActions={availableActions}
+            availableActions={
+              moduleName === 'lessons_schedules'
+                ? availableActions.filter((a) => a.action === 'view')
+                : availableActions
+            }
             selectedActions={permissionsState[moduleName] || []}
             onChange={(selected) => handleActionChange(moduleName, selected)}
           />
         ))}
 
-        {/* Sahifa ruxsatlari (virtual) card */}
-        <div className="permission-card">
-          <h3 className="permission-card-title">
-            {t('roles.pagePermissions', 'Sahifa ruxsatlari')}
-          </h3>
-          <div className="permission-checkboxes">
-            <p style={{ margin: '0 0 6px 0', fontWeight: 600, fontSize: '14px' }}>
-              {t('roles.pageLessonSchedule', 'Dars jadvali')}
-            </p>
-            <label className="permission-checkbox-label">
-              {roleData?.name === 'admin' ? (
-                <input type="checkbox" checked disabled />
-              ) : (
-                <input
-                  type="checkbox"
-                  checked={pagePermissions.includes('lesson_schedules.view')}
-                  onChange={() =>
-                    setPagePermissions((prev) =>
-                      prev.includes('lesson_schedules.view')
-                        ? prev.filter((p) => p !== 'lesson_schedules.view')
-                        : [...prev, 'lesson_schedules.view'],
-                    )
-                  }
-                />
-              )}
-              {t('roles.view', 'Ko‘rish')}
-            </label>
-          </div>
-        </div>
-
-        {/* Dashboard bo'limlari visibility card */}
+        {/* Dashboard bo’limlari visibility card */}
         <div className="permission-card">
           <h3 className="permission-card-title">
             {t('roles.dashboardSections', 'Dashboard bo‘limlari')}

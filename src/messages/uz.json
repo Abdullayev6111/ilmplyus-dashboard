@@ -1776,7 +1776,8 @@
     "employees": "Xodimlar",
     "tests": "Testlar",
     "lessons": "Darslar",
-    "permissions": "Ruxsatlar"
+    "permissions": "Ruxsatlar",
+    "lessons_schedules": "Dars jadvali"
   },
   "studentsContract": {
     "loading": "Yuklanmoqda...",

@@ -13,7 +13,6 @@ import type { Branch } from '../../types/common.types';
 import type { Course } from '../../types/course.types';
 import { Protected } from '../../components/Protected';
 import useAuthStore from '../../store/useAuthStore';
-import { fetchDashboardSettings } from '../dashboard/dashboard.service';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
 
@@ -154,17 +153,11 @@ const Groups = () => {
     (r) => r.name.toLowerCase() === 'admin' || r.name.toLowerCase() === 'superadmin',
   );
 
-  const { data: dashboardSettings, isLoading: isLoadingSettings } = useQuery({
-    queryKey: ['dashboard-settings'],
-    queryFn: fetchDashboardSettings,
-    staleTime: 5 * 60 * 1000,
-    enabled: !isAdmin,
-  });
-
-  if (!isAdmin && !isLoadingSettings) {
-    const roleName = user?.roles?.[0]?.name;
-    const virtualPerms = roleName ? (dashboardSettings?.pagePermissions?.[roleName] ?? []) : [];
-    if (!virtualPerms.includes('lesson_schedules.view')) {
+  if (!isAdmin) {
+    const hasBackendPerm = user?.roles?.some((role) =>
+      role.permissions?.some((p: any) => p.name === 'lessons_schedules.view'),
+    );
+    if (!hasBackendPerm) {
       return <Navigate to="/" replace />;
     }
   }
