@@ -19,7 +19,6 @@ import './registration.css';
 type PageSize = 5 | 10 | 20 | 50;
 const PAGE_SIZE_OPTIONS: PageSize[] = [5, 10, 20, 50];
 
-
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
   const hours = String(d.getHours()).padStart(2, '0');
@@ -163,9 +162,7 @@ const Registration = () => {
   const filteredData = useMemo(() => {
     const allLids: Lid[] = data ?? [];
     const filtered = applyClientFilters(allLids, search, filters, lang);
-    return [...filtered].sort((a, b) =>
-      idSortOrder === 'asc' ? a.id - b.id : b.id - a.id,
-    );
+    return [...filtered].sort((a, b) => (idSortOrder === 'asc' ? a.id - b.id : b.id - a.id));
   }, [data, search, filters, lang, idSortOrder]);
 
   const totalPages = Math.ceil(total / pageSize);
@@ -216,7 +213,7 @@ const Registration = () => {
             <div
               className="registration-top__search"
               role="search"
-              aria-label="O'quvchilarni qidirish"
+              aria-label="O‘quvchilarni qidirish"
             >
               <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
               <input
@@ -257,7 +254,7 @@ const Registration = () => {
           <div
             className="db-table-wrapper"
             role="region"
-            aria-label="Yangi o'quvchilar jadvali"
+            aria-label="Yangi ‘quvchilar jadvali"
             tabIndex={0}
           >
             <table className="db-table">
@@ -369,7 +366,7 @@ const Registration = () => {
                               <button
                                 type="button"
                                 className="db-action-btn db-action-btn--danger"
-                                aria-label={`${fish}ni o'chirish`}
+                                aria-label={`${fish}ni o‘chirish`}
                                 onClick={() => handleOpenDelete(student.id)}
                                 disabled={deleteMutation.isPending}
                               >

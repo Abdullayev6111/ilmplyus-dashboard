@@ -83,7 +83,7 @@ function statusLabel(status: string) {
     case 'FAILED':
       return { label: 'Bekor qilindi', cls: 'status-failed' };
     case 'NO ANSWER':
-      return { label: "Javob yo'q", cls: 'status-noanswer' };
+      return { label: 'Javob yo‘q', cls: 'status-noanswer' };
     default:
       return { label: status, cls: '' };
   }
@@ -319,7 +319,11 @@ const CallModal: React.FC<CallModalProps> = ({
         <div className="ipt-unified-modal">
           {/* Header Buttons (Telegram Style) */}
           <div className="ipt-tg-header">
-            <button onClick={() => setMinimized(true)} className="ipt-tg-btn" title={t('ipTelephone.minimize')}>
+            <button
+              onClick={() => setMinimized(true)}
+              className="ipt-tg-btn"
+              title={t('ipTelephone.minimize')}
+            >
               <i className="fas fa-minus" />
             </button>
             <button className="ipt-tg-btn" title={t('ipTelephone.maximize')}>
@@ -372,7 +376,9 @@ const CallModal: React.FC<CallModalProps> = ({
                 }}
               />
               <div className="ipt-dial-input-area">
-                <span className="ipt-dial-display">{number || t('ipTelephone.dialpadPlaceholder')}</span>
+                <span className="ipt-dial-display">
+                  {number || t('ipTelephone.dialpadPlaceholder')}
+                </span>
                 <button
                   onClick={backspace}
                   disabled={!number}
@@ -492,7 +498,9 @@ const CallModal: React.FC<CallModalProps> = ({
                     onClick={() => setTransferMode(mode)}
                     className={`ipt-mode-btn ${active ? 'active' : ''}`}
                   >
-                    {mode === 'direct' ? t('ipTelephone.transferDirect') : t('ipTelephone.transferHold')}
+                    {mode === 'direct'
+                      ? t('ipTelephone.transferDirect')
+                      : t('ipTelephone.transferHold')}
                   </button>
                 );
               })}
@@ -694,7 +702,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ filename }) => {
   );
 };
 
-
 const isOperatorNumber = (num: string) => {
   if (!num) return false;
   return num === '552051515' || (num.length === 4 && Number(num) >= 1000);
@@ -731,13 +738,16 @@ const IPTelephone: React.FC = () => {
   const remoteAudioRef = useRef<HTMLAudioElement>(null);
   const location = useLocation();
 
-  const FILTERS = useMemo(() => [
-    { key: 'all', label: t('ipTelephone.filterAll') },
-    { key: 'in', label: t('ipTelephone.filterIn') },
-    { key: 'out', label: t('ipTelephone.filterOut') },
-    { key: 'missed', label: t('ipTelephone.filterMissed') },
-    { key: 'rejected', label: t('ipTelephone.filterRejected') },
-  ], [t]);
+  const FILTERS = useMemo(
+    () => [
+      { key: 'all', label: t('ipTelephone.filterAll') },
+      { key: 'in', label: t('ipTelephone.filterIn') },
+      { key: 'out', label: t('ipTelephone.filterOut') },
+      { key: 'missed', label: t('ipTelephone.filterMissed') },
+      { key: 'rejected', label: t('ipTelephone.filterRejected') },
+    ],
+    [t],
+  );
 
   const {
     callState,
@@ -814,7 +824,13 @@ const IPTelephone: React.FC = () => {
     const load = async () => {
       setLoading(true);
 
-      const emptyHistory: HistoryResponse = { data: [], page: 0, limit: 0, total: 0, totalPages: 0 };
+      const emptyHistory: HistoryResponse = {
+        data: [],
+        page: 0,
+        limit: 0,
+        total: 0,
+        totalPages: 0,
+      };
 
       const [json, ops, lidMap] = await Promise.all([
         fetch(`${BASE_URL}/api/v1/history?limit=${limit * 3}`)
@@ -822,7 +838,9 @@ const IPTelephone: React.FC = () => {
           .catch(() => emptyHistory),
 
         API.get('/ip-telefon-operators')
-          .then((r) => (Array.isArray(r.data) ? r.data : (r.data?.data ?? [])) as IpTelefonOperator[])
+          .then(
+            (r) => (Array.isArray(r.data) ? r.data : (r.data?.data ?? [])) as IpTelefonOperator[],
+          )
           .catch(() => [] as IpTelefonOperator[]),
 
         fetchLids({ page: 1, per_page: 1000 })
@@ -1052,7 +1070,9 @@ const IPTelephone: React.FC = () => {
                   onClick={() => setShowFilterMenu((v) => !v)}
                 >
                   <i className="fas fa-sliders-h" /> {t('ipTelephone.filterBtn')}
-                  {(operatorFilter || branchFilter || dateFrom || dateTo) && <span className="ipt-filter-dot" />}
+                  {(operatorFilter || branchFilter || dateFrom || dateTo) && (
+                    <span className="ipt-filter-dot" />
+                  )}
                 </button>
                 {showFilterMenu && (
                   <div className="ipt-filter-menu">
@@ -1164,7 +1184,9 @@ const IPTelephone: React.FC = () => {
                         <div className="ipt-actions-cell">
                           <button
                             className={`ipt-row-call-btn${isCalling ? ' calling' : ''}`}
-                            title={isCalling ? t('ipTelephone.callActive') : t('ipTelephone.callAction')}
+                            title={
+                              isCalling ? t('ipTelephone.callActive') : t('ipTelephone.callAction')
+                            }
                             disabled={isCallActive && !isCalling}
                             onClick={() => handleCallClick(client)}
                           >
@@ -1187,7 +1209,9 @@ const IPTelephone: React.FC = () => {
 
           <div className="ipt-footer">
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <span className="ipt-total-info">{t('ipTelephone.totalCalls', { count: total })}</span>
+              <span className="ipt-total-info">
+                {t('ipTelephone.totalCalls', { count: total })}
+              </span>
               <div
                 style={{
                   display: 'flex',

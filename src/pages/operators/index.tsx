@@ -1,20 +1,15 @@
-import { useState, useMemo } from "react";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  keepPreviousData,
-} from "@tanstack/react-query";
-import { API } from "../../api/api";
-import "../users/users.css";
-import "./operators.css";
-import { useTranslation } from "react-i18next";
-import { getLocalized } from "../../utils/getLocalized";
-import TableSkeleton from "../../components/TableSkeleton";
-import EmptyState from "../../components/EmptyState";
-import { useTableSettingsStore } from "../../store/useTableSettingsStore";
-import type { Branch, UsersResponse } from "../../types";
-import { Protected } from "../../components/Protected";
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { API } from '../../api/api';
+import '../users/users.css';
+import './operators.css';
+import { useTranslation } from 'react-i18next';
+import { getLocalized } from '../../utils/getLocalized';
+import TableSkeleton from '../../components/TableSkeleton';
+import EmptyState from '../../components/EmptyState';
+import { useTableSettingsStore } from '../../store/useTableSettingsStore';
+import type { Branch, UsersResponse } from '../../types';
+import { Protected } from '../../components/Protected';
 
 export interface IpTelefonOperator {
   id: number;
@@ -61,20 +56,18 @@ const Operators = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [sortAsc, setSortAsc] = useState(true);
-  const [editingItem, setEditingItem] = useState<IpTelefonOperator | null>(
-    null,
-  );
+  const [editingItem, setEditingItem] = useState<IpTelefonOperator | null>(null);
   const [viewItem, setViewItem] = useState<IpTelefonOperator | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
-    branch_id: "",
-    employee_id: "",
-    login: "",
-    password: "",
+    branch_id: '',
+    employee_id: '',
+    login: '',
+    password: '',
   });
 
   const { settings } = useTableSettingsStore();
@@ -82,20 +75,18 @@ const Operators = () => {
   const isVisible = (colId: string) => operatorSettings[colId] ?? true;
 
   const { data: operators, isLoading } = useQuery<IpTelefonOperator[]>({
-    queryKey: ["ip-telefon-operators"],
+    queryKey: ['ip-telefon-operators'],
     queryFn: async () => {
-      const { data } = await API.get<IpTelefonOperator[]>(
-        "/ip-telefon-operators",
-      );
+      const { data } = await API.get<IpTelefonOperator[]>('/ip-telefon-operators');
       return Array.isArray(data) ? data : (data as any)?.data || [];
     },
     placeholderData: keepPreviousData,
   });
 
   const { data: branchesData } = useQuery<Branch[]>({
-    queryKey: ["branches"],
+    queryKey: ['branches'],
     queryFn: async () => {
-      const { data } = await API.get("/branches");
+      const { data } = await API.get('/branches');
       return Array.isArray(data) ? data : (data as any)?.data || [];
     },
     staleTime: 1000 * 60 * 30,
@@ -103,18 +94,18 @@ const Operators = () => {
   });
 
   const { data: usersData } = useQuery<UsersResponse>({
-    queryKey: ["users"],
+    queryKey: ['users'],
     queryFn: async () => {
-      const { data } = await API.get("/users");
+      const { data } = await API.get('/users');
       return data;
     },
     placeholderData: keepPreviousData,
   });
 
   const { data: employeesData } = useQuery<any[]>({
-    queryKey: ["employees"],
+    queryKey: ['employees'],
     queryFn: async () => {
-      const { data } = await API.get("/employees");
+      const { data } = await API.get('/employees');
       return Array.isArray(data) ? data : (data as any)?.data || [];
     },
     staleTime: 1000 * 60 * 30,
@@ -123,20 +114,18 @@ const Operators = () => {
 
   const createMutation = useMutation({
     mutationFn: async (payload: IpTelefonOperatorPayload) =>
-      API.post("/ip-telefon-operators", payload),
+      API.post('/ip-telefon-operators', payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ip-telefon-operators"] });
+      queryClient.invalidateQueries({ queryKey: ['ip-telefon-operators'] });
       resetForm();
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (params: {
-      id: number;
-      payload: IpTelefonOperatorPayload;
-    }) => API.put(`/ip-telefon-operators/${params.id}`, params.payload),
+    mutationFn: async (params: { id: number; payload: IpTelefonOperatorPayload }) =>
+      API.put(`/ip-telefon-operators/${params.id}`, params.payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ip-telefon-operators"] });
+      queryClient.invalidateQueries({ queryKey: ['ip-telefon-operators'] });
       resetForm();
     },
   });
@@ -144,7 +133,7 @@ const Operators = () => {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => API.delete(`/ip-telefon-operators/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ip-telefon-operators"] });
+      queryClient.invalidateQueries({ queryKey: ['ip-telefon-operators'] });
     },
   });
 
@@ -156,15 +145,12 @@ const Operators = () => {
       // Filter by branch
       const isInBranch =
         !formData.branch_id ||
-        (u.branches &&
-          u.branches.some((b) => b.id.toString() === formData.branch_id)) ||
+        (u.branches && u.branches.some((b) => b.id.toString() === formData.branch_id)) ||
         (u.branch && u.branch.id.toString() === formData.branch_id) ||
         u.branch?.toString() === formData.branch_id;
 
       // Filter by role (must be operator)
-      const isOperator = u.roles?.some((r) =>
-        r.name.toLowerCase().includes("operator"),
-      );
+      const isOperator = u.roles?.some((r) => r.name.toLowerCase().includes('operator'));
 
       return isInBranch && isOperator && u.pinfl;
     });
@@ -177,7 +163,7 @@ const Operators = () => {
           id: matchedEmp.id,
           full_name:
             matchedEmp.full_name ||
-            `${matchedEmp.last_name || ""} ${matchedEmp.first_name || ""}`.trim() ||
+            `${matchedEmp.last_name || ''} ${matchedEmp.first_name || ''}`.trim() ||
             user.full_name,
         });
       }
@@ -189,16 +175,16 @@ const Operators = () => {
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-    setFormData({ branch_id: "", employee_id: "", login: "", password: "" });
+    setFormData({ branch_id: '', employee_id: '', login: '', password: '' });
   };
 
   const openEditModal = (item: IpTelefonOperator) => {
     setEditingItem(item);
     setFormData({
-      branch_id: item.branch_id?.toString() || "",
-      employee_id: item.employee_id?.toString() || "",
-      login: item.login?.toString() || "",
-      password: item.password || "",
+      branch_id: item.branch_id?.toString() || '',
+      employee_id: item.employee_id?.toString() || '',
+      login: item.login?.toString() || '',
+      password: item.password || '',
     });
     setShowModal(true);
   };
@@ -220,11 +206,11 @@ const Operators = () => {
   };
 
   const confirmDelete = () => {
-    if (deleteTarget === "all") {
+    if (deleteTarget === 'all') {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
-    if (typeof deleteTarget === "number") {
+    if (typeof deleteTarget === 'number') {
       deleteMutation.mutate(deleteTarget);
       setSelected((prev) => prev.filter((x) => x !== deleteTarget));
     }
@@ -236,49 +222,43 @@ const Operators = () => {
     setSelected(checked ? (operators?.map((c) => c.id) ?? []) : []);
 
   const toggleOne = (id: number) =>
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
     <section className="users container">
-      <h1 className="main-title">{t("aside.operators", "Operatorlar")}</h1>
+      <h1 className="main-title">{t('aside.operators', 'Operatorlar')}</h1>
 
       {/* Add / Edit Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className="expenses-subcategory" style={{ minWidth: 480 }}>
-            <h1>
-              {editingItem
-                ? t("common.edit", "Tahrirlash")
-                : t("users.addNew", "Qo'shish")}
-            </h1>
+            <h1>{editingItem ? t('common.edit', 'Tahrirlash') : t('users.addNew', 'Qo‘shish')}</h1>
 
             <form className="subcategory-form" onSubmit={handleSubmit}>
               <div className="subcategory-form-group">
-                <label>{t("payments.branch", "Filial")}</label>
+                <label>{t('payments.branch', 'Filial')}</label>
                 <select
                   value={formData.branch_id}
                   onChange={(e) => {
                     setFormData({
                       ...formData,
                       branch_id: e.target.value,
-                      employee_id: "",
+                      employee_id: '',
                     });
                   }}
                   required
                 >
-                  <option value="">{t("common.choose", "Tanlang")}</option>
+                  <option value="">{t('common.choose', 'Tanlang')}</option>
                   {branchesData?.map((b) => (
                     <option key={b.id} value={b.id}>
-                      {getLocalized(b, "name", i18n.language)}
+                      {getLocalized(b, 'name', i18n.language)}
                     </option>
                   ))}
                 </select>
               </div>
 
               <div className="subcategory-form-group">
-                <label>{t("aside.operators", "Operator")}</label>
+                <label>{t('aside.operators', 'Operator')}</label>
                 <select
                   value={formData.employee_id}
                   onChange={(e) =>
@@ -290,7 +270,7 @@ const Operators = () => {
                   required
                   disabled={!formData.branch_id}
                 >
-                  <option value="">{t("common.choose", "Tanlang")}</option>
+                  <option value="">{t('common.choose', 'Tanlang')}</option>
                   {availableOperators.map((u) => (
                     <option key={u.id} value={u.id}>
                       {u.full_name}
@@ -298,47 +278,39 @@ const Operators = () => {
                   ))}
                   {editingItem &&
                     editingItem.employee &&
-                    formData.employee_id ===
-                      editingItem.employee_id?.toString() &&
-                    !availableOperators.some(
-                      (u) => u.id === editingItem.employee_id,
-                    ) && (
+                    formData.employee_id === editingItem.employee_id?.toString() &&
+                    !availableOperators.some((u) => u.id === editingItem.employee_id) && (
                       <option value={editingItem.employee_id}>
-                        {editingItem.employee.full_name ||
-                          editingItem.employee.first_name}
+                        {editingItem.employee.full_name || editingItem.employee.first_name}
                       </option>
                     )}
                 </select>
-                {formData.branch_id &&
-                  availableOperators.length === 0 &&
-                  !editingItem && (
-                    <span
-                      style={{
-                        fontSize: 12,
-                        color: "red",
-                        marginTop: 4,
-                        display: "block",
-                      }}
-                    >
-                      Bu filialda operator topilmadi
-                    </span>
-                  )}
+                {formData.branch_id && availableOperators.length === 0 && !editingItem && (
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: 'red',
+                      marginTop: 4,
+                      display: 'block',
+                    }}
+                  >
+                    Bu filialda operator topilmadi
+                  </span>
+                )}
               </div>
 
               <div className="subcategory-form-group">
-                <label>{t("users.loginText", "Login")}</label>
+                <label>{t('users.loginText', 'Login')}</label>
                 <input
                   type="text"
                   value={formData.login}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, login: e.target.value }))
-                  }
+                  onChange={(e) => setFormData((prev) => ({ ...prev, login: e.target.value }))}
                   required
                 />
               </div>
 
               <div className="subcategory-form-group">
-                <label>{t("users.password", "Password")}</label>
+                <label>{t('users.password', 'Password')}</label>
                 <input
                   type="text"
                   value={formData.password}
@@ -356,16 +328,14 @@ const Operators = () => {
                 <button
                   className="primary"
                   type="submit"
-                  disabled={
-                    createMutation.isPending || updateMutation.isPending
-                  }
+                  disabled={createMutation.isPending || updateMutation.isPending}
                 >
                   {createMutation.isPending || updateMutation.isPending
-                    ? t("common.saving", "Saqlanmoqda...")
-                    : t("common.save", "Saqlash")}
+                    ? t('common.saving', 'Saqlanmoqda...')
+                    : t('common.save', 'Saqlash')}
                 </button>
                 <button type="button" className="cancel" onClick={resetForm}>
-                  {t("common.cancel", "Bekor qilish")}
+                  {t('common.cancel', 'Bekor qilish')}
                 </button>
               </div>
             </form>
@@ -377,17 +347,14 @@ const Operators = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t("users.confirmDelete", "O‘chirishni tasdiqlaysizmi?")}</h3>
+            <h3>{t('users.confirmDelete', 'O‘chirishni tasdiqlaysizmi?')}</h3>
             <div className="modal-actions">
               <button className="danger" onClick={confirmDelete}>
-                {t("common.delete", "O'chirish")}
+                {t('common.delete', 'O‘chirish')}
               </button>
 
-              <button
-                className="cancel"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                {t("common.cancel", "Bekor qilish")}
+              <button className="cancel" onClick={() => setShowDeleteModal(false)}>
+                {t('common.cancel', 'Bekor qilish')}
               </button>
             </div>
           </div>
@@ -397,77 +364,66 @@ const Operators = () => {
       {/* View Modal */}
       {viewItem && (
         <div className="modal-overlay">
-          <div
-            className="modal"
-            style={{ width: 600, padding: 32, borderRadius: 8 }}
-          >
+          <div className="modal" style={{ width: 600, padding: 32, borderRadius: 8 }}>
             <h2
               style={{
-                textAlign: "center",
+                textAlign: 'center',
                 marginBottom: 32,
-                color: "#003b73",
+                color: '#003b73',
               }}
             >
-              {t("aside.operators", "Operatorlar")}
+              {t('aside.operators', 'Operatorlar')}
             </h2>
 
-            <div style={{ display: "flex", marginBottom: 24 }}>
+            <div style={{ display: 'flex', marginBottom: 24 }}>
               <div style={{ flex: 1 }}>
-                <p style={{ color: "#888", fontSize: 14, marginBottom: 8 }}>
-                  {t("users.fish", "F.I.SH")}:
+                <p style={{ color: '#888', fontSize: 14, marginBottom: 8 }}>
+                  {t('users.fish', 'F.I.SH')}:
                 </p>
-                <p style={{ color: "#003b73", fontWeight: 500, fontSize: 16 }}>
-                  {viewItem.employee?.full_name ||
-                    viewItem.employee?.first_name ||
-                    "-"}
+                <p style={{ color: '#003b73', fontWeight: 500, fontSize: 16 }}>
+                  {viewItem.employee?.full_name || viewItem.employee?.first_name || '-'}
                 </p>
               </div>
               <div style={{ flex: 1 }}>
-                <p style={{ color: "#888", fontSize: 14, marginBottom: 8 }}>
-                  {t("payments.branch", "Filial")}:
+                <p style={{ color: '#888', fontSize: 14, marginBottom: 8 }}>
+                  {t('payments.branch', 'Filial')}:
                 </p>
-                <p style={{ color: "#003b73", fontWeight: 500, fontSize: 16 }}>
-                  {viewItem.branch
-                    ? getLocalized(viewItem.branch, "name", i18n.language)
-                    : "-"}
+                <p style={{ color: '#003b73', fontWeight: 500, fontSize: 16 }}>
+                  {viewItem.branch ? getLocalized(viewItem.branch, 'name', i18n.language) : '-'}
                 </p>
               </div>
             </div>
 
-            <div style={{ display: "flex", marginBottom: 32 }}>
+            <div style={{ display: 'flex', marginBottom: 32 }}>
               <div style={{ flex: 1 }}>
-                <p style={{ color: "#888", fontSize: 14, marginBottom: 8 }}>
-                  {t("users.loginText", "Login")}:
+                <p style={{ color: '#888', fontSize: 14, marginBottom: 8 }}>
+                  {t('users.loginText', 'Login')}:
                 </p>
-                <p style={{ color: "#003b73", fontWeight: 500, fontSize: 16 }}>
-                  {viewItem.login || "-"}
+                <p style={{ color: '#003b73', fontWeight: 500, fontSize: 16 }}>
+                  {viewItem.login || '-'}
                 </p>
               </div>
               <div style={{ flex: 1 }}>
-                <p style={{ color: "#888", fontSize: 14, marginBottom: 8 }}>
-                  ID:
-                </p>
-                <p style={{ color: "#003b73", fontWeight: 500, fontSize: 16 }}>
-                  #{viewItem.id}
-                </p>
+                <p style={{ color: '#888', fontSize: 14, marginBottom: 8 }}>ID:</p>
+                <p style={{ color: '#003b73', fontWeight: 500, fontSize: 16 }}>#{viewItem.id}</p>
               </div>
             </div>
 
             <button
               onClick={() => setViewItem(null)}
               style={{
-                border: "1px solid #003b73",
-                background: "transparent",
-                color: "#003b73",
-                padding: "8px 32px",
+                border: '1px solid #003b73',
+                background: 'transparent',
+                color: '#003b73',
+                padding: '8px 32px',
                 borderRadius: 4,
-                cursor: "pointer",
+                cursor: 'pointer',
                 fontWeight: 600,
                 fontSize: 14,
-                width: "100%",
+                width: '100%',
               }}
             >
-              {t("common.cancel", "Ortga")}
+              {t('common.cancel', 'Ortga')}
             </button>
           </div>
         </div>
@@ -476,7 +432,7 @@ const Operators = () => {
       <div className="users-filters">
         <Protected permission="operators.create">
           <button className="add-new-user" onClick={() => setShowModal(true)}>
-            {t("users.addNew", "Qo'shish")}
+            {t('users.addNew', 'Q‘shish')}
           </button>
         </Protected>
         <Protected permission="operators.delete">
@@ -484,11 +440,11 @@ const Operators = () => {
             className="delete-all"
             disabled={!selected.length}
             onClick={() => {
-              setDeleteTarget("all");
+              setDeleteTarget('all');
               setShowDeleteModal(true);
             }}
           >
-            {t("common.delete", "O'chirish")}
+            {t('common.delete', 'O‘chirish')}
           </button>
         </Protected>
       </div>
@@ -501,20 +457,21 @@ const Operators = () => {
                 <input
                   type="checkbox"
                   checked={
-                    (operators?.length ?? 0) > 0 &&
-                    selected.length === (operators?.length ?? 0)
+                    (operators?.length ?? 0) > 0 && selected.length === (operators?.length ?? 0)
                   }
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              {isVisible("id") && <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>}
-              {isVisible("full_name") && <th>{t("users.fish", "F.I.SH")}</th>}
-              {isVisible("branch") && <th>{t("payments.branch", "Filial")}</th>}
-              {isVisible("login") && <th>{t("users.loginText", "Login")}</th>}
-              {isVisible("password") && (
-                <th>{t("users.password", "Password")}</th>
+              {isVisible('id') && (
+                <th className="th-sortable" onClick={() => setSortAsc((p) => !p)}>
+                  ID {sortAsc ? '↑' : '↓'}
+                </th>
               )}
-              <th>{t("courses.actions", "Harakatlar")}</th>
+              {isVisible('full_name') && <th>{t('users.fish', 'F.I.SH')}</th>}
+              {isVisible('branch') && <th>{t('payments.branch', 'Filial')}</th>}
+              {isVisible('login') && <th>{t('users.loginText', 'Login')}</th>}
+              {isVisible('password') && <th>{t('users.password', 'Password')}</th>}
+              <th>{t('courses.actions', 'Harakatlar')}</th>
             </tr>
           </thead>
 
@@ -522,66 +479,53 @@ const Operators = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={7} />
             ) : operators && operators.length > 0 ? (
-              [...(operators || [])].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id).map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(item.id)}
-                      onChange={() => toggleOne(item.id)}
-                    />
-                  </td>
-                  {isVisible("id") && <td>{item.id}</td>}
-                  {isVisible("full_name") && (
+              [...(operators || [])]
+                .sort((a, b) => (sortAsc ? a.id - b.id : b.id - a.id))
+                .map((item) => (
+                  <tr key={item.id}>
                     <td>
-                      {item.employee?.full_name ||
-                        item.employee?.first_name ||
-                        "-"}
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(item.id)}
+                        onChange={() => toggleOne(item.id)}
+                      />
                     </td>
-                  )}
-                  {isVisible("branch") && (
-                    <td>
-                      {item.branch
-                        ? getLocalized(item.branch, "name", i18n.language)
-                        : "-"}
+                    {isVisible('id') && <td>{item.id}</td>}
+                    {isVisible('full_name') && (
+                      <td>{item.employee?.full_name || item.employee?.first_name || '-'}</td>
+                    )}
+                    {isVisible('branch') && (
+                      <td>
+                        {item.branch ? getLocalized(item.branch, 'name', i18n.language) : '-'}
+                      </td>
+                    )}
+                    {isVisible('login') && <td>{item.login}</td>}
+                    {isVisible('password') && <td>{item.password}</td>}
+                    <td className="actions">
+                      <button className="user-view-btn" onClick={() => setViewItem(item)}>
+                        <i className="fa-solid fa-eye"></i>
+                      </button>
+                      <Protected permission="operators.edit">
+                        <button className="user-edit-btn" onClick={() => openEditModal(item)}>
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+                      </Protected>
+                      <Protected permission="operators.delete">
+                        <button
+                          className="user-delete-btn"
+                          onClick={() => {
+                            setDeleteTarget(item.id);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </Protected>
                     </td>
-                  )}
-                  {isVisible("login") && <td>{item.login}</td>}
-                  {isVisible("password") && <td>{item.password}</td>}
-                  <td className="actions">
-                    <button
-                      className="user-view-btn"
-                      onClick={() => setViewItem(item)}
-                    >
-                      <i className="fa-solid fa-eye"></i>
-                    </button>
-                    <Protected permission="operators.edit">
-                      <button
-                        className="user-edit-btn"
-                        onClick={() => openEditModal(item)}
-                      >
-                        <i className="fa-solid fa-pen"></i>
-                      </button>
-                    </Protected>
-                    <Protected permission="operators.delete">
-                      <button
-                        className="user-delete-btn"
-                        onClick={() => {
-                          setDeleteTarget(item.id);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
-                    </Protected>
-                  </td>
-                </tr>
-              ))
+                  </tr>
+                ))
             ) : (
-              <EmptyState
-                colSpan={7}
-                message={t("common.noData", "Ma'lumot topilmadi")}
-              />
+              <EmptyState colSpan={7} message={t('common.noData', "Ma'lumot topilmadi")} />
             )}
           </tbody>
         </table>

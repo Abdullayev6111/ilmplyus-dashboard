@@ -189,9 +189,9 @@ const GroupSelector: React.FC = () => {
                   <i className="fa-solid fa-users" />
                 </div>
                 <div className="group-card__item-content">
-                  <span className="group-card__item-label">O'quvchilar soni</span>
+                  <span className="group-card__item-label">O‘quvchilar soni</span>
                   <span className="group-card__item-value">
-                    {g.students_count ?? g.max_students ?? 0} o'quvchi
+                    {g.students_count ?? g.max_students ?? 0} o‘quvchi
                   </span>
                 </div>
               </div>

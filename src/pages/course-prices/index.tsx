@@ -39,7 +39,7 @@ function Pagination({ currentPage, lastPage, from, to, total, onPageChange }: Pa
   return (
     <div className="cp-pagination">
       <span className="cp-pagination__info">
-        Jami: {total} ta, {from}-{to} ko'rsatilmoqda
+        Jami: {total} ta, {from}-{to} ko‘rsatilmoqda
       </span>
       <div className="cp-pagination__controls">
         <button

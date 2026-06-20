@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import './studentsContracts.css';
 import { emptyMinorStudent, emptyRepresentative } from '../../types/studentContract.types';
 import type {
@@ -13,12 +14,9 @@ import type { Group } from '@/types/groups.types';
 import { notifications } from '@mantine/notifications';
 import { API } from '@/api/api';
 
-// Helper: convert ISO date string to YYYY-MM-DD for date inputs
 const formatDateForInput = (dateStr: string | null | undefined): string => {
   if (!dateStr) return '';
-  // Already in YYYY-MM-DD format
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-  // ISO format: extract date part
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return '';
   const year = d.getFullYear();
@@ -46,6 +44,7 @@ const MinorStudentCard = ({
   allGroups: Group[];
   allCourses: Course[];
 }) => {
+  const { t } = useTranslation();
   const [lidSearchTerm, setLidSearchTerm] = useState(student.lid_id || '');
   const [showLidDropdown, setShowLidDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -127,7 +126,7 @@ const MinorStudentCard = ({
         <div style={{ flex: 1, display: 'flex', gap: '20px' }}>
           <div className="sc-form-col" style={{ position: 'relative', flex: 1 }} ref={dropdownRef}>
             <label className="sc-form-label">
-              Lid ID / Qidirish <span>*</span>
+              {t('studentsContract.lidIdSearch')} <span>*</span>
             </label>
             <input
               type="text"
@@ -137,7 +136,7 @@ const MinorStudentCard = ({
                 borderRadius: '10px',
                 padding: '12px 16px',
               }}
-              placeholder="ID yoki Ism..."
+              placeholder={t('studentsContract.lidSearchPlaceholder')}
               value={lidSearchTerm || student.lid_id}
               onChange={(e) => {
                 setLidSearchTerm(e.target.value);
@@ -177,8 +176,8 @@ const MinorStudentCard = ({
                       }}
                     >
                       <div style={{ width: '60px' }}>ID</div>
-                      <div style={{ flex: 2 }}>Ismi</div>
-                      <div style={{ flex: 2 }}>Telefon</div>
+                      <div style={{ flex: 2 }}>{t('studentsContract.nameCol')}</div>
+                      <div style={{ flex: 2 }}>{t('studentsContract.telephoneCol')}</div>
                     </div>
                     {searchResults.map((lid: Lid) => (
                       <div
@@ -212,7 +211,7 @@ const MinorStudentCard = ({
                       color: '#64748b',
                     }}
                   >
-                    Natija topilmadi
+                    {t('studentsContract.noResults')}
                   </div>
                 )}
               </div>
@@ -244,7 +243,7 @@ const MinorStudentCard = ({
             }}
             onClick={() => onRemove(index)}
           >
-            X O'chirish
+            X {t('studentsContract.delete')}
           </button>
         )}
       </div>
@@ -252,7 +251,7 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Shartnoma tili <span>*</span>
+            {t('studentsContract.contractLanguage')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
@@ -266,15 +265,15 @@ const MinorStudentCard = ({
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Fuqaroligi <span>*</span>
+            {t('studentsContract.citizenship')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
             value={student.citizenship}
             onChange={(e) => onChange(index, 'citizenship', e.target.value)}
           >
-            <option value="citizen">O'zbekiston</option>
-            <option value="foreign">Chet el</option>
+            <option value="citizen">{t('studentsContract.uzbekistan')}</option>
+            <option value="foreign">{t('studentsContract.foreign')}</option>
           </select>
         </div>
       </div>
@@ -282,7 +281,7 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Guvohnoma / Passport <span>*</span>
+            {t('studentsContract.certPassport')} <span>*</span>
           </label>
           <div className="sc-passport-group" style={{ display: 'flex', gap: '8px' }}>
             <input
@@ -309,7 +308,7 @@ const MinorStudentCard = ({
                 borderRadius: '8px',
                 border: '1px solid #e2e8f0',
               }}
-              placeholder="Raqam"
+              placeholder={t('studentsContract.number')}
               maxLength={7}
               value={student.birth_cert_number}
               onChange={(e) => {
@@ -321,7 +320,7 @@ const MinorStudentCard = ({
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Berilgan sanasi <span>*</span>
+            {t('studentsContract.issuedDate')} <span>*</span>
           </label>
           <input
             type="date"
@@ -336,7 +335,7 @@ const MinorStudentCard = ({
           />
         </div>
         <div className="sc-form-col">
-          <label className="sc-form-label">Amal qilish sanasi</label>
+          <label className="sc-form-label">{t('studentsContract.expiryDateLabel')}</label>
           <input
             type="date"
             className="sc-form-input"
@@ -351,7 +350,7 @@ const MinorStudentCard = ({
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Tug'ilgan joyi <span>*</span>
+            {t('studentsContract.birthPlace')} <span>*</span>
           </label>
           <input
             type="text"
@@ -361,7 +360,7 @@ const MinorStudentCard = ({
               borderRadius: '8px',
               border: '1px solid #e2e8f0',
             }}
-            placeholder="Kiriting"
+            placeholder={t('studentsContract.enter')}
             value={student.birth_place}
             onChange={(e) => onChange(index, 'birth_place', e.target.value)}
           />
@@ -371,12 +370,12 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Familiya <span>*</span>
+            {t('studentsContract.lastName')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
-            placeholder="Kiriting"
+            placeholder={t('studentsContract.enter')}
             value={student.last_name}
             onChange={(e) => onChange(index, 'last_name', e.target.value)}
           />
@@ -386,24 +385,24 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Ism <span>*</span>
+            {t('studentsContract.firstName')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
-            placeholder="Kiriting"
+            placeholder={t('studentsContract.enter')}
             value={student.first_name}
             onChange={(e) => onChange(index, 'first_name', e.target.value)}
           />
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Otasining ismi <span>*</span>
+            {t('studentsContract.fatherName')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
-            placeholder="Kiriting"
+            placeholder={t('studentsContract.enter')}
             value={student.father_name}
             onChange={(e) => onChange(index, 'father_name', e.target.value)}
           />
@@ -413,7 +412,7 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Tug'ilgan sanasi <span>*</span>
+            {t('studentsContract.birthDate')} <span>*</span>
           </label>
           <input
             type="date"
@@ -424,14 +423,14 @@ const MinorStudentCard = ({
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Guruh <span>*</span>
+            {t('studentsContract.group')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
             value={student.group_id}
             onChange={(e) => onChange(index, 'group_id', e.target.value)}
           >
-            <option value="">Tanlang</option>
+            <option value="">{t('studentsContract.select')}</option>
             {(allGroups || []).map((g: Group) => (
               <option key={g.id} value={g.id}>
                 {g.name}
@@ -441,17 +440,17 @@ const MinorStudentCard = ({
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Kurs <span>*</span>
+            {t('studentsContract.course')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
             value={student.course_id}
             onChange={(e) => {
               onChange(index, 'course_id', e.target.value);
-              onChange(index, 'level_id', ''); // Reset level when course changes
+              onChange(index, 'level_id', '');
             }}
           >
-            <option value="">Tanlang</option>
+            <option value="">{t('studentsContract.select')}</option>
             {(allCourses || []).map((c: Course) => (
               <option key={c.id} value={c.id}>
                 {c.name_uz}
@@ -461,14 +460,14 @@ const MinorStudentCard = ({
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            Bosqichi <span>*</span>
+            {t('studentsContract.level')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
             value={student.level_id}
             onChange={(e) => onChange(index, 'level_id', e.target.value)}
           >
-            <option value="">Tanlang</option>
+            <option value="">{t('studentsContract.select')}</option>
             {(
               (allCourses || []).find((c: Course) => String(c.id) === student.course_id)?.levels ||
               []
@@ -483,7 +482,7 @@ const MinorStudentCard = ({
 
       <div className="sc-form-row">
         <div className="sc-form-col">
-          <label className="sc-form-label">Oylik to'lov</label>
+          <label className="sc-form-label">{t('studentsContract.monthlyPayment')}</label>
           <input
             type="number"
             className="sc-form-input"
@@ -493,7 +492,7 @@ const MinorStudentCard = ({
           />
         </div>
         <div className="sc-form-col">
-          <label className="sc-form-label">Umumiy narx</label>
+          <label className="sc-form-label">{t('studentsContract.totalPrice')}</label>
           <input
             type="number"
             className="sc-form-input"
@@ -506,7 +505,7 @@ const MinorStudentCard = ({
 
       <div className="sc-form-row">
         <div className="sc-form-col">
-          <label className="sc-form-label">Kurs boshlanish sanasi</label>
+          <label className="sc-form-label">{t('studentsContract.courseStartDate')}</label>
           <input
             type="date"
             className="sc-form-input"
@@ -515,7 +514,7 @@ const MinorStudentCard = ({
           />
         </div>
         <div className="sc-form-col">
-          <label className="sc-form-label">Kurs tugash sanasi</label>
+          <label className="sc-form-label">{t('studentsContract.courseEndDate')}</label>
           <input
             type="date"
             className="sc-form-input"
@@ -528,7 +527,7 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col" style={{ flex: '0 0 50%' }}>
           <label className="sc-form-label">
-            Telefon nomer <span>*</span>
+            {t('studentsContract.phoneNo')} <span>*</span>
           </label>
           <input
             type="text"
@@ -540,7 +539,7 @@ const MinorStudentCard = ({
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            Yashash joyi (Asosiy) <span>*</span>
+            {t('studentsContract.primaryAddress')} <span>*</span>
           </label>
           <textarea
             className="sc-form-textarea"
@@ -552,7 +551,7 @@ const MinorStudentCard = ({
               border: '1px solid #e2e8f0',
               fontSize: '14px',
             }}
-            placeholder="Kiriting"
+            placeholder={t('studentsContract.enter')}
             value={student.residential_address}
             onChange={(e) => onChange(index, 'residential_address', e.target.value)}
           />
@@ -566,6 +565,7 @@ const UnderAge = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id } = useParams();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [representative, setRepresentative] = useState<RepresentativeFormData>({
     ...emptyRepresentative,
@@ -713,7 +713,6 @@ const UnderAge = () => {
         if (i !== index) return s;
         const updated = { ...s, [field]: finalValue };
 
-        // Auto-fill dates when group is selected
         if (field === 'group_id' && value && allGroups) {
           const group = allGroups.find((g: Group) => String(g.id) === value);
           if (group) {
@@ -722,7 +721,6 @@ const UnderAge = () => {
           }
         }
 
-        // Auto-calculate total price
         if (
           (field === 'monthly_price' ||
             field === 'group_id' ||
@@ -834,7 +832,6 @@ const UnderAge = () => {
           course_start_date: s.course_start_date,
           course_end_date: s.course_end_date,
         };
-        // Include student id for update
         if (id && contractToEdit) {
           const contract = contractToEdit.contract || contractToEdit.data || contractToEdit;
           const existingStudent = contract.contract_students?.[idx];
@@ -854,7 +851,7 @@ const UnderAge = () => {
   if (id && isFetchingContract) {
     return (
       <div className="students-contract container" style={{ marginTop: 50, marginLeft: 140 }}>
-        <div style={{ textAlign: 'center', padding: 40 }}>Yuklanmoqda...</div>
+        <div style={{ textAlign: 'center', padding: 40 }}>{t('studentsContract.loading')}</div>
       </div>
     );
   }
@@ -894,7 +891,7 @@ const UnderAge = () => {
             color: '#000',
           }}
         >
-          SHARTNOMA: VAKIL BILAN
+          {t('studentsContract.contractWithRep')}
         </span>
       </div>
 
@@ -925,7 +922,7 @@ const UnderAge = () => {
           }}
           onClick={() => setStep(1)}
         >
-          1-Qadam: Vakil
+          {t('studentsContract.step1Rep')}
         </div>
         <div
           className={`sc-step-item ${step === 2 ? 'active' : ''}`}
@@ -944,14 +941,14 @@ const UnderAge = () => {
             if (isStep1Valid()) setStep(2);
             else {
               notifications.show({
-                title: 'Xatolik',
-                message: "Iltimos, vakil ma'lumotlarini to'liq to'ldiring!",
+                title: t('studentsContract.error'),
+                message: t('studentsContract.fillRepDetails'),
                 color: 'red',
               });
             }
           }}
         >
-          2-Qadam: Oqovchi
+          {t('studentsContract.step2StudentMinor')}
         </div>
       </div>
 
@@ -983,7 +980,7 @@ const UnderAge = () => {
               </div>
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  Fuqaroligi <span>*</span>
+                  {t('studentsContract.citizenship')} <span>*</span>
                 </label>
                 <select
                   className="sc-form-select"
@@ -996,13 +993,13 @@ const UnderAge = () => {
                   value={representative.citizenship}
                   onChange={(e) => handleRepChange('citizenship', e.target.value)}
                 >
-                  <option value="citizen">O'zbekiston</option>
-                  <option value="foreign">Chet el</option>
+                  <option value="citizen">{t('studentsContract.uzbekistan')}</option>
+                  <option value="foreign">{t('studentsContract.foreign')}</option>
                 </select>
               </div>
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  Vakil <span>*</span>
+                  {t('studentsContract.representative')} <span>*</span>
                 </label>
                 <select
                   className="sc-form-select"
@@ -1015,10 +1012,10 @@ const UnderAge = () => {
                   value={representative.representative_type}
                   onChange={(e) => handleRepChange('representative_type', e.target.value)}
                 >
-                  <option value="Ota">Otasi</option>
-                  <option value="Ona">Onasi</option>
-                  <option value="Vasiy">Vasiy</option>
-                  <option value="Boshqa">Boshqa</option>
+                  <option value="Ota">{t('studentsContract.fatherRole')}</option>
+                  <option value="Ona">{t('studentsContract.motherRole')}</option>
+                  <option value="Vasiy">{t('studentsContract.guardian')}</option>
+                  <option value="Boshqa">{t('studentsContract.other')}</option>
                 </select>
               </div>
             </div>
@@ -1026,7 +1023,7 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  Shartnoma tili <span>*</span>
+                  {t('studentsContract.contractLanguage')} <span>*</span>
                 </label>
                 <select
                   className="sc-form-select"
@@ -1040,7 +1037,7 @@ const UnderAge = () => {
               </div>
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  Tug'ilgan sanasi <span>*</span>
+                  {t('studentsContract.birthDate')} <span>*</span>
                 </label>
                 <input
                   type="date"
@@ -1051,7 +1048,7 @@ const UnderAge = () => {
               </div>
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  Passport Seriya/Raqam <span>*</span>
+                  {t('studentsContract.passportSeriesSlashNo')} <span>*</span>
                 </label>
                 <div className="sc-passport-group" style={{ display: 'flex', gap: '8px' }}>
                   <input
@@ -1090,7 +1087,7 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  Berilgan sanasi <span>*</span>
+                  {t('studentsContract.issuedDate')} <span>*</span>
                 </label>
                 <input
                   type="date"
@@ -1105,7 +1102,7 @@ const UnderAge = () => {
                 />
               </div>
               <div className="sc-form-col">
-                <label className="sc-form-label">Amal qilish sanasi</label>
+                <label className="sc-form-label">{t('studentsContract.expiryDateLabel')}</label>
                 <input
                   type="date"
                   className="sc-form-input"
@@ -1123,12 +1120,12 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  Familiya <span>*</span>
+                  {t('studentsContract.lastName')} <span>*</span>
                 </label>
                 <input
                   type="text"
                   className="sc-form-input"
-                  placeholder="Kiriting"
+                  placeholder={t('studentsContract.enter')}
                   value={representative.last_name}
                   onChange={(e) => handleRepChange('last_name', e.target.value)}
                 />
@@ -1138,24 +1135,24 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  Ism <span>*</span>
+                  {t('studentsContract.firstName')} <span>*</span>
                 </label>
                 <input
                   type="text"
                   className="sc-form-input"
-                  placeholder="Kiriting"
+                  placeholder={t('studentsContract.enter')}
                   value={representative.first_name}
                   onChange={(e) => handleRepChange('first_name', e.target.value)}
                 />
               </div>
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  Otasining ismi <span>*</span>
+                  {t('studentsContract.fatherName')} <span>*</span>
                 </label>
                 <input
                   type="text"
                   className="sc-form-input"
-                  placeholder="Kiriting"
+                  placeholder={t('studentsContract.enter')}
                   value={representative.father_name}
                   onChange={(e) => handleRepChange('father_name', e.target.value)}
                 />
@@ -1174,7 +1171,7 @@ const UnderAge = () => {
               >
                 <div className="sc-form-col" style={{ flex: '0 0 32%' }}>
                   <label className="sc-form-label">
-                    Telefon nomer {pIdx + 1} <span>*</span>
+                    {t('studentsContract.phoneNo')} {pIdx + 1} <span>*</span>
                   </label>
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <input
@@ -1229,12 +1226,12 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  Yashash joyi (Ro'yxatga olingan) <span>*</span>
+                  {t('studentsContract.registeredAddressShort')} <span>*</span>
                 </label>
                 <input
                   type="text"
                   className="sc-form-input"
-                  placeholder="Kiriting"
+                  placeholder={t('studentsContract.enter')}
                   value={representative.registered_address}
                   onChange={(e) => handleRepChange('registered_address', e.target.value)}
                 />
@@ -1244,7 +1241,7 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col" style={{ flex: 1 }}>
                 <label className="sc-form-label">
-                  Yashash joyi (Haqiqiy) <span>*</span>
+                  {t('studentsContract.actualAddress')} <span>*</span>
                 </label>
                 <textarea
                   className="sc-form-textarea"
@@ -1255,7 +1252,7 @@ const UnderAge = () => {
                     border: '1px solid #e2e8f0',
                     padding: '12px',
                   }}
-                  placeholder="Kiriting"
+                  placeholder={t('studentsContract.enter')}
                   value={representative.residential_address}
                   onChange={(e) => handleRepChange('residential_address', e.target.value)}
                 />
@@ -1285,7 +1282,7 @@ const UnderAge = () => {
               }}
               onClick={() => navigate('/students-contract')}
             >
-              Bekor qilish
+              {t('studentsContract.cancel')}
             </button>
             <button
               className="sc-form-next-btn"
@@ -1302,14 +1299,14 @@ const UnderAge = () => {
                 if (isStep1Valid()) setStep(2);
                 else {
                   notifications.show({
-                    title: 'Xatolik',
-                    message: "Iltimos, vakil ma'lumotlarini to'liq to'ldiring!",
+                    title: t('studentsContract.error'),
+                    message: t('studentsContract.fillRepDetails'),
                     color: 'red',
                   });
                 }
               }}
             >
-              Keyingisi
+              {t('studentsContract.next')}
             </button>
           </div>
         </>
@@ -1346,7 +1343,7 @@ const UnderAge = () => {
             }}
             onClick={addStudent}
           >
-            + Yana o'quvchi qo'shish
+            {t('studentsContract.addStudent')}
           </button>
 
           <div
@@ -1371,7 +1368,7 @@ const UnderAge = () => {
               }}
               onClick={() => navigate('/students-contract')}
             >
-              Bekor qilish
+              {t('studentsContract.cancel')}
             </button>
             <button
               className="sc-form-prev-btn"
@@ -1386,7 +1383,7 @@ const UnderAge = () => {
               }}
               onClick={() => setStep(1)}
             >
-              Oldingisi
+              {t('studentsContract.prev')}
             </button>
             <button
               className="sc-form-save-btn"
@@ -1402,7 +1399,9 @@ const UnderAge = () => {
               onClick={handleSubmit}
               disabled={createMutation.isPending || updateMutation.isPending}
             >
-              {createMutation.isPending || updateMutation.isPending ? 'Saqlanmoqda...' : 'Saqlash'}
+              {createMutation.isPending || updateMutation.isPending
+                ? t('studentsContract.saving')
+                : t('studentsContract.save')}
             </button>
           </div>
         </>

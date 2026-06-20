@@ -41,7 +41,7 @@ const Roles = () => {
   const handleBatchDelete = () => {
     if (
       window.confirm(
-        t('roles.confirmBatchDelete', "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz?"),
+        t('roles.confirmBatchDelete', 'Tanlanganlarni haqiqatan ham o‘chirmoqchimisiz?'),
       )
     ) {
       selected.forEach((id) => deleteRoleMutation.mutate(id));
@@ -51,7 +51,7 @@ const Roles = () => {
 
   return (
     <section className="role-container container">
-      <h1 className="role-page-title">{t('roles.listTitle', "Amallar ro'yxati")}</h1>
+      <h1 className="role-page-title">{t('roles.listTitle', 'Amallar ro‘yxati')}</h1>
 
       <div className="role-header-actions">
         <div style={{ display: 'flex', gap: '10px' }}>

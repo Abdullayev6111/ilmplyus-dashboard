@@ -23,7 +23,7 @@ interface TaskModalProps {
 
 const PRIORITY_OPTIONS: { label: string; value: Priority }[] = [
   { label: 'Shoshilinch', value: 'shoshilinch' },
-  { label: "O'rta", value: 'orta' },
+  { label: 'O‘rta', value: 'orta' },
   { label: 'Sekin', value: 'sekin' },
 ];
 
@@ -100,7 +100,11 @@ export default function TaskModal({
     queryFn: async () => {
       const res = await API.get('/users');
       const d = res.data;
-      const arr: OperatorUser[] = Array.isArray(d) ? d : Array.isArray(d?.data) ? d.data : (d?.data?.data ?? []);
+      const arr: OperatorUser[] = Array.isArray(d)
+        ? d
+        : Array.isArray(d?.data)
+          ? d.data
+          : (d?.data?.data ?? []);
       return arr.filter(isOperator);
     },
   });
@@ -194,7 +198,7 @@ export default function TaskModal({
     if (!date || !time || timeError) {
       notifications.show({
         title: 'Xatolik',
-        message: t("Sana yoki vaqtni to'g'ri kiriting"),
+        message: t('Sana yoki vaqtni t‘g‘ri kiriting'),
         color: 'red',
       });
       return;
@@ -384,7 +388,9 @@ export default function TaskModal({
           <select
             className="modal__select"
             value={operatorId}
-            onChange={(e) => setOverrideOperatorId(e.target.value === '' ? '' : Number(e.target.value))}
+            onChange={(e) =>
+              setOverrideOperatorId(e.target.value === '' ? '' : Number(e.target.value))
+            }
           >
             <option value="">{t('taskModal.selectOperator')}</option>
 

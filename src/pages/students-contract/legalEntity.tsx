@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
+import { useTranslation } from 'react-i18next';
 import {
   type OrganizationFormData,
   emptyOrganization,
@@ -92,6 +93,7 @@ const OrganizationStudentCard = ({
   allGroups: Group[];
   allCourses: Course[];
 }) => {
+  const { t } = useTranslation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -167,7 +169,10 @@ const OrganizationStudentCard = ({
           marginBottom: '20px',
         }}
       >
-        <h3 style={{ margin: 0, fontSize: '18px', color: '#003366' }}>O'quvchi #{index + 1}</h3>
+        <h3 style={{ margin: 0, fontSize: '18px', color: '#003366' }}>
+          {t('studentsContract.studentNo')}
+          {index + 1}
+        </h3>
         {showRemove && (
           <button
             onClick={() => onRemove(index)}
@@ -181,7 +186,8 @@ const OrganizationStudentCard = ({
               fontSize: '13px',
             }}
           >
-            <i className="fa-solid fa-trash-can" style={{ marginRight: '6px' }}></i> O'chirish
+            <i className="fa-solid fa-trash-can" style={{ marginRight: '6px' }}></i>
+            {t('studentsContract.delete')}
           </button>
         )}
       </div>
@@ -189,12 +195,12 @@ const OrganizationStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col" style={{ flex: 1, marginBottom: '10px' }}>
           <label className="sc-form-label">
-            Ushbu shaxs <span>*</span>
+            {t('studentsContract.thisPerson')} <span>*</span>
           </label>
           <ToggleButton
             options={[
-              { label: 'Voyaga yetgan shaxs', value: 'false' },
-              { label: 'Voyaga yetmagan shaxs', value: 'true' },
+              { label: t('studentsContract.adult'), value: 'false' },
+              { label: t('studentsContract.minor'), value: 'true' },
             ]}
             value={String(student.is_minor)}
             onChange={(val) => onChange(index, 'is_minor', val === 'true')}
@@ -205,13 +211,13 @@ const OrganizationStudentCard = ({
       <div className="sc-form-row" style={{ display: 'flex', gap: '18px' }}>
         <div className="sc-form-col" style={{ position: 'relative', flex: 1 }} ref={dropdownRef}>
           <label className="sc-form-label">
-            Lid ID / Qidirish <span>*</span>
+            {t('studentsContract.lidIdSearch')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
             style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-            placeholder="Lid ID yoki ism..."
+            placeholder={t('studentsContract.lidIdPlaceholder')}
             value={student.lid_id || searchTerm}
             onFocus={() => setShowDropdown(true)}
             onChange={(e) => {
@@ -254,7 +260,7 @@ const OrganizationStudentCard = ({
                       ID: {lid.id} - {lid.first_name} {lid.last_name}
                     </div>
                     <div style={{ fontSize: '12px', color: '#64748b' }}>
-                      {lid.phone} | {lid.course?.name_uz || "Kurs yo'q"}
+                      {lid.phone} | {lid.course?.name_uz || t('studentsContract.noCourse')}
                     </div>
                   </div>
                 ))
@@ -266,7 +272,7 @@ const OrganizationStudentCard = ({
                     color: '#64748b',
                   }}
                 >
-                  Natija topilmadi
+                  {t('studentsContract.noResults')}
                 </div>
               )}
             </div>
@@ -296,7 +302,7 @@ const OrganizationStudentCard = ({
           <>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Tug'ilganlik haqida guvohnoma seriyasi va raqami <span>*</span>
+                {t('studentsContract.birthCertSeriesNo')} <span>*</span>
               </label>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <input
@@ -329,7 +335,7 @@ const OrganizationStudentCard = ({
                     boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
                     background: '#f8faff',
                   }}
-                  placeholder="Raqam"
+                  placeholder={t('studentsContract.number')}
                   maxLength={7}
                   value={student.birth_cert_number}
                   onChange={(e) => {
@@ -341,7 +347,7 @@ const OrganizationStudentCard = ({
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Berilgan sanasi <span>*</span>
+                {t('studentsContract.issuedDate')} <span>*</span>
               </label>
               <input
                 type="date"
@@ -353,13 +359,13 @@ const OrganizationStudentCard = ({
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Tug'ilgan joyi <span>*</span>
+                {t('studentsContract.birthPlace')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                placeholder="Kiriting"
+                placeholder={t('studentsContract.enter')}
                 value={student.birth_place}
                 onChange={(e) => onChange(index, 'birth_place', e.target.value)}
               />
@@ -369,7 +375,7 @@ const OrganizationStudentCard = ({
           <>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Passport seriyasi va raqami <span>*</span>
+                {t('studentsContract.passportSeriesNo')} <span>*</span>
               </label>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <input
@@ -400,7 +406,7 @@ const OrganizationStudentCard = ({
                     boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
                     background: '#f8faff',
                   }}
-                  placeholder="Raqam"
+                  placeholder={t('studentsContract.number')}
                   maxLength={7}
                   value={student.passport_number}
                   onChange={(e) => {
@@ -412,7 +418,7 @@ const OrganizationStudentCard = ({
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Berilgan sanasi <span>*</span>
+                {t('studentsContract.issuedDate')} <span>*</span>
               </label>
               <input
                 type="date"
@@ -424,7 +430,7 @@ const OrganizationStudentCard = ({
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Amal qilish muddati <span>*</span>
+                {t('studentsContract.expiryDate')} <span>*</span>
               </label>
               <input
                 type="date"
@@ -441,39 +447,39 @@ const OrganizationStudentCard = ({
       <div className="sc-form-row" style={{ display: 'flex', gap: '18px' }}>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            Familiya <span>*</span>
+            {t('studentsContract.lastName')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
             style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-            placeholder="Kiriting"
+            placeholder={t('studentsContract.enter')}
             value={student.last_name}
             onChange={(e) => onChange(index, 'last_name', e.target.value)}
           />
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            Ism <span>*</span>
+            {t('studentsContract.firstName')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
             style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-            placeholder="Kiriting"
+            placeholder={t('studentsContract.enter')}
             value={student.first_name}
             onChange={(e) => onChange(index, 'first_name', e.target.value)}
           />
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            Otasining ismi <span>*</span>
+            {t('studentsContract.fatherName')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
             style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-            placeholder="Kiriting"
+            placeholder={t('studentsContract.enter')}
             value={student.father_name}
             onChange={(e) => onChange(index, 'father_name', e.target.value)}
           />
@@ -483,7 +489,7 @@ const OrganizationStudentCard = ({
       <div className="sc-form-row" style={{ display: 'flex', gap: '18px' }}>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            Tug'ilgan sanasi <span>*</span>
+            {t('studentsContract.birthDate')} <span>*</span>
           </label>
           <input
             type="date"
@@ -495,7 +501,7 @@ const OrganizationStudentCard = ({
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            Kurs <span>*</span>
+            {t('studentsContract.course')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
@@ -506,7 +512,7 @@ const OrganizationStudentCard = ({
               onChange(index, 'level_id', '');
             }}
           >
-            <option value="">Tanlang</option>
+            <option value="">{t('studentsContract.select')}</option>
             {(allCourses || []).map((c: Course) => (
               <option key={c.id} value={c.id}>
                 {c.name_uz}
@@ -516,7 +522,7 @@ const OrganizationStudentCard = ({
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            Bosqichi <span>*</span>
+            {t('studentsContract.level')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
@@ -524,7 +530,7 @@ const OrganizationStudentCard = ({
             value={student.level_id}
             onChange={(e) => onChange(index, 'level_id', e.target.value)}
           >
-            <option value="">Tanlang</option>
+            <option value="">{t('studentsContract.select')}</option>
             {(
               (allCourses || []).find((c: Course) => String(c.id) === student.course_id)?.levels ||
               []
@@ -539,7 +545,7 @@ const OrganizationStudentCard = ({
 
       <div className="sc-form-row" style={{ display: 'flex', gap: '18px' }}>
         <div className="sc-form-col" style={{ flex: 1 }}>
-          <label className="sc-form-label">Oylik to'lov</label>
+          <label className="sc-form-label">{t('studentsContract.monthlyPayment')}</label>
           <input
             type="number"
             className="sc-form-input"
@@ -549,7 +555,7 @@ const OrganizationStudentCard = ({
           />
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
-          <label className="sc-form-label">Umumiy narx</label>
+          <label className="sc-form-label">{t('studentsContract.totalPrice')}</label>
           <input
             type="number"
             className="sc-form-input"
@@ -560,7 +566,7 @@ const OrganizationStudentCard = ({
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            Guruh <span>*</span>
+            {t('studentsContract.group')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
@@ -568,7 +574,7 @@ const OrganizationStudentCard = ({
             value={student.group_id}
             onChange={(e) => onChange(index, 'group_id', e.target.value)}
           >
-            <option value="">Tanlang</option>
+            <option value="">{t('studentsContract.select')}</option>
             {(allGroups || []).map((g: Group) => (
               <option key={g.id} value={g.id}>
                 {g.name}
@@ -581,7 +587,7 @@ const OrganizationStudentCard = ({
       <div className="sc-form-row" style={{ display: 'flex', gap: '18px' }}>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            Telefon nomer <span>*</span>
+            {t('studentsContract.phoneNo')} <span>*</span>
           </label>
           <input
             type="text"
@@ -592,7 +598,7 @@ const OrganizationStudentCard = ({
           />
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
-          <label className="sc-form-label">Kurs boshlanish sanasi</label>
+          <label className="sc-form-label">{t('studentsContract.courseStartDate')}</label>
           <input
             type="date"
             className="sc-form-input"
@@ -601,7 +607,7 @@ const OrganizationStudentCard = ({
           />
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
-          <label className="sc-form-label">Kurs tugash sanasi</label>
+          <label className="sc-form-label">{t('studentsContract.courseEndDate')}</label>
           <input
             type="date"
             className="sc-form-input"
@@ -614,7 +620,7 @@ const OrganizationStudentCard = ({
       <div className="sc-form-row" style={{ display: 'flex', gap: '18px' }}>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            Yashash joyi <span>*</span>
+            {t('studentsContract.residentialAddress')} <span>*</span>
           </label>
           <textarea
             className="sc-form-textarea"
@@ -627,7 +633,7 @@ const OrganizationStudentCard = ({
               boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
               background: '#f8faff',
             }}
-            placeholder="Kiriting"
+            placeholder={t('studentsContract.enter')}
             value={student.residential_address}
             onChange={(e) => onChange(index, 'residential_address', e.target.value)}
           />
@@ -635,7 +641,7 @@ const OrganizationStudentCard = ({
         {!student.is_minor && (
           <div className="sc-form-col" style={{ flex: 1 }}>
             <label className="sc-form-label">
-              Yashash joyi (Ro'yhatga olingan manzili) <span>*</span>
+              {t('studentsContract.registeredAddress')} <span>*</span>
             </label>
             <textarea
               className="sc-form-textarea"
@@ -648,7 +654,7 @@ const OrganizationStudentCard = ({
                 boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
                 background: '#f8faff',
               }}
-              placeholder="Kiriting"
+              placeholder={t('studentsContract.enter')}
               value={student.registered_address}
               onChange={(e) => onChange(index, 'registered_address', e.target.value)}
             />
@@ -663,6 +669,7 @@ const LegalEntity = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id } = useParams();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [organization, setOrganization] = useState<OrganizationFormData>({
     ...emptyOrganization,
@@ -692,7 +699,7 @@ const LegalEntity = () => {
           trustee_date: formatDateForInput(contract.organization.trustee_date),
           trustee_number: contract.organization.trustee_number || '',
           organization_name: contract.organization.organization_name || '',
-          organization_branch: contract.organization.organization_branch || "yo'q",
+          organization_branch: contract.organization.organization_branch || 'yo‘q',
           branch_name: contract.organization.branch_name || '',
           branch_address: contract.organization.branch_address || '',
           director_last_name: contract.organization.director_last_name || '',
@@ -834,7 +841,6 @@ const LegalEntity = () => {
         if (i !== index) return s;
         let updated = { ...s, [field]: finalValue };
 
-        // Auto-fill dates when group is selected
         if (field === 'group_id' && value && allGroups) {
           const group = allGroups.find((g: Group) => String(g.id) === value);
           if (group) {
@@ -843,7 +849,6 @@ const LegalEntity = () => {
           }
         }
 
-        // Auto-calculate total price
         if (
           (field === 'monthly_price' ||
             field === 'group_id' ||
@@ -891,16 +896,16 @@ const LegalEntity = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['student-contracts'] });
       notifications.show({
-        title: 'Muvaffaqiyatli',
-        message: 'Shartnoma yaratildi',
+        title: t('studentsContract.success'),
+        message: t('studentsContract.contractCreated'),
         color: 'green',
       });
       navigate('/students-contract');
     },
     onError: () =>
       notifications.show({
-        title: 'Xatolik',
-        message: 'Shartnoma yaratishda xatolik yuz berdi',
+        title: t('studentsContract.error'),
+        message: t('studentsContract.contractCreateError'),
         color: 'red',
       }),
   });
@@ -910,16 +915,16 @@ const LegalEntity = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['student-contracts'] });
       notifications.show({
-        title: 'Muvaffaqiyatli',
-        message: 'Shartnoma yangilandi',
+        title: t('studentsContract.success'),
+        message: t('studentsContract.contractUpdated'),
         color: 'green',
       });
       navigate('/students-contract');
     },
     onError: () =>
       notifications.show({
-        title: 'Xatolik',
-        message: 'Shartnomani yangilashda xatolik yuz berdi',
+        title: t('studentsContract.error'),
+        message: t('studentsContract.contractUpdateError'),
         color: 'red',
       }),
   });
@@ -927,7 +932,7 @@ const LegalEntity = () => {
   const handleSubmit = () => {
     const payload = {
       contract_type: 'legal',
-      organization: { ...organization, phone: organization.phones[0] }, // Fallback to first phone if API only supports one
+      organization: { ...organization, phone: organization.phones[0] },
       students: students.map((s, idx) => {
         const studentPayload: Record<string, unknown> = {
           ...s,
@@ -958,7 +963,7 @@ const LegalEntity = () => {
   if (id && isFetchingContract) {
     return (
       <div className="students-contract container" style={{ marginTop: 50, marginLeft: 140 }}>
-        <div style={{ textAlign: 'center', padding: 40 }}>Yuklanmoqda...</div>
+        <div style={{ textAlign: 'center', padding: 40 }}>{t('studentsContract.loading')}</div>
       </div>
     );
   }
@@ -996,7 +1001,7 @@ const LegalEntity = () => {
             color: '#000',
           }}
         >
-          TASHKILOT BILAN SHARTNOMA
+          {t('studentsContract.contractWithOrg')}
         </span>
       </div>
 
@@ -1026,7 +1031,7 @@ const LegalEntity = () => {
           }}
           onClick={() => setStep(1)}
         >
-          1-Qadam: Tashkilot
+          {t('studentsContract.step1Org')}
         </div>
         <div
           className={`sc-step-item ${step === 2 ? 'active' : ''}`}
@@ -1045,13 +1050,13 @@ const LegalEntity = () => {
             if (isStep1Valid()) setStep(2);
             else
               notifications.show({
-                title: 'Xatolik',
-                message: "Iltimos, tashkilot ma'lumotlarini to'liq to'ldiring!",
+                title: t('studentsContract.error'),
+                message: t('studentsContract.fillOrgDetails'),
                 color: 'red',
               });
           }}
         >
-          2-Qadam: Oquvchi
+          {t('studentsContract.step2Student')}
         </div>
       </div>
 
@@ -1069,7 +1074,7 @@ const LegalEntity = () => {
           <div className="sc-form-row" style={{ display: 'flex', gap: '18px' }}>
             <div className="sc-form-col" style={{ flex: 2 }}>
               <label className="sc-form-label">
-                Tashkilot STIR raqami <span>*</span>
+                {t('studentsContract.orgTin')} <span>*</span>
               </label>
               <div style={{ position: 'relative' }}>
                 <input
@@ -1101,7 +1106,7 @@ const LegalEntity = () => {
                     gap: '8px',
                   }}
                 >
-                  resstordan tekshirish
+                  {t('studentsContract.checkRegister')}
                   <i
                     className="fa-solid fa-arrow-up-right-from-square"
                     style={{ fontSize: '12px' }}
@@ -1111,7 +1116,7 @@ const LegalEntity = () => {
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Shartnoma tili <span>*</span>
+                {t('studentsContract.contractLanguage')} <span>*</span>
               </label>
               <div style={{ position: 'relative' }}>
                 <select
@@ -1145,7 +1150,7 @@ const LegalEntity = () => {
           <div className="sc-form-row" style={{ display: 'flex', gap: '18px', marginTop: '18px' }}>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Filial <span>*</span>
+                {t('studentsContract.branch')} <span>*</span>
               </label>
               <div style={{ position: 'relative' }}>
                 <select
@@ -1169,7 +1174,7 @@ const LegalEntity = () => {
                     }
                   }}
                 >
-                  <option value="">Tanlang</option>
+                  <option value="">{t('studentsContract.select')}</option>
                   {branches?.map((b: Branch) => (
                     <option key={b.id} value={b.id}>
                       {b.name_uz}
@@ -1190,19 +1195,19 @@ const LegalEntity = () => {
               </div>
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
-              <label className="sc-form-label">Shahar</label>
+              <label className="sc-form-label">{t('studentsContract.city')}</label>
               <input
                 type="text"
                 className="sc-form-input"
                 style={{ background: '#e2e8f0', border: 'none' }}
-                placeholder="Avtomatik to'ladi"
+                placeholder={t('studentsContract.autoFill')}
                 value={organization.city}
                 readOnly
               />
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Shartnoma sanasi <span>*</span>
+                {t('studentsContract.contractDate')} <span>*</span>
               </label>
               <input
                 type="date"
@@ -1233,19 +1238,19 @@ const LegalEntity = () => {
               <i className="fa-solid fa-building"></i>
             </div>
             <h3 style={{ margin: 0, fontSize: '16px', color: '#1e293b' }}>
-              Tashkilot ma'lumotlari
+              {t('studentsContract.orgInfo')}
             </h3>
           </div>
 
           <div className="sc-form-row" style={{ display: 'flex', gap: '18px' }}>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Ishonchnoma <span>*</span>
+                {t('studentsContract.poa')} <span>*</span>
               </label>
               <ToggleButton
                 options={[
-                  { label: 'ishonchnomasiz', value: 'Ishonchnomasiz' },
-                  { label: 'Ishonchnomali', value: 'Ishonchnoma bilan' },
+                  { label: t('studentsContract.withoutPoa'), value: 'Ishonchnomasiz' },
+                  { label: t('studentsContract.withPoa'), value: 'Ishonchnoma bilan' },
                 ]}
                 value={organization.has_trustee}
                 onChange={(val) => handleOrgChange('has_trustee', val)}
@@ -1253,7 +1258,7 @@ const LegalEntity = () => {
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Ishonchnoma sanasi <span>*</span>
+                {t('studentsContract.poaDate')} <span>*</span>
               </label>
               <input
                 type="date"
@@ -1265,13 +1270,13 @@ const LegalEntity = () => {
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Ishonchnoma raqami <span>*</span>
+                {t('studentsContract.poaNumber')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                placeholder="kiriting"
+                placeholder={t('studentsContract.enter')}
                 value={organization.trustee_number}
                 onChange={(e) => handleOrgChange('trustee_number', e.target.value)}
               />
@@ -1281,25 +1286,25 @@ const LegalEntity = () => {
           <div className="sc-form-row" style={{ display: 'flex', gap: '18px', marginTop: '18px' }}>
             <div className="sc-form-col" style={{ flex: 2 }}>
               <label className="sc-form-label">
-                Tashkilot nomi <span>*</span>
+                {t('studentsContract.orgName')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                placeholder="Kiriting"
+                placeholder={t('studentsContract.enter')}
                 value={organization.organization_name}
                 onChange={(e) => handleOrgChange('organization_name', e.target.value)}
               />
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Tashkilot filiali <span>*</span>
+                {t('studentsContract.orgBranch')} <span>*</span>
               </label>
               <ToggleButton
                 options={[
-                  { label: "yo'q", value: "yo'q" },
-                  { label: 'bor', value: 'bor' },
+                  { label: t('studentsContract.noBranch'), value: 'y‘q' },
+                  { label: t('studentsContract.hasBranch'), value: 'bor' },
                 ]}
                 value={organization.organization_branch}
                 onChange={(val) => handleOrgChange('organization_branch', val)}
@@ -1312,13 +1317,13 @@ const LegalEntity = () => {
               <div className="sc-form-row" style={{ marginTop: '18px' }}>
                 <div className="sc-form-col">
                   <label className="sc-form-label">
-                    Filial nomi <span>*</span>
+                    {t('studentsContract.branchName')} <span>*</span>
                   </label>
                   <input
                     type="text"
                     className="sc-form-input"
                     style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                    placeholder="Kiriting"
+                    placeholder={t('studentsContract.enter')}
                     value={organization.branch_name}
                     onChange={(e) => handleOrgChange('branch_name', e.target.value)}
                   />
@@ -1328,13 +1333,13 @@ const LegalEntity = () => {
               <div className="sc-form-row" style={{ marginTop: '18px' }}>
                 <div className="sc-form-col">
                   <label className="sc-form-label">
-                    Filial manzili <span>*</span>
+                    {t('studentsContract.branchAddress')} <span>*</span>
                   </label>
                   <input
                     type="text"
                     className="sc-form-input"
                     style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                    placeholder="Kiriting"
+                    placeholder={t('studentsContract.enter')}
                     value={organization.branch_address}
                     onChange={(e) => handleOrgChange('branch_address', e.target.value)}
                   />
@@ -1346,39 +1351,39 @@ const LegalEntity = () => {
           <div className="sc-form-row" style={{ display: 'flex', gap: '18px', marginTop: '18px' }}>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Rahbarning familiyasi <span>*</span>
+                {t('studentsContract.directorLastName')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                placeholder="Kiriting"
+                placeholder={t('studentsContract.enter')}
                 value={organization.director_last_name}
                 onChange={(e) => handleOrgChange('director_last_name', e.target.value)}
               />
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Rahbarning ismi <span>*</span>
+                {t('studentsContract.directorFirstName')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                placeholder="Kiriting"
+                placeholder={t('studentsContract.enter')}
                 value={organization.director_first_name}
                 onChange={(e) => handleOrgChange('director_first_name', e.target.value)}
               />
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Rahbarning otasining ismi <span>*</span>
+                {t('studentsContract.directorFatherName')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                placeholder="Kiriting"
+                placeholder={t('studentsContract.enter')}
                 value={organization.director_father_name}
                 onChange={(e) => handleOrgChange('director_father_name', e.target.value)}
               />
@@ -1388,7 +1393,7 @@ const LegalEntity = () => {
           <div className="sc-form-row" style={{ display: 'flex', gap: '18px', marginTop: '18px' }}>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Shartnoma boshlanish sanasi <span>*</span>
+                {t('studentsContract.contractStartDate')} <span>*</span>
               </label>
               <input
                 type="date"
@@ -1400,7 +1405,7 @@ const LegalEntity = () => {
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Shartnoma tugash sanasi <span>*</span>
+                {t('studentsContract.contractEndDate')} <span>*</span>
               </label>
               <input
                 type="date"
@@ -1420,7 +1425,7 @@ const LegalEntity = () => {
             >
               <div className="sc-form-col" style={{ flex: 1 }}>
                 <label className="sc-form-label">
-                  Telefon nomer {idx + 1} <span>*</span>
+                  {t('studentsContract.phoneNo')} {idx + 1} <span>*</span>
                 </label>
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <input
@@ -1481,33 +1486,33 @@ const LegalEntity = () => {
                 type="text"
                 className="sc-form-input"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                placeholder="Kiriting"
+                placeholder={t('studentsContract.enter')}
                 value={organization.ifut}
                 onChange={(e) => handleOrgChange('ifut', e.target.value)}
               />
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Xisob raqam <span>*</span>
+                {t('studentsContract.bankAccount')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                placeholder="Kiriting"
+                placeholder={t('studentsContract.enter')}
                 value={organization.account_number}
                 onChange={(e) => handleOrgChange('account_number', e.target.value)}
               />
             </div>
             <div className="sc-form-col" style={{ flex: 1 }}>
               <label className="sc-form-label">
-                Bank nomi <span>*</span>
+                {t('studentsContract.bankName')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                placeholder="Kiriting"
+                placeholder={t('studentsContract.enter')}
                 value={organization.bank_name}
                 onChange={(e) => handleOrgChange('bank_name', e.target.value)}
               />
@@ -1523,7 +1528,7 @@ const LegalEntity = () => {
                 type="text"
                 className="sc-form-input"
                 style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-                placeholder="Kiriting"
+                placeholder={t('studentsContract.enter')}
                 value={organization.mfo}
                 onChange={(e) => handleOrgChange('mfo', e.target.value)}
               />
@@ -1551,7 +1556,7 @@ const LegalEntity = () => {
               }}
               onClick={() => navigate('/students-contract')}
             >
-              Bekor qilish
+              {t('studentsContract.cancel')}
             </button>
             <button
               className="sc-form-next-btn"
@@ -1569,13 +1574,13 @@ const LegalEntity = () => {
                 if (isStep1Valid()) setStep(2);
                 else
                   notifications.show({
-                    title: 'Xatolik',
-                    message: "Iltimos, tashkilot ma'lumotlarini to'liq to'ldiring!",
+                    title: t('studentsContract.error'),
+                    message: t('studentsContract.fillOrgDetails'),
                     color: 'red',
                   });
               }}
             >
-              Keyingisi
+              {t('studentsContract.next')}
             </button>
           </div>
         </div>
@@ -1611,7 +1616,7 @@ const LegalEntity = () => {
             }}
             onClick={addStudent}
           >
-            + Yana o'quvchi qo'shish
+            {t('studentsContract.addStudent')}
           </button>
           <div
             style={{
@@ -1634,7 +1639,7 @@ const LegalEntity = () => {
               }}
               onClick={() => navigate('/students-contract')}
             >
-              Bekor qilish
+              {t('studentsContract.cancel')}
             </button>
             <button
               className="sc-form-prev-btn"
@@ -1649,7 +1654,7 @@ const LegalEntity = () => {
               }}
               onClick={() => setStep(1)}
             >
-              Oldingisi
+              {t('studentsContract.prev')}
             </button>
             <button
               className="sc-form-save-btn"
@@ -1666,7 +1671,9 @@ const LegalEntity = () => {
               onClick={handleSubmit}
               disabled={createMutation.isPending || updateMutation.isPending}
             >
-              {createMutation.isPending || updateMutation.isPending ? 'Saqlanmoqda...' : 'Saqlash'}
+              {createMutation.isPending || updateMutation.isPending
+                ? t('studentsContract.saving')
+                : t('studentsContract.save')}
             </button>
           </div>
         </>

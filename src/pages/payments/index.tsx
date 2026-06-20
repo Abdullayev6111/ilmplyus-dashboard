@@ -176,12 +176,12 @@ const Payments = () => {
 
   const handleFormSubmit = () => {
     if (!formData.familiya || !formData.ism) {
-      alert(t('payments.lastNameRequiredAlert', "Familiya va Ism to'ldirilishi shart!"));
+      alert(t('payments.lastNameRequiredAlert', 'Familiya va Ism to‘ldirilishi shart!'));
       return;
     }
 
     if (!formData.amount || !formData.payment_type || !formData.payment_period) {
-      alert(t('payments.allFieldsRequiredAlert', "Barcha to'lov maydonlarini to'ldiring!"));
+      alert(t('payments.allFieldsRequiredAlert', 'Barcha to‘lov maydonlarini to‘ldiring!'));
       return;
     }
 

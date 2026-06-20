@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -268,10 +268,11 @@ export function ContractsCreate({
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!/^\d{14}$/.test(formData.jshshr))
-      newErrors.jshshr = "JSHSHR 14 ta raqamdan iborat bo'lishi kerak";
-    if (!/^[A-Z]{2}$/.test(formData.passport_series)) newErrors.passport_series = '2 ta katta harf';
-    if (!/^\d{7}$/.test(formData.passport_number)) newErrors.passport_number = '7 ta raqam';
+    if (!/^\d{14}$/.test(formData.jshshr)) newErrors.jshshr = t('contractsValidation.jshshrError');
+    if (!/^[A-Z]{2}$/.test(formData.passport_series))
+      newErrors.passport_series = t('contractsValidation.passportSeriesError');
+    if (!/^\d{7}$/.test(formData.passport_number))
+      newErrors.passport_number = t('contractsValidation.passportNumberError');
     if (!formData.first_name) newErrors.first_name = t('contractsValidation.required');
     if (!formData.last_name) newErrors.last_name = t('contractsValidation.required');
     if (!formData.branch_id) newErrors.branch_id = t('contractsValidation.required');
@@ -326,7 +327,7 @@ export function ContractsCreate({
         });
         currentEmployeeId = res.data?.data?.id || res.data?.id;
         if (!currentEmployeeId) {
-          throw new Error('Xodim yozuvini yaratishda ID qaytarilmadi');
+          throw new Error(t('contracts.employeeIdError'));
         }
       }
 
@@ -335,7 +336,7 @@ export function ContractsCreate({
         try {
           const res = await API.get(`/contracts`);
           if (!currentEmployeeId) {
-            throw new Error('Employee ID mavjud emas');
+            throw new Error(t('contracts.employeeIdError'));
           }
           const allContracts = Array.isArray(res.data) ? res.data : res.data?.data || [];
           if (Array.isArray(allContracts)) {
@@ -348,7 +349,7 @@ export function ContractsCreate({
             }
           }
         } catch {
-          throw new Error('Shartnoma raqamini shakllantirishda xatolik yuz berdi');
+          throw new Error(t('contracts.contractNumberError'));
         }
       }
 
@@ -458,7 +459,7 @@ export function ContractsCreate({
       if (compressedFile.size > 200 * 1024) {
         setErrors((prev) => ({
           ...prev,
-          photo: 'Rasmni 200KB gacha siqib bo‘lmadi',
+          photo: t('contracts.photoError'),
         }));
         return;
       }
@@ -477,7 +478,7 @@ export function ContractsCreate({
     } catch {
       setErrors((prev) => ({
         ...prev,
-        photo: 'Rasmni qayta ishlashda xatolik',
+        photo: t('contracts.photoProcessError'),
       }));
     }
   };
@@ -489,7 +490,7 @@ export function ContractsCreate({
           <div className="icon-box">
             <i className="fas fa-user-edit"></i>
           </div>
-          Xodim bilan shartnoma
+          {t('contracts.pageTitle')}
         </h1>
       </div>
 
@@ -523,7 +524,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Shartnoma tili <span className="required">*</span>
+              {t('contracts.language')} <span className="required">*</span>
             </label>
             <select
               value={formData.language}
@@ -538,7 +539,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Fuqaroligi <span className="required">*</span>
+              {t('contracts.citizenship')} <span className="required">*</span>
             </label>
             <select
               value={formData.citizenship}
@@ -549,16 +550,16 @@ export function ContractsCreate({
                 })
               }
             >
-              <option value="citizen">O'zbekiston fuqarosi</option>
-              <option value="no_citizenship">Fuqaroligi yo'q</option>
-              <option value="foreign_citizen">Chet el fuqarosi</option>
+              <option value="citizen">{t('contracts.citizenOption')}</option>
+              <option value="no_citizenship">{t('contracts.noCitizenshipOption')}</option>
+              <option value="foreign_citizen">{t('contracts.foreignCitizenOption')}</option>
             </select>
           </div>
 
           {formData.citizenship === 'foreign_citizen' && (
             <div className="ct-form-group">
               <label>
-                Mamlakat <span className="required">*</span>
+                {t('contracts.country')} <span className="required">*</span>
               </label>
               <input
                 type="text"
@@ -570,13 +571,13 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Filial <span className="required">*</span>
+              {t('payments.branch')} <span className="required">*</span>
             </label>
             <select
               value={formData.branch_id}
               onChange={(e) => setFormData({ ...formData, branch_id: Number(e.target.value) })}
             >
-              <option value={0}>Tanlang</option>
+              <option value={0}>{t('contracts.selectPlaceholder')}</option>
               {branches?.map((b) => (
                 <option key={b.id} value={b.id}>
                   {getLocalized(b, 'name', lang)}
@@ -586,13 +587,13 @@ export function ContractsCreate({
           </div>
 
           <div className="ct-form-group">
-            <label>Shahar</label>
+            <label>{t('contracts.city')}</label>
             <input type="text" value={selectedBranch?.city || ''} readOnly disabled />
           </div>
 
           <div className="ct-form-group">
             <label>
-              Shartnoma sanasi <span className="required">*</span>
+              {t('contracts.contractDate')} <span className="required">*</span>
             </label>
             <input
               type="date"
@@ -603,7 +604,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group span-2">
             <label>
-              Passport seriyasi va raqami <span className="required">*</span>
+              {t('contracts.passportSeriesNumber')} <span className="required">*</span>
             </label>
             <div className="ct-passport-row">
               <input
@@ -635,7 +636,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Berilgan sanasi <span className="required">*</span>
+              {t('contracts.issuedDate')} <span className="required">*</span>
             </label>
             <input
               type="date"
@@ -650,14 +651,14 @@ export function ContractsCreate({
           </div>
 
           <div className="ct-form-group">
-            <label>Rasm (ixtiyoriy, max 200KB)</label>
+            <label>{t('contracts.photo')}</label>
 
             <div style={{ display: 'flex', gap: 10 }}>
               <input type="file" accept="image/*" onChange={handleFileChange} />
 
               <button type="button" className="ct-camera-btn" onClick={() => setIsCameraOpen(true)}>
                 <span className="ct-camera-btn-icon">📷</span>
-                <span>Kamera</span>
+                <span>{t('contracts.camera')}</span>
               </button>
             </div>
 
@@ -720,11 +721,11 @@ export function ContractsCreate({
 
           <div className="ct-form-group full-width">
             <label>
-              Kim tomonidan berilganligi <span className="required">*</span>
+              {t('contracts.issuedBy')} <span className="required">*</span>
             </label>
             <input
               type="text"
-              placeholder="kiring"
+              placeholder={t('contracts.enterHint')}
               value={formData.passport_given_by}
               onChange={(e) => setFormData({ ...formData, passport_given_by: e.target.value })}
             />
@@ -732,33 +733,33 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Familya <span className="required">*</span>
+              {t('contracts.lastName')} <span className="required">*</span>
             </label>
             <input
               type="text"
-              placeholder="Kiritish"
+              placeholder={t('contracts.enterHint')}
               value={formData.last_name}
               onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
             />
           </div>
           <div className="ct-form-group">
             <label>
-              Ism <span className="required">*</span>
+              {t('contracts.firstName')} <span className="required">*</span>
             </label>
             <input
               type="text"
-              placeholder="Kiritish"
+              placeholder={t('contracts.enterHint')}
               value={formData.first_name}
               onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
             />
           </div>
           <div className="ct-form-group">
             <label>
-              Otasini ismi <span className="required">*</span>
+              {t('contracts.middleName')} <span className="required">*</span>
             </label>
             <input
               type="text"
-              placeholder="Kiritish"
+              placeholder={t('contracts.enterHint')}
               value={formData.middle_name}
               onChange={(e) => setFormData({ ...formData, middle_name: e.target.value })}
             />
@@ -766,7 +767,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Tug'ilgan sanasi <span className="required">*</span>
+              {t('contracts.birthDate')} <span className="required">*</span>
             </label>
             <input
               type="date"
@@ -777,7 +778,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Bo'lim <span className="required">*</span>
+              {t('contracts.department')} <span className="required">*</span>
             </label>
             <select
               value={formData.department_id}
@@ -789,7 +790,7 @@ export function ContractsCreate({
                 })
               }
             >
-              <option value={0}>tanlang</option>
+              <option value={0}>{t('contracts.selectPlaceholder')}</option>
               {departments?.map((d) => (
                 <option key={d.id} value={d.id}>
                   {getLocalized(d, 'name', lang)}
@@ -800,7 +801,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Lavozimi <span className="required">*</span>
+              {t('contracts.position')} <span className="required">*</span>
             </label>
             <select
               value={formData.position_id}
@@ -811,7 +812,7 @@ export function ContractsCreate({
                 })
               }
             >
-              <option value={0}>tanlang</option>
+              <option value={0}>{t('contracts.selectPlaceholder')}</option>
               {filteredPositions?.map((p) => (
                 <option key={p.id} value={p.id}>
                   {getLocalized(p, 'name', lang)}
@@ -822,7 +823,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Shartnoma boshlanish sanasi <span className="required">*</span>
+              {t('contracts.contractStartDate')} <span className="required">*</span>
             </label>
             <input
               type="date"
@@ -838,7 +839,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Shartnoma tugash sanasi <span className="required">*</span>
+              {t('contracts.contractEndDate')} <span className="required">*</span>
             </label>
             <input
               type="date"
@@ -856,7 +857,7 @@ export function ContractsCreate({
               onChange={(e) => setFormData({ ...formData, contract_type: e.target.value })}
               className={errors.contract_type ? 'error' : ''}
             >
-              <option value="">tanlang</option>
+              <option value="">{t('contracts.selectPlaceholder')}</option>
               <option value="doimiy">{t('contractsValidation.options.doimiy')}</option>
               <option value="muddatli">{t('contractsValidation.options.muddatli')}</option>
               <option value="sinov">{t('contractsValidation.options.sinov')}</option>
@@ -866,7 +867,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Shartnoma muddati <span className="required">*</span>
+              {t('contracts.contractDuration')} <span className="required">*</span>
             </label>
             <input
               type="date"
@@ -876,7 +877,7 @@ export function ContractsCreate({
           </div>
 
           <div className="ct-form-group">
-            <label>Sinov muddati</label>
+            <label>{t('contracts.probation')}</label>
             <select
               value={formData.probation_enabled ? 'yes' : 'no'}
               onChange={(e) =>
@@ -886,15 +887,15 @@ export function ContractsCreate({
                 })
               }
             >
-              <option value="no">Yo'q</option>
-              <option value="yes">Ha</option>
+              <option value="no">{t('contracts.no')}</option>
+              <option value="yes">{t('contracts.yes')}</option>
             </select>
           </div>
 
           {formData.probation_enabled && (
             <div className="ct-form-group">
               <label>
-                Sinov muddati kunda <span className="required">*</span>
+                {t('contracts.probationDays')} <span className="required">*</span>
               </label>
               <input
                 type="number"
@@ -911,7 +912,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Umumiy ish soati (oylik) <span className="required">*</span>
+              {t('contracts.workingHours')} <span className="required">*</span>
             </label>
             <input
               type="number"
@@ -927,7 +928,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>
-              Asosiy maosh <span className="required">*</span>
+              {t('contracts.baseSalary')} <span className="required">*</span>
             </label>
             <input
               type="number"
@@ -942,28 +943,28 @@ export function ContractsCreate({
           </div>
 
           <div className="ct-form-group">
-            <label>Soatlik maosh</label>
+            <label>{t('contracts.hourlySalary')}</label>
             <input type="text" value={hourlyRate} readOnly disabled />
           </div>
         </div>
 
         <div className="ct-dynamic-section">
-          <h3>Qo'shimcha topshiriqlar</h3>
+          <h3>{t('contracts.additionalTasks')}</h3>
           {formData.additional_tasks.map((task, idx) => (
             <div key={idx} className="ct-dynamic-item">
               <div className="ct-form-group">
-                <label>Topshiriq</label>
+                <label>{t('contracts.task')}</label>
                 <select
                   value={task.task_id}
                   onChange={(e) => updateTask(idx, { task_id: Number(e.target.value) })}
                 >
-                  <option value={0}>tanlang</option>
+                  <option value={0}>{t('contracts.selectPlaceholder')}</option>
                   <option value={1}>Monitoring</option>
                   <option value={2}>Adminstrator</option>
                 </select>
               </div>
               <div className="ct-form-group">
-                <label>Maosh</label>
+                <label>{t('contracts.salary')}</label>
                 <input
                   type="number"
                   value={task.salary}
@@ -975,7 +976,7 @@ export function ContractsCreate({
                 />
               </div>
               <div className="ct-form-group">
-                <label>Izoh</label>
+                <label>{t('contracts.comment')}</label>
                 <input
                   type="text"
                   value={task.comment}
@@ -1007,7 +1008,7 @@ export function ContractsCreate({
 
         <div className="ct-form-grid">
           <div className="ct-form-group full-width">
-            <label>Jami oylik maosh</label>
+            <label>{t('contracts.totalMonthlySalary')}</label>
             <input
               type="text"
               value={totalMonthlySalary.toFixed(2)}
@@ -1021,7 +1022,7 @@ export function ContractsCreate({
         <div className="ct-form-grid">
           <div className="ct-form-group">
             <label>
-              Maosh davri (boshi) <span className="required">*</span>
+              {t('contracts.salaryPeriodStart')} <span className="required">*</span>
             </label>
             <input
               type="date"
@@ -1036,7 +1037,7 @@ export function ContractsCreate({
           </div>
           <div className="ct-form-group">
             <label>
-              Maosh davri (tugashi) <span className="required">*</span>
+              {t('contracts.salaryPeriodEnd')} <span className="required">*</span>
             </label>
             <input
               type="date"
@@ -1082,10 +1083,10 @@ export function ContractsCreate({
               }
               className={errors.vacation_type ? 'error' : ''}
             >
-              <option value="">tanlang</option>
+              <option value="">{t('contracts.selectPlaceholder')}</option>
               <option value="yillik">{t('contractsValidation.options.annual')}</option>
               <option value="qisman">{t('contractsValidation.options.partial')}</option>
-              <option value="yo'q">{t('contractsValidation.options.other')}</option>
+              <option value="yo‘q">{t('contractsValidation.options.other')}</option>
             </select>
             {errors.vacation_type && <span className="error-text">{errors.vacation_type}</span>}
           </div>
@@ -1094,7 +1095,7 @@ export function ContractsCreate({
             <>
               <div className="ct-form-group">
                 <label>
-                  Ta'til kuni <span className="required">*</span>
+                  {t('contracts.vacationDays')} <span className="required">*</span>
                 </label>
                 <input
                   type="number"
@@ -1109,7 +1110,7 @@ export function ContractsCreate({
               </div>
               <div className="ct-form-group">
                 <label>
-                  Ta'til uchun maosh <span className="required">*</span>
+                  {t('contracts.vacationPayment')} <span className="required">*</span>
                 </label>
                 <input
                   type="number"
@@ -1129,7 +1130,7 @@ export function ContractsCreate({
         <div className="ct-dynamic-section">
           <div className="ct-form-group">
             <label>
-              Telefon nomer <span className="required">*</span>
+              {t('contracts.phone')} <span className="required">*</span>
             </label>
             {formData.phones.map((phone, idx) => (
               <div
@@ -1185,7 +1186,7 @@ export function ContractsCreate({
         <div className="ct-form-grid ct-form-grid-2">
           <div className="ct-form-group">
             <label>
-              Yashash joyi (Ro'yxatga olingan manzili) <span className="required">*</span>
+              {t('contracts.addressReg')} <span className="required">*</span>
             </label>
             <textarea
               value={formData.address_reg}
@@ -1194,7 +1195,7 @@ export function ContractsCreate({
           </div>
           <div className="ct-form-group">
             <label>
-              Yashash joyi <span className="required">*</span>
+              {t('contracts.addressCurrent')} <span className="required">*</span>
             </label>
             <textarea
               value={formData.address_current}
@@ -1205,7 +1206,7 @@ export function ContractsCreate({
 
         <div className="ct-form-actions">
           <button type="submit" className="ct-btn ct-btn-save" disabled={saveMutation.isPending}>
-            {saveMutation.isPending ? 'Saqlanmoqda...' : 'Saqlash'}
+            {saveMutation.isPending ? t('contracts.saving') : t('contracts.save')}
           </button>
           <button
             type="button"
@@ -1215,7 +1216,7 @@ export function ContractsCreate({
               else navigate('/contracts');
             }}
           >
-            Bekor qilish
+            {t('contracts.cancel')}
           </button>
         </div>
       </form>

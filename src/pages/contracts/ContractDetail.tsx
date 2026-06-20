@@ -1,6 +1,6 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { getLocalized } from "../../utils/getLocalized";
+﻿﻿import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { getLocalized } from '../../utils/getLocalized';
 
 interface Employee {
   id: number;
@@ -64,11 +64,11 @@ interface Props {
 }
 
 const ContractDetail: React.FC<Props> = ({ contract, onClose }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const formatDate = (dateStr: string) => {
-    if (!dateStr) return "-";
-    return new Date(dateStr).toLocaleDateString("ru-RU");
+    if (!dateStr) return '-';
+    return new Date(dateStr).toLocaleDateString('ru-RU');
   };
 
   const emp = contract.employee;
@@ -82,60 +82,55 @@ const ContractDetail: React.FC<Props> = ({ contract, onClose }) => {
 
         <div className="detail-section">
           <h2 className="detail-section-title">
-            <i className="fas fa-user"></i> Shaxsiy ma'lumotlar
+            <i className="fas fa-user"></i> {t('contracts.personalInfo')}
           </h2>
           <div className="detail-grid">
             <div className="detail-item">
-              <span className="detail-label">F.I.SH</span>
+              <span className="detail-label">{t('contracts.fullName')}</span>
               <span className="detail-value">
-                {emp.full_name ||
-                  `${emp.last_name} ${emp.first_name} ${emp.middle_name}`}
+                {emp.full_name || `${emp.last_name} ${emp.first_name} ${emp.middle_name}`}
               </span>
             </div>
             <div className="detail-item">
               <span className="detail-label">PINFL</span>
-              <span className="detail-value">{emp.pinfl || "-"}</span>
+              <span className="detail-value">{emp.pinfl || '-'}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Tug'ilgan sana</span>
+              <span className="detail-label">{t('contracts.birthDate')}</span>
               <span className="detail-value">{formatDate(emp.birth_date)}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Telefon</span>
+              <span className="detail-label">{t('contracts.phone')}</span>
               <span className="detail-value">{emp.phone}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Fuqaroligi</span>
+              <span className="detail-label">{t('contracts.citizenship')}</span>
               <span className="detail-value">{emp.citizenship}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Til</span>
-              <span className="detail-value">
-                {contract.language || "N/A"}
-              </span>
+              <span className="detail-label">{t('contracts.language')}</span>
+              <span className="detail-value">{contract.language || 'N/A'}</span>
             </div>
           </div>
         </div>
 
         <div className="detail-section">
           <h2 className="detail-section-title">
-            <i className="fas fa-id-card"></i> Passport ma'lumotlari
+            <i className="fas fa-id-card"></i> {t('contracts.passportInfo')}
           </h2>
           <div className="detail-grid">
             <div className="detail-item">
-              <span className="detail-label">Seriya va raqam</span>
+              <span className="detail-label">{t('contracts.serialNumber')}</span>
               <span className="detail-value">
                 {emp.passport_series} {emp.passport_number}
               </span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Berilgan sana</span>
-              <span className="detail-value">
-                {formatDate(emp.passport_given_date)}
-              </span>
+              <span className="detail-label">{t('contracts.issuedDate')}</span>
+              <span className="detail-value">{formatDate(emp.passport_given_date)}</span>
             </div>
-            <div className="detail-item" style={{ gridColumn: "span 2" }}>
-              <span className="detail-label">Kim tomonidan berilgan</span>
+            <div className="detail-item" style={{ gridColumn: 'span 2' }}>
+              <span className="detail-label">{t('contracts.issuedBy')}</span>
               <span className="detail-value">{emp.passport_given_by}</span>
             </div>
           </div>
@@ -143,117 +138,103 @@ const ContractDetail: React.FC<Props> = ({ contract, onClose }) => {
 
         <div className="detail-section">
           <h2 className="detail-section-title">
-            <i className="fas fa-briefcase"></i> Ish joyi va Shartnoma
+            <i className="fas fa-briefcase"></i> {t('contracts.workplaceContract')}
           </h2>
           <div className="detail-grid">
             <div className="detail-item">
-              <span className="detail-label">Shartnoma raqami</span>
+              <span className="detail-label">{t('contracts.contractNumber')}</span>
               <span className="detail-value">{contract.contract_number}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Bo'lim</span>
+              <span className="detail-label">{t('contracts.department')}</span>
               <span className="detail-value">
-                {getLocalized(contract.department, "name", i18n.language)}
+                {getLocalized(contract.department, 'name', i18n.language)}
               </span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Lavozim</span>
+              <span className="detail-label">{t('contracts.position')}</span>
               <span className="detail-value">
                 {contract.position
-                  ? getLocalized(contract.position, "name", i18n.language)
-                  : "Xodim"}
+                  ? getLocalized(contract.position, 'name', i18n.language)
+                  : t('contracts.employee')}
               </span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Status</span>
+              <span className="detail-label">{t('contracts.tableStatus')}</span>
               <span className={`badge ${contract.status}`}>
-                {contract.status === "active" ? "Faol" : "Faol emas"}
+                {contract.status === 'active' ? t('contracts.statusActive') : t('contracts.statusInactive')}
               </span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Boshlanish sanasi</span>
-              <span className="detail-value">
-                {formatDate(contract.contract_start_date)}
-              </span>
+              <span className="detail-label">{t('contracts.tableStartDate')}</span>
+              <span className="detail-value">{formatDate(contract.contract_start_date)}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Tugash sanasi</span>
-              <span className="detail-value">
-                {formatDate(contract.contract_end_date)}
-              </span>
+              <span className="detail-label">{t('contracts.tableEndDate')}</span>
+              <span className="detail-value">{formatDate(contract.contract_end_date)}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Shartnoma turi</span>
+              <span className="detail-label">{t('contracts.contractType')}</span>
               <span className="detail-value">{contract.contract_type}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Sinov muddati</span>
-              <span className="detail-value">
-                {contract.probation_period || "Yo'q"}
-              </span>
+              <span className="detail-label">{t('contracts.probationPeriod')}</span>
+              <span className="detail-value">{contract.probation_period || t('contracts.no')}</span>
             </div>
           </div>
         </div>
 
         <div className="detail-section">
           <h2 className="detail-section-title">
-            <i className="fas fa-money-bill-wave"></i> Ish haqi va Ish vaqti
+            <i className="fas fa-money-bill-wave"></i> {t('contracts.salaryWorkTime')}
           </h2>
           <div className="detail-grid">
             <div className="detail-item">
-              <span className="detail-label">Asosiy maosh</span>
+              <span className="detail-label">{t('contracts.baseSalary')}</span>
               <span className="detail-value">
                 {Number(contract.base_salary).toLocaleString()} UZS
               </span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Oylik ish vaqti</span>
-              <span className="detail-value">
-                {contract.working_hours_monthly} soat
-              </span>
+              <span className="detail-label">{t('contracts.monthlyWorkHours')}</span>
+              <span className="detail-value">{contract.working_hours_monthly} {t('contracts.hours')}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Soatlik stavka</span>
+              <span className="detail-label">{t('contracts.hourlyRate')}</span>
               <span className="detail-value">
                 {Number(contract.hourly_rate).toLocaleString()} UZS
               </span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Jami oylik maosh</span>
-              <span
-                className="detail-value"
-                style={{ fontWeight: "bold", color: "#fe9100" }}
-              >
+              <span className="detail-label">{t('contracts.totalMonthlySalary')}</span>
+              <span className="detail-value" style={{ fontWeight: 'bold', color: '#fe9100' }}>
                 {Number(contract.total_monthly_salary).toLocaleString()} UZS
               </span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Maosh davri</span>
+              <span className="detail-label">{t('contracts.salaryPeriod')}</span>
               <span className="detail-value">
-                {formatDate(contract.salary_start_date)} -{" "}
-                {formatDate(contract.salary_end_date)}
+                {formatDate(contract.salary_start_date)} - {formatDate(contract.salary_end_date)}
               </span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Ta'til turi</span>
-              <span className="detail-value">
-                {contract.vacation_type || "Mavjud emas"}
-              </span>
+              <span className="detail-label">{t('contracts.vacationType')}</span>
+              <span className="detail-value">{contract.vacation_type || t('contracts.notAvailable')}</span>
             </div>
           </div>
         </div>
 
         <div className="detail-section">
           <h2 className="detail-section-title">
-            <i className="fas fa-map-marker-alt"></i> Manzil ma'lumotlari
+            <i className="fas fa-map-marker-alt"></i> {t('contracts.addressInfo')}
           </h2>
           <div className="detail-grid">
-            <div className="detail-item" style={{ gridColumn: "span 2" }}>
-              <span className="detail-label">Ro'yxatga olingan manzili</span>
+            <div className="detail-item" style={{ gridColumn: 'span 2' }}>
+              <span className="detail-label">{t('contracts.registeredAddress')}</span>
               <span className="detail-value">{emp.address_registration}</span>
             </div>
-            <div className="detail-item" style={{ gridColumn: "span 2" }}>
-              <span className="detail-label">Haqiqiy yashash manzili</span>
+            <div className="detail-item" style={{ gridColumn: 'span 2' }}>
+              <span className="detail-label">{t('contracts.livingAddress')}</span>
               <span className="detail-value">{emp.address_living}</span>
             </div>
           </div>

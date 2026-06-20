@@ -220,7 +220,7 @@ export const emptyOrganization: OrganizationFormData = {
   trustee_date: '',
   trustee_number: '',
   organization_name: '',
-  organization_branch: "yo'q",
+  organization_branch: 'yo‘q',
   branch_name: '',
   branch_address: '',
   director_last_name: '',

@@ -12,8 +12,8 @@ import './roles.css';
 const TAB_LABELS: Record<MainTab, string> = {
   umumiy: 'Umumiy Dashboard',
   sotuv: 'Sotuv va Lidlar',
-  oquvchi: "O'quvchilar Analitikasi",
-  oqituvchi: "O'qituvchilar & Xonalar",
+  oquvchi: 'O‘quvchilar Analitikasi',
+  oqituvchi: 'O‘qituvchilar & Xonalar',
   moliya: 'Kompleks Moliya',
 };
 
@@ -151,7 +151,10 @@ const RolePermissions = () => {
   });
 
   const saveDashMutation = useMutation({
-    mutationFn: async (settings: { roleVisibility: Record<string, string[]>; pagePermissions: Record<string, string[]> }) => {
+    mutationFn: async (settings: {
+      roleVisibility: Record<string, string[]>;
+      pagePermissions: Record<string, string[]>;
+    }) => {
       await saveDashboardSettings({
         tabNames: dashboardSettings?.tabNames ?? {},
         roleVisibility: settings.roleVisibility,
@@ -247,14 +250,23 @@ const RolePermissions = () => {
                   onChange={(e) => {
                     const current = permissionsState[perm.moduleName] || [];
                     if (e.target.checked) {
-                      handleActionChange(perm.moduleName, [...current, { id: perm.id, action: perm.action }]);
+                      handleActionChange(perm.moduleName, [
+                        ...current,
+                        { id: perm.id, action: perm.action },
+                      ]);
                     } else {
-                      handleActionChange(perm.moduleName, current.filter((a) => a.id !== perm.id));
+                      handleActionChange(
+                        perm.moduleName,
+                        current.filter((a) => a.id !== perm.id),
+                      );
                     }
                   }}
                 />
                 <span className="permission-standalone-name">
-                  {t(`roles.standalonePermissions.${perm.moduleName}_${perm.action}`, perm.fullName)}
+                  {t(
+                    `roles.standalonePermissions.${perm.moduleName}_${perm.action}`,
+                    perm.fullName,
+                  )}
                 </span>
               </label>
             </div>
@@ -279,6 +291,9 @@ const RolePermissions = () => {
             {t('roles.pagePermissions', 'Sahifa ruxsatlari')}
           </h3>
           <div className="permission-checkboxes">
+            <p style={{ margin: '0 0 6px 0', fontWeight: 600, fontSize: '14px' }}>
+              {t('roles.pageLessonSchedule', 'Dars jadvali')}
+            </p>
             <label className="permission-checkbox-label">
               {roleData?.name === 'admin' ? (
                 <input type="checkbox" checked disabled />
@@ -295,7 +310,7 @@ const RolePermissions = () => {
                   }
                 />
               )}
-              {t('roles.pageGroups', 'Guruhlar sahifasi')}
+              {t('roles.view', 'Ko‘rish')}
             </label>
           </div>
         </div>
@@ -303,7 +318,7 @@ const RolePermissions = () => {
         {/* Dashboard bo'limlari visibility card */}
         <div className="permission-card">
           <h3 className="permission-card-title">
-            {t('roles.dashboardSections', "Dashboard bo'limlari")}
+            {t('roles.dashboardSections', 'Dashboard bo‘limlari')}
           </h3>
           <div className="permission-checkboxes">
             {ALL_TABS.map((tab) => (

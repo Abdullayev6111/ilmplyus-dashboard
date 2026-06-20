@@ -1,34 +1,27 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  keepPreviousData,
-} from "@tanstack/react-query";
-import { API } from "../../api/api";
-import { useTranslation } from "react-i18next";
-import { getLocalized } from "../../utils/getLocalized";
-import EmptyState from "../../components/EmptyState";
-import TableSkeleton from "../../components/TableSkeleton";
-import "../branches/branches.css";
-import type { Branch, DepartmentType, DepartmentPayload } from "../../types";
-import { useEffect, useMemo, useState } from "react";
-import { Protected } from "../../components/Protected";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { API } from '../../api/api';
+import { useTranslation } from 'react-i18next';
+import { getLocalized } from '../../utils/getLocalized';
+import EmptyState from '../../components/EmptyState';
+import TableSkeleton from '../../components/TableSkeleton';
+import '../branches/branches.css';
+import type { Branch, DepartmentType, DepartmentPayload } from '../../types';
+import { useEffect, useMemo, useState } from 'react';
+import { Protected } from '../../components/Protected';
 
 // --- API FUNCTIONS ---
 const getBranches = async (): Promise<Branch[]> => {
-  const { data } = await API.get("/branches");
+  const { data } = await API.get('/branches');
   return data;
 };
 
 const getDepartments = async (): Promise<DepartmentType[]> => {
-  const { data } = await API.get("/departments");
+  const { data } = await API.get('/departments');
   return data;
 };
 
-const createDepartment = async (
-  payload: DepartmentPayload,
-): Promise<DepartmentType> => {
-  const { data } = await API.post("/departments", payload);
+const createDepartment = async (payload: DepartmentPayload): Promise<DepartmentType> => {
+  const { data } = await API.post('/departments', payload);
   return data;
 };
 
@@ -61,32 +54,32 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
   initialData,
 }) => {
   const { t, i18n } = useTranslation();
-  const [nameUz, setNameUz] = useState("");
-  const [nameRu, setNameRu] = useState("");
-  const [nameEn, setNameEn] = useState("");
-  const [code, setCode] = useState("");
-  const [branchId, setBranchId] = useState<number | "">("");
-  const [manager, setManager] = useState("");
+  const [nameUz, setNameUz] = useState('');
+  const [nameRu, setNameRu] = useState('');
+  const [nameEn, setNameEn] = useState('');
+  const [code, setCode] = useState('');
+  const [branchId, setBranchId] = useState<number | ''>('');
+  const [manager, setManager] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [isCodeModified, setIsCodeModified] = useState(false);
 
   useEffect(() => {
     if (initialData) {
-      setNameUz(initialData.name_uz || "");
-      setNameRu(initialData.name_ru || "");
-      setNameEn(initialData.name_en || "");
+      setNameUz(initialData.name_uz || '');
+      setNameRu(initialData.name_ru || '');
+      setNameEn(initialData.name_en || '');
       setCode(initialData.code);
       setBranchId(initialData.branch_id);
-      setManager(initialData.manager || "");
+      setManager(initialData.manager || '');
       setIsActive(initialData.is_active);
       setIsCodeModified(true);
     } else {
-      setNameUz("");
-      setNameRu("");
-      setNameEn("");
-      setCode("");
-      setBranchId("");
-      setManager("");
+      setNameUz('');
+      setNameRu('');
+      setNameEn('');
+      setCode('');
+      setBranchId('');
+      setManager('');
       setIsActive(true);
       setIsCodeModified(false);
     }
@@ -94,12 +87,12 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === 'Escape') onClose();
     };
     if (isOpen) {
-      window.addEventListener("keydown", handleEsc);
+      window.addEventListener('keydown', handleEsc);
     }
-    return () => window.removeEventListener("keydown", handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -123,7 +116,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
     onSubmit(payload, initialData?.id);
   };
 
-  const inputStyle = { padding: "6px 10px", height: "36px", fontSize: "13px" };
+  const inputStyle = { padding: '6px 10px', height: '36px', fontSize: '13px' };
 
   return (
     <div className="branch-modal-overlay" onClick={onClose}>
@@ -133,14 +126,12 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
         onSubmit={handleSubmit}
       >
         <h3 className="branch-modal-heading">
-          {initialData
-            ? t("departments.editTitle")
-            : t("departments.addNewTitle")}
+          {initialData ? t('departments.editTitle') : t('departments.addNewTitle')}
         </h3>
 
         <div className="dept-form-grid">
           <div className="branch-input-group">
-            <label htmlFor="name_uz">{t("departments.name")} (UZ)</label>
+            <label htmlFor="name_uz">{t('departments.name')} (UZ)</label>
             <input
               id="name_uz"
               type="text"
@@ -149,7 +140,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
                 const newName = e.target.value;
                 setNameUz(newName);
                 if (!isCodeModified && !initialData) {
-                  setCode(newName.toUpperCase().replace(/\s+/g, "_"));
+                  setCode(newName.toUpperCase().replace(/\s+/g, '_'));
                 }
               }}
               required
@@ -158,7 +149,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
           </div>
 
           <div className="branch-input-group">
-            <label htmlFor="manager">{t("departments.manager")}</label>
+            <label htmlFor="manager">{t('departments.manager')}</label>
             <input
               id="manager"
               type="text"
@@ -170,7 +161,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
           </div>
 
           <div className="branch-input-group">
-            <label htmlFor="code">{t("departments.code")}</label>
+            <label htmlFor="code">{t('departments.code')}</label>
             <input
               id="code"
               type="text"
@@ -185,27 +176,27 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
           </div>
 
           <div className="branch-input-group">
-            <label>{t("departments.status")}</label>
+            <label>{t('departments.status')}</label>
             <div className="branch-toggle-wrapper">
               <button
                 type="button"
-                className={isActive ? "" : "branch-active-btn"}
+                className={isActive ? '' : 'branch-active-btn'}
                 onClick={() => setIsActive(false)}
               >
-                {t("departments.inactive")}
+                {t('departments.inactive')}
               </button>
               <button
                 type="button"
-                className={isActive ? "branch-active-btn" : ""}
+                className={isActive ? 'branch-active-btn' : ''}
                 onClick={() => setIsActive(true)}
               >
-                {t("departments.active")}
+                {t('departments.active')}
               </button>
             </div>
           </div>
 
           <div className="branch-input-group dept-full-width">
-            <label htmlFor="branch">{t("departments.branch")}</label>
+            <label htmlFor="branch">{t('departments.branch')}</label>
             <select
               id="branch"
               value={branchId}
@@ -214,7 +205,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
               style={inputStyle}
             >
               <option value="" disabled>
-                {t("departments.selectBranch")}
+                {t('departments.selectBranch')}
               </option>
               {branches?.map((b) => (
                 <option key={b.id} value={b.id}>
@@ -227,7 +218,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
           {initialData && (
             <>
               <div className="branch-input-group">
-                <label htmlFor="name_ru">{t("departments.name")} (RU)</label>
+                <label htmlFor="name_ru">{t('departments.name')} (RU)</label>
                 <input
                   id="name_ru"
                   type="text"
@@ -238,7 +229,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
               </div>
 
               <div className="branch-input-group">
-                <label htmlFor="name_en">{t("departments.name")} (EN)</label>
+                <label htmlFor="name_en">{t('departments.name')} (EN)</label>
                 <input
                   id="name_en"
                   type="text"
@@ -253,10 +244,10 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
 
         <div className="branch-modal-buttons">
           <button type="submit" className="branch-save-btn">
-            {t("departments.save")}
+            {t('departments.save')}
           </button>
           <button type="button" onClick={onClose} className="branch-cancel-btn">
-            {t("departments.cancel")}
+            {t('departments.cancel')}
           </button>
         </div>
       </form>
@@ -269,29 +260,23 @@ const Department = () => {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingDepartment, setEditingDepartment] =
-    useState<DepartmentType | null>(null);
+  const [editingDepartment, setEditingDepartment] = useState<DepartmentType | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [sortAsc, setSortAsc] = useState(true);
 
-  const toggleAll = (checked: boolean) =>
-    setSelected(checked ? tableData?.map((r) => r.id) : []);
+  const toggleAll = (checked: boolean) => setSelected(checked ? tableData?.map((r) => r.id) : []);
 
   const toggleOne = (id: number) =>
-    setSelected((p) =>
-      p.includes(id) ? p.filter((x) => x !== id) : [...p, id],
-    );
+    setSelected((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
-  const { data: departments = [], isLoading: isLoadingDepartments } = useQuery<
-    DepartmentType[]
-  >({
-    queryKey: ["departments"],
+  const { data: departments = [], isLoading: isLoadingDepartments } = useQuery<DepartmentType[]>({
+    queryKey: ['departments'],
     queryFn: getDepartments,
     placeholderData: keepPreviousData,
   });
 
   const { data: branches = [] } = useQuery<Branch[]>({
-    queryKey: ["branches"],
+    queryKey: ['branches'],
     queryFn: getBranches,
     staleTime: 1000 * 60 * 30,
     placeholderData: keepPreviousData,
@@ -300,7 +285,7 @@ const Department = () => {
   const createMutation = useMutation({
     mutationFn: createDepartment,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["departments"] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       setIsModalOpen(false);
     },
   });
@@ -309,7 +294,7 @@ const Department = () => {
     mutationFn: ({ id, payload }: { id: number; payload: DepartmentPayload }) =>
       updateDepartment(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["departments"] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
       setIsModalOpen(false);
     },
   });
@@ -317,7 +302,7 @@ const Department = () => {
   const deleteMutation = useMutation({
     mutationFn: deleteDepartment,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["departments"] });
+      queryClient.invalidateQueries({ queryKey: ['departments'] });
     },
   });
 
@@ -340,30 +325,34 @@ const Department = () => {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm(t("departments.confirmDelete", "Haqiqatan ham o‘chirmoqchimisiz?"))) {
+    if (window.confirm(t('departments.confirmDelete', 'Haqiqatan ham o‘chirmoqchimisiz?'))) {
       deleteMutation.mutate(id);
     }
   };
 
   const handleDeleteSelected = () => {
-    if (window.confirm(t("departments.confirmBatchDelete", "Tanlanganlarni haqiqatan ham o'chirmoqchimisiz?"))) {
+    if (
+      window.confirm(
+        t('departments.confirmBatchDelete', 'Tanlanganlarni haqiqatan ham o‘chirmoqchimisiz?'),
+      )
+    ) {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
   };
 
   const tableData = useMemo(() => {
-    return [...departments].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id);
+    return [...departments].sort((a, b) => (sortAsc ? a.id - b.id : b.id - a.id));
   }, [departments, sortAsc]);
 
   return (
     <section className="branch-container container">
-      <h1 className="branch-page-title">{t("departments.listTitle")}</h1>
+      <h1 className="branch-page-title">{t('departments.listTitle')}</h1>
 
       <div className="branch-filter-panel">
         <Protected permission="departments.create">
           <button className="branch-add-btn" onClick={() => handleOpenModal()}>
-            {t("departments.addNewTitle")}
+            {t('departments.addNewTitle')}
           </button>
         </Protected>
 
@@ -372,9 +361,12 @@ const Department = () => {
             className="branch-delete-btn"
             disabled={!selected.length}
             onClick={handleDeleteSelected}
-            style={{ opacity: selected.length ? 1 : 0.5, cursor: selected.length ? "pointer" : "not-allowed" }}
+            style={{
+              opacity: selected.length ? 1 : 0.5,
+              cursor: selected.length ? 'pointer' : 'not-allowed',
+            }}
           >
-            {t("departments.deleteSelected")}
+            {t('departments.deleteSelected')}
           </button>
         </Protected>
       </div>
@@ -386,67 +378,65 @@ const Department = () => {
               <th>
                 <input
                   type="checkbox"
-                  checked={
-                    selected.length === tableData?.length && tableData?.length > 0
-                  }
+                  checked={selected.length === tableData?.length && tableData?.length > 0}
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
-              <th>{t("departments.name")}</th>
-              <th>{t("departments.code")}</th>
-              <th>{t("departments.branch")}</th>
-              <th>{t("departments.manager")}</th>
-              <th>{t("departments.status")}</th>
-              <th>{t("departments.actions")}</th>
+              <th className="th-sortable" onClick={() => setSortAsc((p) => !p)}>
+                ID {sortAsc ? '↑' : '↓'}
+              </th>
+              <th>{t('departments.name')}</th>
+              <th>{t('departments.code')}</th>
+              <th>{t('departments.branch')}</th>
+              <th>{t('departments.manager')}</th>
+              <th>{t('departments.status')}</th>
+              <th>{t('departments.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {isLoadingDepartments ? (
               <TableSkeleton rowCount={8} columnCount={8} />
-            ) : tableData?.map((dept) => (
-              <tr key={dept.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(dept.id)}
-                    onChange={() => toggleOne(dept.id)}
-                  />
-                </td>
-                <td>{dept.id}</td>
-                <td>{getLocalized(dept, 'name', i18n.language)}</td>
-                <td>{dept.code}</td>
-                <td>{dept.branch ? getLocalized(dept.branch, 'name', i18n.language) : "-"}</td>
-                <td>{dept.manager}</td>
-                <td>
-                  {dept.is_active
-                    ? t("departments.active")
-                    : t("departments.inactive")}
-                </td>
-                <td className="branch-action-cell">
-                  <Protected permission="departments.edit">
-                    <button
-                      className="branch-edit-icon"
-                      onClick={() => handleOpenModal(dept)}
-                      aria-label={t("common.edit", "Tahrirlash")}
-                    >
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
-                  </Protected>
-                  <Protected permission="departments.delete">
-                    <button
-                      className="branch-delete-icon"
-                      onClick={() => handleDelete(dept.id)}
-                      aria-label={t("common.delete", "O’chirish")}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
-                  </Protected>
-                </td>
-              </tr>
-            ))}
+            ) : (
+              tableData?.map((dept) => (
+                <tr key={dept.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(dept.id)}
+                      onChange={() => toggleOne(dept.id)}
+                    />
+                  </td>
+                  <td>{dept.id}</td>
+                  <td>{getLocalized(dept, 'name', i18n.language)}</td>
+                  <td>{dept.code}</td>
+                  <td>{dept.branch ? getLocalized(dept.branch, 'name', i18n.language) : '-'}</td>
+                  <td>{dept.manager}</td>
+                  <td>{dept.is_active ? t('departments.active') : t('departments.inactive')}</td>
+                  <td className="branch-action-cell">
+                    <Protected permission="departments.edit">
+                      <button
+                        className="branch-edit-icon"
+                        onClick={() => handleOpenModal(dept)}
+                        aria-label={t('common.edit', 'Tahrirlash')}
+                      >
+                        <i className="fa-solid fa-pen"></i>
+                      </button>
+                    </Protected>
+                    <Protected permission="departments.delete">
+                      <button
+                        className="branch-delete-icon"
+                        onClick={() => handleDelete(dept.id)}
+                        aria-label={t('common.delete', 'O’chirish')}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </Protected>
+                  </td>
+                </tr>
+              ))
+            )}
             {!isLoadingDepartments && tableData.length === 0 && (
-              <EmptyState colSpan={8} message={t("common.noData")} />
+              <EmptyState colSpan={8} message={t('common.noData')} />
             )}
           </tbody>
         </table>

@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API } from "../../api/api";
-import { useTranslation } from "react-i18next";
-import EmptyState from "../../components/EmptyState";
-import "./archive.css";
+import { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { API } from '../../api/api';
+import { useTranslation } from 'react-i18next';
+import EmptyState from '../../components/EmptyState';
+import './archive.css';
 
 interface Branch {
   id: number;
@@ -59,25 +59,22 @@ const ArchivedPayments = () => {
   const [archived, setArchived] = useState<Payment[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
 
-  const toggleAll = (checked: boolean) =>
-    setSelected(checked ? archived?.map((r) => r.id) : []);
+  const toggleAll = (checked: boolean) => setSelected(checked ? archived?.map((r) => r.id) : []);
 
   const toggleOne = (id: number) =>
-    setSelected((p) =>
-      p.includes(id) ? p.filter((x) => x !== id) : [...p, id],
-    );
+    setSelected((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
   useEffect(() => {
     const loadArchived = () => {
       try {
-        const stored = localStorage.getItem("archivedPayments");
+        const stored = localStorage.getItem('archivedPayments');
         if (stored) {
           const parsed = JSON.parse(stored);
-          console.log("Arxivlangan to'lovlar:", parsed);
+          console.log('Arxivlangan to‘lovlar:', parsed);
           setArchived(parsed);
         }
       } catch (error) {
-        console.error("Arxivlarni yuklash xatosi:", error);
+        console.error('Arxivlarni yuklash xatosi:', error);
       }
     };
     loadArchived();
@@ -94,41 +91,39 @@ const ArchivedPayments = () => {
         student_id: payment.student_id,
         group_id: payment.group_id,
       };
-      const { data } = await API.post("/payments", payload);
+      const { data } = await API.post('/payments', payload);
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
     },
   });
 
   const restorePayment = (payment: Payment) => {
     try {
       const updatedArchived = archived.filter((p) => p.id !== payment.id);
-      localStorage.setItem("archivedPayments", JSON.stringify(updatedArchived));
+      localStorage.setItem('archivedPayments', JSON.stringify(updatedArchived));
       setArchived(updatedArchived);
 
-      const storedIds = JSON.parse(
-        localStorage.getItem("archivedPaymentIds") || "[]",
-      );
+      const storedIds = JSON.parse(localStorage.getItem('archivedPaymentIds') || '[]');
       const updatedIds = storedIds.filter((id: number) => id !== payment.id);
-      localStorage.setItem("archivedPaymentIds", JSON.stringify(updatedIds));
+      localStorage.setItem('archivedPaymentIds', JSON.stringify(updatedIds));
 
       restoreMutation.mutate(payment);
 
-      console.log("✅ To'lov qayta tiklandi:", payment.id);
+      console.log('✅ To‘lov qayta tiklandi:', payment.id);
     } catch (error) {
-      console.error("❌ Restore xatosi:", error);
-      alert(t("payments.restoreError"));
+      console.error('❌ Restore xatosi:', error);
+      alert(t('payments.restoreError'));
     }
   };
 
   const deleteFromArchive = (id: number) => {
     const updated = archived.filter((p) => p.id !== id);
-    localStorage.setItem("archivedPayments", JSON.stringify(updated));
+    localStorage.setItem('archivedPayments', JSON.stringify(updated));
     setArchived(updated);
 
-    console.log("Arxivdan butunlay o'chirildi:", id);
+    console.log('Arxivdan butunlay o‘chirildi:', id);
   };
 
   const handleRestoreSelected = () => {
@@ -138,18 +133,14 @@ const ArchivedPayments = () => {
   };
 
   const handleDeleteSelected = () => {
-    if (window.confirm(t("payments.confirmBatchDelete"))) {
+    if (window.confirm(t('payments.confirmBatchDelete'))) {
       const updated = archived.filter((p) => !selected.includes(p.id));
-      localStorage.setItem("archivedPayments", JSON.stringify(updated));
+      localStorage.setItem('archivedPayments', JSON.stringify(updated));
       setArchived(updated);
 
-      const storedIds = JSON.parse(
-        localStorage.getItem("archivedPaymentIds") || "[]",
-      );
-      const updatedIds = storedIds.filter(
-        (id: number) => !selected.includes(id),
-      );
-      localStorage.setItem("archivedPaymentIds", JSON.stringify(updatedIds));
+      const storedIds = JSON.parse(localStorage.getItem('archivedPaymentIds') || '[]');
+      const updatedIds = storedIds.filter((id: number) => !selected.includes(id));
+      localStorage.setItem('archivedPaymentIds', JSON.stringify(updatedIds));
 
       setSelected([]);
     }
@@ -158,32 +149,32 @@ const ArchivedPayments = () => {
   const formatAmount = (amount: string | number) => {
     return Number(amount)
       .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   };
 
   return (
     <section className="payments container">
-      <h1 className="main-title">{t("payments.archivedTitle")}</h1>
+      <h1 className="main-title">{t('payments.archivedTitle')}</h1>
 
       <div className="payments-filters">
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: 'flex', gap: '10px' }}>
           <button
             className="restore-btn"
-            style={{ padding: "8px 16px", borderRadius: "8px" }}
+            style={{ padding: '8px 16px', borderRadius: '8px' }}
             disabled={!selected.length}
             onClick={handleRestoreSelected}
           >
-            <i className="fa-solid fa-rotate-left" style={{ marginRight: "8px" }}></i>
-            {t("payments.restoreSelected")}
+            <i className="fa-solid fa-rotate-left" style={{ marginRight: '8px' }}></i>
+            {t('payments.restoreSelected')}
           </button>
           <button
             className="payment-delete-btn"
-            style={{ padding: "8px 16px", borderRadius: "8px" }}
+            style={{ padding: '8px 16px', borderRadius: '8px' }}
             disabled={!selected.length}
             onClick={handleDeleteSelected}
           >
-            <i className="fa-solid fa-trash" style={{ marginRight: "8px" }}></i>
-            {t("payments.deleteSelected")}
+            <i className="fa-solid fa-trash" style={{ marginRight: '8px' }}></i>
+            {t('payments.deleteSelected')}
           </button>
         </div>
       </div>
@@ -195,26 +186,24 @@ const ArchivedPayments = () => {
               <th>
                 <input
                   type="checkbox"
-                  checked={
-                    selected.length === archived?.length && archived?.length > 0
-                  }
+                  checked={selected.length === archived?.length && archived?.length > 0}
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
               <th>ID</th>
-              <th>{t("payments.fish")}</th>
-              <th>{t("payments.amount")}</th>
-              <th>{t("payments.paymentMethod")}</th>
-              <th>{t("payments.paymentPeriod")}</th>
-              <th>{t("payments.course")}</th>
-              <th>{t("payments.cashier")}</th>
-              <th>{t("payments.branch")}</th>
-              <th>{t("payments.actions")}</th>
+              <th>{t('payments.fish')}</th>
+              <th>{t('payments.amount')}</th>
+              <th>{t('payments.paymentMethod')}</th>
+              <th>{t('payments.paymentPeriod')}</th>
+              <th>{t('payments.course')}</th>
+              <th>{t('payments.cashier')}</th>
+              <th>{t('payments.branch')}</th>
+              <th>{t('payments.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {archived.length === 0 ? (
-              <EmptyState colSpan={10} message={t("payments.noArchived")} />
+              <EmptyState colSpan={10} message={t('payments.noArchived')} />
             ) : (
               archived?.map((u) => (
                 <tr key={u.id}>
@@ -239,14 +228,14 @@ const ArchivedPayments = () => {
                     <button
                       className="restore-btn"
                       onClick={() => restorePayment(u)}
-                      title={t("payments.restore")}
+                      title={t('payments.restore')}
                     >
                       <i className="fa-solid fa-rotate-left"></i>
                     </button>
                     <button
                       className="payment-delete-btn"
                       onClick={() => deleteFromArchive(u.id)}
-                      title={t("payments.permanentDelete")}
+                      title={t('payments.permanentDelete')}
                     >
                       <i className="fa-solid fa-trash"></i>
                     </button>

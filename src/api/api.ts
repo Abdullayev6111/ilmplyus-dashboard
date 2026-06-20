@@ -1,13 +1,13 @@
-import axios from "axios";
-import useAuthStore from "../store/useAuthStore";
-import { queryClient } from "../main";
-import { notifications } from "@mantine/notifications";
+import axios from 'axios';
+import useAuthStore from '../store/useAuthStore';
+import { queryClient } from '../main';
+import { notifications } from '@mantine/notifications';
 
 export const API = axios.create({
-  baseURL: "https://easypos.uz/api",
+  baseURL: 'https://easypos.uz/api',
   timeout: 15000,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -45,12 +45,9 @@ API.interceptors.response.use(
       notifications.clean();
 
       notifications.show({
-        color: "red",
-        title: "Xatolik",
-        message:
-          status === 403
-            ? "Sahifaga kirishga ruxsat yo'q"
-            : message || "Xatolik yuz berdi",
+        color: 'red',
+        title: 'Xatolik',
+        message: status === 403 ? 'Sahifaga kirishga ruxsat y‘q' : message || 'Xatolik yuz berdi',
       });
 
       setTimeout(() => {

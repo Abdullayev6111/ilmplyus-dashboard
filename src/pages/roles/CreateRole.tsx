@@ -12,8 +12,8 @@ import './roles.css';
 const TAB_LABELS: Record<MainTab, string> = {
   umumiy: 'Umumiy Dashboard',
   sotuv: 'Sotuv va Lidlar',
-  oquvchi: "O'quvchilar Analitikasi",
-  oqituvchi: "O'qituvchilar & Xonalar",
+  oquvchi: 'O‘quvchilar Analitikasi',
+  oqituvchi: 'O‘qituvchilar & Xonalar',
   moliya: 'Kompleks Moliya',
 };
 
@@ -130,7 +130,10 @@ const CreateRole = () => {
     }));
   };
 
-  const isPending = createRoleMutation.isPending || assignPermissionsMutation.isPending || saveDashMutation.isPending;
+  const isPending =
+    createRoleMutation.isPending ||
+    assignPermissionsMutation.isPending ||
+    saveDashMutation.isPending;
 
   if (isLoadingPerms || isLoadingDash) {
     return (
@@ -195,14 +198,23 @@ const CreateRole = () => {
                   onChange={(e) => {
                     const current = permissionsState[perm.moduleName] || [];
                     if (e.target.checked) {
-                      handleActionChange(perm.moduleName, [...current, { id: perm.id, action: perm.action }]);
+                      handleActionChange(perm.moduleName, [
+                        ...current,
+                        { id: perm.id, action: perm.action },
+                      ]);
                     } else {
-                      handleActionChange(perm.moduleName, current.filter((a) => a.id !== perm.id));
+                      handleActionChange(
+                        perm.moduleName,
+                        current.filter((a) => a.id !== perm.id),
+                      );
                     }
                   }}
                 />
                 <span className="permission-standalone-name">
-                  {t(`roles.standalonePermissions.${perm.moduleName}_${perm.action}`, perm.fullName)}
+                  {t(
+                    `roles.standalonePermissions.${perm.moduleName}_${perm.action}`,
+                    perm.fullName,
+                  )}
                 </span>
               </label>
             </div>
@@ -223,7 +235,7 @@ const CreateRole = () => {
 
         <div className="permission-card">
           <h3 className="permission-card-title">
-            {t('roles.dashboardSections', "Dashboard bo'limlari")}
+            {t('roles.dashboardSections', 'Dashboard bo‘limlari')}
           </h3>
           <div className="permission-checkboxes">
             {ALL_TABS.map((tab) => (
