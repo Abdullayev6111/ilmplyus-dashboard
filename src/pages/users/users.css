@@ -608,3 +608,17 @@
   background: rgba(255, 255, 255, 0.3);
   color: #fff;
 }
+
+.trash-tab-unviewed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  background: #E70A0A;
+  color: #fff;
+  font-size: 11px;
+  font-family: noto-b;
+  border-radius: 20px;
+  padding: 1px 7px;
+  min-width: 18px;
+}

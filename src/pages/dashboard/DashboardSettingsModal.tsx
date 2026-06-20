@@ -11,7 +11,7 @@ interface Props {
 
 export default function DashboardSettingsModal({ onClose, defaultLabels }: Props) {
   const { t } = useTranslation();
-  const { tabNames, roleVisibility, saveSettings, isSaving } = useDashboardSettings();
+  const { tabNames, roleVisibility, pagePermissions, saveSettings, isSaving } = useDashboardSettings();
 
   const [section, setSection] = useState<'names' | 'visibility'>('names');
 
@@ -43,7 +43,7 @@ export default function DashboardSettingsModal({ onClose, defaultLabels }: Props
       const name = (localNames[tab] ?? '').trim();
       if (name) newTabNames[tab] = name;
     });
-    saveSettings({ tabNames: newTabNames, roleVisibility: localVis }, { onSuccess: onClose });
+    saveSettings({ tabNames: newTabNames, roleVisibility: localVis, pagePermissions }, { onSuccess: onClose });
   }
 
   function isVisible(roleName: string, tab: MainTab): boolean {

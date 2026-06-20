@@ -11,8 +11,18 @@ export interface LidsQueryParams {
   per_page: number;
 }
 
-export async function fetchLids(params: LidsQueryParams): Promise<Lid[]> {
-  const { data } = await API.get<Lid[]>("/lids", { params });
+export interface PaginatedLids {
+  data: Lid[];
+  meta: {
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+  };
+}
+
+export async function fetchLids(params: LidsQueryParams): Promise<PaginatedLids> {
+  const { data } = await API.get<PaginatedLids>("/lids", { params });
   return data;
 }
 

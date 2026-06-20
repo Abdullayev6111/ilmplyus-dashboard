@@ -1383,7 +1383,14 @@
     "error": "Xatolik yuz berdi. Qayta urinib ko‘ring.",
     "paginationAll": "Jami",
     "paginationFrom": "tadan",
-    "paginationTo": "tagacha ko‘rsatmoqda"
+    "paginationTo": "tagacha ko’rsatmoqda"
+  },
+  "lid": {
+    "modals": {
+      "confirmDelete": "Haqiqatan ham o’chirmoqchimisiz?",
+      "confirm": "Tasdiqlash",
+      "cancel": "Bekor qilish"
+    }
   },
   "studentsAttendance": {
     "davomat": "Davomat",

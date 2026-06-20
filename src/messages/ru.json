@@ -1151,6 +1151,13 @@
     "paginationFrom": "шт.",
     "paginationTo": "показано до"
   },
+  "lid": {
+    "modals": {
+      "confirmDelete": "Вы уверены, что хотите удалить?",
+      "confirm": "Подтвердить",
+      "cancel": "Отмена"
+    }
+  },
   "dashboard": {
     "allLids": "ВСЕГО ЛИДОВ",
     "conversion": "Конверсия",

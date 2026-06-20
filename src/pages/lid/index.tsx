@@ -9,7 +9,7 @@ import type {
 import { RegistrationModal } from '@/components/RegistrationModal';
 import { DeleteConfirmationModal } from '@/components/RegistrationModal/DeleteConfirmModal';
 import { useDeleteMutation } from '@/hooks/useMutations';
-import { fetchLids, deleteLid } from '@/pages/lid/lid.service';
+import { fetchLids, deleteLid, type PaginatedLids } from '@/pages/lid/lid.service';
 import { getName, formatGender, getSourceKey, getSourceLabel } from '../../types/lid.types';
 import { useTranslation } from 'react-i18next';
 import { Protected } from '../../components/Protected';
@@ -150,22 +150,21 @@ const Registration = () => {
   const [deleteId, setDeleteId] = useState<number | undefined>(undefined);
   const [idSortOrder, setIdSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  const { data, isLoading, isError } = useQuery<Lid[]>({
+  const { data, isLoading, isError } = useQuery<PaginatedLids>({
     queryKey: ['lids', currentPage, pageSize],
     queryFn: () => fetchLids({ page: currentPage, per_page: pageSize }),
   });
 
   const deleteMutation = useDeleteMutation(deleteLid, [['lids']]);
 
-  const total = data?.length ?? 0;
+  const lids: Lid[] = data?.data ?? [];
+  const total = data?.meta?.total ?? 0;
+  const totalPages = data?.meta?.last_page ?? 1;
 
   const filteredData = useMemo(() => {
-    const allLids: Lid[] = data ?? [];
-    const filtered = applyClientFilters(allLids, search, filters, lang);
+    const filtered = applyClientFilters(lids, search, filters, lang);
     return [...filtered].sort((a, b) => (idSortOrder === 'asc' ? a.id - b.id : b.id - a.id));
-  }, [data, search, filters, lang, idSortOrder]);
-
-  const totalPages = Math.ceil(total / pageSize);
+  }, [lids, search, filters, lang, idSortOrder]);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);

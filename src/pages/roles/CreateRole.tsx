@@ -97,6 +97,7 @@ const CreateRole = () => {
       await saveDashboardSettings({
         tabNames: dashboardSettings?.tabNames ?? {},
         roleVisibility: newVis,
+        pagePermissions: dashboardSettings?.pagePermissions ?? {},
       });
     },
   });

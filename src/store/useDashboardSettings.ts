@@ -11,7 +11,7 @@ export const ALL_TABS: MainTab[] = ["umumiy", "sotuv", "oquvchi", "oqituvchi", "
 
 export const DASHBOARD_SETTINGS_KEY = ["dashboard-settings"] as const;
 
-const EMPTY: DashboardSettings = { tabNames: {}, roleVisibility: {} };
+const EMPTY: DashboardSettings = { tabNames: {}, roleVisibility: {}, pagePermissions: {} };
 
 function useDashboardSettings() {
   const queryClient = useQueryClient();
@@ -31,13 +31,14 @@ function useDashboardSettings() {
 
   const tabNames = data.tabNames as Partial<Record<MainTab, string>>;
   const roleVisibility = data.roleVisibility as Record<string, MainTab[]>;
+  const pagePermissions = data.pagePermissions;
 
   const getVisibleTabs = (roleName: string): MainTab[] => {
     if (roleName === "admin") return ALL_TABS;
     return roleVisibility[roleName] ?? ALL_TABS;
   };
 
-  return { tabNames, roleVisibility, getVisibleTabs, saveSettings, isSaving };
+  return { tabNames, roleVisibility, pagePermissions, getVisibleTabs, saveSettings, isSaving };
 }
 
 export default useDashboardSettings;

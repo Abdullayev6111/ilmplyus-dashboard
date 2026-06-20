@@ -1159,6 +1159,13 @@
     "paginationFrom": "items",
     "paginationTo": "showing up to"
   },
+  "lid": {
+    "modals": {
+      "confirmDelete": "Are you sure you want to delete?",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    }
+  },
   "dashboard": {
     "allLids": "TOTAL LEADS",
     "conversion": "Conversion",

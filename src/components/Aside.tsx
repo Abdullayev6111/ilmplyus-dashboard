@@ -34,11 +34,13 @@ import coursesIcon from '../assets/images/aside-school.svg';
 import salariesIcon from '../assets/images/money-check-dollar-solid-full.svg';
 import salesDepartmentIcon from '../assets/images/chart-line-solid-full.svg';
 import testIcon from '../assets/images/clipboard-check-solid-full.svg';
+import trashIcon from '../assets/images/trash-solid-full.svg';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDashboardSettings } from '../pages/dashboard/dashboard.service';
+import { API } from '../api/api';
 
 const pathMatches = (path: string, current: string) => {
   if (path === '/') return current === '/';
@@ -59,6 +61,16 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
     queryFn: fetchDashboardSettings,
     staleTime: 5 * 60 * 1000,
     enabled: !!user && !isAdmin,
+  });
+
+  const { data: trashUnviewedCount = 0 } = useQuery<number>({
+    queryKey: ['trash-unviewed-count'],
+    queryFn: async () => {
+      const { data } = await API.get('/trash/unviewed-count');
+      return typeof data === 'number' ? data : (data?.count ?? 0);
+    },
+    refetchInterval: 60 * 1000,
+    enabled: !!user,
   });
 
   const hasPermission = (permission?: string) => {
@@ -87,7 +99,6 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         { label: t('aside.users'), path: '/users', permission: 'users.view' },
         { label: t('aside.roles'), path: '/roles', permission: 'roles.view' },
         { label: t('aside.operators'), path: '/operators', permission: 'operators.view' },
-        { label: t('aside.archive'), path: '/users/archive', permission: 'users.view' },
       ],
     },
     {
@@ -101,7 +112,6 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         { label: t('aside.departments'), path: '/department', permission: 'departments.view' },
         { label: t('aside.rooms'), path: '/rooms', permission: 'rooms.view' },
         { label: t('aside.faceId'), path: '/face-id', permission: 'hikvision_devices.view' },
-        { label: t('aside.archive'), path: '/branches/archive', permission: 'branches.view' },
       ],
     },
     {
@@ -114,7 +124,6 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         { label: t('aside.positions'), path: '/positions', permission: 'positions.view' },
         { label: t('aside.contract'), path: '/contracts', permission: 'employee_contracts.view' },
         { label: t('aside.teachers'), path: '/teachers', permission: 'teachers.view' },
-        { label: t('aside.archive'), path: '/teachers/archive', permission: 'teachers.view' },
       ],
     },
     {
@@ -144,7 +153,6 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         },
         { label: t('aside.demoLesson'), path: '/demo-lesson', permission: 'demo_lessons.view' },
         { label: t('aside.groups'), path: '/groups', permission: 'lesson_schedules.view' },
-        { label: t('aside.archive'), path: '/courses/archive', permission: 'courses.view' },
       ],
     },
     {
@@ -162,7 +170,6 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         },
         { label: t('aside.sources'), path: '/sources', permission: 'sources.view' },
         { label: t('aside.tasks'), path: '/tasks', permission: 'tasks.view' },
-        { label: t('aside.archive'), path: '/lid/archive', permission: 'lids.view' },
       ],
     },
     {
@@ -170,10 +177,7 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       label: t('aside.test'),
       imgIcon: testIcon,
       paths: ['/questions'],
-      children: [
-        { label: t('aside.questions'), path: '/questions', permission: 'questions.view' },
-        { label: t('aside.archive'), path: '/questions/archive', permission: 'questions.view' },
-      ],
+      children: [{ label: t('aside.questions'), path: '/questions', permission: 'questions.view' }],
     },
     {
       id: 'expenses-group',
@@ -192,7 +196,6 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
           permission: 'expense_subcategories.view',
         },
         { label: t('aside.expenseCreate'), path: '/expenses/create', permission: 'expenses.view' },
-        { label: t('aside.archive'), path: '/expenses/archive', permission: 'expenses.view' },
       ],
     },
     {
@@ -217,7 +220,6 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
           permission: 'student_contracts.view',
         },
         { label: t('aside.students'), path: '/students', permission: 'students.view' },
-        { label: t('aside.archive'), path: '/students/archive', permission: 'students.view' },
       ],
     },
     {
@@ -239,15 +241,12 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       label: t('aside.salaries'),
       imgIcon: salariesIcon,
       paths: ['/salaries'],
-      children: [
-        { label: t('aside.salary'), path: '/salaries', permission: 'salaries.view' },
-        { label: t('aside.archive'), path: '/salaries/archive', permission: 'salaries.view' },
-      ],
+      children: [{ label: t('aside.salary'), path: '/salaries', permission: 'salaries.view' }],
     },
     {
       id: 'trash-group',
       label: t('aside.trash'),
-      faIcon: 'fa-solid fa-trash-can',
+      imgIcon: trashIcon,
       paths: ['/trash'],
       children: [{ label: t('aside.trash'), path: '/trash', permission: 'trash.view' }],
     },
@@ -326,6 +325,9 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
                   {!collapsed && (
                     <>
                       <span className="nav-group-label">{group.label}</span>
+                      {group.id === 'trash-group' && trashUnviewedCount > 0 && (
+                        <span className="trash-unviewed-badge">{trashUnviewedCount}</span>
+                      )}
                       <i
                         className={`fa-solid ${open ? 'fa-chevron-up' : 'fa-chevron-down'} nav-group-chevron`}
                       />
