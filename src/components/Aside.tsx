@@ -229,11 +229,6 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       paths: ['/payments'],
       children: [
         { label: t('aside.paymentsList'), path: '/payments', permission: 'payments.view' },
-        {
-          label: t('aside.paymentsArchive'),
-          path: '/payments/archive',
-          permission: 'payments.view',
-        },
       ],
     },
     {

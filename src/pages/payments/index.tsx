@@ -538,7 +538,7 @@ const Payments = () => {
               <th>{t('payments.fish')}</th>
               <th>{t('payments.amount')}</th>
               <th>{t('payments.paymentMethod')}</th>
-              <th>{t('payments.paymentPeriod')}</th>
+              <th>{t('payments.paymentDate')}</th>
               <th>{t('payments.course')}</th>
               <th>{t('payments.cashier')}</th>
               <th>{t('payments.branch')}</th>
@@ -565,7 +565,7 @@ const Payments = () => {
                   </td>
                   <td>{formatAmount(u.amount)}</td>
                   <td>{u.payment_method}</td>
-                  <td>{u.payment_period}</td>
+                  <td>{u.payment_date || '-'}</td>
                   <td>{u.course ? getLocalized(u.course, 'name', i18n.language) : '-'}</td>
                   <td>{u.cashier?.full_name}</td>
                   <td>

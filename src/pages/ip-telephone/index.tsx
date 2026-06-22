@@ -846,7 +846,7 @@ const IPTelephone: React.FC = () => {
         fetchLids({ page: 1, per_page: 1000 })
           .then((list) => {
             const map: Record<string, string> = {};
-            list.forEach((lid) => {
+            list.data.forEach((lid) => {
               if (!lid.phone) return;
               const digits = lid.phone.replace(/\D/g, '');
               const fish = [lid.last_name, lid.first_name].filter(Boolean).join(' ');
