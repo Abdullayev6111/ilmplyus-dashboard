@@ -1955,5 +1955,17 @@
     "contractDateLabel": "Contract Date",
     "note": "Note",
     "notePlaceholder": "Enter note"
+  },
+  "setPassword": {
+    "title": "Set Password",
+    "usernamePlaceholder": "Username",
+    "tempPasswordPlaceholder": "Temporary password (from SMS)",
+    "newPasswordPlaceholder": "New password",
+    "confirmPasswordPlaceholder": "Confirm password",
+    "saving": "Saving...",
+    "submitBtn": "Set Password",
+    "errorPasswordMatch": "Passwords do not match.",
+    "errorMinLength": "Password must be at least 6 characters.",
+    "errorGeneric": "An error occurred"
   }
 }

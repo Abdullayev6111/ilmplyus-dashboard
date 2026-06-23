@@ -1947,5 +1947,17 @@
     "contractDateLabel": "Shartnoma sanasi",
     "note": "Izoh",
     "notePlaceholder": "Izoh kiriting"
+  },
+  "setPassword": {
+    "title": "Parol O‘rnatish",
+    "usernamePlaceholder": "Foydalanuvchi nomi",
+    "tempPasswordPlaceholder": "Vaqtiy parol (SMS'dan)",
+    "newPasswordPlaceholder": "Yangi parol",
+    "confirmPasswordPlaceholder": "Parolni tasdiqlang",
+    "saving": "Saqlanmoqda...",
+    "submitBtn": "Parolni O‘rnatish",
+    "errorPasswordMatch": "Parollar mos kelmadi.",
+    "errorMinLength": "Parol minimal 6 belgi bo'lishi kerak.",
+    "errorGeneric": "Xatolik yuz berdi"
   }
 }

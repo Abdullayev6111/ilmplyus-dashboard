@@ -1,6 +1,6 @@
-import type { Branch, ApiResponse } from "./common.types";
-import type { Group } from "./groups.types";
-import type { Course } from "./course.types";
+import type { Branch, ApiResponse } from './common.types';
+import type { Group } from './groups.types';
+import type { Course } from './course.types';
 
 export interface Student {
   id: number;
@@ -34,6 +34,7 @@ export interface Payment {
   group?: Group;
   course?: Course;
   teacher?: PaymentEmployee;
+  payment_date: string;
 }
 
 export type PaymentsResponse = ApiResponse<Payment[]>;

@@ -55,6 +55,7 @@ import ContractDetails from './pages/students-contract/ContractDetails';
 import Salaries from './pages/salaries';
 import Employees from './pages/employees';
 import TrashPage from './pages/trash';
+import SetPasswordPage from './pages/set-password';
 
 // Archive pages
 import UsersArchive from './pages/users/archive';
@@ -104,6 +105,7 @@ const App = () => {
 
   return (
     <Routes>
+      <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/login" element={isAuth ? <Navigate to="/" replace /> : <LoginPage />} />
 
       <Route element={<ProtectedRoute />}>

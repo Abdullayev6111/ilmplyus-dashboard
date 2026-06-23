@@ -1947,5 +1947,17 @@
     "contractDateLabel": "Дата договора",
     "note": "Примечание",
     "notePlaceholder": "Введите примечание"
+  },
+  "setPassword": {
+    "title": "Установить пароль",
+    "usernamePlaceholder": "Имя пользователя",
+    "tempPasswordPlaceholder": "Временный пароль (из SMS)",
+    "newPasswordPlaceholder": "Новый пароль",
+    "confirmPasswordPlaceholder": "Подтвердите пароль",
+    "saving": "Сохранение...",
+    "submitBtn": "Установить пароль",
+    "errorPasswordMatch": "Пароли не совпадают.",
+    "errorMinLength": "Пароль должен содержать минимум 6 символов.",
+    "errorGeneric": "Произошла ошибка"
   }
 }

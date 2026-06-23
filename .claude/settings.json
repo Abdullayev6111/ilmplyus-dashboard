@@ -12,7 +12,12 @@
       "Bash(node -e \"const d=require\\('C:/Users/HP/OneDrive/Desktop/Work/ilmplyus dashboard/src/messages/uz.json'\\); console.log\\('tabs' in d.dashboard, 'umumiy' in d.dashboard\\)\")",
       "Bash(node -e \"const p=require\\('C:/Users/HP/OneDrive/Desktop/Work/ilmplyus dashboard/package.json'\\); console.log\\(Object.keys\\(p.dependencies || {}\\)\\);\")",
       "Bash(node -e \"const fs=require\\('fs'\\); console.log\\(fs.readFileSync\\('C:/Users/HP/OneDrive/Desktop/Work/ilmplyus dashboard/vite.config.ts', 'utf-8'\\)\\)\")",
-      "Bash(grep -E \"\\\\.\\(tsx?|jsx?\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx?|jsx?\\)$\")",
+      "Read(//c/Users/HP/Downloads/Telegram Desktop/**)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src\\pages\\set-password",
+      "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src"
     ]
   }
 }
