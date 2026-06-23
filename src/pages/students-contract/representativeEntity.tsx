@@ -683,6 +683,35 @@ const RepresentativeCard = ({
   showRemove: boolean;
 }) => {
   const { t } = useTranslation();
+  const jshshrTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (jshshrTimerRef.current) clearTimeout(jshshrTimerRef.current);
+    if (representative.jshshir.length !== 14) return;
+
+    jshshrTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await API.get('/users');
+        const users: Array<{ full_name: string; pinfl: string; phone: string | null }> =
+          Array.isArray(res.data) ? res.data : res.data?.data || [];
+
+        const matched = users.find((u) => u.pinfl === representative.jshshir);
+        if (matched) {
+          const parts = (matched.full_name || '').trim().split(/\s+/);
+          if (parts[0]) onChange(index, 'last_name', parts[0]);
+          if (parts[1]) onChange(index, 'first_name', parts[1]);
+          if (parts.length > 2) onChange(index, 'father_name', parts.slice(2).join(' '));
+          if (matched.phone) onChange(index, 'phones', [matched.phone.replace(/\s/g, '')]);
+        }
+      } catch {
+        // silently ignore lookup errors
+      }
+    }, 400);
+
+    return () => {
+      if (jshshrTimerRef.current) clearTimeout(jshshrTimerRef.current);
+    };
+  }, [representative.jshshir, index]);
 
   return (
     <div

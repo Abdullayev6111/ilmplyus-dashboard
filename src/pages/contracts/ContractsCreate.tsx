@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -150,6 +150,59 @@ export function ContractsCreate({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [jshshrLoading, setJshshrLoading] = useState(false);
+  const jshshrTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (jshshrTimerRef.current) clearTimeout(jshshrTimerRef.current);
+
+    if (formData.jshshr.length !== 14) return;
+
+    jshshrTimerRef.current = setTimeout(async () => {
+      setJshshrLoading(true);
+      try {
+        const res = await API.get('/users');
+        const users: Array<{
+          id: number;
+          full_name: string;
+          pinfl: string;
+          phone: string | null;
+          branches: Array<{ id: number }>;
+          departments: Array<{ id: number }>;
+        }> = Array.isArray(res.data) ? res.data : res.data?.data || [];
+
+        const matched = users.find((u) => u.pinfl === formData.jshshr);
+        if (matched) {
+          const nameParts = (matched.full_name || '').trim().split(/\s+/);
+          const last_name = nameParts[0] || '';
+          const first_name = nameParts[1] || '';
+          const middle_name = nameParts.slice(2).join(' ');
+
+          const branchId = matched.branches?.[0]?.id || 0;
+          const departmentId = matched.departments?.[0]?.id || 0;
+          const phone = matched.phone ? matched.phone.replace(/\s/g, '') : '+998';
+
+          setFormData((prev) => ({
+            ...prev,
+            last_name: last_name || prev.last_name,
+            first_name: first_name || prev.first_name,
+            middle_name: middle_name || prev.middle_name,
+            phones: phone ? [phone] : prev.phones,
+            branch_id: branchId || prev.branch_id,
+            department_id: departmentId || prev.department_id,
+          }));
+        }
+      } catch {
+        // silently ignore lookup errors
+      } finally {
+        setJshshrLoading(false);
+      }
+    }, 400);
+
+    return () => {
+      if (jshshrTimerRef.current) clearTimeout(jshshrTimerRef.current);
+    };
+  }, [formData.jshshr]);
 
   const { data: branches } = useQuery<BranchMeta[]>({
     queryKey: ['branches'],
@@ -505,6 +558,11 @@ export function ContractsCreate({
           <div className="ct-form-group span-2">
             <label>
               JSHSHR <span className="required">*</span>
+              {jshshrLoading && (
+                <span style={{ marginLeft: 8, fontSize: 12, color: '#888', fontWeight: 'normal' }}>
+                  {t('contracts.searching')}...
+                </span>
+              )}
             </label>
             <input
               type="text"

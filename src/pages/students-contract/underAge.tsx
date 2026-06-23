@@ -656,6 +656,39 @@ const UnderAge = () => {
       ),
   });
 
+  const jshshrTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (jshshrTimerRef.current) clearTimeout(jshshrTimerRef.current);
+    if (representative.jshshir.length !== 14) return;
+
+    jshshrTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await API.get('/users');
+        const users: Array<{ full_name: string; pinfl: string; phone: string | null }> =
+          Array.isArray(res.data) ? res.data : res.data?.data || [];
+
+        const matched = users.find((u) => u.pinfl === representative.jshshir);
+        if (matched) {
+          const parts = (matched.full_name || '').trim().split(/\s+/);
+          setRepresentative((prev) => ({
+            ...prev,
+            last_name: parts[0] || prev.last_name,
+            first_name: parts[1] || prev.first_name,
+            father_name: parts.slice(2).join(' ') || prev.father_name,
+            phones: matched.phone ? [matched.phone.replace(/\s/g, '')] : prev.phones,
+          }));
+        }
+      } catch {
+        // silently ignore lookup errors
+      }
+    }, 400);
+
+    return () => {
+      if (jshshrTimerRef.current) clearTimeout(jshshrTimerRef.current);
+    };
+  }, [representative.jshshir]);
+
   const handleRepChange = (field: keyof RepresentativeFormData, value: string) => {
     let finalValue = value;
     if (field === 'passport_series') finalValue = value.toUpperCase();
