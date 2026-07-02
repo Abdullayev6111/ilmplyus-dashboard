@@ -138,12 +138,18 @@
   background: #fff;
   padding: 25px;
   border-radius: 12px;
-  width: 900px !important;
+  width: 500px;
 }
 
 .modal.small {
-  width: 320px;
+  width: 320px !important;
+  max-width: 320px !important;
   text-align: center;
+}
+
+.modal.add-user-modal {
+  max-width: 900px;
+  width: 100%;
 }
 
 .form-grid {
@@ -383,11 +389,6 @@
     padding: 7px;
   }
 } */
-
-.add-user-modal {
-  max-width: 900px;
-  width: 100%;
-}
 
 .add-user-form {
   display: grid;

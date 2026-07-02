@@ -9,6 +9,12 @@ import EmptyState from "../../components/EmptyState";
 import { getLocalized } from "../../utils/getLocalized";
 import { Protected } from "../../components/Protected";
 
+interface Jamgarma {
+  id: number;
+  name_uz: string;
+  status: string;
+}
+
 interface ExpenseCategory {
   id: number;
   name_uz: string;
@@ -72,22 +78,42 @@ const ExpensesSubcategory = () => {
   const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<ExpenseSubcategory | null>(null);
   const [formData, setFormData] = useState<FormData>(emptyForm);
+  const [formJamgarmaIds, setFormJamgarmaIds] = useState<number[]>([]);
+
+  const { data: jamgarmas } = useQuery<Jamgarma[]>({
+    queryKey: ["jamgarmas"],
+    queryFn: async () => {
+      const { data } = await API.get("/jamgarmas");
+      return data.data ?? data;
+    },
+  });
 
   const { data: subcategories, isLoading } = useQuery<ExpenseSubcategory[]>({
     queryKey: ["expense-subcategories"],
     queryFn: async () => {
       const { data } = await API.get("/expense-subcategories");
-      return data;
+      return data.data ?? data;
     },
   });
 
   const { data: categories } = useQuery<ExpenseCategory[]>({
-    queryKey: ["expense-categories"],
+    queryKey: ["expense-categories", formJamgarmaIds],
     queryFn: async () => {
-      const { data } = await API.get("/expense-categories");
-      return data;
+      const params: Record<string, number[]> = {};
+      if (formJamgarmaIds.length > 0) {
+        params["jamgarma_ids[]"] = formJamgarmaIds;
+      }
+      const { data } = await API.get("/expense-categories", { params });
+      return data.data ?? data;
     },
   });
+
+  const toggleFormJamgarma = (id: number) => {
+    setFormJamgarmaIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+    setFormData((prev) => ({ ...prev, expense_category_id: "" }));
+  };
 
   const createMutation = useMutation({
     mutationFn: async () =>
@@ -128,6 +154,7 @@ const ExpensesSubcategory = () => {
     setShowAddModal(false);
     setEditingItem(null);
     setFormData(emptyForm);
+    setFormJamgarmaIds([]);
   };
 
   const openEditModal = (item: ExpenseSubcategory) => {
@@ -138,6 +165,7 @@ const ExpensesSubcategory = () => {
       created_at: toLocalDateTimeInput(item.created_at),
       updated_at: toLocalDateTimeInput(item.updated_at),
     });
+    setFormJamgarmaIds([]);
     setShowAddModal(true);
   };
 
@@ -180,6 +208,24 @@ const ExpensesSubcategory = () => {
                 }
               }}
             >
+              {jamgarmas && jamgarmas.length > 0 && (
+                <div className="subcategory-form-group">
+                  <label>{t("expenses.fund")}</label>
+                  <div className="jamgarma-check-list">
+                    {jamgarmas.map((j) => (
+                      <label key={j.id} className="jamgarma-check-item">
+                        <input
+                          type="checkbox"
+                          checked={formJamgarmaIds.includes(j.id)}
+                          onChange={() => toggleFormJamgarma(j.id)}
+                        />
+                        {j.name_uz}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="subcategory-form-group">
                 <label>{t("expenses.expenseCategory")}</label>
                 <select

@@ -29,6 +29,12 @@ interface Cashier {
   full_name: string;
 }
 
+interface Jamgarma {
+  id: number;
+  name_uz: string;
+  status: string;
+}
+
 interface Branch {
   id: number;
   address: string;
@@ -85,6 +91,7 @@ const Expenses = () => {
   const [showRange, setShowRange] = useState(false);
 
   const [formData, setFormData] = useState({
+    jamgarma_id: "",
     expense_category_id: "",
     expense_subcategory_id: "",
     user_id: "",
@@ -101,9 +108,22 @@ const Expenses = () => {
     queryFn: async () => (await API.get("/expenses")).data,
   });
 
+  const { data: jamgarmas } = useQuery<Jamgarma[]>({
+    queryKey: ["jamgarmas"],
+    queryFn: async () => {
+      const { data } = await API.get("/jamgarmas");
+      return data.data ?? data;
+    },
+  });
+
   const { data: categories } = useQuery<Category[]>({
-    queryKey: ["expense-categories"],
-    queryFn: async () => (await API.get("/expense-categories")).data,
+    queryKey: ["expense-categories", formData.jamgarma_id],
+    queryFn: async () => {
+      const params: Record<string, string> = {};
+      if (formData.jamgarma_id) params["jamgarma_id"] = formData.jamgarma_id;
+      const { data } = await API.get("/expense-categories", { params });
+      return data.data ?? data;
+    },
   });
 
   const { data: subcategories } = useQuery<Subcategory[]>({
@@ -175,6 +195,7 @@ const Expenses = () => {
   const openEditModal = (item: Expense) => {
     setEditingItem(item);
     setFormData({
+      jamgarma_id: "",
       expense_category_id: String(item.category?.id || ""),
       expense_subcategory_id: String(item.subcategory?.id || ""),
       user_id: String(item.cashier?.id || ""),
@@ -192,6 +213,7 @@ const Expenses = () => {
     setShowAddModal(false);
     setEditingItem(null);
     setFormData({
+      jamgarma_id: "",
       expense_category_id: "",
       expense_subcategory_id: "",
       user_id: "",
@@ -253,6 +275,33 @@ const Expenses = () => {
                 }
               }}
             >
+              <div className="create-form">
+                <div className="form-group" style={{ width: "100%" }}>
+                  <label>{t("expenses.fund")}</label>
+                  <select
+                    className="create-form-input"
+                    value={formData.jamgarma_id}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        jamgarma_id: e.target.value,
+                        expense_category_id: "",
+                        expense_subcategory_id: "",
+                      })
+                    }
+                    required
+                    style={{ width: "100%" }}
+                  >
+                    <option value="">{t("expenses.chooseFund")}</option>
+                    {jamgarmas?.map((j) => (
+                      <option key={j.id} value={j.id}>
+                        {j.name_uz}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               <div className="create-form">
                 <div className="form-group">
                   <label>{t("expenses.expenseCategory")}</label>

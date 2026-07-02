@@ -56,6 +56,8 @@ import Salaries from './pages/salaries';
 import Employees from './pages/employees';
 import TrashPage from './pages/trash';
 import SetPasswordPage from './pages/set-password';
+import Finances from './pages/finance';
+import JamgarmaPage from './pages/finance/Jamgarma';
 
 // Archive pages
 import UsersArchive from './pages/users/archive';
@@ -192,6 +194,9 @@ const App = () => {
 
           {/* Axlat qutisi */}
           <Route path="/trash" element={<TrashPage />} />
+          {/* Moliya */}
+          <Route path="/finances" element={<Finances />} />
+          <Route path="/jamgarma" element={<JamgarmaPage />} />
 
           {/* Arxivlar */}
           <Route path="/users/archive" element={<UsersArchive />} />

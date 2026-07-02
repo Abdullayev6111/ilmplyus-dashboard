@@ -35,6 +35,8 @@ import salariesIcon from '../assets/images/money-check-dollar-solid-full.svg';
 import salesDepartmentIcon from '../assets/images/chart-line-solid-full.svg';
 import testIcon from '../assets/images/clipboard-check-solid-full.svg';
 import trashIcon from '../assets/images/trash-solid-full.svg';
+import settingsIcon from '../assets/images/aside-settings.svg';
+import financesIcon from '../assets/images/building-columns-solid-full.svg';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
@@ -199,6 +201,24 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       ],
     },
     {
+      id: 'finances-group',
+      label: t('aside.finances'),
+      imgIcon: financesIcon,
+      paths: ['/finances', '/jamgarma'],
+      children: [
+        {
+          label: t('aside.scoreSheet'),
+          path: '/finances',
+          permission: '',
+        },
+        {
+          label: t('aside.jamgarma'),
+          path: '/jamgarma',
+          permission: '',
+        },
+      ],
+    },
+    {
       id: 'students-group',
       label: t('aside.students'),
       imgIcon: studentsIcon,
@@ -244,6 +264,13 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       imgIcon: trashIcon,
       paths: ['/trash'],
       children: [{ label: t('aside.trash'), path: '/trash', permission: 'trash.view' }],
+    },
+    {
+      id: 'settings-group',
+      label: t('aside.settings'),
+      imgIcon: settingsIcon,
+      paths: ['/settings'],
+      children: [{ label: t('aside.settings'), path: '/settings', permission: 'settings.view' }],
     },
   ];
 

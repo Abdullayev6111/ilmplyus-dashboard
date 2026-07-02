@@ -1,0 +1,1395 @@
+/* ═══════════════════════════════════════════════════════════════
+   FINANCE MODULE — finance.css
+   Colors: #003366 (blue) | #FE9100 (orange) | #2AA411 (green) | #E70A0A (red)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Page Shell ──────────────────────────────────────────────── */
+.finances {
+  width: 100%;
+  max-width: 1750px;
+  min-height: 864px;
+  border-radius: 15px;
+  padding: 25px;
+  margin-top: 30px !important;
+  margin-bottom: 30px !important;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Tab Navigation ──────────────────────────────────────────── */
+.fin-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.fin-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  font-family: noto-m;
+  font-size: 15px;
+  color: #666;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.fin-tab i {
+  font-size: 14px;
+}
+
+.fin-tab:hover {
+  color: #003366;
+  background: rgba(0, 51, 102, 0.04);
+}
+
+.fin-tab.active {
+  color: #003366;
+  border-bottom-color: #fe9100;
+  font-family: noto-b;
+}
+
+/* ─── Toolbar (search + filter + add) ────────────────────────── */
+.fin-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.fin-search-box {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 380px;
+}
+
+.fin-search-box input {
+  width: 100%;
+  height: 42px;
+  padding: 0 16px;
+  padding-right: 44px;
+  border-radius: 15px;
+  border: 2px solid #003366;
+  background: #fff;
+  color: #003366;
+  font-family: noto-m;
+  font-size: 14px;
+  outline: none;
+  transition: box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.fin-search-box input:focus {
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+}
+
+.fin-search-box i {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #003366;
+  font-size: 15px;
+  pointer-events: none;
+}
+
+.fin-btn-filter {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 15px;
+  border: 2px solid #003366;
+  background: #fff;
+  color: #003366;
+  font-family: noto-m;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.fin-btn-filter:hover {
+  background: #003366;
+  color: #fff;
+}
+
+.fin-btn-add {
+  height: 42px;
+  padding: 0 24px;
+  border-radius: 15px;
+  border: 2px solid #fe9100;
+  background: #fe9100;
+  color: #fff;
+  font-family: noto-m;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.fin-btn-add:hover {
+  background: #e68200;
+  border-color: #e68200;
+}
+
+/* ─── Table Wrapper ───────────────────────────────────────────── */
+.fin-table-wrapper {
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  flex: 1;
+}
+
+.fin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 700px;
+}
+
+.fin-table thead {
+  background: #e6e6e6;
+}
+
+.fin-table th {
+  padding: 11px 10px;
+  color: #003366;
+  text-align: center;
+  font-family: noto-b;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  border-right: 1px solid rgba(158, 157, 157, 0.35);
+  position: sticky;
+  top: 0;
+  background: #e6e6e6;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.fin-table th:last-child {
+  border-right: none;
+}
+
+.fin-table th:nth-child(2),
+.fin-table td:nth-child(2) {
+  white-space: nowrap;
+  text-align: left;
+  overflow: visible;
+  max-width: none;
+}
+
+.fin-table td {
+  padding: 10px;
+  text-align: center;
+  font-family: noto-m;
+  color: #333;
+  border-bottom: 1px solid #f0f4f8;
+  vertical-align: middle;
+}
+
+.fin-table tbody tr:hover {
+  background: #f5faff;
+}
+
+/* ─── Table Cell Variants ─────────────────────────────────────── */
+.fin-account-number {
+  font-family: noto-b;
+  letter-spacing: 0.5px;
+  color: #003366;
+}
+
+.fin-signatories-cell {
+  font-size: 12px;
+  color: #555;
+  max-width: 200px;
+}
+
+.fin-amount-cell {
+  font-family: noto-b;
+  white-space: nowrap;
+}
+
+.fin-date-cell {
+  font-size: 12px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.fin-description-cell {
+  max-width: 140px;
+  font-size: 12px;
+  color: #555;
+  word-break: break-word;
+}
+
+/* ─── Status Text ─────────────────────────────────────────────── */
+.fin-status-text {
+  font-family: noto-b;
+  font-size: 13px;
+}
+
+.fin-text-green {
+  color: #2aa411;
+}
+
+.fin-text-red {
+  color: #e70a0a;
+}
+
+.fin-text-orange {
+  color: #fe9100;
+}
+
+/* ─── Table Action Buttons (accounts row) ─────────────────────── */
+.fin-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.fin-action-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.fin-action-view {
+  color: #003366;
+}
+
+.fin-action-view:hover {
+  color: #0050a8;
+  transform: scale(1.15);
+}
+
+.fin-action-signatories {
+  color: #666;
+}
+
+.fin-action-signatories:hover {
+  color: #333;
+  transform: scale(1.15);
+}
+
+.fin-action-edit {
+  color: #2aa411;
+}
+
+.fin-action-edit:hover {
+  transform: scale(1.15);
+}
+
+.fin-action-delete {
+  color: #e70a0a;
+}
+
+.fin-action-delete:hover {
+  transform: scale(1.15);
+}
+
+/* ─── Transfer Account Cell (branch + account badges) ──────────── */
+.fin-account-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.fin-branch-cell {
+  white-space: nowrap;
+  text-align: left;
+}
+
+.fin-branch-tag {
+  display: inline-block;
+  background: #003366;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-family: noto-b;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.fin-acct-tag {
+  display: inline-block;
+  background: #1565c0;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-family: noto-m;
+  letter-spacing: 0.3px;
+}
+
+/* ─── Transfer Responsible Persons ───────────────────────────── */
+.fin-responsible-cell {
+  text-align: left;
+  min-width: 200px;
+}
+
+.fin-resp-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.fin-resp-row:last-child {
+  margin-bottom: 0;
+}
+
+.fin-resp-label {
+  color: #666;
+  font-family: noto-m;
+}
+
+.fin-resp-name {
+  color: #333;
+  font-family: noto-b;
+}
+
+.fin-resp-date {
+  color: #888;
+  font-size: 10px;
+  display: block;
+  width: 100%;
+}
+
+/* ─── Transfer Action Buttons (pending row) ──────────────────── */
+.fin-transfer-action-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: stretch;
+  min-width: 110px;
+}
+
+.fin-btn-approve {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  background: #2aa411;
+  color: #fff;
+  font-family: noto-b;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fin-btn-approve:hover:not(:disabled) {
+  background: #228a0d;
+}
+
+.fin-btn-approve:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.fin-btn-reject {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #e70a0a;
+  background: transparent;
+  color: #e70a0a;
+  font-family: noto-b;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fin-btn-reject:hover:not(:disabled) {
+  background: #e70a0a;
+  color: #fff;
+}
+
+.fin-btn-reject:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.fin-btn-cancel-transfer {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #999;
+  background: #fff;
+  color: #555;
+  font-family: noto-m;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fin-btn-cancel-transfer:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.fin-btn-cancel-transfer:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Pagination ──────────────────────────────────────────────── */
+.fin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 0 4px;
+}
+
+.fin-pagination-info {
+  font-family: noto-m;
+  font-size: 13px;
+  color: #555;
+}
+
+.fin-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.fin-page-btn {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  color: #003366;
+  font-family: noto-m;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fin-page-btn:hover:not(:disabled) {
+  background: #003366;
+  color: #fff;
+  border-color: #003366;
+}
+
+.fin-page-btn.active {
+  background: #fe9100;
+  color: #fff;
+  border-color: #fe9100;
+  font-family: noto-b;
+}
+
+.fin-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.fin-page-dots {
+  min-width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+}
+
+/* ─── Modal Overlay ───────────────────────────────────────────── */
+.fin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+/* ─── Create / Edit Account Modal ─────────────────────────────── */
+.fin-modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px;
+  width: 100%;
+  max-width: 480px;
+  border: 1px solid #003366;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.fin-modal-sm {
+  max-width: 360px;
+  text-align: center;
+}
+
+.fin-modal-title {
+  font-family: noto-b;
+  font-size: 18px;
+  color: #003366;
+  text-align: center;
+  margin: 0 0 22px 0;
+}
+
+/* ─── Form Groups ─────────────────────────────────────────────── */
+.fin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.fin-form-group label {
+  font-family: noto-m;
+  font-size: 13px;
+  color: #003366;
+}
+
+.fin-form-group input,
+.fin-form-group select,
+.fin-form-group textarea {
+  padding: 10px 12px;
+  border: 1px solid #dde3ee;
+  border-radius: 8px;
+  font-family: noto-m;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  background: #fff;
+}
+
+.fin-form-group input:focus,
+.fin-form-group select:focus,
+.fin-form-group textarea:focus {
+  border-color: #003366;
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+}
+
+.fin-form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23003366' d='M1.41 0L6 4.59L10.59 0L12 1.41L6 7.41L0 1.41L1.41 0Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.fin-form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ─── Signatory Selected List ─────────────────────────────────── */
+.fin-signatories-selected {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+/* ─── Balance Cards (table cell) ─────────────────────────────── */
+.fin-balance-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fin-balance-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: noto-m;
+  white-space: nowrap;
+}
+
+.fin-balance-card--cash {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.fin-balance-card--noncash {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.fin-balance-card i {
+  font-size: 11px;
+}
+
+.fin-balance-card-total {
+  font-family: noto-b;
+  font-size: 13px;
+  color: #003366;
+  padding-bottom: 4px;
+  margin-bottom: 2px;
+}
+
+/* ─── Balance Display Row ─────────────────────────────────────── */
+.fin-balance-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #f5f8ff;
+  border: 1px solid #dde3ee;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.fin-balance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.fin-balance-total {
+  border-top: 1px solid #dde3ee;
+  margin-top: 4px;
+  padding-top: 8px;
+}
+
+.fin-balance-label {
+  color: #555;
+  font-family: noto-r;
+}
+
+.fin-balance-value {
+  font-family: noto-b;
+  font-size: 13px;
+}
+
+.fin-signatory-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: noto-m;
+  font-size: 13px;
+  color: #333;
+}
+
+.fin-check-icon {
+  color: #2aa411;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.fin-signatory-chip span {
+  flex: 1;
+}
+
+.fin-signatory-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #e70a0a;
+  font-size: 13px;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.fin-signatory-remove:hover {
+  opacity: 0.7;
+}
+
+/* ─── Add Signatory Row ───────────────────────────────────────── */
+.fin-signatory-add-row {
+  display: flex;
+  gap: 8px;
+}
+
+.fin-signatory-add-row select {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #dde3ee;
+  border-radius: 8px;
+  font-family: noto-m;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23003366' d='M1.41 0L6 4.59L10.59 0L12 1.41L6 7.41L0 1.41L1.41 0Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  background-color: #fff;
+  transition: border-color 0.2s;
+}
+
+.fin-signatory-add-row select:focus {
+  border-color: #003366;
+}
+
+.fin-add-signatory-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  background: #003366;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fin-add-signatory-btn:hover:not(:disabled) {
+  background: #00254d;
+}
+
+.fin-add-signatory-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* ─── Modal Action Buttons ────────────────────────────────────── */
+.fin-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+
+.fin-btn-save {
+  padding: 10px 28px;
+  border-radius: 10px;
+  border: none;
+  background: #fe9100;
+  color: #fff;
+  font-family: noto-m;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.fin-btn-save:hover:not(:disabled) {
+  background: #e68200;
+}
+
+.fin-btn-save:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.fin-btn-cancel {
+  padding: 10px 28px;
+  border-radius: 10px;
+  border: 2px solid #888;
+  background: #fff;
+  color: #555;
+  font-family: noto-m;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.fin-btn-cancel:hover {
+  background: #f2f2f2;
+}
+
+.fin-btn-danger {
+  padding: 10px 28px;
+  border-radius: 10px;
+  border: none;
+  background: #e70a0a;
+  color: #fff;
+  font-family: noto-m;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.fin-btn-danger:hover:not(:disabled) {
+  background: #c90000;
+}
+
+.fin-btn-danger:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* ─── Confirm Modal Text ──────────────────────────────────────── */
+.fin-confirm-text {
+  font-family: noto-b;
+  font-size: 16px;
+  color: #003366;
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+}
+
+/* ─── Account Detail Modal ────────────────────────────────────── */
+.fin-detail-modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px;
+  width: 100%;
+  max-width: 440px;
+  border: 1px solid #003366;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.fin-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.fin-detail-icon {
+  font-size: 20px;
+  color: #fe9100;
+}
+
+.fin-detail-header h3 {
+  font-family: noto-b;
+  font-size: 17px;
+  color: #003366;
+  margin: 0;
+}
+
+.fin-detail-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.fin-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f4f8;
+  gap: 12px;
+}
+
+.fin-detail-row:last-child {
+  border-bottom: none;
+}
+
+.fin-detail-row > span:first-child {
+  font-family: noto-m;
+  font-size: 13px;
+  color: #777;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+.fin-detail-row > span:last-child {
+  font-family: noto-b;
+  font-size: 13px;
+  color: #333;
+  text-align: right;
+}
+
+.fin-detail-row-signatories {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.fin-detail-row-signatories > span:first-child {
+  margin-bottom: 8px;
+}
+
+.fin-signatory-list-view {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fin-signatory-tag {
+  background: #003366;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: noto-m;
+}
+
+.fin-mono {
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+/* ─── Status Change Section (inside detail modal) ─────────────── */
+.fin-status-change-section {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fin-readonly-input {
+  background: #f5f7fa;
+  color: #555;
+  cursor: default;
+  border: 1px solid #dde3ee;
+  border-radius: 8px;
+  padding: 9px 12px;
+  width: 100%;
+  font-family: noto-m;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* ─── Transfer Create View ────────────────────────────────────── */
+.fin-transfer-create {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── Transfer Type Selection ─────────────────────────────────── */
+.fin-transfer-type-select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 32px;
+  background: #fff;
+  border: 2px solid #003366;
+  border-radius: 16px;
+  width: 420px;
+  max-width: 90vw;
+}
+
+.fin-type-select-title {
+  font-family: noto-b;
+  font-size: 18px;
+  color: #003366;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.fin-type-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: #f59e0b;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-family: noto-m;
+  font-size: 15px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    opacity 0.2s;
+}
+
+.fin-type-btn:hover {
+  background: #d97706;
+}
+
+.fin-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #003366;
+  font-family: noto-m;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: opacity 0.2s;
+}
+
+.fin-back-btn:hover {
+  opacity: 0.7;
+}
+
+.fin-transfer-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ─── Account Cards (left side) ───────────────────────────────── */
+.fin-transfer-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fin-account-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.fin-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 14px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.fin-card-icon {
+  font-size: 18px;
+  color: #fe9100;
+}
+
+.fin-card-header h4 {
+  font-family: noto-b;
+  font-size: 15px;
+  color: #003366;
+  margin: 0;
+}
+
+.fin-card-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.fin-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid #f5f7fa;
+  gap: 12px;
+}
+
+.fin-card-row:last-child {
+  border-bottom: none;
+}
+
+.fin-card-label {
+  font-family: noto-m;
+  font-size: 12px;
+  color: #777;
+  flex-shrink: 0;
+  min-width: 110px;
+}
+
+.fin-card-value {
+  font-family: noto-b;
+  font-size: 13px;
+  color: #333;
+  text-align: right;
+}
+
+.fin-card-empty {
+  font-family: noto-m;
+  font-size: 13px;
+  color: #aaa;
+  text-align: center;
+  padding: 20px 0;
+  margin: 0;
+}
+
+/* ─── Transfer Form Card (right side) ─────────────────────────── */
+.fin-transfer-form-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 20px;
+}
+
+/* ─── Amount Input with Currency ──────────────────────────────── */
+.fin-amount-input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dde3ee;
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.fin-amount-input-wrap:focus-within {
+  border-color: #003366;
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+}
+
+.fin-amount-input-wrap input {
+  flex: 1;
+  border: none;
+  padding: 10px 12px;
+  font-family: noto-m;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  background: #fff;
+}
+
+.fin-currency-badge {
+  padding: 10px 14px;
+  background: #f0f4f8;
+  color: #666;
+  font-family: noto-b;
+  font-size: 13px;
+  border-left: 1px solid #dde3ee;
+  white-space: nowrap;
+}
+
+.fin-input-error {
+  border-color: #e53935 !important;
+  outline: none;
+}
+
+.fin-field-error {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #e53935;
+  font-family: noto-r;
+}
+
+/* ─── Send Transfer Button ────────────────────────────────────── */
+.fin-btn-transfer {
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  border: none;
+  background: #003366;
+  color: #fff;
+  font-family: noto-b;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+
+.fin-btn-transfer:hover:not(:disabled) {
+  background: #00254d;
+}
+
+.fin-btn-transfer:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* ─── Transfers Table (wider columns) ─────────────────────────── */
+.fin-transfers-table {
+  min-width: 960px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1920px) {
+  .finances {
+    max-width: 1750px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .fin-transfer-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .fin-transfer-form-card {
+    position: static;
+  }
+
+  .fin-transfers-table {
+    min-width: 800px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .finances {
+    padding: 16px;
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .fin-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .fin-tab {
+    padding: 10px 20px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .fin-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .fin-search-box {
+    min-width: 160px;
+    max-width: 100%;
+    flex: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .fin-btn-add {
+    margin-left: 0;
+  }
+
+  .fin-card-label {
+    min-width: 90px;
+  }
+
+  .fin-detail-row > span:first-child {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 850px) {
+  .fin-pagination {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .fin-modal {
+    padding: 20px;
+  }
+
+  .fin-detail-modal {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .finances {
+    padding: 12px;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .fin-tab {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .fin-toolbar {
+    gap: 8px;
+  }
+
+  .fin-search-box {
+    min-width: 130px;
+  }
+
+  .fin-btn-filter,
+  .fin-btn-add {
+    padding: 0 14px;
+    height: 38px;
+    font-size: 13px;
+  }
+
+  .fin-table {
+    font-size: 12px;
+  }
+
+  .fin-table th,
+  .fin-table td {
+    padding: 8px 7px;
+  }
+
+  .fin-modal {
+    max-width: 100%;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .fin-modal-sm {
+    max-width: 90%;
+  }
+
+  .fin-detail-modal {
+    max-width: 100%;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .fin-modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fin-account-card {
+    padding: 14px;
+  }
+
+  .fin-transfer-form-card {
+    padding: 16px;
+  }
+
+  .fin-transfer-action-btns {
+    min-width: 90px;
+  }
+
+  .fin-page-btn {
+    min-width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .fin-pagination-info {
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .fin-pagination-controls {
+    gap: 3px;
+  }
+}

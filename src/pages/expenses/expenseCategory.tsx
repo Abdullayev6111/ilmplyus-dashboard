@@ -9,6 +9,12 @@ import EmptyState from '../../components/EmptyState';
 import { getLocalized } from '../../utils/getLocalized';
 import { Protected } from '../../components/Protected';
 
+interface Jamgarma {
+  id: number;
+  name_uz: string;
+  status: string;
+}
+
 interface ExpenseCategory {
   id: number;
   name_uz: string;
@@ -20,11 +26,12 @@ interface ExpenseCategory {
 
 interface FormData {
   name: string;
+  jamgarma_ids: number[];
   created_at: string;
   updated_at: string;
 }
 
-const emptyForm: FormData = { name: '', created_at: '', updated_at: '' };
+const emptyForm: FormData = { name: '', jamgarma_ids: [], created_at: '', updated_at: '' };
 
 const formatDateTime = (iso: string) => {
   if (!iso) return '-';
@@ -57,17 +64,47 @@ const ExpensesCategory = () => {
   const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<ExpenseCategory | null>(null);
   const [formData, setFormData] = useState<FormData>(emptyForm);
+  const [filterJamgarmaIds, setFilterJamgarmaIds] = useState<number[]>([]);
 
-  const { data: categories, isLoading } = useQuery<ExpenseCategory[]>({
-    queryKey: ['expense-categories'],
+  const { data: jamgarmas } = useQuery<Jamgarma[]>({
+    queryKey: ['jamgarmas'],
     queryFn: async () => {
-      const { data } = await API.get('/expense-categories');
-      return data;
+      const { data } = await API.get('/jamgarmas');
+      return data.data ?? data;
     },
   });
 
+  const { data: categories, isLoading } = useQuery<ExpenseCategory[]>({
+    queryKey: ['expense-categories', filterJamgarmaIds],
+    queryFn: async () => {
+      const params: Record<string, number[]> = {};
+      if (filterJamgarmaIds.length > 0) {
+        params['jamgarma_ids[]'] = filterJamgarmaIds;
+      }
+      const { data } = await API.get('/expense-categories', { params });
+      return data.data ?? data;
+    },
+  });
+
+  const toggleFilterJamgarma = (id: number) =>
+    setFilterJamgarmaIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+
+  const toggleFormJamgarma = (id: number) =>
+    setFormData((prev) => ({
+      ...prev,
+      jamgarma_ids: prev.jamgarma_ids.includes(id)
+        ? prev.jamgarma_ids.filter((x) => x !== id)
+        : [...prev.jamgarma_ids, id],
+    }));
+
   const createMutation = useMutation({
-    mutationFn: async () => API.post('/expense-categories', { name_uz: formData.name }),
+    mutationFn: async () =>
+      API.post('/expense-categories', {
+        name_uz: formData.name,
+        jamgarma_ids: formData.jamgarma_ids,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expense-categories'] });
       resetForm();
@@ -76,7 +113,10 @@ const ExpensesCategory = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id }: { id: number }) => {
-      const payload: any = { name_uz: formData.name };
+      const payload: any = {
+        name_uz: formData.name,
+        jamgarma_ids: formData.jamgarma_ids,
+      };
       if (formData.created_at) payload.created_at = toApiDateTime(formData.created_at);
       if (formData.updated_at) payload.updated_at = toApiDateTime(formData.updated_at);
       return API.put(`/expense-categories/${id}`, payload);
@@ -104,6 +144,7 @@ const ExpensesCategory = () => {
     setEditingItem(item);
     setFormData({
       name: item.name_uz,
+      jamgarma_ids: [],
       created_at: toLocalDateTimeInput(item.created_at),
       updated_at: toLocalDateTimeInput(item.updated_at),
     });
@@ -158,6 +199,24 @@ const ExpensesCategory = () => {
                   required
                 />
               </div>
+
+              {jamgarmas && jamgarmas.length > 0 && (
+                <div className="subcategory-form-group">
+                  <label>{t('expenses.fund')}</label>
+                  <div className="jamgarma-check-list">
+                    {jamgarmas.map((j) => (
+                      <label key={j.id} className="jamgarma-check-item">
+                        <input
+                          type="checkbox"
+                          checked={formData.jamgarma_ids.includes(j.id)}
+                          onChange={() => toggleFormJamgarma(j.id)}
+                        />
+                        {j.name_uz}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {editingItem && (
                 <>
@@ -230,6 +289,21 @@ const ExpensesCategory = () => {
             {t('expenses.delete')}
           </button>
         </Protected>
+
+        {jamgarmas && jamgarmas.length > 0 && (
+          <div className="jamgarma-chips">
+            {jamgarmas.map((j) => (
+              <button
+                key={j.id}
+                type="button"
+                className={`jamgarma-chip${filterJamgarmaIds.includes(j.id) ? ' active' : ''}`}
+                onClick={() => toggleFilterJamgarma(j.id)}
+              >
+                {j.name_uz}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="users-table-wrapper">
