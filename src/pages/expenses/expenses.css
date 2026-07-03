@@ -136,63 +136,6 @@
 
 /* Expenses create end */
 
-/* Jamgarma filter chips */
-.jamgarma-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.jamgarma-chip {
-  padding: 5px 14px;
-  border-radius: 20px;
-  border: 1.5px solid #003366;
-  cursor: pointer;
-  font-size: 13px;
-  background: #fff;
-  color: #003366;
-  font-family: noto-m;
-  transition: all 0.2s;
-}
-
-.jamgarma-chip.active {
-  background: #003366;
-  color: #fff;
-}
-
-/* Jamgarma checkbox list in form */
-.jamgarma-check-list {
-  width: 330px;
-  max-height: 140px;
-  overflow-y: auto;
-  border: 1px solid #003366;
-  border-radius: 15px;
-  padding: 10px 15px;
-  margin-top: 9px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.jamgarma-check-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #333;
-  margin: 0;
-  font-weight: normal;
-}
-
-.jamgarma-check-item input[type="checkbox"] {
-  width: auto;
-  height: auto;
-  margin: 0;
-  flex-shrink: 0;
-}
-
 /* Date filter */
 .date-filter-input-wrapper {
   position: relative;

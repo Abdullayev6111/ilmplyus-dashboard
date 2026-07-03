@@ -1,19 +1,14 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { API } from "../../api/api";
-import "../users/users.css";
-import "./expenses.css";
-import { useTranslation } from "react-i18next";
-import TableSkeleton from "../../components/TableSkeleton";
-import EmptyState from "../../components/EmptyState";
-import { getLocalized } from "../../utils/getLocalized";
-import { Protected } from "../../components/Protected";
-
-interface Jamgarma {
-  id: number;
-  name_uz: string;
-  status: string;
-}
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { API } from '../../api/api';
+import '../users/users.css';
+import './expenses.css';
+import '../finance/finance.css';
+import { useTranslation } from 'react-i18next';
+import TableSkeleton from '../../components/TableSkeleton';
+import EmptyState from '../../components/EmptyState';
+import { getLocalized } from '../../utils/getLocalized';
+import { Protected } from '../../components/Protected';
 
 interface ExpenseCategory {
   id: number;
@@ -41,30 +36,30 @@ interface FormData {
 }
 
 const emptyForm: FormData = {
-  name: "",
-  expense_category_id: "",
-  created_at: "",
-  updated_at: "",
+  name: '',
+  expense_category_id: '',
+  created_at: '',
+  updated_at: '',
 };
 
 const formatDateTime = (iso: string) => {
-  if (!iso) return "-";
+  if (!iso) return '-';
   const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
+  const pad = (n: number) => String(n).padStart(2, '0');
   return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
 const toLocalDateTimeInput = (iso: string) => {
-  if (!iso) return "";
+  if (!iso) return '';
   const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
+  const pad = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
 const toApiDateTime = (dt: string) => {
   if (!dt) return undefined;
-  const base = dt.replace("T", " ");
-  return base.length === 16 ? base + ":00" : base;
+  const base = dt.replace('T', ' ');
+  return base.length === 16 ? base + ':00' : base;
 };
 
 const ExpensesSubcategory = () => {
@@ -73,56 +68,36 @@ const ExpensesSubcategory = () => {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<ExpenseSubcategory | null>(null);
   const [formData, setFormData] = useState<FormData>(emptyForm);
-  const [formJamgarmaIds, setFormJamgarmaIds] = useState<number[]>([]);
-
-  const { data: jamgarmas } = useQuery<Jamgarma[]>({
-    queryKey: ["jamgarmas"],
-    queryFn: async () => {
-      const { data } = await API.get("/jamgarmas");
-      return data.data ?? data;
-    },
-  });
 
   const { data: subcategories, isLoading } = useQuery<ExpenseSubcategory[]>({
-    queryKey: ["expense-subcategories"],
+    queryKey: ['expense-subcategories'],
     queryFn: async () => {
-      const { data } = await API.get("/expense-subcategories");
+      const { data } = await API.get('/expense-subcategories');
       return data.data ?? data;
     },
   });
 
   const { data: categories } = useQuery<ExpenseCategory[]>({
-    queryKey: ["expense-categories", formJamgarmaIds],
+    queryKey: ['expense-categories'],
     queryFn: async () => {
-      const params: Record<string, number[]> = {};
-      if (formJamgarmaIds.length > 0) {
-        params["jamgarma_ids[]"] = formJamgarmaIds;
-      }
-      const { data } = await API.get("/expense-categories", { params });
+      const { data } = await API.get('/expense-categories');
       return data.data ?? data;
     },
   });
 
-  const toggleFormJamgarma = (id: number) => {
-    setFormJamgarmaIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-    setFormData((prev) => ({ ...prev, expense_category_id: "" }));
-  };
-
   const createMutation = useMutation({
     mutationFn: async () =>
-      API.post("/expense-subcategories", {
+      API.post('/expense-subcategories', {
         name_uz: formData.name,
         expense_category_id: formData.expense_category_id,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expense-subcategories"] });
+      queryClient.invalidateQueries({ queryKey: ['expense-subcategories'] });
       resetForm();
     },
   });
@@ -138,7 +113,7 @@ const ExpensesSubcategory = () => {
       return API.put(`/expense-subcategories/${id}`, payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expense-subcategories"] });
+      queryClient.invalidateQueries({ queryKey: ['expense-subcategories'] });
       resetForm();
     },
   });
@@ -146,7 +121,7 @@ const ExpensesSubcategory = () => {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => API.delete(`/expense-subcategories/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expense-subcategories"] });
+      queryClient.invalidateQueries({ queryKey: ['expense-subcategories'] });
     },
   });
 
@@ -154,7 +129,6 @@ const ExpensesSubcategory = () => {
     setShowAddModal(false);
     setEditingItem(null);
     setFormData(emptyForm);
-    setFormJamgarmaIds([]);
   };
 
   const openEditModal = (item: ExpenseSubcategory) => {
@@ -165,16 +139,15 @@ const ExpensesSubcategory = () => {
       created_at: toLocalDateTimeInput(item.created_at),
       updated_at: toLocalDateTimeInput(item.updated_at),
     });
-    setFormJamgarmaIds([]);
     setShowAddModal(true);
   };
 
   const confirmDelete = () => {
-    if (deleteTarget === "all") {
+    if (deleteTarget === 'all') {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
-    if (typeof deleteTarget === "number") {
+    if (typeof deleteTarget === 'number') {
       deleteMutation.mutate(deleteTarget);
       setSelected((p) => p.filter((x) => x !== deleteTarget));
     }
@@ -190,12 +163,14 @@ const ExpensesSubcategory = () => {
 
   return (
     <section className="users container">
-      <h1 className="main-title">{t("expenses.expenseSubCategory")}</h1>
+      <h1 className="main-title">{t('expenses.expenseSubCategory')}</h1>
 
       {showAddModal && (
         <div className="modal-overlay">
           <div className="expenses-subcategory">
-            <h1>{editingItem ? t("expenses.editSubCategory") : t("expenses.expenseSubCategory")}</h1>
+            <h1>
+              {editingItem ? t('expenses.editSubCategory') : t('expenses.expenseSubCategory')}
+            </h1>
 
             <form
               className="subcategory-form"
@@ -208,26 +183,8 @@ const ExpensesSubcategory = () => {
                 }
               }}
             >
-              {jamgarmas && jamgarmas.length > 0 && (
-                <div className="subcategory-form-group">
-                  <label>{t("expenses.fund")}</label>
-                  <div className="jamgarma-check-list">
-                    {jamgarmas.map((j) => (
-                      <label key={j.id} className="jamgarma-check-item">
-                        <input
-                          type="checkbox"
-                          checked={formJamgarmaIds.includes(j.id)}
-                          onChange={() => toggleFormJamgarma(j.id)}
-                        />
-                        {j.name_uz}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               <div className="subcategory-form-group">
-                <label>{t("expenses.expenseCategory")}</label>
+                <label>{t('expenses.expenseCategory')}</label>
                 <select
                   value={formData.expense_category_id}
                   onChange={(e) =>
@@ -235,17 +192,17 @@ const ExpensesSubcategory = () => {
                   }
                   required
                 >
-                  <option value="">{t("expenses.choose")}</option>
+                  <option value="">{t('expenses.choose')}</option>
                   {categories?.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {getLocalized(c, "name", i18n.language)}
+                      {getLocalized(c, 'name', i18n.language)}
                     </option>
                   ))}
                 </select>
               </div>
 
               <div className="subcategory-form-group">
-                <label>{t("expenses.expenseSubCategoryName")}</label>
+                <label>{t('expenses.expenseSubCategoryName')}</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -257,7 +214,7 @@ const ExpensesSubcategory = () => {
               {editingItem && (
                 <>
                   <div className="subcategory-form-group">
-                    <label>{t("expenses.createdAt")}</label>
+                    <label>{t('expenses.createdAt')}</label>
                     <input
                       type="datetime-local"
                       value={formData.created_at}
@@ -265,7 +222,7 @@ const ExpensesSubcategory = () => {
                     />
                   </div>
                   <div className="subcategory-form-group">
-                    <label>{t("expenses.updatedAt")}</label>
+                    <label>{t('expenses.updatedAt')}</label>
                     <input
                       type="datetime-local"
                       value={formData.updated_at}
@@ -282,11 +239,11 @@ const ExpensesSubcategory = () => {
                   disabled={createMutation.isPending || updateMutation.isPending}
                 >
                   {createMutation.isPending || updateMutation.isPending
-                    ? t("expenses.saving")
-                    : t("expenses.save")}
+                    ? t('expenses.saving')
+                    : t('expenses.save')}
                 </button>
                 <button type="button" className="cancel" onClick={resetForm}>
-                  {t("expenses.cancel")}
+                  {t('expenses.cancel')}
                 </button>
               </div>
             </form>
@@ -297,13 +254,13 @@ const ExpensesSubcategory = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t("expenses.confirmDelete")}</h3>
+            <h3>{t('expenses.confirmDelete')}</h3>
             <div className="modal-actions">
               <button className="danger" onClick={confirmDelete}>
-                {t("expenses.delete")}
+                {t('expenses.delete')}
               </button>
               <button className="cancel" onClick={() => setShowDeleteModal(false)}>
-                {t("expenses.cancel")}
+                {t('expenses.cancel')}
               </button>
             </div>
           </div>
@@ -313,16 +270,19 @@ const ExpensesSubcategory = () => {
       <div className="users-filters">
         <Protected permission="expense_subcategories.create">
           <button className="add-new-user" onClick={() => setShowAddModal(true)}>
-            {t("expenses.addBtn")}
+            {t('expenses.addBtn')}
           </button>
         </Protected>
         <Protected permission="expense_subcategories.delete">
           <button
             className="delete-all"
             disabled={!selected.length}
-            onClick={() => { setDeleteTarget("all"); setShowDeleteModal(true); }}
+            onClick={() => {
+              setDeleteTarget('all');
+              setShowDeleteModal(true);
+            }}
           >
-            {t("expenses.delete")}
+            {t('expenses.delete')}
           </button>
         </Protected>
       </div>
@@ -334,18 +294,21 @@ const ExpensesSubcategory = () => {
               <th>
                 <input
                   type="checkbox"
-                  checked={selected.length === (subcategories?.length || 0) && (subcategories?.length || 0) > 0}
+                  checked={
+                    selected.length === (subcategories?.length || 0) &&
+                    (subcategories?.length || 0) > 0
+                  }
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
               <th className="th-sortable" onClick={() => setSortAsc((p) => !p)}>
-                ID {sortAsc ? "↑" : "↓"}
+                ID {sortAsc ? '↑' : '↓'}
               </th>
-              <th>{t("expenses.subCategory")}</th>
-              <th>{t("expenses.category")}</th>
-              <th>{t("expenses.createdAt")}</th>
-              <th>{t("expenses.updatedAt")}</th>
-              <th>{t("expenses.actions")}</th>
+              <th>{t('expenses.subCategory')}</th>
+              <th>{t('expenses.category')}</th>
+              <th>{t('expenses.createdAt')}</th>
+              <th>{t('expenses.updatedAt')}</th>
+              <th>{t('expenses.actions')}</th>
             </tr>
           </thead>
 
@@ -365,8 +328,10 @@ const ExpensesSubcategory = () => {
                       />
                     </td>
                     <td>{item.id}</td>
-                    <td>{getLocalized(item, "name", i18n.language)}</td>
-                    <td>{item.category ? getLocalized(item.category, "name", i18n.language) : "-"}</td>
+                    <td>{getLocalized(item, 'name', i18n.language)}</td>
+                    <td>
+                      {item.category ? getLocalized(item.category, 'name', i18n.language) : '-'}
+                    </td>
                     <td>{formatDateTime(item.created_at)}</td>
                     <td>{formatDateTime(item.updated_at)}</td>
                     <td className="actions">
@@ -378,7 +343,10 @@ const ExpensesSubcategory = () => {
                       <Protected permission="expense_subcategories.delete">
                         <button
                           className="user-delete-btn"
-                          onClick={() => { setDeleteTarget(item.id); setShowDeleteModal(true); }}
+                          onClick={() => {
+                            setDeleteTarget(item.id);
+                            setShowDeleteModal(true);
+                          }}
                         >
                           <i className="fa-solid fa-trash"></i>
                         </button>
@@ -387,7 +355,7 @@ const ExpensesSubcategory = () => {
                   </tr>
                 ))
             ) : (
-              <EmptyState colSpan={7} message={t("expenses.subCategoryNotFound")} />
+              <EmptyState colSpan={7} message={t('expenses.subCategoryNotFound')} />
             )}
           </tbody>
         </table>

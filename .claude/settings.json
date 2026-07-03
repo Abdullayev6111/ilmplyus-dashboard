@@ -16,7 +16,9 @@
       "Read(//c/Users/HP/Downloads/Telegram Desktop/**)",
       "Bash(powershell -command \"Get-Content src/messages/uz.json | Select-Object -Last 20\")",
       "Bash(powershell -command \"Get-Content src/messages/ru.json | Select-Object -Last 20\")",
-      "Bash(powershell -command \"Get-Content src/messages/ru.json | Select-Object -Last 30\")"
+      "Bash(powershell -command \"Get-Content src/messages/ru.json | Select-Object -Last 30\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/uz.json'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/en.json'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/ru.json'\\)\\); console.log\\('all valid json'\\)\")",
+      "Bash(node ./__smoke-debts.cjs)"
     ],
     "additionalDirectories": [
       "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src\\pages\\set-password",

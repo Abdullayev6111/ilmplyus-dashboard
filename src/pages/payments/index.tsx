@@ -1,5 +1,11 @@
 import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import {
+  useQuery,
+  useQueries,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import { API } from '../../api/api';
 import './payments.css';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +14,12 @@ import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import type { Payment, PaymentPayload, Branch, Employee, Course, Group } from '../../types';
 import { Protected } from '../../components/Protected';
+
+interface Commission {
+  payment_method: string;
+}
+
+const KNOWN_PAYMENT_METHODS = ['cash', 'card', 'bank', 'click', 'paynet'];
 
 const Payments = () => {
   const { t, i18n } = useTranslation();
@@ -86,6 +98,45 @@ const Payments = () => {
     staleTime: 1000 * 60 * 10,
     placeholderData: keepPreviousData,
   });
+
+  const { data: formCommissions } = useQuery<Commission[]>({
+    queryKey: ['branch-commissions', formData.branch_id],
+    queryFn: async () => {
+      const { data } = await API.get(`/branches/${formData.branch_id}/commissions`);
+      return data.data ?? data;
+    },
+    enabled: !!formData.branch_id,
+    staleTime: 1000 * 60 * 10,
+  });
+
+  const formPaymentMethods = useMemo(
+    () => Array.from(new Set((formCommissions ?? []).map((c) => c.payment_method))),
+    [formCommissions],
+  );
+
+  const allBranchCommissionsQueries = useQueries({
+    queries: (branchesData ?? []).map((b) => ({
+      queryKey: ['branch-commissions', String(b.id)],
+      queryFn: async () => {
+        const { data } = await API.get(`/branches/${b.id}/commissions`);
+        return (data.data ?? data) as Commission[];
+      },
+      staleTime: 1000 * 60 * 10,
+    })),
+  });
+
+  const allPaymentMethods = useMemo(() => {
+    const set = new Set<string>();
+    allBranchCommissionsQueries.forEach((q) => {
+      q.data?.forEach((c) => set.add(c.payment_method));
+    });
+    return Array.from(set);
+  }, [allBranchCommissionsQueries]);
+
+  const paymentMethodLabel = (method: string) => {
+    const normalized = method?.toLowerCase();
+    return KNOWN_PAYMENT_METHODS.includes(normalized) ? t(`commissions.methods.${normalized}`) : method;
+  };
 
   const createMutation = useMutation({
     mutationFn: async (payload: PaymentPayload) => {
@@ -233,7 +284,9 @@ const Payments = () => {
         const fullName =
           `${u.student?.last_name ?? ''} ${u.student?.first_name ?? ''}`.toLowerCase();
         const matchSearch = fullName.includes(search.toLowerCase());
-        const matchPaymentType = paymentTypeFilter ? u.payment_method === paymentTypeFilter : true;
+        const matchPaymentType = paymentTypeFilter
+          ? u.payment_method?.toLowerCase() === paymentTypeFilter.toLowerCase()
+          : true;
 
         return matchSearch && matchPaymentType;
       })
@@ -313,11 +366,18 @@ const Payments = () => {
                   <select
                     value={formData.payment_type}
                     onChange={(e) => setFormData({ ...formData, payment_type: e.target.value })}
+                    disabled={!formData.branch_id}
                   >
-                    <option value="">{t('payments.choose')}</option>
-                    <option value="Naqt">{t('payments.inCash')}</option>
-                    <option value="Karta">{t('payments.byCard')}</option>
-                    <option value="Bank">{t('payments.bank')}</option>
+                    <option value="">
+                      {formData.branch_id
+                        ? t('payments.choose')
+                        : t('payments.chooseBranchFirst')}
+                    </option>
+                    {formPaymentMethods.map((method) => (
+                      <option key={method} value={method}>
+                        {paymentMethodLabel(method)}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -354,12 +414,14 @@ const Payments = () => {
                   <label>{t('payments.branch')}</label>
                   <select
                     value={formData.branch_id}
-                    onChange={(e) => setFormData({ ...formData, branch_id: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, branch_id: e.target.value, payment_type: '' })
+                    }
                   >
                     <option value="">{t('payments.choose')}</option>
                     {branchesData?.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {b.address}
+                        {getLocalized(b, 'name', i18n.language) || b.name_uz || '-'}
                       </option>
                     ))}
                   </select>
@@ -510,9 +572,11 @@ const Payments = () => {
           onChange={(e) => setPaymentTypeFilter(e.target.value)}
         >
           <option value="">{t('payments.paymentMethod')}</option>
-          <option value="Naqt">{t('payments.inCash')}</option>
-          <option value="Karta">{t('payments.byCard')}</option>
-          <option value="Bank">{t('payments.bank')}</option>
+          {allPaymentMethods.map((method) => (
+            <option key={method} value={method}>
+              {paymentMethodLabel(method)}
+            </option>
+          ))}
         </select>
 
         <div className="search-box">
@@ -564,7 +628,7 @@ const Payments = () => {
                     {u.student?.last_name} {u.student?.first_name}
                   </td>
                   <td>{formatAmount(u.amount)}</td>
-                  <td>{u.payment_method}</td>
+                  <td>{paymentMethodLabel(u.payment_method)}</td>
                   <td>{u.payment_date || '-'}</td>
                   <td>{u.course ? getLocalized(u.course, 'name', i18n.language) : '-'}</td>
                   <td>{u.cashier?.full_name}</td>

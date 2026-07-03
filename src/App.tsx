@@ -15,6 +15,7 @@ import Roles from './pages/roles';
 import RolePermissions from './pages/roles/RolePermissions';
 import CreateRole from './pages/roles/CreateRole';
 import Payments from './pages/payments';
+import Commissions from './pages/commissions';
 import ArchivedPayments from './pages/archive';
 import Expenses from './pages/expenses';
 import ExpenseCategory from './pages/expenses/expenseCategory';
@@ -58,6 +59,7 @@ import TrashPage from './pages/trash';
 import SetPasswordPage from './pages/set-password';
 import Finances from './pages/finance';
 import JamgarmaPage from './pages/finance/Jamgarma';
+import DebtsPage from './pages/debts';
 
 // Archive pages
 import UsersArchive from './pages/users/archive';
@@ -185,6 +187,7 @@ const App = () => {
           {/* To'lovlar */}
           <Route path="/payments" element={<Payments />} />
           <Route path="/payments/archive" element={<ArchivedPayments />} />
+          <Route path="/commissions" element={<Commissions />} />
 
           {/* Oyliklar */}
           <Route path="/salaries" element={<Salaries />} />
@@ -197,6 +200,7 @@ const App = () => {
           {/* Moliya */}
           <Route path="/finances" element={<Finances />} />
           <Route path="/jamgarma" element={<JamgarmaPage />} />
+          <Route path="/debts" element={<DebtsPage />} />
 
           {/* Arxivlar */}
           <Route path="/users/archive" element={<UsersArchive />} />

@@ -14,6 +14,7 @@ interface Category {
   name_uz: string;
   name_ru?: string;
   name_en?: string;
+  jamgarmas?: Jamgarma[];
 }
 
 interface Subcategory {
@@ -32,6 +33,8 @@ interface Cashier {
 interface Jamgarma {
   id: number;
   name_uz: string;
+  name_ru?: string;
+  name_en?: string;
   status: string;
 }
 
@@ -117,14 +120,18 @@ const Expenses = () => {
   });
 
   const { data: categories } = useQuery<Category[]>({
-    queryKey: ["expense-categories", formData.jamgarma_id],
+    queryKey: ["expense-categories"],
     queryFn: async () => {
-      const params: Record<string, string> = {};
-      if (formData.jamgarma_id) params["jamgarma_id"] = formData.jamgarma_id;
-      const { data } = await API.get("/expense-categories", { params });
+      const { data } = await API.get("/expense-categories");
       return data.data ?? data;
     },
   });
+
+  const formCategories = categories?.filter(
+    (c) =>
+      !formData.jamgarma_id ||
+      c.jamgarmas?.some((j) => String(j.id) === formData.jamgarma_id),
+  );
 
   const { data: subcategories } = useQuery<Subcategory[]>({
     queryKey: ["expense-subcategories"],
@@ -276,7 +283,7 @@ const Expenses = () => {
               }}
             >
               <div className="create-form">
-                <div className="form-group" style={{ width: "100%" }}>
+                <div className="form-group">
                   <label>{t("expenses.fund")}</label>
                   <select
                     className="create-form-input"
@@ -290,12 +297,11 @@ const Expenses = () => {
                       })
                     }
                     required
-                    style={{ width: "100%" }}
                   >
                     <option value="">{t("expenses.chooseFund")}</option>
                     {jamgarmas?.map((j) => (
                       <option key={j.id} value={j.id}>
-                        {j.name_uz}
+                        {getLocalized(j, 'name', i18n.language) || j.name_uz}
                       </option>
                     ))}
                   </select>
@@ -318,7 +324,7 @@ const Expenses = () => {
                     required
                   >
                     <option value="">{t("expenses.choose")}</option>
-                    {categories?.map((c) => (
+                    {formCategories?.map((c) => (
                       <option key={c.id} value={c.id}>
                         {getLocalized(c, 'name', i18n.language)}
                       </option>

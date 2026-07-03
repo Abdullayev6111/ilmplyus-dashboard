@@ -16,14 +16,12 @@ import { Protected } from "../../components/Protected";
 
 interface SourceFormData {
   name_uz: string;
-  link: string;
   created_at: string;
   updated_at: string;
 }
 
 const emptyForm: SourceFormData = {
   name_uz: "",
-  link: "",
   created_at: "",
   updated_at: "",
 };
@@ -72,7 +70,6 @@ const Sources = () => {
     mutationFn: async () => {
       const payload: SourcePayload = {
         name_uz: formData.name_uz,
-        link: formData.link,
       };
       return sourceAPI.createSource(payload);
     },
@@ -94,7 +91,6 @@ const Sources = () => {
     }) => {
       const apiPayload: SourcePayload = {
         name_uz: payload.name_uz,
-        link: payload.link,
       };
       if (payload.created_at) {
         apiPayload.created_at = new Date(payload.created_at).toISOString();
@@ -123,7 +119,6 @@ const Sources = () => {
     setEditingItem(item);
     setFormData({
       name_uz: item.name_uz || "",
-      link: item.link || "",
       created_at: toLocalDateTimeInput(item.created_at),
       updated_at: toLocalDateTimeInput(item.updated_at),
     });
@@ -194,19 +189,6 @@ const Sources = () => {
                     setFormData({ ...formData, name_uz: e.target.value })
                   }
                   placeholder={t("sources.name")}
-                  required
-                />
-              </div>
-
-              <div className="subcategory-form-group">
-                <label>{t("sources.link")}</label>
-                <input
-                  type="text"
-                  value={formData.link}
-                  onChange={(e) =>
-                    setFormData({ ...formData, link: e.target.value })
-                  }
-                  placeholder="https://..."
                   required
                 />
               </div>

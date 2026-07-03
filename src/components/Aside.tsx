@@ -204,7 +204,7 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       id: 'finances-group',
       label: t('aside.finances'),
       imgIcon: financesIcon,
-      paths: ['/finances', '/jamgarma'],
+      paths: ['/finances', '/jamgarma', '/debts'],
       children: [
         {
           label: t('aside.scoreSheet'),
@@ -214,6 +214,11 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         {
           label: t('aside.jamgarma'),
           path: '/jamgarma',
+          permission: '',
+        },
+        {
+          label: t('aside.debts'),
+          path: '/debts',
           permission: '',
         },
       ],
@@ -246,9 +251,10 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       id: 'payments-group',
       label: t('aside.payments'),
       imgIcon: paymentsIcon,
-      paths: ['/payments'],
+      paths: ['/payments', '/commissions'],
       children: [
         { label: t('aside.paymentsList'), path: '/payments', permission: 'payments.view' },
+        { label: t('aside.commissions'), path: '/commissions', permission: 'commissions.view' },
       ],
     },
     {

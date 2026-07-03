@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API } from '../../api/api';
 import '../users/users.css';
 import './expenses.css';
+import '../finance/finance.css';
 import { useTranslation } from 'react-i18next';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
@@ -12,6 +13,8 @@ import { Protected } from '../../components/Protected';
 interface Jamgarma {
   id: number;
   name_uz: string;
+  name_ru?: string;
+  name_en?: string;
   status: string;
 }
 
@@ -22,6 +25,7 @@ interface ExpenseCategory {
   name_en?: string;
   created_at: string;
   updated_at: string;
+  jamgarmas?: Jamgarma[];
 }
 
 interface FormData {
@@ -64,7 +68,7 @@ const ExpensesCategory = () => {
   const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<ExpenseCategory | null>(null);
   const [formData, setFormData] = useState<FormData>(emptyForm);
-  const [filterJamgarmaIds, setFilterJamgarmaIds] = useState<number[]>([]);
+  const [jamgarmaDropdown, setJamgarmaDropdown] = useState('');
 
   const { data: jamgarmas } = useQuery<Jamgarma[]>({
     queryKey: ['jamgarmas'],
@@ -75,29 +79,21 @@ const ExpensesCategory = () => {
   });
 
   const { data: categories, isLoading } = useQuery<ExpenseCategory[]>({
-    queryKey: ['expense-categories', filterJamgarmaIds],
+    queryKey: ['expense-categories'],
     queryFn: async () => {
-      const params: Record<string, number[]> = {};
-      if (filterJamgarmaIds.length > 0) {
-        params['jamgarma_ids[]'] = filterJamgarmaIds;
-      }
-      const { data } = await API.get('/expense-categories', { params });
+      const { data } = await API.get('/expense-categories');
       return data.data ?? data;
     },
   });
 
-  const toggleFilterJamgarma = (id: number) =>
-    setFilterJamgarmaIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-
-  const toggleFormJamgarma = (id: number) =>
+  const removeFormJamgarma = (id: number) =>
     setFormData((prev) => ({
       ...prev,
-      jamgarma_ids: prev.jamgarma_ids.includes(id)
-        ? prev.jamgarma_ids.filter((x) => x !== id)
-        : [...prev.jamgarma_ids, id],
+      jamgarma_ids: prev.jamgarma_ids.filter((x) => x !== id),
     }));
+
+  const availableJamgarmas = (jamgarmas ?? []).filter((j) => !formData.jamgarma_ids.includes(j.id));
+  const selectedJamgarmas = (jamgarmas ?? []).filter((j) => formData.jamgarma_ids.includes(j.id));
 
   const createMutation = useMutation({
     mutationFn: async () =>
@@ -138,13 +134,14 @@ const ExpensesCategory = () => {
     setShowAddModal(false);
     setEditingItem(null);
     setFormData(emptyForm);
+    setJamgarmaDropdown('');
   };
 
   const openEditModal = (item: ExpenseCategory) => {
     setEditingItem(item);
     setFormData({
       name: item.name_uz,
-      jamgarma_ids: [],
+      jamgarma_ids: item.jamgarmas?.map((j) => j.id) ?? [],
       created_at: toLocalDateTimeInput(item.created_at),
       updated_at: toLocalDateTimeInput(item.updated_at),
     });
@@ -170,6 +167,9 @@ const ExpensesCategory = () => {
   const toggleOne = (id: number) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
+  const getJamgarmaName = (j: Jamgarma) =>
+    getLocalized(j, 'name', i18n.language) || j.name_uz || '-';
+
   return (
     <section className="users container">
       <h1 className="main-title">{t('expenses.expenseCategory')}</h1>
@@ -190,6 +190,48 @@ const ExpensesCategory = () => {
                 }
               }}
             >
+              {selectedJamgarmas.length > 0 && (
+                <div style={{ width: '100%' }} className="fin-signatories-selected">
+                  {selectedJamgarmas.map((j) => (
+                    <div key={j.id} className="fin-signatory-chip">
+                      <i className="fa-solid fa-check fin-check-icon" />
+                      <span>{getJamgarmaName(j)}</span>
+                      <button
+                        className="fin-signatory-remove"
+                        onClick={() => removeFormJamgarma(j.id)}
+                        type="button"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="subcategory-form-group">
+                <label>{t('expenses.fund')}</label>
+                <select
+                  value={jamgarmaDropdown}
+                  onChange={(e) => {
+                    const id = parseInt(e.target.value);
+                    if (id && !formData.jamgarma_ids.includes(id)) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        jamgarma_ids: [...prev.jamgarma_ids, id],
+                      }));
+                    }
+                    setJamgarmaDropdown('');
+                  }}
+                >
+                  <option value="">{t('expenses.chooseFund')}</option>
+                  {availableJamgarmas.map((j) => (
+                    <option key={j.id} value={j.id}>
+                      {getJamgarmaName(j)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="subcategory-form-group">
                 <label>{t('expenses.expenseCategoryName')}</label>
                 <input
@@ -199,24 +241,6 @@ const ExpensesCategory = () => {
                   required
                 />
               </div>
-
-              {jamgarmas && jamgarmas.length > 0 && (
-                <div className="subcategory-form-group">
-                  <label>{t('expenses.fund')}</label>
-                  <div className="jamgarma-check-list">
-                    {jamgarmas.map((j) => (
-                      <label key={j.id} className="jamgarma-check-item">
-                        <input
-                          type="checkbox"
-                          checked={formData.jamgarma_ids.includes(j.id)}
-                          onChange={() => toggleFormJamgarma(j.id)}
-                        />
-                        {j.name_uz}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {editingItem && (
                 <>
@@ -284,26 +308,14 @@ const ExpensesCategory = () => {
           <button
             className="delete-all"
             disabled={!selected.length}
-            onClick={() => { setDeleteTarget('all'); setShowDeleteModal(true); }}
+            onClick={() => {
+              setDeleteTarget('all');
+              setShowDeleteModal(true);
+            }}
           >
             {t('expenses.delete')}
           </button>
         </Protected>
-
-        {jamgarmas && jamgarmas.length > 0 && (
-          <div className="jamgarma-chips">
-            {jamgarmas.map((j) => (
-              <button
-                key={j.id}
-                type="button"
-                className={`jamgarma-chip${filterJamgarmaIds.includes(j.id) ? ' active' : ''}`}
-                onClick={() => toggleFilterJamgarma(j.id)}
-              >
-                {j.name_uz}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       <div className="users-table-wrapper">
@@ -313,7 +325,9 @@ const ExpensesCategory = () => {
               <th>
                 <input
                   type="checkbox"
-                  checked={selected.length === (categories?.length || 0) && (categories?.length || 0) > 0}
+                  checked={
+                    selected.length === (categories?.length || 0) && (categories?.length || 0) > 0
+                  }
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
@@ -321,6 +335,7 @@ const ExpensesCategory = () => {
                 ID {sortAsc ? '↑' : '↓'}
               </th>
               <th>{t('expenses.categoryName')}</th>
+              <th>{t('expenses.fund')}</th>
               <th>{t('expenses.createdAt')}</th>
               <th>{t('expenses.updatedAt')}</th>
               <th>{t('expenses.actions')}</th>
@@ -329,7 +344,7 @@ const ExpensesCategory = () => {
 
           <tbody>
             {isLoading ? (
-              <TableSkeleton rowCount={8} columnCount={6} />
+              <TableSkeleton rowCount={8} columnCount={7} />
             ) : categories?.length ? (
               [...(categories || [])]
                 .sort((a, b) => (sortAsc ? a.id - b.id : b.id - a.id))
@@ -344,6 +359,11 @@ const ExpensesCategory = () => {
                     </td>
                     <td>{item.id}</td>
                     <td>{getLocalized(item, 'name', i18n.language)}</td>
+                    <td>
+                      {item.jamgarmas && item.jamgarmas.length > 0
+                        ? item.jamgarmas.map((j) => getJamgarmaName(j)).join(', ')
+                        : '-'}
+                    </td>
                     <td>{formatDateTime(item.created_at)}</td>
                     <td>{formatDateTime(item.updated_at)}</td>
                     <td className="actions">
@@ -355,7 +375,10 @@ const ExpensesCategory = () => {
                       <Protected permission="expense_categories.delete">
                         <button
                           className="user-delete-btn"
-                          onClick={() => { setDeleteTarget(item.id); setShowDeleteModal(true); }}
+                          onClick={() => {
+                            setDeleteTarget(item.id);
+                            setShowDeleteModal(true);
+                          }}
                         >
                           <i className="fa-solid fa-trash"></i>
                         </button>
@@ -364,7 +387,7 @@ const ExpensesCategory = () => {
                   </tr>
                 ))
             ) : (
-              <EmptyState colSpan={6} message={t('expenses.categoryNotFound')} />
+              <EmptyState colSpan={7} message={t('expenses.categoryNotFound')} />
             )}
           </tbody>
         </table>

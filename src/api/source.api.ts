@@ -14,7 +14,6 @@ export interface SourcePayload {
   name_uz: string;
   name_ru?: string;
   name_en?: string;
-  link: string;
   created_at?: string;
   updated_at?: string;
 }

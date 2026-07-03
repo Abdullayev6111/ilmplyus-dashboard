@@ -1,0 +1,84 @@
+/* ═══════════════════════════════════════════════════════════════
+   DEBTS MODULE — debts.css
+   Extends finance.css (fin-*) with debts-specific additions.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Override finance.css's nth-child(2) nowrap rule ──────────────
+   That rule was tuned for a single-line branch label; our giver/
+   receiver columns hold a multi-line fund cell and must wrap. ───── */
+.debts-transfers-table {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 1050px;
+}
+
+.debts-transfers-table th,
+.debts-transfers-table td {
+  white-space: normal;
+  vertical-align: top;
+}
+
+.debts-transfers-table th:nth-child(1),
+.debts-transfers-table td:nth-child(1) {
+  width: 5%;
+}
+
+.debts-transfers-table th:nth-child(2),
+.debts-transfers-table td:nth-child(2),
+.debts-transfers-table th:nth-child(3),
+.debts-transfers-table td:nth-child(3) {
+  width: 15%;
+}
+
+.debts-transfers-table th:nth-child(4) {
+  width: 13%;
+}
+
+.debts-transfers-table th:nth-child(5) {
+  width: 17%;
+}
+
+.debts-transfers-table th:nth-child(6) {
+  width: 15%;
+}
+
+.debts-transfers-table th:nth-child(7) {
+  width: 10%;
+}
+
+.debts-transfers-table th:nth-child(8) {
+  width: 10%;
+}
+
+/* ─── Fund Cell (giver / receiver columns in the transfers table) ─
+   Plain block layout, not flex: a flex child's min-width doesn't
+   reliably bubble up into the table's auto column-width algorithm,
+   which let the column collapse narrower than its content. ──────── */
+.debts-fund-cell {
+  text-align: left;
+}
+
+.debts-fund-name,
+.debts-fund-section,
+.debts-fund-tag {
+  display: block;
+}
+
+.debts-fund-name {
+  font-family: noto-b;
+  font-size: 13px;
+  color: #003366;
+}
+
+.debts-fund-section {
+  font-size: 11px;
+  color: #777;
+  margin-top: 2px;
+}
+
+.debts-fund-tag {
+  font-size: 10px;
+  font-family: noto-m;
+  color: #e70a0a;
+  margin-top: 2px;
+}
