@@ -41,7 +41,8 @@ interface Jamgarma {
   branch_id?: number;
   branch?: Branch;
   chart_of_accounts?: { id: number; account_number: string; account_type_name?: string };
-  withdrawers?: Withdrawer[];
+  cash_withdrawers?: Withdrawer[];
+  non_cash_withdrawers?: Withdrawer[];
   created_at?: string;
   updated_at?: string;
 }
@@ -161,6 +162,8 @@ const JamgarmaPage = () => {
   });
   const [selectedWithdrawerIds, setSelectedWithdrawerIds] = useState<number[]>([]);
   const [withdrawerDropdown, setWithdrawerDropdown] = useState('');
+  const [cashWithdrawerIds, setCashWithdrawerIds] = useState<number[]>([]);
+  const [nonCashWithdrawerIds, setNonCashWithdrawerIds] = useState<number[]>([]);
 
   // ── Status change state ──────────────────────────────────────────
   const [viewStatusChange, setViewStatusChange] = useState('');
@@ -296,9 +299,17 @@ const JamgarmaPage = () => {
     return `${lastName} ${firstInitial}.`;
   };
 
-  const getWithdrawersDisplay = (item: Jamgarma) => {
-    if (!item.withdrawers?.length) return ['-'];
-    return item.withdrawers.map((w) => formatWithdrawerName(w.full_name));
+  const getWithdrawerBadges = (item: Jamgarma) => {
+    const cashIds = new Set((item.cash_withdrawers ?? []).map((w) => w.id));
+    const nonCashIds = new Set((item.non_cash_withdrawers ?? []).map((w) => w.id));
+    const merged = [...(item.cash_withdrawers ?? []), ...(item.non_cash_withdrawers ?? [])];
+    const unique = merged.filter((w, i) => merged.findIndex((x) => x.id === w.id) === i);
+    return unique.map((w) => ({
+      id: w.id,
+      name: formatWithdrawerName(w.full_name),
+      isCash: cashIds.has(w.id),
+      isNonCash: nonCashIds.has(w.id),
+    }));
   };
 
   const getName = (item: Jamgarma) =>
@@ -323,6 +334,8 @@ const JamgarmaPage = () => {
     });
     setSelectedWithdrawerIds([]);
     setWithdrawerDropdown('');
+    setCashWithdrawerIds([]);
+    setNonCashWithdrawerIds([]);
   };
 
   const openEdit = (item: Jamgarma) => {
@@ -338,12 +351,30 @@ const JamgarmaPage = () => {
       chart_of_accounts_id: item.chart_of_accounts?.id ? String(item.chart_of_accounts.id) : '',
       status: item.status || 'active',
     });
-    setSelectedWithdrawerIds(item.withdrawers?.map((w) => w.id) ?? []);
+    const cashIds = item.cash_withdrawers?.map((w) => w.id) ?? [];
+    const nonCashIds = item.non_cash_withdrawers?.map((w) => w.id) ?? [];
+    setSelectedWithdrawerIds(Array.from(new Set([...cashIds, ...nonCashIds])));
+    setCashWithdrawerIds(cashIds);
+    setNonCashWithdrawerIds(nonCashIds);
     setShowCreate(true);
   };
 
   const removeWithdrawer = (uid: number) => {
     setSelectedWithdrawerIds((prev) => prev.filter((id) => id !== uid));
+    setCashWithdrawerIds((prev) => prev.filter((id) => id !== uid));
+    setNonCashWithdrawerIds((prev) => prev.filter((id) => id !== uid));
+  };
+
+  const toggleCashWithdrawer = (uid: number) => {
+    setCashWithdrawerIds((prev) =>
+      prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid],
+    );
+  };
+
+  const toggleNonCashWithdrawer = (uid: number) => {
+    setNonCashWithdrawerIds((prev) =>
+      prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid],
+    );
   };
 
   const handleSubmit = () => {
@@ -357,6 +388,8 @@ const JamgarmaPage = () => {
           ...(form.section_uz && { section_uz: form.section_uz }),
           ...(form.branch_id && { branch_id: Number(form.branch_id) }),
           withdrawer_ids: selectedWithdrawerIds,
+          cash_withdrawer_ids: cashWithdrawerIds,
+          non_cash_withdrawer_ids: nonCashWithdrawerIds,
           ...(form.chart_of_accounts_id && {
             chart_of_accounts_id: Number(form.chart_of_accounts_id),
           }),
@@ -370,6 +403,8 @@ const JamgarmaPage = () => {
         ...(form.section_uz && { section_uz: form.section_uz }),
         ...(form.branch_id && { branch_id: Number(form.branch_id) }),
         withdrawer_ids: selectedWithdrawerIds,
+        cash_withdrawer_ids: cashWithdrawerIds,
+        non_cash_withdrawer_ids: nonCashWithdrawerIds,
         ...(form.chart_of_accounts_id && {
           chart_of_accounts_id: Number(form.chart_of_accounts_id),
         }),
@@ -427,7 +462,7 @@ const JamgarmaPage = () => {
       {/* ── Create / Edit Modal ──────────────────────────────────────────── */}
       {showCreate && (
         <div className="fin-modal-overlay" onClick={closeModal}>
-          <div className="fin-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="fin-modal fin-modal-jamgarma" onClick={(e) => e.stopPropagation()}>
             <h3 className="fin-modal-title">
               {editingItem ? t('jamgarma.edit') : t('jamgarma.create')}
             </h3>
@@ -474,28 +509,51 @@ const JamgarmaPage = () => {
               </select>
             </div>
 
-            {/* Selected withdrawers chips */}
-            {selectedWithdrawerUsers.length > 0 && (
-              <div className="fin-signatories-selected">
-                {selectedWithdrawerUsers.map((u) => (
-                  <div key={u.id} className="fin-signatory-chip">
-                    <i className="fa-solid fa-check fin-check-icon" />
-                    <span>{u.full_name}</span>
-                    <button
-                      className="fin-signatory-remove"
-                      onClick={() => removeWithdrawer(u.id)}
-                      type="button"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Add withdrawer dropdown */}
+            {/* Withdrawer selection: one card per selected withdrawer (naqd/naqdsiz + remove) */}
             <div className="fin-form-group">
               <label>{t('jamgarma.withdrawers')}</label>
+
+              {selectedWithdrawerUsers.length > 0 && (
+                <div className="fin-withdrawer-user-cards">
+                  {selectedWithdrawerUsers.map((u) => (
+                    <div key={u.id} className="fin-withdrawer-user-card">
+                      <div className="fin-withdrawer-user-card-name-group">
+                        <i className="fa-solid fa-check fin-check-icon" />
+                        <span className="fin-withdrawer-user-card-name">{u.full_name}</span>
+                      </div>
+                      <label className="fin-withdrawer-type-inline">
+                        <span className="fin-withdrawer-type-label">
+                          {t('jamgarma.cashShort')}
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={cashWithdrawerIds.includes(u.id)}
+                          onChange={() => toggleCashWithdrawer(u.id)}
+                        />
+                      </label>
+                      <label className="fin-withdrawer-type-inline">
+                        <span className="fin-withdrawer-type-label">
+                          {t('jamgarma.nonCashShort')}
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={nonCashWithdrawerIds.includes(u.id)}
+                          onChange={() => toggleNonCashWithdrawer(u.id)}
+                        />
+                      </label>
+                      <button
+                        className="fin-withdrawer-user-card-remove"
+                        onClick={() => removeWithdrawer(u.id)}
+                        type="button"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add withdrawer dropdown */}
               <select
                 value={withdrawerDropdown}
                 onChange={(e) => {
@@ -663,11 +721,23 @@ const JamgarmaPage = () => {
                   {getStatusLabel(viewingItem.status)}
                 </span>
               </div>
-              {viewingItem.withdrawers && viewingItem.withdrawers.length > 0 && (
+              {viewingItem.cash_withdrawers && viewingItem.cash_withdrawers.length > 0 && (
                 <div className="fin-detail-row fin-detail-row-signatories">
-                  <span>{t('jamgarma.withdrawersList')}</span>
+                  <span>{t('jamgarma.cashWithdrawersList')}</span>
                   <div className="fin-signatory-list-view">
-                    {viewingItem.withdrawers.map((w) => (
+                    {viewingItem.cash_withdrawers.map((w) => (
+                      <span key={w.id} className="fin-signatory-tag">
+                        {w.full_name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {viewingItem.non_cash_withdrawers && viewingItem.non_cash_withdrawers.length > 0 && (
+                <div className="fin-detail-row fin-detail-row-signatories">
+                  <span>{t('jamgarma.nonCashWithdrawersList')}</span>
+                  <div className="fin-signatory-list-view">
+                    {viewingItem.non_cash_withdrawers.map((w) => (
                       <span key={w.id} className="fin-signatory-tag">
                         {w.full_name}
                       </span>
@@ -801,9 +871,25 @@ const JamgarmaPage = () => {
                   <td>{getName(item)}</td>
                   <td>{getSectionLabel(item.jamgarma_fund_type || item.section_uz)}</td>
                   <td className="fin-signatories-cell">
-                    {getWithdrawersDisplay(item).map((name, i) => (
-                      <div key={i}>{name}</div>
-                    ))}
+                    {getWithdrawerBadges(item).length > 0 ? (
+                      getWithdrawerBadges(item).map((w) => (
+                        <div key={w.id} className="fin-withdrawer-badge-row">
+                          <span>{w.name}</span>
+                          {w.isCash && (
+                            <span className="fin-withdrawer-badge fin-withdrawer-badge--cash">
+                              {t('jamgarma.cashShort')}
+                            </span>
+                          )}
+                          {w.isNonCash && (
+                            <span className="fin-withdrawer-badge fin-withdrawer-badge--noncash">
+                              {t('jamgarma.nonCashShort')}
+                            </span>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <div>-</div>
+                    )}
                   </td>
                   <td>
                     <div className="fin-balance-cards">

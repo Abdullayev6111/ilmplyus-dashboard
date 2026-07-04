@@ -218,6 +218,34 @@
   max-width: 200px;
 }
 
+.fin-withdrawer-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  padding: 3px 0;
+}
+
+.fin-withdrawer-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-family: noto-m;
+  white-space: nowrap;
+}
+
+.fin-withdrawer-badge--cash {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.fin-withdrawer-badge--noncash {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
 .fin-amount-cell {
   font-family: noto-b;
   white-space: nowrap;
@@ -781,6 +809,79 @@
 .fin-add-signatory-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+/* ─── Jamg'arma Withdrawer Selection (single-row card per withdrawer) ── */
+.fin-modal-jamgarma {
+  max-width: 560px;
+}
+
+.fin-withdrawer-user-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.fin-withdrawer-user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  overflow-x: auto;
+}
+
+.fin-withdrawer-user-card-name-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.fin-withdrawer-user-card-name {
+  font-family: noto-m;
+  font-size: 13px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fin-withdrawer-type-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.fin-withdrawer-type-label {
+  font-family: noto-m;
+  font-size: 12px;
+  color: #003366;
+}
+
+.fin-withdrawer-user-card-remove {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #e70a0a;
+  font-size: 13px;
+  padding: 0;
+  line-height: 1;
+  transition: opacity 0.2s;
+}
+
+.fin-withdrawer-user-card-remove:hover {
+  opacity: 0.7;
 }
 
 /* ─── Modal Action Buttons ────────────────────────────────────── */

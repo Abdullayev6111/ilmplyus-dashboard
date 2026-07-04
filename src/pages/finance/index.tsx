@@ -45,22 +45,37 @@ interface FinanceAccount {
   transfer_makers?: TransferMaker[];
 }
 
+interface TransferPerson {
+  id: number | null;
+  full_name: string | null;
+  username?: string | null;
+}
+
+interface TransferAccountRef {
+  id: number;
+  account_number: string;
+  account_type_name?: string;
+  balance: number;
+}
+
 interface FinanceTransfer {
   id: number;
-  sender_account_id: number;
-  receiver_account_id: number;
   amount: number;
-  currency: string;
-  description?: string;
-  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
-  sender_name?: string;
-  sender_date?: string;
-  approver_name?: string;
-  approver_date?: string;
+  notes?: string | null;
+  status: 'sent' | 'approved' | 'rejected' | 'cancelled';
+  status_name?: string;
+  source_account?: TransferAccountRef;
+  destination_account?: TransferAccountRef;
+  sent_by?: TransferPerson;
+  sent_at?: string | null;
+  approved_by?: TransferPerson;
+  approved_at?: string | null;
+  cancelled_by?: TransferPerson;
+  cancelled_at?: string | null;
+  rejected_by?: TransferPerson;
+  rejected_at?: string | null;
   created_at: string;
   updated_at: string;
-  sender_account?: FinanceAccount;
-  receiver_account?: FinanceAccount;
 }
 
 interface Jamgarma {
@@ -205,6 +220,7 @@ const Finances = () => {
   const [transferPage, setTransferPage] = useState(1);
   const [showConfirmTransfer, setShowConfirmTransfer] = useState(false);
   const [viewingTransfer, setViewingTransfer] = useState<FinanceTransfer | null>(null);
+  const [selectedTransferIds, setSelectedTransferIds] = useState<number[]>([]);
 
   // ── Transfer form state ────────────────────────────────────────
   const [transferForm, setTransferForm] = useState({
@@ -390,8 +406,8 @@ const Finances = () => {
 
   const getTransferStatusLabel = (status: string) => {
     const map: Record<string, string> = {
+      sent: t('finance.statusPending'),
       approved: t('finance.statusApproved'),
-      pending: t('finance.statusPending'),
       rejected: t('finance.statusRejected'),
       cancelled: t('finance.statusCancelled'),
     };
@@ -501,8 +517,8 @@ const Finances = () => {
 
   const confirmTransfer = () => {
     createTransferMutation.mutate({
-      sender_account_id: Number(transferForm.sender_account_id),
-      receiver_account_id: Number(transferForm.receiver_account_id),
+      source_account_id: Number(transferForm.sender_account_id),
+      destination_account_id: Number(transferForm.receiver_account_id),
       amount: Number(transferForm.amount.replace(/\s/g, '')),
       currency: 'UZS',
       description: transferForm.description,
@@ -533,9 +549,9 @@ const Finances = () => {
     const q = transferSearch.toLowerCase();
     return transfers.filter(
       (tr) =>
-        tr.description?.toLowerCase().includes(q) ||
-        tr.sender_account?.account_number?.toLowerCase().includes(q) ||
-        tr.receiver_account?.account_number?.toLowerCase().includes(q),
+        tr.notes?.toLowerCase().includes(q) ||
+        tr.source_account?.account_number?.toLowerCase().includes(q) ||
+        tr.destination_account?.account_number?.toLowerCase().includes(q),
     );
   })();
 
@@ -545,6 +561,28 @@ const Finances = () => {
   })();
 
   const transferLastPage = Math.max(1, Math.ceil(filteredTransfers.length / ITEMS_PER_PAGE));
+
+  const toggleTransferSelection = (id: number) => {
+    setSelectedTransferIds((prev) =>
+      prev.includes(id) ? prev.filter((tid) => tid !== id) : [...prev, id],
+    );
+  };
+
+  const allPageTransfersSelected =
+    paginatedTransfers.length > 0 &&
+    paginatedTransfers.every((tr) => selectedTransferIds.includes(tr.id));
+
+  const toggleAllPageTransfers = () => {
+    if (allPageTransfersSelected) {
+      setSelectedTransferIds((prev) =>
+        prev.filter((id) => !paginatedTransfers.some((tr) => tr.id === id)),
+      );
+    } else {
+      setSelectedTransferIds((prev) =>
+        Array.from(new Set([...prev, ...paginatedTransfers.map((tr) => tr.id)])),
+      );
+    }
+  };
 
   const availableSignatories = signatoryUsers.filter((u) => !selectedUserIds.includes(u.id));
 
@@ -987,13 +1025,13 @@ const Finances = () => {
                   <div className="fin-detail-row">
                     <span>{t('finance.senderAccount')}</span>
                     <span className="fin-mono">
-                      {viewingTransfer.sender_account?.account_number || '-'}
+                      {viewingTransfer.source_account?.account_number || '-'}
                     </span>
                   </div>
                   <div className="fin-detail-row">
                     <span>{t('finance.receiverAccount')}</span>
                     <span className="fin-mono">
-                      {viewingTransfer.receiver_account?.account_number || '-'}
+                      {viewingTransfer.destination_account?.account_number || '-'}
                     </span>
                   </div>
                   <div className="fin-detail-row">
@@ -1008,7 +1046,7 @@ const Finances = () => {
                       className={
                         viewingTransfer.status === 'approved'
                           ? 'fin-text-green'
-                          : viewingTransfer.status === 'pending'
+                          : viewingTransfer.status === 'sent'
                             ? 'fin-text-orange'
                             : 'fin-text-red'
                       }
@@ -1016,22 +1054,34 @@ const Finances = () => {
                       {getTransferStatusLabel(viewingTransfer.status)}
                     </span>
                   </div>
-                  {viewingTransfer.sender_name && (
+                  {viewingTransfer.sent_by?.full_name && (
                     <div className="fin-detail-row">
                       <span>{t('finance.senderPerson')}</span>
-                      <span>{viewingTransfer.sender_name}</span>
+                      <span>{viewingTransfer.sent_by.full_name}</span>
                     </div>
                   )}
-                  {viewingTransfer.approver_name && (
+                  {viewingTransfer.approved_by?.full_name && (
                     <div className="fin-detail-row">
                       <span>{t('finance.approverPerson')}</span>
-                      <span>{viewingTransfer.approver_name}</span>
+                      <span>{viewingTransfer.approved_by.full_name}</span>
                     </div>
                   )}
-                  {viewingTransfer.description && (
+                  {viewingTransfer.rejected_by?.full_name && (
+                    <div className="fin-detail-row">
+                      <span>{t('finance.rejecterPerson')}</span>
+                      <span>{viewingTransfer.rejected_by.full_name}</span>
+                    </div>
+                  )}
+                  {viewingTransfer.cancelled_by?.full_name && (
+                    <div className="fin-detail-row">
+                      <span>{t('finance.cancellerPerson')}</span>
+                      <span>{viewingTransfer.cancelled_by.full_name}</span>
+                    </div>
+                  )}
+                  {viewingTransfer.notes && (
                     <div className="fin-detail-row">
                       <span>{t('finance.description')}</span>
-                      <span>{viewingTransfer.description}</span>
+                      <span>{viewingTransfer.notes}</span>
                     </div>
                   )}
                   <div className="fin-detail-row">
@@ -1102,6 +1152,13 @@ const Finances = () => {
                 <table className="fin-table fin-transfers-table">
                   <thead>
                     <tr>
+                      <th>
+                        <input
+                          type="checkbox"
+                          checked={allPageTransfersSelected}
+                          onChange={toggleAllPageTransfers}
+                        />
+                      </th>
                       <th>{t('finance.id')}</th>
                       <th>{t('finance.senderAccount')}</th>
                       <th>{t('finance.receiverAccount')}</th>
@@ -1114,34 +1171,41 @@ const Finances = () => {
                   </thead>
                   <tbody>
                     {transfersLoading ? (
-                      <TableSkeleton rowCount={10} columnCount={8} />
+                      <TableSkeleton rowCount={10} columnCount={9} />
                     ) : paginatedTransfers.length > 0 ? (
                       paginatedTransfers.map((tr, idx) => (
                         <tr key={tr.id}>
                           <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedTransferIds.includes(tr.id)}
+                              onChange={() => toggleTransferSelection(tr.id)}
+                            />
+                          </td>
+                          <td>
                             {String((transferPage - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, '0')}
                           </td>
 
-                          {/* Sender Account */}
+                          {/* Source Account */}
                           <td>
                             <div className="fin-account-cell">
                               <span className="fin-branch-tag">
-                                {getBranchLabel(tr.sender_account?.branch).toUpperCase()}
+                                {(tr.source_account?.account_type_name || '-').toUpperCase()}
                               </span>
                               <span className="fin-acct-tag">
-                                {tr.sender_account?.account_number || '-'}
+                                {tr.source_account?.account_number || '-'}
                               </span>
                             </div>
                           </td>
 
-                          {/* Receiver Account */}
+                          {/* Destination Account */}
                           <td>
                             <div className="fin-account-cell">
                               <span className="fin-branch-tag">
-                                {getBranchLabel(tr.receiver_account?.branch).toUpperCase()}
+                                {(tr.destination_account?.account_type_name || '-').toUpperCase()}
                               </span>
                               <span className="fin-acct-tag">
-                                {tr.receiver_account?.account_number || '-'}
+                                {tr.destination_account?.account_number || '-'}
                               </span>
                             </div>
                           </td>
@@ -1153,51 +1217,73 @@ const Finances = () => {
 
                           {/* Responsible Persons */}
                           <td className="fin-responsible-cell">
-                            {tr.sender_name && (
+                            {tr.sent_by?.full_name && (
                               <div className="fin-resp-row">
                                 <span className="fin-resp-label">{t('finance.senderPerson')}:</span>
-                                <span className="fin-resp-name">{tr.sender_name}</span>
-                                {tr.sender_date && (
-                                  <span className="fin-resp-date">
-                                    {formatDate(tr.sender_date)}
-                                  </span>
+                                <span className="fin-resp-name">{tr.sent_by.full_name}</span>
+                                {tr.sent_at && (
+                                  <span className="fin-resp-date">{formatDate(tr.sent_at)}</span>
                                 )}
                               </div>
                             )}
-                            {tr.approver_name && (
+                            {tr.approved_by?.full_name && (
                               <div className="fin-resp-row">
                                 <span className="fin-resp-label">
                                   {t('finance.approverPerson')}:
                                 </span>
-                                <span className="fin-resp-name">{tr.approver_name}</span>
-                                {tr.approver_date && (
+                                <span className="fin-resp-name">{tr.approved_by.full_name}</span>
+                                {tr.approved_at && (
+                                  <span className="fin-resp-date">{formatDate(tr.approved_at)}</span>
+                                )}
+                              </div>
+                            )}
+                            {tr.rejected_by?.full_name && (
+                              <div className="fin-resp-row">
+                                <span className="fin-resp-label">
+                                  {t('finance.rejecterPerson')}:
+                                </span>
+                                <span className="fin-resp-name">{tr.rejected_by.full_name}</span>
+                                {tr.rejected_at && (
+                                  <span className="fin-resp-date">{formatDate(tr.rejected_at)}</span>
+                                )}
+                              </div>
+                            )}
+                            {tr.cancelled_by?.full_name && (
+                              <div className="fin-resp-row">
+                                <span className="fin-resp-label">
+                                  {t('finance.cancellerPerson')}:
+                                </span>
+                                <span className="fin-resp-name">{tr.cancelled_by.full_name}</span>
+                                {tr.cancelled_at && (
                                   <span className="fin-resp-date">
-                                    {formatDate(tr.approver_date)}
+                                    {formatDate(tr.cancelled_at)}
                                   </span>
                                 )}
                               </div>
                             )}
-                            {!tr.sender_name && !tr.approver_name && '-'}
+                            {!tr.sent_by?.full_name &&
+                              !tr.approved_by?.full_name &&
+                              !tr.rejected_by?.full_name &&
+                              !tr.cancelled_by?.full_name &&
+                              '-'}
                           </td>
 
-                          {/* Description */}
-                          <td className="fin-description-cell">{tr.description || '-'}</td>
+                          {/* Notes */}
+                          <td className="fin-description-cell">{tr.notes || '-'}</td>
 
                           {/* Status */}
                           <td>
-                            {tr.status !== 'pending' && (
-                              <span
-                                className={`fin-status-text${
-                                  tr.status === 'approved'
-                                    ? ' fin-text-green'
-                                    : tr.status === 'cancelled' || tr.status === 'rejected'
-                                      ? ' fin-text-red'
-                                      : ''
-                                }`}
-                              >
-                                {getTransferStatusLabel(tr.status)}
-                              </span>
-                            )}
+                            <span
+                              className={`fin-status-text${
+                                tr.status === 'approved'
+                                  ? ' fin-text-green'
+                                  : tr.status === 'cancelled' || tr.status === 'rejected'
+                                    ? ' fin-text-red'
+                                    : ' fin-text-orange'
+                              }`}
+                            >
+                              {getTransferStatusLabel(tr.status)}
+                            </span>
                           </td>
 
                           {/* Actions */}
@@ -1215,7 +1301,7 @@ const Finances = () => {
                         </tr>
                       ))
                     ) : (
-                      <EmptyState colSpan={8} message={t('finance.noTransfers')} />
+                      <EmptyState colSpan={9} message={t('finance.noTransfers')} />
                     )}
                   </tbody>
                 </table>

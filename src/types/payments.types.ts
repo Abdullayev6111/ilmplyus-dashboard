@@ -6,6 +6,9 @@ export interface Student {
   id: number;
   first_name: string;
   last_name: string;
+  full_name?: string;
+  student_code?: string;
+  branch_id?: number;
   phone?: string;
 }
 
@@ -19,7 +22,7 @@ export interface Payment {
   id: number;
   amount: string | number;
   payment_method: string;
-  payment_period: string;
+  payment_period?: string;
   paid_at?: string;
   created_at: string;
   updated_at: string;
@@ -44,7 +47,7 @@ export interface PaymentPayload {
   full_name?: string;
   amount: number;
   payment_method: string;
-  payment_period: string;
+  payment_period?: string;
   course?: string;
   group?: string;
   teacher?: string;

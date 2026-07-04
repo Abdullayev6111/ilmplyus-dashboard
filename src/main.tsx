@@ -1,4 +1,4 @@
-import { createRoot } from "react-dom/client";
+import { createRoot, type Root } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
 import App from "./App.tsx";
@@ -25,7 +25,11 @@ export const queryClient = new QueryClient({
   },
 });
 
-createRoot(document.getElementById("root")!).render(
+const container = document.getElementById("root")!;
+const globalForRoot = globalThis as unknown as { __reactRoot?: Root };
+const root = globalForRoot.__reactRoot ?? (globalForRoot.__reactRoot = createRoot(container));
+
+root.render(
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <MantineProvider>

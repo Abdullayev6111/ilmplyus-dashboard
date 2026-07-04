@@ -13,10 +13,16 @@ import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import type { Payment, PaymentPayload, Branch, Employee, Course, Group } from '../../types';
+import { studentAPI, type Student } from '../../api/student.api';
 import { Protected } from '../../components/Protected';
 
 interface Commission {
   payment_method: string;
+}
+
+interface AppUser {
+  id: number;
+  full_name: string;
 }
 
 const KNOWN_PAYMENT_METHODS = ['cash', 'card', 'bank', 'click', 'paynet'];
@@ -34,12 +40,10 @@ const Payments = () => {
   const [paymentTypeFilter, setPaymentTypeFilter] = useState('');
 
   const [formData, setFormData] = useState({
-    familiya: '',
-    ism: '',
-    sharif: '',
+    student_id: '',
+    student_code: '',
     amount: '',
     payment_type: '',
-    payment_period: '',
     course_id: '',
     teacher_id: '',
     cashier_id: '',
@@ -79,6 +83,16 @@ const Payments = () => {
     placeholderData: keepPreviousData,
   });
 
+  const { data: usersData } = useQuery<AppUser[]>({
+    queryKey: ['payment-cashiers'],
+    queryFn: async () => {
+      const { data } = await API.get('/users');
+      return Array.isArray(data) ? data : data?.data || [];
+    },
+    staleTime: 1000 * 60 * 30,
+    placeholderData: keepPreviousData,
+  });
+
   const { data: coursesData } = useQuery<Course[]>({
     queryKey: ['courses'],
     queryFn: async () => {
@@ -98,6 +112,42 @@ const Payments = () => {
     staleTime: 1000 * 60 * 10,
     placeholderData: keepPreviousData,
   });
+
+  const { data: studentsData } = useQuery<Student[]>({
+    queryKey: ['students'],
+    queryFn: studentAPI.getAll,
+    staleTime: 1000 * 60 * 10,
+    placeholderData: keepPreviousData,
+  });
+
+  const selectedStudent = studentsData?.find((s) => String(s.id) === formData.student_id);
+
+  const groupOptions = !editingPayment
+    ? (selectedStudent?.groups ?? [])
+    : (groupsData ?? []);
+
+  const applyStudentSelection = (student: Student) => {
+    const singleGroup = student.groups.length === 1 ? student.groups[0] : undefined;
+    setFormData((prev) => ({
+      ...prev,
+      student_id: String(student.id),
+      student_code: student.student_code,
+      branch_id: String(student.branch_id),
+      payment_type: String(student.branch_id) === prev.branch_id ? prev.payment_type : '',
+      group_id: singleGroup ? String(singleGroup.id) : '',
+      course_id: singleGroup ? String(singleGroup.course_id) : '',
+      teacher_id: singleGroup ? String(singleGroup.teacher_id) : '',
+    }));
+  };
+
+  const handleAccountNumberChange = (value: string) => {
+    const match = studentsData?.find((s) => s.student_code === value);
+    if (match) {
+      applyStudentSelection(match);
+    } else {
+      setFormData((prev) => ({ ...prev, student_code: value }));
+    }
+  };
 
   const { data: formCommissions } = useQuery<Commission[]>({
     queryKey: ['branch-commissions', formData.branch_id],
@@ -187,12 +237,10 @@ const Payments = () => {
     setShowAddModal(false);
     setEditingPayment(null);
     setFormData({
-      familiya: '',
-      ism: '',
-      sharif: '',
+      student_id: '',
+      student_code: '',
       amount: '',
       payment_type: '',
-      payment_period: '',
       course_id: '',
       teacher_id: '',
       cashier_id: '',
@@ -207,14 +255,12 @@ const Payments = () => {
   const openEditModal = (payment: Payment) => {
     setEditingPayment(payment);
     setFormData({
-      familiya: payment.student?.last_name || '',
-      ism: payment.student?.first_name || '',
-      sharif: '',
+      student_id: payment.student_id?.toString() || '',
+      student_code: payment.student?.student_code || '',
       amount: payment.amount?.toString() || '',
       payment_type: payment.payment_method || '',
-      payment_period: payment.payment_period || '',
       course_id: payment.course_id?.toString() || '',
-      teacher_id: '',
+      teacher_id: payment.teacher?.id?.toString() || '',
       cashier_id: payment.user_id?.toString() || '',
       branch_id: payment.branch_id?.toString() || '',
       payment_date: payment.created_at?.split('T')[0] || '',
@@ -226,12 +272,12 @@ const Payments = () => {
   };
 
   const handleFormSubmit = () => {
-    if (!formData.familiya || !formData.ism) {
-      alert(t('payments.lastNameRequiredAlert', 'Familiya va Ism to‘ldirilishi shart!'));
+    if (!formData.student_id) {
+      alert(t('payments.studentRequiredAlert', 'O‘quvchi tanlanishi shart!'));
       return;
     }
 
-    if (!formData.amount || !formData.payment_type || !formData.payment_period) {
+    if (!formData.amount || !formData.payment_type) {
       alert(t('payments.allFieldsRequiredAlert', 'Barcha to‘lov maydonlarini to‘ldiring!'));
       return;
     }
@@ -248,10 +294,9 @@ const Payments = () => {
     const selectedGroup = groupsData?.find((g) => g.id === Number(formData.group_id));
 
     const payload: PaymentPayload = {
-      full_name: `${formData.familiya} ${formData.ism} ${formData.sharif}`.trim(),
+      full_name: selectedStudent?.full_name || editingPayment?.student?.full_name || '',
       amount: Number(formData.amount),
       payment_method: formData.payment_type,
-      payment_period: formData.payment_period,
       course: selectedCourse ? getLocalized(selectedCourse, 'name', i18n.language) : '',
       group: selectedGroup?.name || '',
       teacher: selectedTeacher?.full_name || '',
@@ -260,9 +305,9 @@ const Payments = () => {
       user_id: Number(formData.cashier_id),
       teacher_id: formData.teacher_id ? Number(formData.teacher_id) : undefined,
       group_id: formData.group_id ? Number(formData.group_id) : undefined,
+      student_id: Number(formData.student_id),
       payment_date: formData.payment_date || new Date().toISOString().split('T')[0],
       ...(editingPayment && {
-        student_id: editingPayment.student_id,
         ...(formData.created_at && { created_at: toPayloadDatetime(formData.created_at) }),
         ...(formData.updated_at && { updated_at: toPayloadDatetime(formData.updated_at) }),
       }),
@@ -330,27 +375,34 @@ const Payments = () => {
             <div className="add-payment-form two-column">
               <div className="form-left">
                 <div className="form-group">
-                  <label>{t('payments.lastName')}</label>
+                  <label>{t('payments.accountNumber')}</label>
                   <input
-                    value={formData.familiya}
-                    onChange={(e) => setFormData({ ...formData, familiya: e.target.value })}
+                    value={formData.student_code}
+                    onChange={(e) => handleAccountNumberChange(e.target.value)}
+                    placeholder={t('payments.accountNumber')}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>{t('payments.firstName')}</label>
-                  <input
-                    value={formData.ism}
-                    onChange={(e) => setFormData({ ...formData, ism: e.target.value })}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>{t('payments.familyName')}</label>
-                  <input
-                    value={formData.sharif}
-                    onChange={(e) => setFormData({ ...formData, sharif: e.target.value })}
-                  />
+                  <label>{t('payments.student')}</label>
+                  <select
+                    value={formData.student_id}
+                    onChange={(e) => {
+                      const student = studentsData?.find((s) => String(s.id) === e.target.value);
+                      if (student) {
+                        applyStudentSelection(student);
+                      } else {
+                        setFormData({ ...formData, student_id: '', student_code: '' });
+                      }
+                    }}
+                  >
+                    <option value="">{t('payments.choose')}</option>
+                    {studentsData?.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.full_name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="form-group">
@@ -382,29 +434,17 @@ const Payments = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>{t('payments.paymentPeriod')}</label>
+                  <label>{t('payments.cashier')}</label>
                   <select
-                    value={formData.payment_period}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        payment_period: e.target.value,
-                      })
-                    }
+                    value={formData.cashier_id}
+                    onChange={(e) => setFormData({ ...formData, cashier_id: e.target.value })}
                   >
                     <option value="">{t('payments.choose')}</option>
-                    <option value="Yanvar">{t('payments.january')}</option>
-                    <option value="Fevral">{t('payments.february')}</option>
-                    <option value="Mart">{t('payments.march')}</option>
-                    <option value="Aprel">{t('payments.april')}</option>
-                    <option value="May">{t('payments.may')}</option>
-                    <option value="Iyun">{t('payments.june')}</option>
-                    <option value="Iyul">{t('payments.july')}</option>
-                    <option value="Avgust">{t('payments.august')}</option>
-                    <option value="Sentyabr">{t('payments.september')}</option>
-                    <option value="Oktabr">{t('payments.october')}</option>
-                    <option value="Noyabr">{t('payments.november')}</option>
-                    <option value="Dekabr">{t('payments.december')}</option>
+                    {usersData?.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.full_name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -446,10 +486,26 @@ const Payments = () => {
                   <label>{t('payments.group')}</label>
                   <select
                     value={formData.group_id}
-                    onChange={(e) => setFormData({ ...formData, group_id: e.target.value })}
+                    onChange={(e) => {
+                      const groupId = e.target.value;
+                      const group = groupOptions.find((g) => String(g.id) === groupId);
+                      setFormData({
+                        ...formData,
+                        group_id: groupId,
+                        course_id: group?.course_id ? String(group.course_id) : formData.course_id,
+                        teacher_id: group?.teacher_id
+                          ? String(group.teacher_id)
+                          : formData.teacher_id,
+                      });
+                    }}
+                    disabled={!editingPayment && !formData.student_id}
                   >
-                    <option value="">{t('payments.choose')}</option>
-                    {groupsData?.map((g) => (
+                    <option value="">
+                      {!editingPayment && !formData.student_id
+                        ? t('payments.chooseStudentFirst')
+                        : t('payments.choose')}
+                    </option>
+                    {groupOptions.map((g) => (
                       <option key={g.id} value={g.id}>
                         {g.name}
                       </option>
@@ -462,21 +518,6 @@ const Payments = () => {
                   <select
                     value={formData.teacher_id}
                     onChange={(e) => setFormData({ ...formData, teacher_id: e.target.value })}
-                  >
-                    <option value="">{t('payments.choose')}</option>
-                    {employeesData?.map((e) => (
-                      <option key={e.id} value={e.id}>
-                        {e.full_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>{t('payments.cashier')}</label>
-                  <select
-                    value={formData.cashier_id}
-                    onChange={(e) => setFormData({ ...formData, cashier_id: e.target.value })}
                   >
                     <option value="">{t('payments.choose')}</option>
                     {employeesData?.map((e) => (
