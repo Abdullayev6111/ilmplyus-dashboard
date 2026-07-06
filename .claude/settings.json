@@ -18,11 +18,20 @@
       "Bash(powershell -command \"Get-Content src/messages/ru.json | Select-Object -Last 20\")",
       "Bash(powershell -command \"Get-Content src/messages/ru.json | Select-Object -Last 30\")",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/uz.json'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/en.json'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/ru.json'\\)\\); console.log\\('all valid json'\\)\")",
-      "Bash(node ./__smoke-debts.cjs)"
+      "Bash(node ./__smoke-debts.cjs)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/en.json'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/ru.json'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/uz.json'\\)\\); console.log\\('OK'\\)\")",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(npx --no-install playwright --version)",
+      "Bash(taskkill //F //PID 19424)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/uz.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/ru.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/en.json','utf8'\\)\\); console.log\\('all valid json'\\)\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src\\pages\\set-password",
-      "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src"
+      "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src",
+      "C:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src\\messages",
+      "C:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src\\pages\\finance"
     ]
   }
 }

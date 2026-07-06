@@ -837,7 +837,7 @@ const JamgarmaPage = () => {
           <i className="fa-solid fa-filter" />
           {t('jamgarma.filter')}
         </button>
-        <Protected permission="">
+        <Protected permission="jamgarmas.create">
           <button className="fin-btn-add" onClick={() => setShowCreate(true)}>
             {t('jamgarma.add')}
           </button>
@@ -929,7 +929,7 @@ const JamgarmaPage = () => {
                       >
                         <i className="fa-solid fa-eye" />
                       </button>
-                      <Protected permission="">
+                      <Protected permission="jamgarmas.edit">
                         <button
                           className="fin-action-btn fin-action-edit"
                           onClick={() => openEdit(item)}
@@ -938,7 +938,7 @@ const JamgarmaPage = () => {
                           <i className="fa-solid fa-pen" />
                         </button>
                       </Protected>
-                      <Protected permission="">
+                      <Protected permission="jamgarmas.delete">
                         <button
                           className="fin-action-btn fin-action-delete"
                           onClick={() => setDeleteId(item.id)}

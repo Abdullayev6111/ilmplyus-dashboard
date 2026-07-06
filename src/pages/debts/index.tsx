@@ -8,6 +8,7 @@ import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import { Protected } from '../../components/Protected';
+import { usePermission } from '../../hooks/usePermission';
 import type { Branch } from '../../types';
 
 // ─── Local Type Definitions ──────────────────────────────────────────────────
@@ -68,6 +69,13 @@ const ENDPOINT_MAP: Record<DebtType, string> = {
   give: '/jamgarma-loans',
   return: '/jamgarma-loan-repayments',
   forgive: '/jamgarma-loan-forfeitures',
+};
+
+// Each debt "type" maps to its own permission module.
+const PERMISSION_MODULE_MAP: Record<DebtType, string> = {
+  give: 'jamgarma_loans',
+  return: 'jamgarma_loan_repayments',
+  forgive: 'jamgarma_loan_forfeitures',
 };
 
 const isPendingStatus = (status: DebtStatus) => status === 'pending' || status === 'sent';
@@ -166,6 +174,12 @@ const DebtsPage = () => {
   // ── View state ──────────────────────────────────────────────────
   const [view, setView] = useState<DebtsView>('list');
   const [transferType, setTransferType] = useState<DebtType>('give');
+
+  // ── Permissions ──────────────────────────────────────────────────
+  const canCreateGive = usePermission('jamgarma_loans.create');
+  const canCreateReturn = usePermission('jamgarma_loan_repayments.create');
+  const canCreateForgive = usePermission('jamgarma_loan_forfeitures.create');
+  const canCreateAnyTransfer = canCreateGive || canCreateReturn || canCreateForgive;
 
   // ── List UI state ───────────────────────────────────────────────
   const [search, setSearch] = useState('');
@@ -571,11 +585,11 @@ const DebtsPage = () => {
               <i className="fa-solid fa-filter" />
               {t('debts.filter')}
             </button>
-            <Protected permission="">
+            {canCreateAnyTransfer && (
               <button className="fin-btn-add" onClick={openTypeSelect}>
                 {t('debts.createTransfer')}
               </button>
-            </Protected>
+            )}
           </div>
 
           <div className="fin-table-wrapper">
@@ -710,7 +724,7 @@ const DebtsPage = () => {
                         </div>
                         {isPendingStatus(tr.status) && (
                           <div className="fin-transfer-action-btns">
-                            <Protected permission="">
+                            <Protected permission={`${PERMISSION_MODULE_MAP[tr.type]}.approve`}>
                               <button
                                 className="fin-btn-approve"
                                 onClick={() => approveMutation.mutate({ id: tr.id, type: tr.type })}
@@ -720,7 +734,7 @@ const DebtsPage = () => {
                               </button>
                             </Protected>
                             {tr.type === 'give' && (
-                              <Protected permission="">
+                              <Protected permission={`${PERMISSION_MODULE_MAP[tr.type]}.reject`}>
                                 <button
                                   className="fin-btn-reject"
                                   onClick={() => rejectMutation.mutate({ id: tr.id, type: tr.type })}
@@ -761,15 +775,21 @@ const DebtsPage = () => {
         <div className="fin-modal-overlay" onClick={() => setView('list')}>
           <div className="fin-transfer-type-select" onClick={(e) => e.stopPropagation()}>
             <h3 className="fin-type-select-title">{t('debts.selectTransferType')}</h3>
-            <button className="fin-type-btn" onClick={() => startCreate('give')}>
-              {t('debts.typeGive')}
-            </button>
-            <button className="fin-type-btn" onClick={() => startCreate('return')}>
-              {t('debts.typeReturn')}
-            </button>
-            <button className="fin-type-btn" onClick={() => startCreate('forgive')}>
-              {t('debts.typeForgive')}
-            </button>
+            {canCreateGive && (
+              <button className="fin-type-btn" onClick={() => startCreate('give')}>
+                {t('debts.typeGive')}
+              </button>
+            )}
+            {canCreateReturn && (
+              <button className="fin-type-btn" onClick={() => startCreate('return')}>
+                {t('debts.typeReturn')}
+              </button>
+            )}
+            {canCreateForgive && (
+              <button className="fin-type-btn" onClick={() => startCreate('forgive')}>
+                {t('debts.typeForgive')}
+              </button>
+            )}
           </div>
         </div>
       )}

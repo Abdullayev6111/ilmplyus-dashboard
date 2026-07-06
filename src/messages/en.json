@@ -329,7 +329,12 @@
       "terminate": "Terminate",
       "sync": "Synchronize",
       "mark_attendance": "Mark attendance",
-      "add_questions": "Add questions"
+      "add_questions": "Add questions",
+      "cancel": "Cancel",
+      "add_transfer_maker": "Add transfer maker",
+      "remove_transfer_maker": "Remove transfer maker",
+      "add_withdrawer": "Add withdrawer",
+      "remove_withdrawer": "Remove withdrawer"
     }
   },
   "rooms": {
@@ -1837,7 +1842,17 @@
     "tests": "Tests",
     "lessons": "Lessons",
     "permissions": "Permissions",
-    "lessons_schedules": "Lesson Schedules"
+    "lessons_schedules": "Lesson Schedules",
+    "chart_of_accounts": "Chart of accounts",
+    "chart_of_accounts_transfers": "Account-to-account transfers",
+    "jamgarmas": "Savings funds",
+    "account_to_jamgarma_transfers": "Account-to-fund transfers",
+    "jamgarma_loans": "Fund loans",
+    "jamgarma_loan_repayments": "Fund loan repayments",
+    "jamgarma_loan_forfeitures": "Fund loan forfeitures",
+    "jamgarma_transactions": "Fund transactions",
+    "payment_gateway_commissions": "Payment gateway commissions",
+    "payment_commission_logs": "Commission logs"
   },
   "studentsContract": {
     "loading": "Loading...",
@@ -2099,7 +2114,10 @@
     "statusChangedAt": "Date of change",
     "statusNote": "Note",
     "statusNotePlaceholder": "Enter note (optional)",
-    "saveStatus": "Save status"
+    "saveStatus": "Save status",
+    "transferType": "Transfer type",
+    "typeCash": "Cash",
+    "typeNonCash": "Non-cash"
   },
   "jamgarma": {
     "add": "Add",

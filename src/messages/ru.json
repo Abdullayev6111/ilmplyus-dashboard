@@ -336,7 +336,12 @@
       "terminate": "Завершить",
       "sync": "Синхронизировать",
       "mark_attendance": "Отметить посещаемость",
-      "add_questions": "Добавить вопросы"
+      "add_questions": "Добавить вопросы",
+      "cancel": "Отменить",
+      "add_transfer_maker": "Добавить исполнителя перевода",
+      "remove_transfer_maker": "Удалить исполнителя перевода",
+      "add_withdrawer": "Добавить получателя",
+      "remove_withdrawer": "Удалить получателя"
     }
   },
   "rooms": {
@@ -1829,7 +1834,17 @@
     "tests": "Тесты",
     "lessons": "Уроки",
     "permissions": "Разрешения",
-    "lessons_schedules": "Расписание занятий"
+    "lessons_schedules": "Расписание занятий",
+    "chart_of_accounts": "План счетов",
+    "chart_of_accounts_transfers": "Переводы между счетами",
+    "jamgarmas": "Накопительные фонды",
+    "account_to_jamgarma_transfers": "Переводы со счета в фонд",
+    "jamgarma_loans": "Займы фондов",
+    "jamgarma_loan_repayments": "Погашения займов фондов",
+    "jamgarma_loan_forfeitures": "Списания займов фондов",
+    "jamgarma_transactions": "Транзакции фондов",
+    "payment_gateway_commissions": "Комиссии платежного шлюза",
+    "payment_commission_logs": "Журналы комиссий"
   },
   "studentsContract": {
     "loading": "Загрузка...",
@@ -2091,7 +2106,10 @@
     "statusChangedAt": "Дата изменения",
     "statusNote": "Примечание",
     "statusNotePlaceholder": "Введите примечание (необязательно)",
-    "saveStatus": "Сохранить статус"
+    "saveStatus": "Сохранить статус",
+    "transferType": "Тип перевода",
+    "typeCash": "Наличный",
+    "typeNonCash": "Безналичный"
   },
   "jamgarma": {
     "add": "Добавить",

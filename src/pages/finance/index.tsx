@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { API } from '../../api/api';
 import './finance.css';
@@ -7,6 +7,7 @@ import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import { Protected } from '../../components/Protected';
+import { usePermission } from '../../hooks/usePermission';
 import type { Branch } from '../../types';
 
 // ─── Local Type Definitions ──────────────────────────────────────────────────
@@ -58,6 +59,19 @@ interface TransferAccountRef {
   balance: number;
 }
 
+interface TransferJamgarmaRef {
+  id: number;
+  name?: string | null;
+  name_uz?: string;
+  name_ru?: string;
+  name_en?: string;
+  cash_balance?: number;
+  non_cash_balance?: number;
+  total_balance?: number;
+}
+
+type TransferSource = 'account' | 'jamgarma';
+
 interface FinanceTransfer {
   id: number;
   amount: number;
@@ -66,6 +80,8 @@ interface FinanceTransfer {
   status_name?: string;
   source_account?: TransferAccountRef;
   destination_account?: TransferAccountRef;
+  destination_jamgarma?: TransferJamgarmaRef;
+  account_type_name?: string;
   sent_by?: TransferPerson;
   sent_at?: string | null;
   approved_by?: TransferPerson;
@@ -76,6 +92,7 @@ interface FinanceTransfer {
   rejected_at?: string | null;
   created_at: string;
   updated_at: string;
+  source: TransferSource;
 }
 
 interface Jamgarma {
@@ -196,6 +213,11 @@ const Finances = () => {
   const [activeTab, setActiveTab] = useState<FinanceTab>('accounts');
   const [transferView, setTransferView] = useState<TransferView>('list');
 
+  // ── Permissions ──────────────────────────────────────────────────
+  const canCreateAccountTransfer = usePermission('chart_of_accounts_transfers.create');
+  const canCreateSavingsTransfer = usePermission('account_to_jamgarma_transfers.create');
+  const canCreateAnyTransfer = canCreateAccountTransfer || canCreateSavingsTransfer;
+
   // ── Accounts UI state ───────────────────────────────────────────
   const [showCreateAccount, setShowCreateAccount] = useState(false);
   const [editingAccount, setEditingAccount] = useState<FinanceAccount | null>(null);
@@ -219,8 +241,7 @@ const Finances = () => {
   const [transferSearch, setTransferSearch] = useState('');
   const [transferPage, setTransferPage] = useState(1);
   const [showConfirmTransfer, setShowConfirmTransfer] = useState(false);
-  const [viewingTransfer, setViewingTransfer] = useState<FinanceTransfer | null>(null);
-  const [selectedTransferIds, setSelectedTransferIds] = useState<number[]>([]);
+  const [selectedTransferIds, setSelectedTransferIds] = useState<string[]>([]);
 
   // ── Transfer form state ────────────────────────────────────────
   const [transferForm, setTransferForm] = useState({
@@ -235,6 +256,7 @@ const Finances = () => {
     sender_account_id: '',
     jamgarma_id: '',
     amount: '',
+    transfer_type: 'cash',
     description: '',
   });
   const [showConfirmSavings, setShowConfirmSavings] = useState(false);
@@ -250,14 +272,38 @@ const Finances = () => {
     placeholderData: keepPreviousData,
   });
 
-  const { data: transfers = [], isLoading: transfersLoading } = useQuery<FinanceTransfer[]>({
+  const { data: accountTransfers = [], isLoading: accountTransfersLoading } = useQuery<
+    FinanceTransfer[]
+  >({
     queryKey: ['chart-of-accounts-transfers'],
     queryFn: async () => {
       const { data } = await API.get('/chart-of-accounts-transfers');
-      return Array.isArray(data) ? data : data?.data || [];
+      const list = Array.isArray(data) ? data : data?.data || [];
+      return list.map((tr: Omit<FinanceTransfer, 'source'>) => ({ ...tr, source: 'account' as const }));
     },
     placeholderData: keepPreviousData,
   });
+
+  const { data: jamgarmaTransfers = [], isLoading: jamgarmaTransfersLoading } = useQuery<
+    FinanceTransfer[]
+  >({
+    queryKey: ['account-to-jamgarma-transfers'],
+    queryFn: async () => {
+      const { data } = await API.get('/account-to-jamgarma-transfers');
+      const list = Array.isArray(data) ? data : data?.data || [];
+      return list.map((tr: Omit<FinanceTransfer, 'source'>) => ({ ...tr, source: 'jamgarma' as const }));
+    },
+    placeholderData: keepPreviousData,
+  });
+
+  const transfers = useMemo(
+    () =>
+      [...accountTransfers, ...jamgarmaTransfers].sort((a, b) =>
+        (b.sent_at || b.created_at || '').localeCompare(a.sent_at || a.created_at || ''),
+      ),
+    [accountTransfers, jamgarmaTransfers],
+  );
+  const transfersLoading = accountTransfersLoading || jamgarmaTransfersLoading;
 
   const { data: branches = [] } = useQuery<Branch[]>({
     queryKey: ['branches'],
@@ -363,22 +409,69 @@ const Finances = () => {
 
   const createSavingsTransferMutation = useMutation({
     mutationFn: async (payload: object) => {
-      const { data } = await API.post('/jamgarma-transfers', payload);
+      const { data } = await API.post('/account-to-jamgarma-transfers', payload);
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts-transfers'] });
+      queryClient.invalidateQueries({ queryKey: ['account-to-jamgarma-transfers'] });
       queryClient.invalidateQueries({ queryKey: ['chart-of-accounts'] });
       queryClient.invalidateQueries({ queryKey: ['jamgarmas'] });
       setShowConfirmSavings(false);
       setTransferView('list');
-      setSavingsForm({ sender_account_id: '', jamgarma_id: '', amount: '', description: '' });
+      setSavingsForm({
+        sender_account_id: '',
+        jamgarma_id: '',
+        amount: '',
+        transfer_type: 'cash',
+        description: '',
+      });
     },
   });
 
-  const closeTransferView = () => {
-    setViewingTransfer(null);
-  };
+  const transferActionBase = (source: TransferSource) =>
+    source === 'jamgarma' ? '/account-to-jamgarma-transfers' : '/chart-of-accounts-transfers';
+
+  const transferPermissionModule = (source: TransferSource) =>
+    source === 'jamgarma' ? 'account_to_jamgarma_transfers' : 'chart_of_accounts_transfers';
+
+  const approveTransferMutation = useMutation({
+    mutationFn: async ({ id, source }: { id: number; source: TransferSource }) => {
+      const { data } = await API.post(`${transferActionBase(source)}/${id}/approve`);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts-transfers'] });
+      queryClient.invalidateQueries({ queryKey: ['account-to-jamgarma-transfers'] });
+      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['jamgarmas'] });
+    },
+  });
+
+  const rejectTransferMutation = useMutation({
+    mutationFn: async ({ id, source }: { id: number; source: TransferSource }) => {
+      const { data } = await API.post(`${transferActionBase(source)}/${id}/reject`);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts-transfers'] });
+      queryClient.invalidateQueries({ queryKey: ['account-to-jamgarma-transfers'] });
+      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['jamgarmas'] });
+    },
+  });
+
+  const cancelTransferMutation = useMutation({
+    mutationFn: async ({ id, source }: { id: number; source: TransferSource }) => {
+      const { data } = await API.post(`${transferActionBase(source)}/${id}/cancel`);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts-transfers'] });
+      queryClient.invalidateQueries({ queryKey: ['account-to-jamgarma-transfers'] });
+      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['jamgarmas'] });
+    },
+  });
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
 
@@ -434,6 +527,38 @@ const Finances = () => {
   const getBranchLabel = (branch?: Branch) => {
     if (!branch) return '-';
     return getLocalized(branch, 'name', i18n.language) || branch.name_uz || '-';
+  };
+
+  const formatPersonName = (fullName?: string | null) => {
+    if (!fullName) return '-';
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length < 2) return fullName;
+    const [lastName, firstName] = parts;
+    return `${lastName} ${firstName.charAt(0).toUpperCase()}`;
+  };
+
+  const getTransferAccountDisplay = (ref?: TransferAccountRef) => {
+    if (!ref) return { branchLabel: '-', accountNumber: '-', isCash: true };
+    const matchedAccount = accounts.find((a) => a.id === ref.id);
+    const isCash = matchedAccount
+      ? matchedAccount.account_type === '0001'
+      : !(ref.account_type_name || '').toLowerCase().includes('naqdsiz');
+    return {
+      branchLabel: matchedAccount ? getBranchLabel(matchedAccount.branch) : '-',
+      accountNumber: ref.account_number || '-',
+      isCash,
+    };
+  };
+
+  const getTransferDestinationDisplay = (tr: FinanceTransfer) => {
+    if (tr.destination_jamgarma) {
+      const jg = tr.destination_jamgarma;
+      const name =
+        getLocalized(jg, 'name', i18n.language) || jg.name_uz || jg.name || `Jam'garma #${jg.id}`;
+      const isCash = !(tr.account_type_name || '').toLowerCase().includes('naqdsiz');
+      return { branchLabel: name, accountNumber: '-', isCash };
+    }
+    return getTransferAccountDisplay(tr.destination_account);
   };
 
   // ─── Account Modal Logic ───────────────────────────────────────────────────
@@ -544,6 +669,8 @@ const Finances = () => {
 
   const accountLastPage = Math.max(1, Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE));
 
+  const getTransferKey = (tr: FinanceTransfer) => `${tr.source}-${tr.id}`;
+
   const filteredTransfers = (() => {
     if (!transferSearch) return transfers;
     const q = transferSearch.toLowerCase();
@@ -551,7 +678,8 @@ const Finances = () => {
       (tr) =>
         tr.notes?.toLowerCase().includes(q) ||
         tr.source_account?.account_number?.toLowerCase().includes(q) ||
-        tr.destination_account?.account_number?.toLowerCase().includes(q),
+        tr.destination_account?.account_number?.toLowerCase().includes(q) ||
+        getTransferDestinationDisplay(tr).branchLabel.toLowerCase().includes(q),
     );
   })();
 
@@ -562,24 +690,24 @@ const Finances = () => {
 
   const transferLastPage = Math.max(1, Math.ceil(filteredTransfers.length / ITEMS_PER_PAGE));
 
-  const toggleTransferSelection = (id: number) => {
+  const toggleTransferSelection = (key: string) => {
     setSelectedTransferIds((prev) =>
-      prev.includes(id) ? prev.filter((tid) => tid !== id) : [...prev, id],
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
   };
 
   const allPageTransfersSelected =
     paginatedTransfers.length > 0 &&
-    paginatedTransfers.every((tr) => selectedTransferIds.includes(tr.id));
+    paginatedTransfers.every((tr) => selectedTransferIds.includes(getTransferKey(tr)));
 
   const toggleAllPageTransfers = () => {
     if (allPageTransfersSelected) {
       setSelectedTransferIds((prev) =>
-        prev.filter((id) => !paginatedTransfers.some((tr) => tr.id === id)),
+        prev.filter((key) => !paginatedTransfers.some((tr) => getTransferKey(tr) === key)),
       );
     } else {
       setSelectedTransferIds((prev) =>
-        Array.from(new Set([...prev, ...paginatedTransfers.map((tr) => tr.id)])),
+        Array.from(new Set([...prev, ...paginatedTransfers.map((tr) => getTransferKey(tr))])),
       );
     }
   };
@@ -903,7 +1031,7 @@ const Finances = () => {
               <i className="fa-solid fa-filter" />
               {t('finance.filter')}
             </button>
-            <Protected permission="finance.create">
+            <Protected permission="chart_of_accounts.create">
               <button className="fin-btn-add" onClick={() => setShowCreateAccount(true)}>
                 {t('finance.addAccount')}
               </button>
@@ -962,7 +1090,7 @@ const Finances = () => {
                           >
                             <i className="fa-solid fa-users" />
                           </button>
-                          <Protected permission="finance.edit">
+                          <Protected permission="chart_of_accounts.edit">
                             <button
                               className="fin-action-btn fin-action-edit"
                               onClick={() => openEditAccount(acc)}
@@ -971,7 +1099,7 @@ const Finances = () => {
                               <i className="fa-solid fa-pen" />
                             </button>
                           </Protected>
-                          <Protected permission="finance.delete">
+                          <Protected permission="chart_of_accounts.delete">
                             <button
                               className="fin-action-btn fin-action-delete"
                               onClick={() => setDeleteAccountId(acc.id)}
@@ -1009,96 +1137,6 @@ const Finances = () => {
          ══════════════════════════════════════════════════════════════ */}
       {activeTab === 'transfers' && (
         <>
-          {/* ── View Transfer Detail Modal ───────────────────────── */}
-          {viewingTransfer && (
-            <div className="fin-modal-overlay" onClick={closeTransferView}>
-              <div className="fin-detail-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="fin-detail-header">
-                  <i className="fa-solid fa-right-left fin-detail-icon" />
-                  <h3>{t('finance.transferDetails')}</h3>
-                </div>
-                <div className="fin-detail-rows">
-                  <div className="fin-detail-row">
-                    <span>{t('finance.id')}</span>
-                    <span>{viewingTransfer.id}</span>
-                  </div>
-                  <div className="fin-detail-row">
-                    <span>{t('finance.senderAccount')}</span>
-                    <span className="fin-mono">
-                      {viewingTransfer.source_account?.account_number || '-'}
-                    </span>
-                  </div>
-                  <div className="fin-detail-row">
-                    <span>{t('finance.receiverAccount')}</span>
-                    <span className="fin-mono">
-                      {viewingTransfer.destination_account?.account_number || '-'}
-                    </span>
-                  </div>
-                  <div className="fin-detail-row">
-                    <span>{t('finance.amount')}</span>
-                    <span className="fin-text-orange">
-                      {formatAmount(viewingTransfer.amount)} UZS
-                    </span>
-                  </div>
-                  <div className="fin-detail-row">
-                    <span>{t('finance.status')}</span>
-                    <span
-                      className={
-                        viewingTransfer.status === 'approved'
-                          ? 'fin-text-green'
-                          : viewingTransfer.status === 'sent'
-                            ? 'fin-text-orange'
-                            : 'fin-text-red'
-                      }
-                    >
-                      {getTransferStatusLabel(viewingTransfer.status)}
-                    </span>
-                  </div>
-                  {viewingTransfer.sent_by?.full_name && (
-                    <div className="fin-detail-row">
-                      <span>{t('finance.senderPerson')}</span>
-                      <span>{viewingTransfer.sent_by.full_name}</span>
-                    </div>
-                  )}
-                  {viewingTransfer.approved_by?.full_name && (
-                    <div className="fin-detail-row">
-                      <span>{t('finance.approverPerson')}</span>
-                      <span>{viewingTransfer.approved_by.full_name}</span>
-                    </div>
-                  )}
-                  {viewingTransfer.rejected_by?.full_name && (
-                    <div className="fin-detail-row">
-                      <span>{t('finance.rejecterPerson')}</span>
-                      <span>{viewingTransfer.rejected_by.full_name}</span>
-                    </div>
-                  )}
-                  {viewingTransfer.cancelled_by?.full_name && (
-                    <div className="fin-detail-row">
-                      <span>{t('finance.cancellerPerson')}</span>
-                      <span>{viewingTransfer.cancelled_by.full_name}</span>
-                    </div>
-                  )}
-                  {viewingTransfer.notes && (
-                    <div className="fin-detail-row">
-                      <span>{t('finance.description')}</span>
-                      <span>{viewingTransfer.notes}</span>
-                    </div>
-                  )}
-                  <div className="fin-detail-row">
-                    <span>{t('finance.createdAt')}</span>
-                    <span>{formatDate(viewingTransfer.created_at)}</span>
-                  </div>
-                </div>
-
-                <div className="fin-modal-actions">
-                  <button className="fin-btn-cancel" onClick={closeTransferView}>
-                    {t('finance.close')}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* ── Confirm Transfer Modal ────────────────────────────── */}
           {showConfirmTransfer && (
             <div className="fin-modal-overlay" onClick={() => setShowConfirmTransfer(false)}>
@@ -1140,11 +1178,11 @@ const Finances = () => {
                   <i className="fa-solid fa-filter" />
                   {t('finance.filter')}
                 </button>
-                <Protected permission="finance.transfer">
+                {canCreateAnyTransfer && (
                   <button className="fin-btn-add" onClick={() => setTransferView('select-type')}>
                     {t('finance.createTransfer')}
                   </button>
-                </Protected>
+                )}
               </div>
 
               {/* Transfers Table */}
@@ -1174,12 +1212,12 @@ const Finances = () => {
                       <TableSkeleton rowCount={10} columnCount={9} />
                     ) : paginatedTransfers.length > 0 ? (
                       paginatedTransfers.map((tr, idx) => (
-                        <tr key={tr.id}>
+                        <tr key={getTransferKey(tr)}>
                           <td>
                             <input
                               type="checkbox"
-                              checked={selectedTransferIds.includes(tr.id)}
-                              onChange={() => toggleTransferSelection(tr.id)}
+                              checked={selectedTransferIds.includes(getTransferKey(tr))}
+                              onChange={() => toggleTransferSelection(getTransferKey(tr))}
                             />
                           </td>
                           <td>
@@ -1188,26 +1226,46 @@ const Finances = () => {
 
                           {/* Source Account */}
                           <td>
-                            <div className="fin-account-cell">
-                              <span className="fin-branch-tag">
-                                {(tr.source_account?.account_type_name || '-').toUpperCase()}
-                              </span>
-                              <span className="fin-acct-tag">
-                                {tr.source_account?.account_number || '-'}
-                              </span>
-                            </div>
+                            {(() => {
+                              const src = getTransferAccountDisplay(tr.source_account);
+                              return (
+                                <div className="fin-account-cell">
+                                  <span className="fin-account-branch">{src.branchLabel}</span>
+                                  <span className="fin-account-number-row">
+                                    <span className="fin-account-number-text">
+                                      {src.accountNumber}
+                                    </span>
+                                    <span
+                                      className={`fin-account-badge${src.isCash ? ' fin-account-badge--cash' : ' fin-account-badge--noncash'}`}
+                                    >
+                                      {src.isCash ? 'Naqd' : 'Naqdsiz'}
+                                    </span>
+                                  </span>
+                                </div>
+                              );
+                            })()}
                           </td>
 
                           {/* Destination Account */}
                           <td>
-                            <div className="fin-account-cell">
-                              <span className="fin-branch-tag">
-                                {(tr.destination_account?.account_type_name || '-').toUpperCase()}
-                              </span>
-                              <span className="fin-acct-tag">
-                                {tr.destination_account?.account_number || '-'}
-                              </span>
-                            </div>
+                            {(() => {
+                              const dst = getTransferDestinationDisplay(tr);
+                              return (
+                                <div className="fin-account-cell">
+                                  <span className="fin-account-branch">{dst.branchLabel}</span>
+                                  <span className="fin-account-number-row">
+                                    <span className="fin-account-number-text">
+                                      {dst.accountNumber}
+                                    </span>
+                                    <span
+                                      className={`fin-account-badge${dst.isCash ? ' fin-account-badge--cash' : ' fin-account-badge--noncash'}`}
+                                    >
+                                      {dst.isCash ? 'Naqd' : 'Naqdsiz'}
+                                    </span>
+                                  </span>
+                                </div>
+                              );
+                            })()}
                           </td>
 
                           {/* Amount */}
@@ -1220,7 +1278,9 @@ const Finances = () => {
                             {tr.sent_by?.full_name && (
                               <div className="fin-resp-row">
                                 <span className="fin-resp-label">{t('finance.senderPerson')}:</span>
-                                <span className="fin-resp-name">{tr.sent_by.full_name}</span>
+                                <span className="fin-resp-name">
+                                  {formatPersonName(tr.sent_by.full_name)}
+                                </span>
                                 {tr.sent_at && (
                                   <span className="fin-resp-date">{formatDate(tr.sent_at)}</span>
                                 )}
@@ -1231,9 +1291,13 @@ const Finances = () => {
                                 <span className="fin-resp-label">
                                   {t('finance.approverPerson')}:
                                 </span>
-                                <span className="fin-resp-name">{tr.approved_by.full_name}</span>
+                                <span className="fin-resp-name">
+                                  {formatPersonName(tr.approved_by.full_name)}
+                                </span>
                                 {tr.approved_at && (
-                                  <span className="fin-resp-date">{formatDate(tr.approved_at)}</span>
+                                  <span className="fin-resp-date">
+                                    {formatDate(tr.approved_at)}
+                                  </span>
                                 )}
                               </div>
                             )}
@@ -1242,9 +1306,13 @@ const Finances = () => {
                                 <span className="fin-resp-label">
                                   {t('finance.rejecterPerson')}:
                                 </span>
-                                <span className="fin-resp-name">{tr.rejected_by.full_name}</span>
+                                <span className="fin-resp-name">
+                                  {formatPersonName(tr.rejected_by.full_name)}
+                                </span>
                                 {tr.rejected_at && (
-                                  <span className="fin-resp-date">{formatDate(tr.rejected_at)}</span>
+                                  <span className="fin-resp-date">
+                                    {formatDate(tr.rejected_at)}
+                                  </span>
                                 )}
                               </div>
                             )}
@@ -1253,7 +1321,9 @@ const Finances = () => {
                                 <span className="fin-resp-label">
                                   {t('finance.cancellerPerson')}:
                                 </span>
-                                <span className="fin-resp-name">{tr.cancelled_by.full_name}</span>
+                                <span className="fin-resp-name">
+                                  {formatPersonName(tr.cancelled_by.full_name)}
+                                </span>
                                 {tr.cancelled_at && (
                                   <span className="fin-resp-date">
                                     {formatDate(tr.cancelled_at)}
@@ -1288,15 +1358,45 @@ const Finances = () => {
 
                           {/* Actions */}
                           <td>
-                            <div className="fin-actions">
-                              <button
-                                className="fin-action-btn fin-action-view"
-                                onClick={() => setViewingTransfer(tr)}
-                                title={t('finance.view')}
-                              >
-                                <i className="fa-solid fa-eye" />
-                              </button>
-                            </div>
+                            {tr.status === 'sent' ? (
+                              <div className="fin-transfer-action-btns">
+                                <Protected permission={`${transferPermissionModule(tr.source)}.approve`}>
+                                  <button
+                                    className="fin-btn-approve"
+                                    onClick={() =>
+                                      approveTransferMutation.mutate({ id: tr.id, source: tr.source })
+                                    }
+                                    disabled={approveTransferMutation.isPending}
+                                  >
+                                    {t('finance.approve')}
+                                  </button>
+                                </Protected>
+                                <Protected permission={`${transferPermissionModule(tr.source)}.reject`}>
+                                  <button
+                                    className="fin-btn-reject"
+                                    onClick={() =>
+                                      rejectTransferMutation.mutate({ id: tr.id, source: tr.source })
+                                    }
+                                    disabled={rejectTransferMutation.isPending}
+                                  >
+                                    {t('finance.reject')}
+                                  </button>
+                                </Protected>
+                                <Protected permission={`${transferPermissionModule(tr.source)}.cancel`}>
+                                  <button
+                                    className="fin-btn-cancel-transfer"
+                                    onClick={() =>
+                                      cancelTransferMutation.mutate({ id: tr.id, source: tr.source })
+                                    }
+                                    disabled={cancelTransferMutation.isPending}
+                                  >
+                                    {t('finance.cancelTransfer')}
+                                  </button>
+                                </Protected>
+                              </div>
+                            ) : (
+                              '-'
+                            )}
                           </td>
                         </tr>
                       ))
@@ -1325,12 +1425,16 @@ const Finances = () => {
             <div className="fin-modal-overlay" onClick={() => setTransferView('list')}>
               <div className="fin-transfer-type-select" onClick={(e) => e.stopPropagation()}>
                 <h3 className="fin-type-select-title">{t('finance.selectTransferType')}</h3>
-                <button className="fin-type-btn" onClick={() => setTransferView('create')}>
-                  {t('finance.typeAccountToAccount')}
-                </button>
-                <button className="fin-type-btn" onClick={() => setTransferView('savings')}>
-                  {t('finance.typeAccountToSavings')}
-                </button>
+                {canCreateAccountTransfer && (
+                  <button className="fin-type-btn" onClick={() => setTransferView('create')}>
+                    {t('finance.typeAccountToAccount')}
+                  </button>
+                )}
+                {canCreateSavingsTransfer && (
+                  <button className="fin-type-btn" onClick={() => setTransferView('savings')}>
+                    {t('finance.typeAccountToSavings')}
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -1585,6 +1689,7 @@ const Finances = () => {
                     sender_account_id: '',
                     jamgarma_id: '',
                     amount: '',
+                    transfer_type: 'cash',
                     description: '',
                   });
                 }}
@@ -1603,11 +1708,12 @@ const Finances = () => {
                         className="fin-btn-save"
                         onClick={() => {
                           createSavingsTransferMutation.mutate({
-                            sender_account_id: Number(savingsForm.sender_account_id),
-                            jamgarma_id: Number(savingsForm.jamgarma_id),
+                            source_account_id: Number(savingsForm.sender_account_id),
+                            destination_jamgarma_id: Number(savingsForm.jamgarma_id),
                             amount: Number(savingsForm.amount.replace(/\s/g, '')),
-                            currency: 'UZS',
-                            description: savingsForm.description,
+                            transfer_type: savingsForm.transfer_type,
+                            description_uz: savingsForm.description,
+                            description_en: savingsForm.description,
                           });
                         }}
                         disabled={createSavingsTransferMutation.isPending}
@@ -1775,6 +1881,19 @@ const Finances = () => {
                           {getJamgarmaName(j)}
                         </option>
                       ))}
+                    </select>
+                  </div>
+
+                  <div className="fin-form-group">
+                    <label>{t('finance.transferType')}</label>
+                    <select
+                      value={savingsForm.transfer_type}
+                      onChange={(e) =>
+                        setSavingsForm({ ...savingsForm, transfer_type: e.target.value })
+                      }
+                    >
+                      <option value="cash">{t('finance.typeCash')}</option>
+                      <option value="non_cash">{t('finance.typeNonCash')}</option>
                     </select>
                   </div>
 

@@ -324,10 +324,10 @@
       "admin_access": "Adminga kirish"
     },
     "permissionActions": {
-      "view": "Ko’rish",
-      "create": "Qo’shish",
+      "view": "Ko‘rish",
+      "create": "Qo‘shish",
       "edit": "Tahrirlash",
-      "delete": "O’chirish",
+      "delete": "O‘chirish",
       "attach_group": "Guruh biriktirish",
       "submit_for_approval": "Tasdiqlashga yuborish",
       "approve": "Tasdiqlash",
@@ -337,7 +337,12 @@
       "terminate": "Tugatish",
       "sync": "Sinxronlashtirish",
       "mark_attendance": "Davomat belgilash",
-      "add_questions": "Savol qo’shish"
+      "add_questions": "Savol qo‘shish",
+      "cancel": "Bekor qilish",
+      "add_transfer_maker": "O‘tkazma qiluvchi qo‘sish",
+      "remove_transfer_maker": "O‘tkazma qiluvchini o‘chirish",
+      "add_withdrawer": "Yechib oluvchi qo‘sish",
+      "remove_withdrawer": "Yechib oluvchini o‘chirish"
     }
   },
   "expenses": {
@@ -1833,7 +1838,17 @@
     "tests": "Testlar",
     "lessons": "Darslar",
     "permissions": "Ruxsatlar",
-    "lessons_schedules": "Dars jadvali"
+    "lessons_schedules": "Dars jadvali",
+    "chart_of_accounts": "Hisobvaraqlar rejasi",
+    "chart_of_accounts_transfers": "Hisobvaraqlar o‘rtasidagi o‘tkazmalar",
+    "jamgarmas": "Jamg‘armalar",
+    "account_to_jamgarma_transfers": "Hisobvaraqdan jamg‘armaga o‘tkazmalar",
+    "jamgarma_loans": "Jamg‘arma qarzlari",
+    "jamgarma_loan_repayments": "Jamg‘arma qarz qaytarishlari",
+    "jamgarma_loan_forfeitures": "Jamg‘arma qarzlarini kechirish",
+    "jamgarma_transactions": "Jamg‘arma tranzaksiyalari",
+    "payment_gateway_commissions": "To‘lov tizimi komissiyalari",
+    "payment_commission_logs": "Komissiya loglari"
   },
   "studentsContract": {
     "loading": "Yuklanmoqda...",
@@ -2081,7 +2096,10 @@
     "statusChangedAt": "O‘zgartirilgan sana",
     "statusNote": "Izoh",
     "statusNotePlaceholder": "Izoh kiriting (ixtiyoriy)",
-    "saveStatus": "Statusni saqlash"
+    "saveStatus": "Statusni saqlash",
+    "transferType": "Transfer turi",
+    "typeCash": "Naqd",
+    "typeNonCash": "Naqdsiz"
   },
   "jamgarma": {
     "add": "Qo‘shish",

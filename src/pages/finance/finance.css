@@ -338,8 +338,49 @@
 .fin-account-cell {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+}
+
+.fin-account-branch {
+  font-family: noto-b;
+  font-size: 12px;
+  color: #333;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.fin-account-number-row {
+  display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.fin-account-number-text {
+  font-family: noto-m;
+  font-size: 11px;
+  color: #777;
+}
+
+.fin-account-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-family: noto-b;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.fin-account-badge--cash {
+  background: #003366;
+}
+
+.fin-account-badge--noncash {
+  background: #2aa411;
 }
 
 .fin-branch-cell {
@@ -438,9 +479,9 @@
 .fin-btn-reject {
   padding: 6px 10px;
   border-radius: 8px;
-  border: 1.5px solid #e70a0a;
-  background: transparent;
-  color: #e70a0a;
+  border: none;
+  background: #e70a0a;
+  color: #fff;
   font-family: noto-b;
   font-size: 12px;
   cursor: pointer;
@@ -448,8 +489,7 @@
 }
 
 .fin-btn-reject:hover:not(:disabled) {
-  background: #e70a0a;
-  color: #fff;
+  background: #c90000;
 }
 
 .fin-btn-reject:disabled {
@@ -460,17 +500,17 @@
 .fin-btn-cancel-transfer {
   padding: 6px 10px;
   border-radius: 8px;
-  border: 1.5px solid #999;
-  background: #fff;
-  color: #555;
-  font-family: noto-m;
+  border: none;
+  background: #e70a0a;
+  color: #fff;
+  font-family: noto-b;
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .fin-btn-cancel-transfer:hover:not(:disabled) {
-  background: #f0f0f0;
+  background: #c90000;
 }
 
 .fin-btn-cancel-transfer:disabled {
