@@ -25,7 +25,9 @@
       "Skill(run:*)",
       "Bash(npx --no-install playwright --version)",
       "Bash(taskkill //F //PID 19424)",
-      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/uz.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/ru.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/en.json','utf8'\\)\\); console.log\\('all valid json'\\)\")"
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/uz.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/ru.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/en.json','utf8'\\)\\); console.log\\('all valid json'\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(open\\('src/messages/uz.json',encoding='utf-8'\\)\\); print\\(json.dumps\\(d.get\\('debts',{}\\),ensure_ascii=False,indent=1\\)\\)\")",
+      "Bash(node -e \"const d=require\\('./src/messages/uz.json'\\); console.log\\(JSON.stringify\\(d.debts,null,1\\)\\)\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src\\pages\\set-password",

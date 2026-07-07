@@ -2183,6 +2183,12 @@
   "debts": {
     "searchPlaceholder": "Search...",
     "filter": "Filter",
+    "filterByFund": "By fund",
+    "filterByCashier": "By cashier",
+    "filterByStatus": "By status",
+    "filterByDate": "By date",
+    "filterAll": "All",
+    "filterClear": "Clear",
     "createTransfer": "Make Transfer",
     "id": "ID",
     "giverFund": "Giver Jamg'arma",

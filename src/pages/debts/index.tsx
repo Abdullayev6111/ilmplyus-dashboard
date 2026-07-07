@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
-import { API } from '../../api/api';
+import { API } from '@/api/api';
 import '../finance/finance.css';
 import './debts.css';
 import { useTranslation } from 'react-i18next';
-import { getLocalized } from '../../utils/getLocalized';
-import TableSkeleton from '../../components/TableSkeleton';
-import EmptyState from '../../components/EmptyState';
-import { Protected } from '../../components/Protected';
-import { usePermission } from '../../hooks/usePermission';
-import type { Branch } from '../../types';
+import { getLocalized } from '@/utils/getLocalized';
+import TableSkeleton from '@/components/TableSkeleton';
+import EmptyState from '@/components/EmptyState';
+import { Protected } from '@/components/Protected';
+import { usePermission } from '@/hooks/usePermission';
+import type { Branch } from '@/types/common.types';
 
 // ─── Local Type Definitions ──────────────────────────────────────────────────
 
@@ -30,7 +30,7 @@ interface Jamgarma {
 }
 
 type DebtType = 'give' | 'return' | 'forgive';
-type DebtStatus = 'pending' | 'sent' | 'approved' | 'rejected';
+type DebtStatus = 'pending' | 'sent' | 'approved' | 'rejected' | 'cancelled';
 
 interface DebtTransferRecord {
   id: number;
@@ -71,14 +71,85 @@ const ENDPOINT_MAP: Record<DebtType, string> = {
   forgive: '/jamgarma-loan-forfeitures',
 };
 
-// Each debt "type" maps to its own permission module.
-const PERMISSION_MODULE_MAP: Record<DebtType, string> = {
+// Permission module slug per debt type — actions are `${module}.view|create|approve|reject|cancel`.
+const PERMISSION_MODULE: Record<DebtType, string> = {
   give: 'jamgarma_loans',
   return: 'jamgarma_loan_repayments',
   forgive: 'jamgarma_loan_forfeitures',
 };
 
 const isPendingStatus = (status: DebtStatus) => status === 'pending' || status === 'sent';
+
+// ─── Raw API Shape → Component Shape ──────────────────────────────────────────
+// The backend returns lender/borrower funds, total_amount, notes and nested
+// person objects. The component works with giver/receiver, amount, description
+// and flat person names, so every raw record is normalized on fetch.
+
+interface RawPerson {
+  id?: number | null;
+  full_name?: string | null;
+  username?: string | null;
+}
+
+interface RawDebtRecord {
+  id: number;
+  // Each endpoint names the two funds differently:
+  //   loans:       lender_jamgarma   / borrower_jamgarma
+  //   repayments:  repayer_jamgarma  / receiver_jamgarma
+  //   forfeitures: forgiver_jamgarma / forgiven_jamgarma
+  lender_jamgarma?: Jamgarma;
+  borrower_jamgarma?: Jamgarma;
+  repayer_jamgarma?: Jamgarma;
+  receiver_jamgarma?: Jamgarma;
+  forgiver_jamgarma?: Jamgarma;
+  forgiven_jamgarma?: Jamgarma;
+  cash_amount?: number;
+  non_cash_amount?: number;
+  total_amount?: number;
+  notes?: string | null;
+  status: DebtStatus;
+  sent_by?: RawPerson | null;
+  sent_at?: string | null;
+  approved_by?: RawPerson | null;
+  approved_at?: string | null;
+  rejected_by?: RawPerson | null;
+  rejected_at?: string | null;
+  cancelled_by?: RawPerson | null;
+  cancelled_at?: string | null;
+  created_at: string;
+}
+
+const normalizeDebtRecord = (r: RawDebtRecord): DebtTransferRecord => {
+  // Pick whichever fund fields the endpoint provided.
+  const giver = r.lender_jamgarma ?? r.repayer_jamgarma ?? r.forgiver_jamgarma;
+  const receiver = r.borrower_jamgarma ?? r.receiver_jamgarma ?? r.forgiven_jamgarma;
+  return {
+  id: r.id,
+  giver_jamgarma_id: giver?.id ?? 0,
+  receiver_jamgarma_id: receiver?.id ?? 0,
+  cash_amount: r.cash_amount ?? 0,
+  non_cash_amount: r.non_cash_amount ?? 0,
+  amount: r.total_amount ?? 0,
+  description: r.notes ?? '',
+  status: r.status,
+  sender_name: r.sent_by?.full_name ?? undefined,
+  sender_date: r.sent_at ?? undefined,
+  approver_name: r.approved_by?.full_name ?? undefined,
+  approver_date: r.approved_at ?? undefined,
+  rejecter_name: r.rejected_by?.full_name ?? r.cancelled_by?.full_name ?? undefined,
+  rejecter_date: r.rejected_at ?? r.cancelled_at ?? undefined,
+  created_at: r.created_at,
+  giver_jamgarma: giver,
+  receiver_jamgarma: receiver,
+  };
+};
+
+const extractRecords = (data: unknown): DebtTransferRecord[] => {
+  const arr = Array.isArray(data)
+    ? data
+    : ((data as { data?: RawDebtRecord[] })?.data ?? []);
+  return (arr as RawDebtRecord[]).map(normalizeDebtRecord);
+};
 
 type DebtsView = 'list' | 'select-type' | 'create';
 
@@ -171,21 +242,33 @@ const DebtsPage = () => {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
-  // ── View state ──────────────────────────────────────────────────
-  const [view, setView] = useState<DebtsView>('list');
-  const [transferType, setTransferType] = useState<DebtType>('give');
-
-  // ── Permissions ──────────────────────────────────────────────────
+  // Create permissions per transfer type (drives the "create" button + type picker).
   const canCreateGive = usePermission('jamgarma_loans.create');
   const canCreateReturn = usePermission('jamgarma_loan_repayments.create');
   const canCreateForgive = usePermission('jamgarma_loan_forfeitures.create');
-  const canCreateAnyTransfer = canCreateGive || canCreateReturn || canCreateForgive;
+  const canCreateAny = canCreateGive || canCreateReturn || canCreateForgive;
+  const canCreateType: Record<DebtType, boolean> = {
+    give: canCreateGive,
+    return: canCreateReturn,
+    forgive: canCreateForgive,
+  };
+
+  // ── View state ──────────────────────────────────────────────────
+  const [view, setView] = useState<DebtsView>('list');
+  const [transferType, setTransferType] = useState<DebtType>('give');
 
   // ── List UI state ───────────────────────────────────────────────
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [viewingTransfer, setViewingTransfer] = useState<DebtTransfer | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  // ── Filter panel state (all client-side, no refetch) ────────────
+  const [showFilter, setShowFilter] = useState(false);
+  const [filterFund, setFilterFund] = useState('');
+  const [filterCashier, setFilterCashier] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterDate, setFilterDate] = useState('');
 
   // ── Form state ──────────────────────────────────────────────────
   const [form, setForm] = useState({
@@ -212,7 +295,7 @@ const DebtsPage = () => {
     queryKey: ['jamgarma-loans'],
     queryFn: async () => {
       const { data } = await API.get('/jamgarma-loans');
-      return Array.isArray(data) ? data : (data?.data ?? []);
+      return extractRecords(data);
     },
     placeholderData: keepPreviousData,
   });
@@ -221,7 +304,7 @@ const DebtsPage = () => {
     queryKey: ['jamgarma-loan-repayments'],
     queryFn: async () => {
       const { data } = await API.get('/jamgarma-loan-repayments');
-      return Array.isArray(data) ? data : (data?.data ?? []);
+      return extractRecords(data);
     },
     placeholderData: keepPreviousData,
   });
@@ -230,7 +313,7 @@ const DebtsPage = () => {
     queryKey: ['jamgarma-loan-forfeitures'],
     queryFn: async () => {
       const { data } = await API.get('/jamgarma-loan-forfeitures');
-      return Array.isArray(data) ? data : (data?.data ?? []);
+      return extractRecords(data);
     },
     placeholderData: keepPreviousData,
   });
@@ -317,6 +400,7 @@ const DebtsPage = () => {
       sent: t('debts.statusPending'),
       approved: t('debts.statusApproved'),
       rejected: t('debts.statusRejected'),
+      cancelled: t('debts.statusCancelled'),
     };
     return map[status] || status;
   };
@@ -417,15 +501,45 @@ const DebtsPage = () => {
 
   // ─── Filtered & Paginated Data ─────────────────────────────────────────────
 
+  // Cashiers (senders) present in the loaded data — options for the filter.
+  const cashierOptions = Array.from(
+    new Set(transfers.map((tr) => tr.sender_name).filter((n): n is string => !!n)),
+  );
+
+  const activeFilterCount =
+    (filterFund ? 1 : 0) +
+    (filterCashier ? 1 : 0) +
+    (filterStatus ? 1 : 0) +
+    (filterDate ? 1 : 0);
+
+  const clearFilters = () => {
+    setFilterFund('');
+    setFilterCashier('');
+    setFilterStatus('');
+    setFilterDate('');
+    setPage(1);
+  };
+
+  // All filtering happens client-side on the already-fetched data.
   const filteredTransfers = (() => {
-    if (!search) return transfers;
-    const q = search.toLowerCase();
-    return transfers.filter(
-      (tr) =>
-        tr.description?.toLowerCase().includes(q) ||
-        getJamgarmaName(tr.giver_jamgarma).toLowerCase().includes(q) ||
-        getJamgarmaName(tr.receiver_jamgarma).toLowerCase().includes(q),
-    );
+    const q = search.trim().toLowerCase();
+    return transfers.filter((tr) => {
+      if (q) {
+        const matches =
+          tr.description?.toLowerCase().includes(q) ||
+          getJamgarmaName(tr.giver_jamgarma).toLowerCase().includes(q) ||
+          getJamgarmaName(tr.receiver_jamgarma).toLowerCase().includes(q);
+        if (!matches) return false;
+      }
+      if (filterFund) {
+        const fid = Number(filterFund);
+        if (tr.giver_jamgarma_id !== fid && tr.receiver_jamgarma_id !== fid) return false;
+      }
+      if (filterCashier && tr.sender_name !== filterCashier) return false;
+      if (filterStatus && tr.status !== filterStatus) return false;
+      if (filterDate && (tr.created_at || '').slice(0, 10) !== filterDate) return false;
+      return true;
+    });
   })();
 
   const paginatedTransfers = (() => {
@@ -581,11 +695,110 @@ const DebtsPage = () => {
               />
               <i className="fa-solid fa-magnifying-glass" />
             </div>
-            <button className="fin-btn-filter">
-              <i className="fa-solid fa-filter" />
-              {t('debts.filter')}
-            </button>
-            {canCreateAnyTransfer && (
+            <div className="debts-filter-wrap">
+              <button
+                className={`fin-btn-filter${activeFilterCount ? ' debts-filter-active' : ''}`}
+                onClick={() => setShowFilter((v) => !v)}
+              >
+                <i className="fa-solid fa-filter" />
+                {t('debts.filter')}
+                {activeFilterCount > 0 && (
+                  <span className="debts-filter-badge">{activeFilterCount}</span>
+                )}
+              </button>
+
+              {showFilter && (
+                <>
+                  <div
+                    className="debts-filter-backdrop"
+                    onClick={() => setShowFilter(false)}
+                  />
+                  <div className="debts-filter-panel">
+                    <div className="debts-filter-head">
+                      <h4>{t('debts.filter')}</h4>
+                      <button
+                        className="debts-filter-close"
+                        onClick={() => setShowFilter(false)}
+                        aria-label={t('debts.close')}
+                      >
+                        <i className="fa-solid fa-xmark" />
+                      </button>
+                    </div>
+
+                    <div className="debts-filter-group">
+                      <label>{t('debts.filterByFund')}</label>
+                      <select
+                        value={filterFund}
+                        onChange={(e) => {
+                          setFilterFund(e.target.value);
+                          setPage(1);
+                        }}
+                      >
+                        <option value="">{t('debts.filterAll')}</option>
+                        {jamgarmas.map((j) => (
+                          <option key={j.id} value={j.id}>
+                            {getJamgarmaName(j)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="debts-filter-group">
+                      <label>{t('debts.filterByCashier')}</label>
+                      <select
+                        value={filterCashier}
+                        onChange={(e) => {
+                          setFilterCashier(e.target.value);
+                          setPage(1);
+                        }}
+                      >
+                        <option value="">{t('debts.filterAll')}</option>
+                        {cashierOptions.map((name) => (
+                          <option key={name} value={name}>
+                            {name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="debts-filter-group">
+                      <label>{t('debts.filterByStatus')}</label>
+                      <select
+                        value={filterStatus}
+                        onChange={(e) => {
+                          setFilterStatus(e.target.value);
+                          setPage(1);
+                        }}
+                      >
+                        <option value="">{t('debts.filterAll')}</option>
+                        <option value="pending">{t('debts.statusPending')}</option>
+                        <option value="approved">{t('debts.statusApproved')}</option>
+                        <option value="rejected">{t('debts.statusRejected')}</option>
+                        <option value="cancelled">{t('debts.statusCancelled')}</option>
+                      </select>
+                    </div>
+
+                    <div className="debts-filter-group">
+                      <label>{t('debts.filterByDate')}</label>
+                      <input
+                        type="date"
+                        value={filterDate}
+                        onChange={(e) => {
+                          setFilterDate(e.target.value);
+                          setPage(1);
+                        }}
+                      />
+                    </div>
+
+                    <button className="debts-filter-clear" onClick={clearFilters}>
+                      <i className="fa-solid fa-eraser" />
+                      {t('debts.filterClear')}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+            {canCreateAny && (
               <button className="fin-btn-add" onClick={openTypeSelect}>
                 {t('debts.createTransfer')}
               </button>
@@ -713,18 +926,9 @@ const DebtsPage = () => {
 
                       {/* Actions */}
                       <td>
-                        <div className="fin-actions">
-                          <button
-                            className="fin-action-btn fin-action-view"
-                            onClick={() => setViewingTransfer(tr)}
-                            title={t('debts.view')}
-                          >
-                            <i className="fa-solid fa-eye" />
-                          </button>
-                        </div>
                         {isPendingStatus(tr.status) && (
                           <div className="fin-transfer-action-btns">
-                            <Protected permission={`${PERMISSION_MODULE_MAP[tr.type]}.approve`}>
+                            <Protected permission={`${PERMISSION_MODULE[tr.type]}.approve`}>
                               <button
                                 className="fin-btn-approve"
                                 onClick={() => approveMutation.mutate({ id: tr.id, type: tr.type })}
@@ -734,7 +938,7 @@ const DebtsPage = () => {
                               </button>
                             </Protected>
                             {tr.type === 'give' && (
-                              <Protected permission={`${PERMISSION_MODULE_MAP[tr.type]}.reject`}>
+                              <Protected permission={`${PERMISSION_MODULE[tr.type]}.reject`}>
                                 <button
                                   className="fin-btn-reject"
                                   onClick={() => rejectMutation.mutate({ id: tr.id, type: tr.type })}
@@ -775,17 +979,17 @@ const DebtsPage = () => {
         <div className="fin-modal-overlay" onClick={() => setView('list')}>
           <div className="fin-transfer-type-select" onClick={(e) => e.stopPropagation()}>
             <h3 className="fin-type-select-title">{t('debts.selectTransferType')}</h3>
-            {canCreateGive && (
+            {canCreateType.give && (
               <button className="fin-type-btn" onClick={() => startCreate('give')}>
                 {t('debts.typeGive')}
               </button>
             )}
-            {canCreateReturn && (
+            {canCreateType.return && (
               <button className="fin-type-btn" onClick={() => startCreate('return')}>
                 {t('debts.typeReturn')}
               </button>
             )}
-            {canCreateForgive && (
+            {canCreateType.forgive && (
               <button className="fin-type-btn" onClick={() => startCreate('forgive')}>
                 {t('debts.typeForgive')}
               </button>

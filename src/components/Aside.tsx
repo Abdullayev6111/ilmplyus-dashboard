@@ -209,17 +209,17 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         {
           label: t('aside.scoreSheet'),
           path: '/finances',
-          permission: '',
+          permission: 'chart_of_accounts.view',
         },
         {
           label: t('aside.jamgarma'),
           path: '/jamgarma',
-          permission: '',
+          permission: 'jamgarmas.view',
         },
         {
           label: t('aside.debts'),
           path: '/debts',
-          permission: '',
+          permission: 'jamgarma_loans.view',
         },
       ],
     },

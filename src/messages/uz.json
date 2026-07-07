@@ -2163,6 +2163,12 @@
   "debts": {
     "searchPlaceholder": "Ma’lumotlarni qidirish...",
     "filter": "Saralash",
+    "filterByFund": "Jamg‘arma bo‘yicha",
+    "filterByCashier": "Kassir bo‘yicha",
+    "filterByStatus": "Status bo‘yicha",
+    "filterByDate": "Sana bo‘yicha",
+    "filterAll": "Barchasi",
+    "filterClear": "Tozalash",
     "createTransfer": "Transfer amalga oshirish",
     "id": "ID",
     "giverFund": "Chiquvchi jamg‘arma",

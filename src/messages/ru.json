@@ -2175,6 +2175,12 @@
   "debts": {
     "searchPlaceholder": "Поиск...",
     "filter": "Фильтр",
+    "filterByFund": "По джамгарме",
+    "filterByCashier": "По кассиру",
+    "filterByStatus": "По статусу",
+    "filterByDate": "По дате",
+    "filterAll": "Все",
+    "filterClear": "Очистить",
     "createTransfer": "Выполнить перевод",
     "id": "ID",
     "giverFund": "Джамгарма-отправитель",

@@ -9,8 +9,7 @@
   max-width: 1750px;
   min-height: 864px;
   border-radius: 15px;
-  padding: 25px;
-  margin-top: 30px !important;
+  margin-top: 40px !important;
   margin-bottom: 30px !important;
   background: transparent;
   display: flex;
@@ -218,34 +217,6 @@
   max-width: 200px;
 }
 
-.fin-withdrawer-badge-row {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-wrap: wrap;
-  padding: 3px 0;
-}
-
-.fin-withdrawer-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 7px;
-  border-radius: 5px;
-  font-size: 10px;
-  font-family: noto-m;
-  white-space: nowrap;
-}
-
-.fin-withdrawer-badge--cash {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-.fin-withdrawer-badge--noncash {
-  background: #e3f2fd;
-  color: #1565c0;
-}
-
 .fin-amount-cell {
   font-family: noto-b;
   white-space: nowrap;
@@ -334,7 +305,7 @@
   transform: scale(1.15);
 }
 
-/* ─── Transfer Account Cell (branch + account badges) ──────────── */
+/* ─── Transfer Account Cell (branch name + account number + type badge) ── */
 .fin-account-cell {
   display: flex;
   flex-direction: column;
@@ -343,72 +314,49 @@
   text-align: left;
 }
 
-.fin-account-branch {
-  font-family: noto-b;
+.fin-branch-cell {
+  white-space: nowrap;
+  text-align: left;
+}
+
+.fin-branch-name {
+  color: #003366;
   font-size: 12px;
-  color: #333;
-  text-transform: uppercase;
+  font-family: noto-b;
+  letter-spacing: 0.3px;
   white-space: nowrap;
 }
 
-.fin-account-number-row {
+.fin-acct-row {
   display: flex;
   align-items: center;
   gap: 6px;
   white-space: nowrap;
 }
 
-.fin-account-number-text {
+.fin-acct-number {
+  font-size: 12px;
   font-family: noto-m;
-  font-size: 11px;
-  color: #777;
+  color: #333;
 }
 
-.fin-account-badge {
-  display: inline-flex;
-  align-items: center;
+.fin-type-badge {
+  display: inline-block;
+  color: #fff;
   padding: 2px 8px;
   border-radius: 5px;
   font-size: 10px;
   font-family: noto-b;
-  color: #fff;
-  white-space: nowrap;
-}
-
-.fin-account-badge--cash {
-  background: #003366;
-}
-
-.fin-account-badge--noncash {
-  background: #2aa411;
-}
-
-.fin-branch-cell {
-  white-space: nowrap;
-  text-align: left;
-}
-
-.fin-branch-tag {
-  display: inline-block;
-  background: #003366;
-  color: #fff;
-  padding: 3px 8px;
-  border-radius: 5px;
-  font-size: 10px;
-  font-family: noto-b;
-  letter-spacing: 0.4px;
-  white-space: nowrap;
-}
-
-.fin-acct-tag {
-  display: inline-block;
-  background: #1565c0;
-  color: #fff;
-  padding: 3px 8px;
-  border-radius: 5px;
-  font-size: 10px;
-  font-family: noto-m;
   letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.fin-badge-cash {
+  background: #003366;
+}
+
+.fin-badge-noncash {
+  background: #2aa411;
 }
 
 /* ─── Transfer Responsible Persons ───────────────────────────── */
@@ -489,7 +437,7 @@
 }
 
 .fin-btn-reject:hover:not(:disabled) {
-  background: #c90000;
+  background: #c40808;
 }
 
 .fin-btn-reject:disabled {
@@ -501,7 +449,7 @@
   padding: 6px 10px;
   border-radius: 8px;
   border: none;
-  background: #e70a0a;
+  background: #a80808;
   color: #fff;
   font-family: noto-b;
   font-size: 12px;
@@ -510,7 +458,12 @@
 }
 
 .fin-btn-cancel-transfer:hover:not(:disabled) {
-  background: #c90000;
+  background: #8a0606;
+}
+
+.fin-btn-cancel-transfer:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .fin-btn-cancel-transfer:disabled {
@@ -849,79 +802,6 @@
 .fin-add-signatory-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
-}
-
-/* ─── Jamg'arma Withdrawer Selection (single-row card per withdrawer) ── */
-.fin-modal-jamgarma {
-  max-width: 560px;
-}
-
-.fin-withdrawer-user-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.fin-withdrawer-user-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  gap: 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 10px 14px;
-  background: #f8fafc;
-  overflow-x: auto;
-}
-
-.fin-withdrawer-user-card-name-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  flex-shrink: 1;
-}
-
-.fin-withdrawer-user-card-name {
-  font-family: noto-m;
-  font-size: 13px;
-  color: #333;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.fin-withdrawer-type-inline {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.fin-withdrawer-type-label {
-  font-family: noto-m;
-  font-size: 12px;
-  color: #003366;
-}
-
-.fin-withdrawer-user-card-remove {
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #e70a0a;
-  font-size: 13px;
-  padding: 0;
-  line-height: 1;
-  transition: opacity 0.2s;
-}
-
-.fin-withdrawer-user-card-remove:hover {
-  opacity: 0.7;
 }
 
 /* ─── Modal Action Buttons ────────────────────────────────────── */
@@ -1363,6 +1243,38 @@
 /* ─── Transfers Table (wider columns) ─────────────────────────── */
 .fin-transfers-table {
   min-width: 960px;
+}
+
+/* ─── Checkbox column ────────────────────────────────────────────
+   The generic `.fin-table th/td:nth-child(2)` rule targets the account
+   column by position; with a checkbox column inserted first, positions
+   shift by one, so re-anchor here for this table specifically. */
+.fin-table--with-checkbox th:first-child,
+.fin-table--with-checkbox td:first-child {
+  width: 36px;
+  text-align: center;
+}
+
+.fin-table--with-checkbox th:nth-child(2),
+.fin-table--with-checkbox td:nth-child(2) {
+  white-space: normal;
+  text-align: center;
+  overflow: hidden;
+  max-width: initial;
+}
+
+.fin-table--with-checkbox th:nth-child(3),
+.fin-table--with-checkbox td:nth-child(3) {
+  white-space: nowrap;
+  text-align: left;
+  overflow: visible;
+  max-width: none;
+}
+
+.fin-table--with-checkbox input[type='checkbox'] {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
 }
 
 /* ═══════════════════════════════════════════════════════════════

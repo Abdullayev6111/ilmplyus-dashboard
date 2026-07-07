@@ -82,3 +82,132 @@
   color: #e70a0a;
   margin-top: 2px;
 }
+
+/* ─── Filter ("Saralash") dropdown panel ─────────────────────────── */
+.debts-filter-wrap {
+  position: relative;
+}
+
+.fin-btn-filter.debts-filter-active {
+  background: #003366;
+  color: #fff;
+}
+
+.debts-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #fe9100;
+  color: #fff;
+  font-size: 11px;
+  font-family: noto-b;
+  line-height: 1;
+}
+
+.debts-filter-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.debts-filter-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 50;
+  width: 280px;
+  max-width: calc(100vw - 32px);
+  padding: 18px;
+  background: #fff;
+  border: 2px solid #003366;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 51, 102, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.debts-filter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.debts-filter-head h4 {
+  margin: 0;
+  font-family: noto-b;
+  font-size: 16px;
+  color: #003366;
+}
+
+.debts-filter-close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: #f0f3f8;
+  color: #003366;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.debts-filter-close:hover {
+  background: #e0e6ef;
+}
+
+.debts-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.debts-filter-group label {
+  font-family: noto-m;
+  font-size: 13px;
+  color: #003366;
+}
+
+.debts-filter-group select,
+.debts-filter-group input {
+  height: 40px;
+  padding: 0 12px;
+  border: 2px solid #d6deea;
+  border-radius: 12px;
+  background: #fff;
+  color: #003366;
+  font-family: noto-m;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.debts-filter-group select:focus,
+.debts-filter-group input:focus {
+  border-color: #003366;
+}
+
+.debts-filter-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  border: 2px solid #e70a0a;
+  border-radius: 12px;
+  background: #fff;
+  color: #e70a0a;
+  font-family: noto-m;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.debts-filter-clear:hover {
+  background: #e70a0a;
+  color: #fff;
+}
