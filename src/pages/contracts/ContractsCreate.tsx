@@ -928,7 +928,7 @@ export function ContractsCreate({
               {t('contracts.contractDuration')} <span className="required">*</span>
             </label>
             <input
-              type="date"
+              type="text"
               value={formData.contract_duration}
               onChange={(e) => setFormData({ ...formData, contract_duration: e.target.value })}
             />

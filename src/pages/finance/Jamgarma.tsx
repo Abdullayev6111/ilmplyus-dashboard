@@ -422,9 +422,15 @@ const JamgarmaPage = () => {
   // ─── Filtered & paginated data ─────────────────────────────────────────────
 
   const filtered = (() => {
-    if (!search) return jamgarmas;
+    // Newest first: recently added rows appear at the top of the table.
+    const sorted = [...jamgarmas].sort((a, b) => {
+      const at = a.created_at ? new Date(a.created_at).getTime() : a.id;
+      const bt = b.created_at ? new Date(b.created_at).getTime() : b.id;
+      return bt - at;
+    });
+    if (!search) return sorted;
     const q = search.toLowerCase();
-    return jamgarmas.filter(
+    return sorted.filter(
       (j) =>
         (j.name_uz || '').toLowerCase().includes(q) ||
         getSectionLabel(j.jamgarma_fund_type || j.section_uz)
@@ -864,9 +870,9 @@ const JamgarmaPage = () => {
             {isLoading ? (
               <TableSkeleton rowCount={10} columnCount={9} />
             ) : paginated.length > 0 ? (
-              paginated.map((item, idx) => (
+              paginated.map((item) => (
                 <tr key={item.id}>
-                  <td>{String((page - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, '0')}</td>
+                  <td>{item.id}</td>
                   <td className="fin-branch-cell">{getBranchLabel(item.branch)}</td>
                   <td>{getName(item)}</td>
                   <td>{getSectionLabel(item.jamgarma_fund_type || item.section_uz)}</td>

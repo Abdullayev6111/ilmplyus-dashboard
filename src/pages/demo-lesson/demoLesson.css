@@ -18,7 +18,7 @@
 }
 
 .dl-title {
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   font-size: 22px;
   font-weight: 700;
   color: #000000;
@@ -54,7 +54,7 @@
   border: none;
   outline: none;
   font-size: 14px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   color: #000000;
   background: transparent;
   width: 100%;
@@ -74,7 +74,7 @@
   border-radius: 10px;
   background: #ffffff;
   font-size: 14px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   color: #000000;
   cursor: pointer;
   white-space: nowrap;
@@ -94,7 +94,7 @@
   background: #fe9100;
   color: #ffffff;
   font-size: 14px;
-  font-family: noto-sb, sans-serif;
+  font-family: noto-sb;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -129,7 +129,7 @@
   padding: 13px 18px;
   text-align: center;
   font-size: 11px;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   font-weight: 700;
   color: #8d8d8d;
   letter-spacing: 0.4px;
@@ -153,7 +153,7 @@
 .dl-table td {
   padding: 13px 18px;
   font-size: 14px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   color: #000000;
   text-align: center;
   overflow: visible;
@@ -231,7 +231,7 @@
   border-radius: 8px;
   background: #ffffff;
   font-size: 13px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   color: #000000;
   cursor: pointer;
   transition: all 0.15s;
@@ -246,7 +246,7 @@
   background: #fe9100;
   border-color: #fe9100;
   color: #ffffff !important;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   font-weight: 700;
 }
 
@@ -292,7 +292,7 @@
 .dl-modal-header {
   padding: 16px 24px;
   background: #d9d9d9;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   font-size: 15px;
   font-weight: 700;
   color: #003366;
@@ -319,7 +319,7 @@
 
 .dl-label {
   font-size: 13px;
-  font-family: noto-sb, sans-serif;
+  font-family: noto-sb;
   font-weight: 600;
   color: #000000;
 }
@@ -341,7 +341,7 @@
   padding: 2px 8px;
   border-radius: 20px;
   font-size: 11px;
-  font-family: noto-sb, sans-serif;
+  font-family: noto-sb;
   font-weight: 600;
   letter-spacing: 0.2px;
 }
@@ -366,7 +366,7 @@
   border: 1.5px solid #bdbdbd;
   border-radius: 8px;
   font-size: 14px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   color: #000000;
   background: #ffffff;
   box-sizing: border-box;
@@ -418,7 +418,7 @@
 
 .dl-date-hint {
   font-size: 11px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   color: #8d8d8d;
   padding-left: 2px;
 }
@@ -436,7 +436,7 @@
   border: 1.5px solid #bdbdbd;
   border-radius: 8px;
   font-size: 14px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   color: #000000;
   background: #ffffff;
   outline: none;
@@ -505,7 +505,7 @@
 .dl-dropdown-item {
   padding: 9px 12px;
   font-size: 14px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   color: #000000;
   cursor: pointer;
   transition: background 0.12s;
@@ -518,7 +518,7 @@
 .dl-dropdown-item--active {
   background: #e8effa;
   color: #003366;
-  font-family: noto-sb, sans-serif;
+  font-family: noto-sb;
   font-weight: 600;
 }
 
@@ -562,7 +562,7 @@
   border-radius: 8px;
   background: #ffffff;
   font-size: 14px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   color: #000000;
   cursor: pointer;
   transition: border-color 0.2s;
@@ -579,7 +579,7 @@
   background: #003366;
   color: #ffffff;
   font-size: 14px;
-  font-family: noto-sb, sans-serif;
+  font-family: noto-sb;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
@@ -609,7 +609,7 @@
 }
 
 .dl-att-title {
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   font-size: 22px;
   font-weight: 700;
   color: #000000;
@@ -622,7 +622,7 @@
   background: #fe9100;
   color: #ffffff;
   font-size: 14px;
-  font-family: noto-sb, sans-serif;
+  font-family: noto-sb;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
@@ -667,7 +667,7 @@
   padding: 13px 18px;
   text-align: left;
   font-size: 11px;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   font-weight: 700;
   color: #8d8d8d;
   letter-spacing: 0.4px;
@@ -695,7 +695,7 @@
 .dl-att-table td {
   padding: 13px 18px;
   font-size: 14px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   color: #000000;
 }
 
@@ -715,14 +715,14 @@
 
 .dl-att-status--present {
   color: #1bb200;
-  font-family: noto-sb, sans-serif;
+  font-family: noto-sb;
   font-weight: 600;
   font-size: 14px;
 }
 
 .dl-att-status--absent {
   color: #e70a0a;
-  font-family: noto-sb, sans-serif;
+  font-family: noto-sb;
   font-weight: 600;
   font-size: 14px;
 }

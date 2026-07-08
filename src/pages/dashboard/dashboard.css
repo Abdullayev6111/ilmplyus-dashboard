@@ -6,7 +6,7 @@
   flex-direction: column;
   gap: 0;
   padding: 0 0 40px;
-  font-family: 'noto-r', sans-serif;
+  font-family: noto-r;
 }
 
 .dashboard p,
@@ -16,13 +16,13 @@
 .dashboard li,
 .dashboard label,
 .dashboard button {
-  font-family: 'noto-r', sans-serif;
+  font-family: noto-r;
 }
 
 .dashboard h1,
 .dashboard h2,
 .dashboard h3 {
-  font-family: 'noto-sb', sans-serif;
+  font-family: noto-sb;
 }
 
 /* ── Tab navigation ─────────────────────────────────────────────────────── */
@@ -86,7 +86,7 @@
   border: none;
   border-bottom: 2.5px solid transparent;
   margin-bottom: -2px;
-  font-family: 'noto-m', sans-serif;
+  font-family: noto-m;
   font-size: 14px;
   color: #64748b;
   cursor: pointer;
@@ -100,7 +100,7 @@
 }
 .dash-tab--active {
   color: #1e293b;
-  font-family: 'noto-b', sans-serif;
+  font-family: noto-b;
   border-bottom-color: var(--tab-color, #3b82f6);
 }
 
@@ -161,7 +161,7 @@
 }
 
 .dash-stat-card__label {
-  font-family: 'noto-r', sans-serif;
+  font-family: noto-r;
   font-size: 12px;
   color: #94a3b8;
   margin: 0;
@@ -183,7 +183,7 @@
 }
 
 .dash-stat-card__sub {
-  font-family: 'noto-r', sans-serif;
+  font-family: noto-r;
   font-size: 12px;
   color: #94a3b8;
   margin: 0;
@@ -1220,7 +1220,7 @@
   border-bottom: 1.5px solid #f1f5f9;
 }
 .dsm-title {
-  font-family: 'noto-sb', sans-serif;
+  font-family: noto-sb;
   font-size: 17px;
   color: #1e293b;
   margin: 0;
@@ -1262,7 +1262,7 @@
   border: none;
   border-bottom: 2.5px solid transparent;
   margin-bottom: -1.5px;
-  font-family: 'noto-m', sans-serif;
+  font-family: noto-m;
   font-size: 13.5px;
   color: #64748b;
   cursor: pointer;
@@ -1285,7 +1285,7 @@
   flex: 1;
 }
 .dsm-hint {
-  font-family: 'noto-r', sans-serif;
+  font-family: noto-r;
   font-size: 13px;
   color: #94a3b8;
   margin-bottom: 16px;
@@ -1299,7 +1299,7 @@
   table-layout: auto !important;
 }
 .dsm-table th {
-  font-family: 'noto-m', sans-serif !important;
+  font-family: noto-m !important;
   font-size: 12px !important;
   color: #94a3b8 !important;
   text-transform: uppercase !important;
@@ -1335,7 +1335,7 @@
 }
 
 .dsm-default-label {
-  font-family: 'noto-m', sans-serif !important;
+  font-family: noto-m !important;
   font-size: 14px !important;
   color: #334155 !important;
   display: flex !important;
@@ -1352,7 +1352,7 @@
   padding: 8px 12px !important;
   border: 1.5px solid #e2e8f0 !important;
   border-radius: 8px !important;
-  font-family: 'noto-r', sans-serif !important;
+  font-family: noto-r !important;
   font-size: 13.5px !important;
   color: #1e293b !important;
   outline: none !important;
@@ -1428,7 +1428,7 @@
   padding: 3px 10px !important;
   background: #f1f5f9 !important;
   border-radius: 20px !important;
-  font-family: 'noto-m', sans-serif !important;
+  font-family: noto-m !important;
   font-size: 12.5px !important;
   color: #475569 !important;
   white-space: nowrap !important;
@@ -1462,7 +1462,7 @@
 .dsm-empty {
   text-align: center;
   color: #94a3b8;
-  font-family: 'noto-r', sans-serif;
+  font-family: noto-r;
   padding: 24px;
 }
 
@@ -1481,7 +1481,7 @@
   padding: 9px 20px;
   border: none;
   border-radius: 9px;
-  font-family: 'noto-m', sans-serif;
+  font-family: noto-m;
   font-size: 13.5px;
   cursor: pointer;
   transition:

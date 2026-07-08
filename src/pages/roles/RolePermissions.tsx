@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API } from '../../api/api';
 import { useTranslation } from 'react-i18next';
 import PermissionCard from '../../components/roles/PermissionCard';
@@ -21,6 +21,7 @@ const RolePermissions = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
 
   const [permissionsState, setPermissionsState] = useState<Record<string, PermissionItem[]>>({});
 
@@ -142,11 +143,18 @@ const RolePermissions = () => {
       roleVisibility: Record<string, string[]>;
       pagePermissions: Record<string, string[]>;
     }) => {
-      await saveDashboardSettings({
+      const payload = {
         tabNames: dashboardSettings?.tabNames ?? {},
         roleVisibility: settings.roleVisibility,
         pagePermissions: settings.pagePermissions,
-      });
+      };
+      await saveDashboardSettings(payload);
+      return payload;
+    },
+    // Sync the shared dashboard-settings cache so re-opening this page reflects
+    // the saved (possibly unchecked) tabs instead of falling back to all-true.
+    onSuccess: (payload) => {
+      queryClient.setQueryData(['dashboard-settings'], payload);
     },
   });
 

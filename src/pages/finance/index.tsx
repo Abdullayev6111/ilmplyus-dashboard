@@ -587,7 +587,7 @@ const Finances = () => {
                 {transfersLoading ? (
                   <TableSkeleton rowCount={10} columnCount={9} />
                 ) : paginatedTransfers.length > 0 ? (
-                  paginatedTransfers.map((tr, idx) => {
+                  paginatedTransfers.map((tr) => {
                     const key = getTransferKey(tr);
                     const senderAcc = resolveTransferAccount(tr.source_account);
                     const receiverAcc =
@@ -613,9 +613,7 @@ const Finances = () => {
                           onChange={() => toggleOneTransfer(key)}
                         />
                       </td>
-                      <td>
-                        {String((transferPage - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, '0')}
-                      </td>
+                      <td>{tr.id}</td>
 
                       {/* Sender Account */}
                       <td>

@@ -3,7 +3,7 @@
   min-height: calc(100vh - 75px);
   margin-top: 50px !important;
   margin-left: 50px !important;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
 }
 
 .lesson-schedule-header {
@@ -263,13 +263,13 @@
 .day-name {
   color: #003366;
   font-size: 16px;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
 }
 
 .day-date {
   color: #94a3b8;
   font-size: 12px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
 }
 
 /* Schedule Card Styling */
@@ -285,7 +285,7 @@
   border-left: 4px solid #fe9100;
   width: 100%;
   min-width: 160px;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   max-height: 80px;
   overflow: hidden;
 }
@@ -305,7 +305,7 @@
   background-color: #edc391 !important;
   color: #003366 !important;
   font-weight: 700 !important;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   font-size: 12px !important;
   padding: 2px 4px !important;
   height: 24px !important;
@@ -316,7 +316,7 @@
 .modal-level-badge {
   background-color: #fe9100 !important;
   color: #fff !important;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   font-size: 12px !important;
   padding: 2px 4px !important;
   height: 24px !important;
@@ -325,7 +325,7 @@
 
 .detail-modal-title {
   color: #003366 !important;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
 }
 
 .info-item {
@@ -333,7 +333,7 @@
   align-items: center;
   gap: 4px;
   color: #475569;
-  font-family: noto-m, sans-serif;
+  font-family: noto-m;
   font-size: 14px !important;
   line-height: 1.2;
 }
@@ -366,7 +366,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
 }
 
 /* Mobile View */
@@ -383,7 +383,7 @@
 }
 
 .mobile-day-title {
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   font-size: 18px;
   color: #003366;
   border-bottom: 2px solid #e2e8f0;
@@ -409,7 +409,7 @@
   color: #fff;
   border: none;
   border-radius: 12px;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   cursor: pointer;
   transition: opacity 0.2s;
 }
@@ -432,7 +432,7 @@
   font-size: 17px;
   font-weight: 700;
   color: #ffffff;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
 }
 
 /* Monthly Calendar Grid */
@@ -472,7 +472,7 @@
   min-width: 140px;
   text-align: center;
   text-transform: capitalize;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   color: #003366;
 }
 
@@ -495,7 +495,7 @@
 .grid-header-cell {
   padding: 12px;
   text-align: center;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   color: #003366;
   font-size: 14px;
 }
@@ -527,7 +527,7 @@
 
 .cell-date {
   align-self: flex-end;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   color: #003366;
   font-size: 14px;
 }
@@ -550,7 +550,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: noto-r, sans-serif;
+  font-family: noto-r;
   border: none;
   width: 100%;
   text-align: left;
@@ -618,7 +618,7 @@
   max-height: 40px;
   border-radius: 10px;
   color: #fff;
-  font-family: noto-b, sans-serif;
+  font-family: noto-b;
   font-size: 14px;
   display: flex;
   align-items: center;

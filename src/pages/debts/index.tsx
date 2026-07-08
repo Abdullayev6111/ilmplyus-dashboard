@@ -823,9 +823,9 @@ const DebtsPage = () => {
                 {transfersLoading ? (
                   <TableSkeleton rowCount={10} columnCount={8} />
                 ) : paginatedTransfers.length > 0 ? (
-                  paginatedTransfers.map((tr, idx) => (
+                  paginatedTransfers.map((tr) => (
                     <tr key={`${tr.type}-${tr.id}`}>
-                      <td>{String((page - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, '0')}</td>
+                      <td>{tr.id}</td>
 
                       {/* Giver fund */}
                       <td>

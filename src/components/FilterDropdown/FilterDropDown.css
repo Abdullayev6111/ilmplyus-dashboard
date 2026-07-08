@@ -19,7 +19,7 @@
   color: #3f3f3f;
   font-size: 15px;
   font-weight: 500;
-  font-family: inherit;
+  font-family: noto-m;
   cursor: pointer;
   white-space: nowrap;
   position: relative;
@@ -305,8 +305,7 @@
   background: #fff5ee;
   color: #f97316;
   font-size: 13px;
-  font-weight: 600;
-  font-family: inherit;
+  font-family: noto-sb;
   cursor: pointer;
   transition:
     background 0.14s ease,
@@ -335,11 +334,13 @@
   padding: 0 10px;
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
-  font-family: inherit;
+  font-family: noto-m;
   font-size: 13px;
   color: #374151;
   background: #fff;
-  transition: border-color 0.14s ease, box-shadow 0.14s ease;
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.14s ease;
   outline: none;
 }
 

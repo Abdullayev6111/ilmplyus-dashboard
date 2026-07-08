@@ -58,7 +58,7 @@ const NotFound = () => {
       ctx.fillStyle = '#fff';
 
       words.forEach((word) => {
-        ctx.font = `${word.size}px sans-serif`;
+        ctx.font = `${word.size}px noto-sb`;
         const metrics = ctx.measureText(word.text);
 
         ctx.fillText(word.text, word.x, word.y);

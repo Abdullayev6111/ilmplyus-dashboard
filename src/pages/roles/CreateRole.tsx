@@ -24,7 +24,8 @@ const CreateRole = () => {
 
   const [roleName, setRoleName] = useState('');
   const [permissionsState, setPermissionsState] = useState<Record<string, PermissionItem[]>>({});
-  const [visibleTabs, setVisibleTabs] = useState<MainTab[]>([...ALL_TABS]);
+  // New roles start with no dashboard sections selected — the admin picks them explicitly.
+  const [visibleTabs, setVisibleTabs] = useState<MainTab[]>([]);
 
   const { data: dashboardSettings, isLoading: isLoadingDash } = useQuery({
     queryKey: ['dashboard-settings'],
@@ -94,11 +95,18 @@ const CreateRole = () => {
 
   const saveDashMutation = useMutation({
     mutationFn: async (newVis: Record<string, string[]>) => {
-      await saveDashboardSettings({
+      const payload = {
         tabNames: dashboardSettings?.tabNames ?? {},
         roleVisibility: newVis,
         pagePermissions: dashboardSettings?.pagePermissions ?? {},
-      });
+      };
+      await saveDashboardSettings(payload);
+      return payload;
+    },
+    // Keep the shared dashboard-settings cache in sync so the edit page reads
+    // the just-saved visibility instead of stale data (which reverts to all-true).
+    onSuccess: (payload) => {
+      queryClient.setQueryData(['dashboard-settings'], payload);
     },
   });
 

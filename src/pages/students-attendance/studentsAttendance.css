@@ -568,7 +568,7 @@
   border: 1px solid var(--border-color) !important;
   border-radius: 8px !important;
   text-align: center !important;
-  font-family: 'Noto Sans', sans-serif !important;
+  font-family: noto-b !important;
   font-weight: 700 !important;
   font-size: 18px !important;
 }
