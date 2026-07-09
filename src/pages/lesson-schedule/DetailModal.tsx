@@ -129,7 +129,7 @@ const DetailItem = ({ icon, label, value }: { icon: any; label: string; value: s
       <FontAwesomeIcon icon={icon} style={{ color: '#003366' }} />
     </div>
     <div>
-      <Text size="xs" color="dimmed" style={{ lineHeight: 1.2, fontFamily: 'noto-r' }}>
+      <Text size="xs" color="dimmed" style={{ lineHeight: 1.2, fontFamily: 'noto-m' }}>
         {label}
       </Text>
       <Text size="sm" fw={500} style={{ fontFamily: 'noto-m', color: '#000000' }}>

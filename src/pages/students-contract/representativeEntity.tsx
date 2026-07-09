@@ -12,11 +12,11 @@ import {
   emptyRepresentative,
 } from '../../types/studentContract.types';
 import type { Lid } from '@/types/lid.types';
-import type { Course } from '@/types/course.types';
 import type { Group } from '@/types/groups.types';
 import type { Branch } from '@/types/users.types';
 import './studentsContracts.css';
 import { API } from '@/api/api';
+import { useOptions, type OptionItem } from '@/hooks/useOptions';
 
 const formatDateForInput = (dateStr: string | null | undefined): string => {
   if (!dateStr) return '';
@@ -80,6 +80,7 @@ const OrganizationStudentCard = ({
   allLids,
   allGroups,
   allCourses,
+  allLevels,
 }: {
   student: OrganizationStudentFormData;
   index: number;
@@ -92,7 +93,8 @@ const OrganizationStudentCard = ({
   showRemove: boolean;
   allLids: Lid[];
   allGroups: Group[];
-  allCourses: Course[];
+  allCourses: OptionItem[];
+  allLevels: OptionItem[];
 }) => {
   const { t } = useTranslation();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -514,9 +516,9 @@ const OrganizationStudentCard = ({
             }}
           >
             <option value="">{t('studentsContract.select')}</option>
-            {(allCourses || []).map((c: Course) => (
+            {(allCourses || []).map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name_uz}
+                {c.label}
               </option>
             ))}
           </select>
@@ -532,12 +534,9 @@ const OrganizationStudentCard = ({
             onChange={(e) => onChange(index, 'level_id', e.target.value)}
           >
             <option value="">{t('studentsContract.select')}</option>
-            {(
-              (allCourses || []).find((c: Course) => String(c.id) === student.course_id)?.levels ||
-              []
-            ).map((l) => (
+            {(allLevels || []).map((l) => (
               <option key={l.id} value={l.id}>
-                {l.name_uz}
+                {l.label}
               </option>
             ))}
           </select>
@@ -1209,13 +1208,8 @@ const RepresentativeEntity = () => {
       ),
   });
 
-  const { data: allCourses } = useQuery({
-    queryKey: ['courses-all'],
-    queryFn: () =>
-      API.get('/courses', { params: { per_page: 1000 } }).then((res) =>
-        Array.isArray(res.data) ? res.data : res.data?.data || [],
-      ),
-  });
+  const { data: allCourses } = useOptions('courses');
+  const { data: allLevels } = useOptions('levels');
 
   const { mutate: fetchBranches, data: branchesData } = useMutation({
     mutationFn: () =>
@@ -2171,6 +2165,7 @@ const RepresentativeEntity = () => {
               allLids={allLids || []}
               allGroups={allGroups || []}
               allCourses={allCourses || []}
+              allLevels={allLevels || []}
             />
           ))}
           <button

@@ -172,7 +172,7 @@
   padding: 8px 14px 8px 34px !important;
   border: 1px solid #003366 !important;
   border-radius: 15px !important;
-  font-family: noto-r !important;
+  font-family: noto-m !important;
   font-size: 13px !important;
   width: 220px !important;
   outline: none !important;
@@ -256,7 +256,7 @@
 }
 
 .ipt-table td {
-  font-family: noto-r !important;
+  font-family: noto-m !important;
   font-size: 14px !important;
   color: #1e293b !important;
   vertical-align: middle !important;
@@ -336,7 +336,7 @@
 }
 
 .ipt-date-cell {
-  font-family: noto-r !important;
+  font-family: noto-m !important;
   color: #64748b !important;
   font-size: 13px !important;
 }
@@ -892,7 +892,7 @@
   padding: 8px 10px !important;
   border: 1px solid #003366 !important;
   border-radius: 15px !important;
-  font-family: noto-r !important;
+  font-family: noto-m !important;
   font-size: 13px !important;
   outline: none !important;
   color: #03213f !important;
@@ -986,7 +986,7 @@
   padding: 8px 12px !important;
   border: 1px solid #d9d9d9 !important;
   border-radius: 10px !important;
-  font-family: noto-r !important;
+  font-family: noto-m !important;
   font-size: 13px !important;
   color: #03213f !important;
   outline: none !important;

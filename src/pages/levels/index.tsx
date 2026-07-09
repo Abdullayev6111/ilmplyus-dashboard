@@ -1,24 +1,19 @@
-import { useState } from "react";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  keepPreviousData,
-} from "@tanstack/react-query";
-import { API } from "../../api/api";
-import "../users/users.css";
-import "./levels.css";
-import { useTranslation } from "react-i18next";
-import { getLocalized } from "../../utils/getLocalized";
-import TableSkeleton from "../../components/TableSkeleton";
-import EmptyState from "../../components/EmptyState";
-import type { Level, LevelPayload } from "../../types";
-import { Protected } from "../../components/Protected";
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { API } from '../../api/api';
+import '../users/users.css';
+import './levels.css';
+import { useTranslation } from 'react-i18next';
+import { getLocalized } from '../../utils/getLocalized';
+import TableSkeleton from '../../components/TableSkeleton';
+import EmptyState from '../../components/EmptyState';
+import type { Level, LevelPayload } from '../../types';
+import { Protected } from '../../components/Protected';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
   return `${day}.${month}.${year}`;
 };
@@ -29,30 +24,30 @@ const Levels = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<number | "all" | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [sortAsc, setSortAsc] = useState(true);
   const [editingItem, setEditingItem] = useState<Level | null>(null);
 
   const [formData, setFormData] = useState<LevelPayload>({
-    name_uz: "",
-    name_ru: "",
-    name_en: "",
+    name_uz: '',
+    name_ru: '',
+    name_en: '',
   });
 
   const { data: levels, isLoading } = useQuery<Level[]>({
-    queryKey: ["levels"],
+    queryKey: ['levels'],
     queryFn: async () => {
-      const { data } = await API.get<Level[]>("/levels");
+      const { data } = await API.get<Level[]>('/levels');
       return Array.isArray(data) ? data : (data as any)?.data || [];
     },
     placeholderData: keepPreviousData,
   });
 
   const createMutation = useMutation({
-    mutationFn: async (payload: LevelPayload) => API.post("/levels", payload),
+    mutationFn: async (payload: LevelPayload) => API.post('/levels', payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["levels"] });
+      queryClient.invalidateQueries({ queryKey: ['levels'] });
       resetForm();
     },
   });
@@ -61,7 +56,7 @@ const Levels = () => {
     mutationFn: async (params: { id: number; payload: LevelPayload }) =>
       API.put(`/levels/${params.id}`, params.payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["levels"] });
+      queryClient.invalidateQueries({ queryKey: ['levels'] });
       resetForm();
     },
   });
@@ -69,33 +64,33 @@ const Levels = () => {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => API.delete(`/levels/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["levels"] });
+      queryClient.invalidateQueries({ queryKey: ['levels'] });
     },
   });
 
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-    setFormData({ name_uz: "", name_ru: "", name_en: "" });
+    setFormData({ name_uz: '', name_ru: '', name_en: '' });
   };
 
   const openEditModal = (item: Level) => {
     setEditingItem(item);
     setFormData({
       name_uz: item.name_uz,
-      name_ru: item.name_ru || "",
-      name_en: item.name_en || "",
+      name_ru: item.name_ru || '',
+      name_en: item.name_en || '',
     });
     setShowModal(true);
   };
 
   const confirmDelete = () => {
-    if (deleteTarget === "all") {
+    if (deleteTarget === 'all') {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
     }
 
-    if (typeof deleteTarget === "number") {
+    if (typeof deleteTarget === 'number') {
       deleteMutation.mutate(deleteTarget);
       setSelected((prev) => prev.filter((x) => x !== deleteTarget));
     }
@@ -108,18 +103,16 @@ const Levels = () => {
     setSelected(checked ? (levels?.map((c) => c.id) ?? []) : []);
 
   const toggleOne = (id: number) =>
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
     <section className="users container">
-      <h1 className="main-title">{t("levels.mainTitle")}</h1>
+      <h1 className="main-title">{t('levels.mainTitle')}</h1>
 
       {showModal && (
         <div className="modal-overlay">
           <div className="expenses-subcategory">
-            <h1>{t("levels.level")}</h1>
+            <h1>{t('levels.level')}</h1>
 
             <form
               className="subcategory-form"
@@ -129,8 +122,8 @@ const Levels = () => {
                 const payload: LevelPayload = {
                   name_uz: formData.name_uz.trim(),
                   ...(editingItem && {
-                    name_ru: formData.name_ru?.trim() || "",
-                    name_en: formData.name_en?.trim() || "",
+                    name_ru: formData.name_ru?.trim() || '',
+                    name_en: formData.name_en?.trim() || '',
                   }),
                 };
 
@@ -142,13 +135,11 @@ const Levels = () => {
               }}
             >
               <div className="subcategory-form-group">
-                <label>{t("levels.levelName")} (UZ)</label>
+                <label>{t('levels.levelName')} (UZ)</label>
                 <input
                   type="text"
                   value={formData.name_uz}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name_uz: e.target.value }))
-                  }
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name_uz: e.target.value }))}
                   required
                 />
               </div>
@@ -156,7 +147,7 @@ const Levels = () => {
               {editingItem && (
                 <>
                   <div className="subcategory-form-group">
-                    <label>{t("levels.levelName")} (RU)</label>
+                    <label>{t('levels.levelName')} (RU)</label>
                     <input
                       type="text"
                       value={formData.name_ru}
@@ -167,7 +158,7 @@ const Levels = () => {
                   </div>
 
                   <div className="subcategory-form-group">
-                    <label>{t("levels.levelName")} (EN)</label>
+                    <label>{t('levels.levelName')} (EN)</label>
                     <input
                       type="text"
                       value={formData.name_en}
@@ -181,10 +172,10 @@ const Levels = () => {
 
               <div className="modal-actions">
                 <button className="primary" type="submit">
-                  {t("payments.save")}
+                  {t('payments.save')}
                 </button>
                 <button type="button" className="cancel" onClick={resetForm}>
-                  {t("payments.cancel")}
+                  {t('payments.cancel')}
                 </button>
               </div>
             </form>
@@ -195,18 +186,15 @@ const Levels = () => {
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal small">
-            <h3>{t("users.confirmDelete")}</h3>
+            <h3>{t('users.confirmDelete')}</h3>
 
             <div className="modal-actions">
               <button className="danger" onClick={confirmDelete}>
-                {t("users.delete")}
+                {t('users.delete')}
               </button>
 
-              <button
-                className="cancel"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                {t("users.cancel")}
+              <button className="cancel" onClick={() => setShowDeleteModal(false)}>
+                {t('users.cancel')}
               </button>
             </div>
           </div>
@@ -216,7 +204,7 @@ const Levels = () => {
       <div className="users-filters">
         <Protected permission="levels.create">
           <button className="add-new-user" onClick={() => setShowModal(true)}>
-            {t("users.addNew")}
+            {t('users.addNew')}
           </button>
         </Protected>
 
@@ -225,11 +213,11 @@ const Levels = () => {
             className="delete-all"
             disabled={!selected.length}
             onClick={() => {
-              setDeleteTarget("all");
+              setDeleteTarget('all');
               setShowDeleteModal(true);
             }}
           >
-            {t("users.delete")}
+            {t('users.delete')}
           </button>
         </Protected>
       </div>
@@ -241,17 +229,16 @@ const Levels = () => {
               <th>
                 <input
                   type="checkbox"
-                  checked={
-                    selected.length === (levels?.length ?? 0) &&
-                    (levels?.length ?? 0) > 0
-                  }
+                  checked={selected.length === (levels?.length ?? 0) && (levels?.length ?? 0) > 0}
                   onChange={(e) => toggleAll(e.target.checked)}
                 />
               </th>
-              <th className="th-sortable" onClick={() => setSortAsc(p => !p)}>ID {sortAsc ? '↑' : '↓'}</th>
-              <th>{t("levels.levelName")}</th>
-              <th>{t("levels.createdDate")}</th>
-              <th>{t("levels.actions")}</th>
+              <th className="th-sortable" onClick={() => setSortAsc((p) => !p)}>
+                ID {sortAsc ? '↑' : '↓'}
+              </th>
+              <th>{t('levels.levelName')}</th>
+              <th>{t('levels.createdDate')}</th>
+              <th>{t('levels.actions')}</th>
             </tr>
           </thead>
 
@@ -259,44 +246,43 @@ const Levels = () => {
             {isLoading ? (
               <TableSkeleton rowCount={8} columnCount={5} />
             ) : levels && levels.length > 0 ? (
-              [...(levels || [])].sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id).map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(item.id)}
-                      onChange={() => toggleOne(item.id)}
-                    />
-                  </td>
-                  <td>{item.id}</td>
-                  <td>{getLocalized(item, 'name', i18n.language)}</td>
-                  <td>{item.created_at ? formatDate(item.created_at) : "-"}</td>
-                  <td className="actions">
-                    <Protected permission="levels.edit">
-                      <button
-                        className="user-edit-btn"
-                        onClick={() => openEditModal(item)}
-                      >
-                        <i className="fa-solid fa-pen"></i>
-                      </button>
-                    </Protected>
+              [...(levels || [])]
+                .sort((a, b) => (sortAsc ? a.id - b.id : b.id - a.id))
+                .map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(item.id)}
+                        onChange={() => toggleOne(item.id)}
+                      />
+                    </td>
+                    <td>{item.id}</td>
+                    <td>{getLocalized(item, 'name', i18n.language)}</td>
+                    <td>{item.created_at ? formatDate(item.created_at) : '-'}</td>
+                    <td className="actions">
+                      <Protected permission="levels.edit">
+                        <button className="user-edit-btn" onClick={() => openEditModal(item)}>
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+                      </Protected>
 
-                    <Protected permission="levels.delete">
-                      <button
-                        className="user-delete-btn"
-                        onClick={() => {
-                          setDeleteTarget(item.id);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
-                    </Protected>
-                  </td>
-                </tr>
-              ))
+                      <Protected permission="levels.delete">
+                        <button
+                          className="user-delete-btn"
+                          onClick={() => {
+                            setDeleteTarget(item.id);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </Protected>
+                    </td>
+                  </tr>
+                ))
             ) : (
-              <EmptyState colSpan={5} message={t("levels.notFound")} />
+              <EmptyState colSpan={5} message={t('levels.notFound')} />
             )}
           </tbody>
         </table>

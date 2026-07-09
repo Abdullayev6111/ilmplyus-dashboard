@@ -7,6 +7,7 @@ import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import { getLocalized } from '../../utils/getLocalized';
 import { Protected } from '../../components/Protected';
+import { useOptions } from '../../hooks/useOptions';
 
 interface TestCourse {
   id: number;
@@ -102,32 +103,9 @@ const Questions = () => {
     placeholderData: keepPreviousData,
   });
 
-  const { data: coursesData } = useQuery<TestCourse[]>({
-    queryKey: ['courses'],
-    queryFn: async () => {
-      const { data } = await API.get('/courses');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-    staleTime: 1000 * 60 * 10,
-  });
-
-  const { data: levelsData } = useQuery<TestLevel[]>({
-    queryKey: ['levels'],
-    queryFn: async () => {
-      const { data } = await API.get('/levels');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-    staleTime: 1000 * 60 * 10,
-  });
-
-  const { data: branchesData } = useQuery<TestBranch[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get('/branches');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-    staleTime: 1000 * 60 * 10,
-  });
+  const { data: coursesData } = useOptions('courses');
+  const { data: levelsData } = useOptions('levels');
+  const { data: branchesData } = useOptions('branches');
 
   const courses = coursesData || [];
   const levels = levelsData || [];
@@ -249,7 +227,7 @@ const Questions = () => {
                   <option value="">{t('questions.modal.selectPlaceholder')}</option>
                   {courses.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {getLocalized(c, 'name', i18n.language)}
+                      {c.label}
                     </option>
                   ))}
                 </select>
@@ -266,7 +244,7 @@ const Questions = () => {
                   <option value="">{t('questions.modal.selectPlaceholder')}</option>
                   {levels.map((l) => (
                     <option key={l.id} value={l.id}>
-                      {getLocalized(l, 'name', i18n.language)}
+                      {l.label}
                     </option>
                   ))}
                 </select>
@@ -283,7 +261,7 @@ const Questions = () => {
                   <option value="">{t('questions.modal.selectPlaceholder')}</option>
                   {branches.map((b) => (
                     <option key={b.id} value={b.id}>
-                      {getLocalized(b, 'name', i18n.language)}
+                      {b.label}
                     </option>
                   ))}
                 </select>

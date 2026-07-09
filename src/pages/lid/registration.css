@@ -50,7 +50,7 @@
   outline: none !important;
   box-shadow: none !important;
   font-size: 15px !important;
-  font-family: noto-r !important;
+  font-family: noto-m !important;
   color: #1a1a1a !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -128,7 +128,7 @@
 
 .db-select__label {
   font-size: 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   color: #6b7280;
 }
 
@@ -139,7 +139,7 @@
   border-radius: 8px;
   background: #fff;
   font-size: 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   color: #374151;
   cursor: pointer;
   outline: none;
@@ -186,7 +186,7 @@
   padding: 14px 20px !important;
   text-align: center !important;
   border-bottom: 1px solid #f9fafb !important;
-  font-family: noto-r !important;
+  font-family: noto-m !important;
   color: #374151 !important;
   vertical-align: middle !important;
   overflow: visible !important;
@@ -426,7 +426,7 @@
 
 .db-empty-state__inner span {
   font-size: 13px;
-  font-family: noto-r;
+  font-family: noto-m;
   color: #9ca3af;
 }
 
@@ -444,7 +444,7 @@
 
 .db-pagination__info {
   font-size: 13px;
-  font-family: noto-r;
+  font-family: noto-m;
   color: #9ca3af;
 }
 
@@ -463,7 +463,7 @@
   background: #fff;
   color: #374151;
   font-size: 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   cursor: pointer;
   display: flex;
   align-items: center;

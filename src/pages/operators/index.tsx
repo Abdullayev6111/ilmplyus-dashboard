@@ -8,8 +8,9 @@ import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import { useTableSettingsStore } from '../../store/useTableSettingsStore';
-import type { Branch, UsersResponse } from '../../types';
+import type { UsersResponse } from '../../types';
 import { Protected } from '../../components/Protected';
+import { useOptions } from '../../hooks/useOptions';
 
 export interface IpTelefonOperator {
   id: number;
@@ -83,15 +84,7 @@ const Operators = () => {
     placeholderData: keepPreviousData,
   });
 
-  const { data: branchesData } = useQuery<Branch[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get('/branches');
-      return Array.isArray(data) ? data : (data as any)?.data || [];
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
+  const { data: branchesData } = useOptions('branches');
 
   const { data: usersData } = useQuery<UsersResponse>({
     queryKey: ['users'],
@@ -251,7 +244,7 @@ const Operators = () => {
                   <option value="">{t('common.choose', 'Tanlang')}</option>
                   {branchesData?.map((b) => (
                     <option key={b.id} value={b.id}>
-                      {getLocalized(b, 'name', i18n.language)}
+                      {b.label}
                     </option>
                   ))}
                 </select>

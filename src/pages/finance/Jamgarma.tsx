@@ -8,6 +8,7 @@ import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import { Protected } from '../../components/Protected';
 import type { Branch } from '../../types';
+import { useOptions } from '../../hooks/useOptions';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -15,16 +16,6 @@ interface Withdrawer {
   id: number;
   full_name: string;
   username?: string;
-}
-
-interface ChartOfAccount {
-  id: number;
-  account_number: string;
-  account_type: string;
-  account_type_name?: string;
-  balance: number;
-  branch_id?: number;
-  branch?: { id: number };
 }
 
 interface Jamgarma {
@@ -180,34 +171,10 @@ const JamgarmaPage = () => {
     placeholderData: keepPreviousData,
   });
 
-  const { data: branches = [] } = useQuery<Branch[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get('/branches');
-      return Array.isArray(data) ? data : (data?.data ?? []);
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const { data: users = [] } = useQuery<Withdrawer[]>({
-    queryKey: ['users'],
-    queryFn: async () => {
-      const { data } = await API.get('/users');
-      return Array.isArray(data) ? data : (data?.data ?? []);
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const { data: chartAccounts = [] } = useQuery<ChartOfAccount[]>({
-    queryKey: ['chart-of-accounts'],
-    queryFn: async () => {
-      const { data } = await API.get('/chart-of-accounts');
-      return Array.isArray(data) ? data : (data?.data ?? []);
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
+  const { data: branches = [] } = useOptions('branches');
+  const { data: users = [] } = useOptions('users');
+  const { data: filteredChartAccounts = [] } = useOptions('chart-of-accounts', {
+    branch_id: form.branch_id,
   });
 
   // ─── Mutations ────────────────────────────────────────────────────────────
@@ -451,12 +418,6 @@ const JamgarmaPage = () => {
   const availableWithdrawers = users.filter((u) => !selectedWithdrawerIds.includes(u.id));
   const selectedWithdrawerUsers = users.filter((u) => selectedWithdrawerIds.includes(u.id));
 
-  const filteredChartAccounts = form.branch_id
-    ? chartAccounts.filter(
-        (a) => a.branch?.id === Number(form.branch_id) || a.branch_id === Number(form.branch_id),
-      )
-    : chartAccounts;
-
   const displayCashBalance = editingItem?.cash_balance ?? 0;
   const displayNonCashBalance = editingItem?.non_cash_balance ?? 0;
   const displayTotalBalance = displayCashBalance + displayNonCashBalance;
@@ -509,7 +470,7 @@ const JamgarmaPage = () => {
                 <option value="">{t('jamgarma.choose')}</option>
                 {branches.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {getBranchLabel(b)}
+                    {b.label}
                   </option>
                 ))}
               </select>
@@ -525,7 +486,7 @@ const JamgarmaPage = () => {
                     <div key={u.id} className="fin-withdrawer-user-card">
                       <div className="fin-withdrawer-user-card-name-group">
                         <i className="fa-solid fa-check fin-check-icon" />
-                        <span className="fin-withdrawer-user-card-name">{u.full_name}</span>
+                        <span className="fin-withdrawer-user-card-name">{u.label}</span>
                       </div>
                       <label className="fin-withdrawer-type-inline">
                         <span className="fin-withdrawer-type-label">
@@ -573,7 +534,7 @@ const JamgarmaPage = () => {
                 <option value="">{t('jamgarma.choose')}</option>
                 {availableWithdrawers.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {u.full_name}
+                    {u.label}
                   </option>
                 ))}
               </select>
@@ -591,7 +552,7 @@ const JamgarmaPage = () => {
                 </option>
                 {filteredChartAccounts.map((a) => (
                   <option key={a.id} value={a.id}>
-                    {a.account_number} {a.account_type_name ? `(${a.account_type_name})` : ''}
+                    {a.label}
                   </option>
                 ))}
               </select>

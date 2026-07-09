@@ -7,13 +7,7 @@ import { useTranslation } from "react-i18next";
 import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
-
-interface Region {
-  id: number;
-  name_uz: string;
-  name_ru?: string;
-  name_en?: string;
-}
+import { useOptions } from "../../hooks/useOptions";
 
 interface District {
   id: number;
@@ -35,10 +29,7 @@ const AreaDistricts = () => {
   const [districtName, setDistrictName] = useState("");
   const [editingItem, setEditingItem] = useState<District | null>(null);
 
-  const { data: regions } = useQuery<Region[]>({
-    queryKey: ["regions"],
-    queryFn: async () => (await API.get("/regions")).data,
-  });
+  const { data: regions } = useOptions("regions");
 
   const { data: districts, isLoading } = useQuery<District[]>({
     queryKey: ["districts", selectedRegionId],
@@ -221,7 +212,7 @@ const AreaDistricts = () => {
             <option value="">{t("aside.regions")}</option>
             {regions?.map((r) => (
               <option key={r.id} value={r.id}>
-                {getLocalized(r, 'name', i18n.language)}
+                {r.label}
               </option>
             ))}
           </select>

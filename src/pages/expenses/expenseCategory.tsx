@@ -9,6 +9,7 @@ import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import { getLocalized } from '../../utils/getLocalized';
 import { Protected } from '../../components/Protected';
+import { useOptions } from '../../hooks/useOptions';
 
 interface Jamgarma {
   id: number;
@@ -70,13 +71,7 @@ const ExpensesCategory = () => {
   const [formData, setFormData] = useState<FormData>(emptyForm);
   const [jamgarmaDropdown, setJamgarmaDropdown] = useState('');
 
-  const { data: jamgarmas } = useQuery<Jamgarma[]>({
-    queryKey: ['jamgarmas'],
-    queryFn: async () => {
-      const { data } = await API.get('/jamgarmas');
-      return data.data ?? data;
-    },
-  });
+  const { data: jamgarmas } = useOptions('jamgarmas');
 
   const { data: categories, isLoading } = useQuery<ExpenseCategory[]>({
     queryKey: ['expense-categories'],
@@ -195,7 +190,7 @@ const ExpensesCategory = () => {
                   {selectedJamgarmas.map((j) => (
                     <div key={j.id} className="fin-signatory-chip">
                       <i className="fa-solid fa-check fin-check-icon" />
-                      <span>{getJamgarmaName(j)}</span>
+                      <span>{j.label}</span>
                       <button
                         className="fin-signatory-remove"
                         onClick={() => removeFormJamgarma(j.id)}
@@ -226,7 +221,7 @@ const ExpensesCategory = () => {
                   <option value="">{t('expenses.chooseFund')}</option>
                   {availableJamgarmas.map((j) => (
                     <option key={j.id} value={j.id}>
-                      {getJamgarmaName(j)}
+                      {j.label}
                     </option>
                   ))}
                 </select>

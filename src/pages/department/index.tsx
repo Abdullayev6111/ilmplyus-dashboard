@@ -5,16 +5,12 @@ import { getLocalized } from '../../utils/getLocalized';
 import EmptyState from '../../components/EmptyState';
 import TableSkeleton from '../../components/TableSkeleton';
 import '../branches/branches.css';
-import type { Branch, DepartmentType, DepartmentPayload } from '../../types';
+import type { DepartmentType, DepartmentPayload } from '../../types';
 import { useEffect, useMemo, useState } from 'react';
 import { Protected } from '../../components/Protected';
+import { useOptions, type OptionItem } from '../../hooks/useOptions';
 
 // --- API FUNCTIONS ---
-const getBranches = async (): Promise<Branch[]> => {
-  const { data } = await API.get('/branches');
-  return data;
-};
-
 const getDepartments = async (): Promise<DepartmentType[]> => {
   const { data } = await API.get('/departments');
   return data;
@@ -42,7 +38,7 @@ interface DepartmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (payload: DepartmentPayload, id?: number) => void;
-  branches: Branch[];
+  branches: OptionItem[];
   initialData?: DepartmentType | null;
 }
 
@@ -53,7 +49,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
   branches,
   initialData,
 }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [nameUz, setNameUz] = useState('');
   const [nameRu, setNameRu] = useState('');
   const [nameEn, setNameEn] = useState('');
@@ -209,7 +205,7 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
               </option>
               {branches?.map((b) => (
                 <option key={b.id} value={b.id}>
-                  {getLocalized(b, 'name', i18n.language)}
+                  {b.label}
                 </option>
               ))}
             </select>
@@ -275,12 +271,7 @@ const Department = () => {
     placeholderData: keepPreviousData,
   });
 
-  const { data: branches = [] } = useQuery<Branch[]>({
-    queryKey: ['branches'],
-    queryFn: getBranches,
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
+  const { data: branches = [] } = useOptions('branches');
 
   const createMutation = useMutation({
     mutationFn: createDepartment,

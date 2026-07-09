@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { API } from '../../api/api';
 import '../users/users.css';
 import type { Employee, EmployeePayload } from '../../types/employee.types';
-import type { Branch } from '../../types/common.types';
+import { useOptions, type OptionItem } from '../../hooks/useOptions';
 import { useCreateMutation, useDeleteMutation } from '../../hooks/useMutations';
 import { useMutation } from '@tanstack/react-query';
 
@@ -75,7 +75,7 @@ function DeleteModal({ employeeName, onConfirm, onCancel, loading }: DeleteModal
 
 interface EmployeeModalProps {
   initial: EmployeePayload & { id?: number; photo_url?: string };
-  branches: Branch[];
+  branches: OptionItem[];
   onClose: () => void;
   onSave: (payload: EmployeePayload, id?: number, photoFile?: File | null) => void;
   loading: boolean;
@@ -277,7 +277,7 @@ function EmployeeModal({ initial, branches, onClose, onSave, loading }: Employee
                 <option value="">{t('employees.selectBranch')}</option>
                 {branches.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {b.name_uz}
+                    {b.label}
                   </option>
                 ))}
               </select>
@@ -656,14 +656,7 @@ export default function Employees() {
     },
   });
 
-  const { data: branches = [] } = useQuery<Branch[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get('/branches');
-      return Array.isArray(data) ? data : (data?.data ?? []);
-    },
-    staleTime: 1000 * 60 * 30,
-  });
+  const { data: branches = [] } = useOptions('branches');
 
   const list = useMemo(() => {
     const all = data ?? [];

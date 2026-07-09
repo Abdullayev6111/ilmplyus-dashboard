@@ -72,7 +72,7 @@
   border: none;
   outline: none;
   font-size: 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   color: #000000;
   background: transparent;
   width: 100%;
@@ -171,7 +171,7 @@
 .dl-table td {
   padding: 13px 18px;
   font-size: 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   color: #000000;
   text-align: center;
   overflow: visible;
@@ -713,7 +713,7 @@
 .dl-att-table td {
   padding: 13px 18px;
   font-size: 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   color: #000000;
 }
 

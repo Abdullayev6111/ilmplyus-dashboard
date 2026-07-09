@@ -3,7 +3,7 @@
   min-height: calc(100vh - 75px);
   margin-top: 50px !important;
   margin-left: 50px !important;
-  font-family: noto-r;
+  font-family: noto-m;
 }
 
 .lesson-schedule-header {
@@ -138,7 +138,7 @@
   border: 1px solid #e2e8f0;
   background: #fff;
   outline: none;
-  font-family: noto-r;
+  font-family: noto-m;
   transition: border-color 0.2s;
 }
 
@@ -269,7 +269,7 @@
 .day-date {
   color: #94a3b8;
   font-size: 12px;
-  font-family: noto-r;
+  font-family: noto-m;
 }
 
 /* Schedule Card Styling */
@@ -285,7 +285,7 @@
   border-left: 4px solid #fe9100;
   width: 100%;
   min-width: 160px;
-  font-family: noto-r;
+  font-family: noto-m;
   max-height: 80px;
   overflow: hidden;
 }
@@ -366,7 +366,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: noto-r;
+  font-family: noto-m;
 }
 
 /* Mobile View */
@@ -550,7 +550,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: noto-r;
+  font-family: noto-m;
   border: none;
   width: 100%;
   text-align: left;

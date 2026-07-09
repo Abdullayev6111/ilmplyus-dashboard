@@ -7,10 +7,10 @@ import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import WorkScheduleModal from '../../components/WorkScheduleModal';
-import type { User, UsersResponse, Branch, Role } from '../../types';
-import type { DepartmentType } from '../../types/department.types';
+import type { User, UsersResponse } from '../../types';
 import { useTableSettingsStore } from '../../store/useTableSettingsStore';
 import { Protected } from '../../components/Protected';
+import { useOptions } from '../../hooks/useOptions';
 
 const genPassword = () =>
   Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4);
@@ -211,37 +211,9 @@ const Users = () => {
     },
   });
 
-  const { data: branchesData } = useQuery<Branch[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get('/branches');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-  });
-
-  // const { data: positionsData } = useQuery<Position[]>({
-  //   queryKey: ['positions'],
-  //   queryFn: async () => {
-  //     const { data } = await API.get('/positions');
-  //     return Array.isArray(data) ? data : data?.data || [];
-  //   },
-  // });
-
-  const { data: rolesData } = useQuery<Role[]>({
-    queryKey: ['roles'],
-    queryFn: async () => {
-      const { data } = await API.get('/roles');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-  });
-
-  const { data: departmentsData } = useQuery<DepartmentType[]>({
-    queryKey: ['departments'],
-    queryFn: async () => {
-      const { data } = await API.get('/departments');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-  });
+  const { data: rolesData } = useOptions('roles');
+  const { data: branchesData } = useOptions('branches');
+  const { data: departmentsData } = useOptions('departments');
 
   const roles = rolesData || [];
   const branches = branchesData || [];
@@ -542,7 +514,7 @@ const Users = () => {
                       const r = roles.find((r) => r.id.toString() === roleId);
                       return (
                         <div key={roleId} className="selected-item">
-                          {r?.name || roleId}
+                          {r?.label || roleId}
                           <button onClick={() => removeRole(roleId)}>×</button>
                         </div>
                       );
@@ -560,7 +532,7 @@ const Users = () => {
                     <option value="">{t('users.choose')}</option>
                     {roles?.map((r) => (
                       <option key={r.id} value={r.id}>
-                        {r.name}
+                        {r.label}
                       </option>
                     ))}
                   </select>
@@ -573,7 +545,7 @@ const Users = () => {
                       const branch = branches.find((b) => b.id.toString() === branchId);
                       return (
                         <div key={branchId} className="selected-item">
-                          {branch ? getLocalized(branch, 'name', i18n.language) : branchId}
+                          {branch?.label ?? branchId}
                           <button type="button" onClick={() => removeBranch(branchId)}>
                             ×
                           </button>
@@ -593,7 +565,7 @@ const Users = () => {
                     <option value="">{t('users.choose')}</option>
                     {branches?.map((branch) => (
                       <option key={branch.id} value={branch.id}>
-                        {getLocalized(branch, 'name', i18n.language)}
+                        {branch.label}
                       </option>
                     ))}
                   </select>
@@ -606,7 +578,7 @@ const Users = () => {
                       const dept = departments.find((d) => d.id.toString() === deptId);
                       return (
                         <div key={deptId} className="selected-item">
-                          {dept ? getLocalized(dept, 'name', i18n.language) : deptId}
+                          {dept?.label ?? deptId}
                           <button type="button" onClick={() => removeDepartment(deptId)}>
                             ×
                           </button>
@@ -626,7 +598,7 @@ const Users = () => {
                     <option value="">{t('users.choose')}</option>
                     {departments?.map((dept) => (
                       <option key={dept.id} value={dept.id}>
-                        {getLocalized(dept, 'name', i18n.language)}
+                        {dept.label}
                       </option>
                     ))}
                   </select>
@@ -734,8 +706,8 @@ const Users = () => {
         <select onChange={(e) => setRole(e.target.value)}>
           <option value="">{t('users.employeeType')}</option>
           {roles?.map((r) => (
-            <option key={r.id} value={r.name}>
-              {r.name}
+            <option key={r.id} value={r.label}>
+              {r.label}
             </option>
           ))}
         </select>

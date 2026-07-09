@@ -4,7 +4,8 @@ import { notifications } from '@mantine/notifications';
 import { useTranslation } from 'react-i18next';
 import { API } from '@/api/api';
 import { getLocalized } from '@/utils/getLocalized';
-import type { Group, Room, Teacher as Employee } from '@/types/groups.types';
+import type { Group } from '@/types/groups.types';
+import { useOptions, type OptionItem } from '@/hooks/useOptions';
 import type { DemoLesson, CreateDemoLessonPayload } from '@/types/demoLesson.types';
 import type { Lid } from '@/types/lid.types';
 import {
@@ -442,7 +443,7 @@ function RoomSelect({
 }: {
   value: string;
   onChange: (v: string) => void;
-  rooms: Room[];
+  rooms: OptionItem[];
   groups: Group[];
   formDate: string;
   startTime: string;
@@ -467,7 +468,7 @@ function RoomSelect({
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const roomName = (r: Room) => r.name || r.name || String(r.id);
+  const roomName = (r: OptionItem) => r.label || String(r.id);
 
   return (
     <div className="dl-select-wrap" ref={ref}>
@@ -761,23 +762,8 @@ const DemoLessonPage = () => {
     [rawGroups],
   );
 
-  const { data: rawRooms } = useQuery<Room[] | { data: Room[] }>({
-    queryKey: ['rooms'],
-    queryFn: () => API.get('/rooms').then((r) => r.data),
-    staleTime: 1000 * 60 * 5,
-  });
-  const rooms: Room[] = Array.isArray(rawRooms)
-    ? rawRooms
-    : ((rawRooms as { data: Room[] })?.data ?? []);
-
-  const { data: rawEmployees } = useQuery<Employee[] | { data: Employee[] }>({
-    queryKey: ['employees'],
-    queryFn: () => API.get('/employees').then((r) => r.data),
-    staleTime: 1000 * 60 * 5,
-  });
-  const employees: Employee[] = Array.isArray(rawEmployees)
-    ? rawEmployees
-    : ((rawEmployees as { data: Employee[] })?.data ?? []);
+  const { data: rooms = [] } = useOptions('rooms');
+  const { data: employees = [] } = useOptions('teachers');
 
   const { data: rawLids } = useQuery<Lid[]>({
     queryKey: ['lids', 1, 1000],
@@ -828,7 +814,7 @@ const DemoLessonPage = () => {
 
   const employeeOptions = employees.map((e) => ({
     value: String(e.id),
-    label: `${e.first_name} ${e.last_name}`,
+    label: e.label,
   }));
 
   const isSaving = create.isPending || update.isPending;

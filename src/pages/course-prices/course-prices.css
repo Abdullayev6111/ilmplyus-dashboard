@@ -60,3 +60,33 @@
   padding: 0 4px;
   user-select: none;
 }
+
+/* Izoh maydoni: inputlar/selectlar bilan bir xil ko'rinishda */
+.add-payment-modal .form-group textarea {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #003366;
+  font-family: noto-m;
+  outline: none;
+  resize: vertical;
+  min-height: 96px;
+  transition: all 0.2s ease;
+}
+
+.add-payment-modal .form-group textarea:focus {
+  border-color: #003366;
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+}
+
+.add-payment-modal .form-group textarea::placeholder {
+  color: #9aa9b8;
+}
+
+.add-payment-modal .form-group textarea:disabled {
+  background: #f7f9fb;
+  color: #7a8fa6;
+  cursor: not-allowed;
+}

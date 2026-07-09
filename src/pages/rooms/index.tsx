@@ -4,16 +4,11 @@ import { API } from "../../api/api";
 import "../users/users.css";
 import "../expenses/expenses.css";
 import { useTranslation } from "react-i18next";
-import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import { useTableSettingsStore } from "../../store/useTableSettingsStore";
 import { Protected } from "../../components/Protected";
-
-interface Branch {
-  id: number;
-  name: string;
-}
+import { useOptions } from "../../hooks/useOptions";
 
 interface Room {
   id: number;
@@ -32,7 +27,7 @@ interface RoomFormData {
 }
 
 const Rooms = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { settings } = useTableSettingsStore();
@@ -65,13 +60,7 @@ const Rooms = () => {
     return (rooms || []).slice().sort((a, b) => sortAsc ? a.id - b.id : b.id - a.id);
   }, [rooms, sortAsc]);
 
-  const { data: branches } = useQuery<Branch[]>({
-    queryKey: ["branches"],
-    queryFn: async () => {
-      const { data } = await API.get("/branches");
-      return data;
-    },
-  });
+  const { data: branches } = useOptions("branches");
 
   const createMutation = useMutation({
     mutationFn: async () =>
@@ -191,7 +180,7 @@ const Rooms = () => {
                   <option value="">{t("rooms.choose")}</option>
                   {branches?.map((b) => (
                     <option key={b.id} value={b.id}>
-                      {getLocalized(b, "name", i18n.language)}
+                      {b.label}
                     </option>
                   ))}
                 </select>

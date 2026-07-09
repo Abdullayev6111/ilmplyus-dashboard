@@ -12,17 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
-import type { Payment, PaymentPayload, Branch, Employee, Course, Group } from '../../types';
-import { studentAPI, type Student } from '../../api/student.api';
+import type { Payment, PaymentPayload } from '../../types';
 import { Protected } from '../../components/Protected';
+import { useOptions, type OptionItem } from '../../hooks/useOptions';
 
 interface Commission {
   payment_method: string;
-}
-
-interface AppUser {
-  id: number;
-  full_name: string;
 }
 
 const KNOWN_PAYMENT_METHODS = ['cash', 'card', 'bank', 'click', 'paynet'];
@@ -63,80 +58,29 @@ const Payments = () => {
     placeholderData: keepPreviousData,
   });
 
-  const { data: branchesData } = useQuery<Branch[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get('/branches');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const { data: employeesData } = useQuery<Employee[]>({
-    queryKey: ['employees'],
-    queryFn: async () => {
-      const { data } = await API.get('/employees');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const { data: usersData } = useQuery<AppUser[]>({
-    queryKey: ['payment-cashiers'],
-    queryFn: async () => {
-      const { data } = await API.get('/users');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const { data: coursesData } = useQuery<Course[]>({
-    queryKey: ['courses'],
-    queryFn: async () => {
-      const { data } = await API.get('/courses');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const { data: groupsData } = useQuery<Group[]>({
-    queryKey: ['groups'],
-    queryFn: async () => {
-      const { data } = await API.get('/groups');
-      return Array.isArray(data) ? data : data?.data || [];
-    },
-    staleTime: 1000 * 60 * 10,
-    placeholderData: keepPreviousData,
-  });
-
-  const { data: studentsData } = useQuery<Student[]>({
-    queryKey: ['students'],
-    queryFn: studentAPI.getAll,
-    staleTime: 1000 * 60 * 10,
-    placeholderData: keepPreviousData,
-  });
+  const { data: branchesData } = useOptions('branches');
+  const { data: employeesData } = useOptions('teachers');
+  const { data: usersData } = useOptions('users');
+  const { data: coursesData } = useOptions('courses');
+  const { data: studentsData } = useOptions('students');
 
   const selectedStudent = studentsData?.find((s) => String(s.id) === formData.student_id);
 
-  const groupOptions = !editingPayment
-    ? (selectedStudent?.groups ?? [])
-    : (groupsData ?? []);
+  // Guruhlar o'quvchining filiali bo'yicha filtrlanadi; tahrirlashda barchasi ko'rinadi.
+  const groupBranchId = editingPayment ? undefined : (selectedStudent?.branch_id as number | undefined);
+  const { data: groupsData } = useOptions('groups', { branch_id: groupBranchId });
+  const groupOptions = groupsData ?? [];
 
-  const applyStudentSelection = (student: Student) => {
-    const singleGroup = student.groups.length === 1 ? student.groups[0] : undefined;
+  const applyStudentSelection = (student: OptionItem) => {
     setFormData((prev) => ({
       ...prev,
       student_id: String(student.id),
-      student_code: student.student_code,
-      branch_id: String(student.branch_id),
-      payment_type: String(student.branch_id) === prev.branch_id ? prev.payment_type : '',
-      group_id: singleGroup ? String(singleGroup.id) : '',
-      course_id: singleGroup ? String(singleGroup.course_id) : '',
-      teacher_id: singleGroup ? String(singleGroup.teacher_id) : '',
+      student_code: String(student.student_code ?? ''),
+      branch_id: String(student.branch_id ?? ''),
+      payment_type: String(student.branch_id ?? '') === prev.branch_id ? prev.payment_type : '',
+      group_id: '',
+      course_id: '',
+      teacher_id: '',
     }));
   };
 
@@ -291,15 +235,15 @@ const Payments = () => {
 
     const selectedCourse = coursesData?.find((c) => c.id === Number(formData.course_id));
     const selectedTeacher = employeesData?.find((e) => e.id === Number(formData.teacher_id));
-    const selectedGroup = groupsData?.find((g) => g.id === Number(formData.group_id));
+    const selectedGroup = groupOptions.find((g) => g.id === Number(formData.group_id));
 
     const payload: PaymentPayload = {
-      full_name: selectedStudent?.full_name || editingPayment?.student?.full_name || '',
+      full_name: selectedStudent?.label || editingPayment?.student?.full_name || '',
       amount: Number(formData.amount),
       payment_method: formData.payment_type,
-      course: selectedCourse ? getLocalized(selectedCourse, 'name', i18n.language) : '',
-      group: selectedGroup?.name || '',
-      teacher: selectedTeacher?.full_name || '',
+      course: selectedCourse?.label ?? '',
+      group: selectedGroup?.label ?? '',
+      teacher: selectedTeacher?.label ?? '',
       course_id: Number(formData.course_id),
       branch_id: Number(formData.branch_id),
       user_id: Number(formData.cashier_id),
@@ -399,7 +343,7 @@ const Payments = () => {
                     <option value="">{t('payments.choose')}</option>
                     {studentsData?.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.full_name}
+                        {s.label}
                       </option>
                     ))}
                   </select>
@@ -442,7 +386,7 @@ const Payments = () => {
                     <option value="">{t('payments.choose')}</option>
                     {usersData?.map((u) => (
                       <option key={u.id} value={u.id}>
-                        {u.full_name}
+                        {u.label}
                       </option>
                     ))}
                   </select>
@@ -461,7 +405,7 @@ const Payments = () => {
                     <option value="">{t('payments.choose')}</option>
                     {branchesData?.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {getLocalized(b, 'name', i18n.language) || b.name_uz || '-'}
+                        {b.label}
                       </option>
                     ))}
                   </select>
@@ -476,7 +420,7 @@ const Payments = () => {
                     <option value="">{t('payments.choose')}</option>
                     {coursesData?.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {getLocalized(c, 'name', i18n.language)}
+                        {c.label}
                       </option>
                     ))}
                   </select>
@@ -507,7 +451,7 @@ const Payments = () => {
                     </option>
                     {groupOptions.map((g) => (
                       <option key={g.id} value={g.id}>
-                        {g.name}
+                        {g.label}
                       </option>
                     ))}
                   </select>
@@ -522,7 +466,7 @@ const Payments = () => {
                     <option value="">{t('payments.choose')}</option>
                     {employeesData?.map((e) => (
                       <option key={e.id} value={e.id}>
-                        {e.full_name}
+                        {e.label}
                       </option>
                     ))}
                   </select>

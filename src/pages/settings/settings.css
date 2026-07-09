@@ -107,7 +107,7 @@
 }
 
 .settings-content-header p {
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 14px;
   color: #666;
 }
@@ -129,7 +129,7 @@
   background: rgba(0, 51, 102, 0.04);
   border-radius: 8px;
   color: #666;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 13px;
 }
 
@@ -237,7 +237,7 @@
   transition: background 0.2s;
 }
 
-.settings-checkbox-label input[type="checkbox"] {
+.settings-checkbox-label input[type='checkbox'] {
   display: none;
 }
 
@@ -254,12 +254,12 @@
   transition: all 0.2s;
 }
 
-.settings-checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+.settings-checkbox-label input[type='checkbox']:checked + .checkbox-custom {
   background-color: #003366;
 }
 
-.settings-checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
-  content: "";
+.settings-checkbox-label input[type='checkbox']:checked + .checkbox-custom::after {
+  content: '';
   position: absolute;
   width: 5px;
   height: 10px;

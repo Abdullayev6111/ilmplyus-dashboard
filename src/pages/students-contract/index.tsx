@@ -10,10 +10,10 @@ import {
   type StudentFormData,
 } from '../../types/studentContract.types';
 import type { Lid } from '@/types/lid.types';
-import type { Course } from '@/types/course.types';
 import type { Group } from '@/types/groups.types';
 import { API } from '@/api/api';
 import { Protected } from '../../components/Protected';
+import { useOptions } from '@/hooks/useOptions';
 
 const getStatusType = (status: string) => {
   switch (status) {
@@ -178,13 +178,8 @@ const AdultContractForm = () => {
       ),
   });
 
-  const { data: allCourses } = useQuery({
-    queryKey: ['courses-all'],
-    queryFn: () =>
-      API.get('/courses', { params: { per_page: 1000 } }).then((res) =>
-        Array.isArray(res.data) ? res.data : res.data?.data || [],
-      ),
-  });
+  const { data: allCourses } = useOptions('courses');
+  const { data: allLevels } = useOptions('levels');
 
   const searchResults = useMemo(() => {
     if (!lidSearchTerm) return [];
@@ -746,9 +741,9 @@ const AdultContractForm = () => {
                 }}
               >
                 <option value="">{t('studentsContract.select')}</option>
-                {(allCourses || []).map((c: Course) => (
+                {(allCourses || []).map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name_uz}
+                    {c.label}
                   </option>
                 ))}
               </select>
@@ -763,12 +758,9 @@ const AdultContractForm = () => {
                 onChange={(e) => handleChange('level_id', e.target.value)}
               >
                 <option value="">{t('studentsContract.select')}</option>
-                {(
-                  (allCourses || []).find((c: Course) => String(c.id) === formData.course_id)
-                    ?.levels ?? []
-                ).map((l: Course['levels'][number]) => (
+                {(allLevels || []).map((l) => (
                   <option key={l.id} value={l.id}>
-                    {l.name_uz}
+                    {l.label}
                   </option>
                 ))}
               </select>

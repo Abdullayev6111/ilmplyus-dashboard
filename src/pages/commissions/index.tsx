@@ -3,18 +3,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API } from '../../api/api';
 import '../users/users.css';
 import { useTranslation } from 'react-i18next';
-import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import { Protected } from '../../components/Protected';
-
-interface Branch {
-  id: number;
-  name_uz: string;
-  name_ru?: string;
-  name_en?: string;
-  address?: string;
-}
+import { useOptions } from '../../hooks/useOptions';
 
 interface Commission {
   id: number;
@@ -73,11 +65,8 @@ const toApiDateTime = (dt: string) => {
   return base.length === 16 ? base + ':00' : base;
 };
 
-const getBranchLabel = (b: Branch, lang: string) =>
-  getLocalized(b, 'name', lang) || b.name_uz || '-';
-
 const Commissions = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const [branchId, setBranchId] = useState('');
@@ -90,13 +79,7 @@ const Commissions = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
 
-  const { data: branches } = useQuery<Branch[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get('/branches');
-      return data.data ?? data;
-    },
-  });
+  const { data: branches } = useOptions('branches');
 
   const { data: commissions, isLoading } = useQuery<Commission[]>({
     queryKey: ['commissions', branchId],
@@ -485,7 +468,7 @@ const Commissions = () => {
           <option value="">{t('commissions.chooseBranch')}</option>
           {branches?.map((b) => (
             <option key={b.id} value={b.id}>
-              {getBranchLabel(b, i18n.language)}
+              {b.label}
             </option>
           ))}
         </select>

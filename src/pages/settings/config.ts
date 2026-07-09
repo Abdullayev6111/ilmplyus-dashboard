@@ -146,6 +146,7 @@ export const TABLE_PAGES_CONFIG: PageConfig[] = [
       { id: 'name', label: 'Nomi' },
       { id: 'branches', label: 'Filiallar' },
       { id: 'levels', label: 'Darajalar' },
+      { id: 'status', label: 'Status' },
       { id: 'created_at', label: 'Yaratilgan sana' },
       { id: 'updated_at', label: 'O‘zgartirilgan sana' },
       { id: 'actions', label: 'Harakatlar', alwaysVisible: true },

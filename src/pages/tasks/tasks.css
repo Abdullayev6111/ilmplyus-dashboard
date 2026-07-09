@@ -84,7 +84,7 @@
   border: 1.5px solid #d0d7e2;
   border-radius: 20px;
   padding: 7px 32px 7px 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 13px;
   color: #333;
   background: #fff
@@ -129,7 +129,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 13px;
   color: #555;
 }
@@ -138,7 +138,7 @@
   border: 1.5px solid #d0d7e2;
   border-radius: 8px;
   padding: 4px 10px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 13px;
   cursor: pointer;
   outline: none;
@@ -149,7 +149,7 @@
 .tasks-state {
   text-align: center;
   margin-top: 60px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 15px;
   color: #aaa;
 }
@@ -200,7 +200,7 @@
 }
 
 .task-card__deadline {
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 12px;
   color: #888;
 }
@@ -273,7 +273,7 @@
   background: #f4f7fb;
   border-radius: 8px;
   padding: 8px 12px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 13px;
   color: #333;
   line-height: 1.5;
@@ -286,7 +286,7 @@
 .task-card__comment-time {
   display: block;
   text-align: right;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 11px;
   color: #888;
   margin-top: 2px;
@@ -304,7 +304,7 @@
   border: 1px solid #d0d7e2;
   border-radius: 7px;
   padding: 6px 10px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 13px;
   outline: none;
   transition: border-color 0.15s;
@@ -539,7 +539,7 @@
   border: 1.5px solid #d0d7e2;
   border-radius: 8px;
   padding: 10px 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 14px;
   color: #333;
   outline: none;
@@ -560,7 +560,7 @@
   border: 1.5px solid #d0d7e2;
   border-radius: 8px;
   padding: 10px 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 14px;
   color: #333;
   outline: none;
@@ -579,7 +579,7 @@
   border: 1.5px solid #d0d7e2;
   border-radius: 8px;
   padding: 10px 36px 10px 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 14px;
   color: #333;
   background: #fff
@@ -687,7 +687,7 @@
 
 .modal__suggestion-item {
   padding: 10px 14px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 13px;
   color: #333;
   cursor: pointer;

@@ -7,7 +7,7 @@ import { API } from '../../api/api';
 import '../users/users.css';
 import './face-id.css';
 import type { HikvisionDevice, HikvisionDevicePayload } from '../../types/hikvision.types';
-import type { Branch } from '../../types/common.types';
+import { useOptions, type OptionItem } from '../../hooks/useOptions';
 import { useCreateMutation, useUpdateMutation, useDeleteMutation } from '../../hooks/useMutations';
 
 const QUERY_KEY = ['hikvision-devices'];
@@ -69,7 +69,7 @@ function DeleteModal({ deviceName, onConfirm, onCancel, loading }: DeleteModalPr
 
 interface DeviceModalProps {
   initial: HikvisionDevicePayload & { id?: number };
-  branches: Branch[];
+  branches: OptionItem[];
   onClose: () => void;
   onSave: (payload: HikvisionDevicePayload, id?: number) => void;
   loading: boolean;
@@ -124,7 +124,7 @@ function DeviceModal({ initial, branches, onClose, onSave, loading }: DeviceModa
                 <option value="">{t('faceId.selectPlaceholder')}</option>
                 {branches.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {b.name_uz}
+                    {b.label}
                   </option>
                 ))}
               </select>
@@ -374,14 +374,7 @@ export default function FaceId() {
     },
   });
 
-  const { data: branches = [] } = useQuery<Branch[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get('/branches');
-      return Array.isArray(data) ? data : (data?.data ?? []);
-    },
-    staleTime: 1000 * 60 * 30,
-  });
+  const { data: branches = [] } = useOptions('branches');
 
   const list = useMemo(() => {
     const all = data ?? [];

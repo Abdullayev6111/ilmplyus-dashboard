@@ -1,32 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { API } from '../../api/api';
-import { getLocalized } from '../../utils/getLocalized';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { CoursePricePayload, CoursePrice } from '../../types';
-
-interface CourseLevel {
-  id: number;
-  name_uz: string;
-  name_ru?: string;
-  name_en?: string;
-}
-
-interface CourseItem {
-  id: number;
-  name_uz: string;
-  name_ru?: string;
-  name_en?: string;
-  branch_id: number;
-  levels?: CourseLevel[];
-  branches?: { id: number; name_uz?: string; name_ru?: string; name_en?: string }[];
-}
-
-interface BranchItem {
-  id: number;
-  name_uz: string;
-  name_ru?: string;
-  name_en?: string;
-}
+import { useOptions, getCourseLevels } from '../../hooks/useOptions';
 
 interface FormState {
   filial: string;
@@ -70,8 +45,7 @@ export default function AddCourseModal({
   onClose,
   onSave,
 }: AddCourseModalProps) {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
+  const { t } = useTranslation();
 
   const MONTHS = useMemo(
     () => [
@@ -121,34 +95,13 @@ export default function AddCourseModal({
   const [startMonth, setStartMonth] = useState(() =>
     editItem?.start_date ? (editItem.start_date.split('.')[1] ?? '') : '',
   );
-  const [courses, setCourses] = useState<CourseItem[]>([]);
-  const [isLoadingData, setIsLoadingData] = useState(true);
-  const [branches, setBranches] = useState<BranchItem[]>([]);
+  const { data: branches = [], isLoading: isLoadingData } = useOptions('branches');
+  const { data: filteredCourses = [] } = useOptions('courses');
 
-  useEffect(() => {
-    API.get<CourseItem[]>('/courses')
-      .then(({ data }) => setCourses(data))
-      .catch(() => setCourses([]));
-  }, []);
-
-  useEffect(() => {
-    API.get<BranchItem[]>('/branches')
-      .then(({ data }) => setBranches(data))
-      .finally(() => setIsLoadingData(false));
-  }, []);
-
-  const filteredCourses = useMemo(() => {
-    if (!form.filial) return [];
-    const branchId = Number(form.filial);
-    return courses.filter((c) =>
-      c.branches?.length ? c.branches.some((b) => b.id === branchId) : c.branch_id === branchId,
-    );
-  }, [courses, form.filial]);
-
-  const selectedCourseLevels = useMemo(() => {
-    if (!form.kurs) return [];
-    return courses.find((c) => String(c.id) === form.kurs)?.levels ?? [];
-  }, [courses, form.kurs]);
+  const selectedCourseLevels = useMemo(
+    () => getCourseLevels(filteredCourses, form.kurs),
+    [filteredCourses, form.kurs],
+  );
 
   const dayOptions = useMemo(() => {
     const count = getDaysInMonth(startMonth);
@@ -296,7 +249,7 @@ export default function AddCourseModal({
                   <option value="">{t('coursePrices.choose')}</option>
                   {branches.map((b) => (
                     <option key={b.id} value={String(b.id)}>
-                      {getLocalized(b, 'name', lang)}
+                      {b.label}
                     </option>
                   ))}
                 </select>
@@ -314,7 +267,7 @@ export default function AddCourseModal({
                   <option value="">{t('coursePrices.choose')}</option>
                   {filteredCourses.map((c) => (
                     <option key={c.id} value={String(c.id)}>
-                      {getLocalized(c, 'name', lang)}
+                      {c.label}
                     </option>
                   ))}
                 </select>
@@ -332,7 +285,7 @@ export default function AddCourseModal({
                   <option value="">{t('coursePrices.choose')}</option>
                   {selectedCourseLevels.map((l) => (
                     <option key={l.id} value={String(l.id)}>
-                      {getLocalized(l, 'name', lang)}
+                      {l.label}
                     </option>
                   ))}
                 </select>
@@ -455,7 +408,6 @@ export default function AddCourseModal({
                   rows={3}
                   placeholder={t('coursePrices.commentPlaceholder')}
                   disabled={isSaving}
-                  style={{ resize: 'vertical' }}
                 />
               </div>
             </div>

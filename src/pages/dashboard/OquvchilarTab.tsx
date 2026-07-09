@@ -181,12 +181,12 @@ export default function OquvchilarTab() {
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 12, fill: '#94a3b8', fontFamily: 'noto-r' }}
+                  tick={{ fontSize: 12, fill: '#94a3b8', fontFamily: 'noto-m' }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 11, fill: '#94a3b8', fontFamily: 'noto-r' }}
+                  tick={{ fontSize: 11, fill: '#94a3b8', fontFamily: 'noto-m' }}
                 />
                 <Tooltip
                   formatter={(v: number | undefined) => [
@@ -195,7 +195,7 @@ export default function OquvchilarTab() {
                   ]}
                   cursor={{ fill: 'rgba(59,130,246,0.06)' }}
                 />
-                <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'noto-r' }} />
+                <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'noto-m' }} />
                 <Bar
                   dataKey="value"
                   name={t('dashboard.oquvchi.count')}
@@ -246,13 +246,13 @@ export default function OquvchilarTab() {
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: '#94a3b8', fontFamily: 'noto-r' }}
+                tick={{ fontSize: 12, fill: '#94a3b8', fontFamily: 'noto-m' }}
               />
               <YAxis
                 domain={[50, 100]}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 11, fill: '#94a3b8', fontFamily: 'noto-r' }}
+                tick={{ fontSize: 11, fill: '#94a3b8', fontFamily: 'noto-m' }}
                 tickFormatter={(v) => `${v}`}
               />
               <Tooltip
@@ -261,7 +261,7 @@ export default function OquvchilarTab() {
                   t('dashboard.oquvchi.avgBall'),
                 ]}
               />
-              <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'noto-r' }} />
+              <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'noto-m' }} />
               <Area
                 type="monotone"
                 dataKey="ball"
@@ -293,13 +293,13 @@ export default function OquvchilarTab() {
                 dataKey="day"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: '#94a3b8', fontFamily: 'noto-r' }}
+                tick={{ fontSize: 12, fill: '#94a3b8', fontFamily: 'noto-m' }}
               />
               <YAxis
                 domain={[0, 100]}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 11, fill: '#94a3b8', fontFamily: 'noto-r' }}
+                tick={{ fontSize: 11, fill: '#94a3b8', fontFamily: 'noto-m' }}
                 tickFormatter={(v) => `${v}`}
               />
               <Tooltip
@@ -308,7 +308,7 @@ export default function OquvchilarTab() {
                   t('dashboard.oquvchi.attendancePct'),
                 ]}
               />
-              <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'noto-r' }} />
+              <Legend wrapperStyle={{ fontSize: 12, fontFamily: 'noto-m' }} />
               <Bar
                 dataKey="pct"
                 name={t('dashboard.oquvchi.attendancePct')}

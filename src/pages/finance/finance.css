@@ -704,7 +704,7 @@
 
 .fin-balance-label {
   color: #555;
-  font-family: noto-r;
+  font-family: noto-m;
 }
 
 .fin-balance-value {
@@ -1213,7 +1213,7 @@
   margin-top: 4px;
   font-size: 12px;
   color: #e53935;
-  font-family: noto-r;
+  font-family: noto-m;
 }
 
 /* ─── Send Transfer Button ────────────────────────────────────── */

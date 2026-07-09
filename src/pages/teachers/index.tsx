@@ -5,9 +5,9 @@ import { API } from '../../api/api';
 import '../users/users.css';
 import './teachers.css';
 import { useTranslation } from 'react-i18next';
-import { getLocalized } from '../../utils/getLocalized';
-import type { Contract, Branch } from '../../types';
+import type { Contract } from '../../types';
 import { Protected } from '../../components/Protected';
+import { useOptions } from '../../hooks/useOptions';
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return '-';
@@ -212,9 +212,8 @@ function Table({
 }
 
 export default function Teachers() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const lang = i18n.language;
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -234,20 +233,13 @@ export default function Teachers() {
     },
   });
 
-  const { data: branches } = useQuery<Branch[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get('/branches');
-      return Array.isArray(data) ? data : (data?.data ?? []);
-    },
-    staleTime: 1000 * 60 * 30,
-  });
+  const { data: branches } = useOptions('branches');
 
   const branchMap = useMemo(() => {
     const map = new Map<number, string>();
-    (branches ?? []).forEach((b) => map.set(b.id, getLocalized(b, 'name', lang) || b.name_uz));
+    (branches ?? []).forEach((b) => map.set(b.id, b.label));
     return map;
-  }, [branches, lang]);
+  }, [branches]);
 
   const sortedData = useMemo(
     () => [...(contractsData ?? [])].sort((a, b) => (sortAsc ? a.id - b.id : b.id - a.id)),

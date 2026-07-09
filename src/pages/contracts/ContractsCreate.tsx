@@ -2,28 +2,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import type { Branch as BranchMeta } from '../../types';
 import imageCompression from 'browser-image-compression';
 import './contracts.css';
 import CameraModal from '../../components/CameraModal/CameraModal';
-import { getLocalized } from '../../utils/getLocalized';
 import { API } from '../../api/api';
-
-interface Department {
-  id: number;
-  name_uz: string | null;
-  name_ru?: string | null;
-  name_en?: string | null;
-  code?: string;
-}
-
-interface Position {
-  id: number;
-  name_uz: string | null;
-  name_ru?: string | null;
-  name_en?: string | null;
-  department_id: number;
-}
+import { useOptions } from '../../hooks/useOptions';
 
 interface AdditionalTask {
   task_id: number;
@@ -100,8 +83,7 @@ export function ContractsCreate({
   const { id: paramId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
+  const { t } = useTranslation();
 
   const employeeId =
     propEmpId || (paramId && !isNaN(Number(paramId)) ? Number(paramId) : undefined);
@@ -204,17 +186,10 @@ export function ContractsCreate({
     };
   }, [formData.jshshr]);
 
-  const { data: branches } = useQuery<BranchMeta[]>({
-    queryKey: ['branches'],
-    queryFn: async () => (await API.get('/branches')).data,
-  });
-  const { data: departments } = useQuery<Department[]>({
-    queryKey: ['departments'],
-    queryFn: async () => (await API.get('/departments')).data,
-  });
-  const { data: positions } = useQuery<Position[]>({
-    queryKey: ['positions'],
-    queryFn: async () => (await API.get('/positions')).data,
+  const { data: branches } = useOptions('branches');
+  const { data: departments } = useOptions('departments');
+  const { data: positions } = useOptions('positions', {
+    department_id: formData.department_id || undefined,
   });
 
   useQuery({
@@ -288,18 +263,8 @@ export function ContractsCreate({
     enabled: !!employeeId,
   });
 
-  const selectedBranch = useMemo(
-    () => branches?.find((b: BranchMeta) => b.id === Number(formData.branch_id)),
-    [branches, formData.branch_id],
-  );
-
-  const filteredPositions = useMemo(() => {
-    if (!positions) return [];
-    if (!formData.department_id) return positions;
-    return positions.filter(
-      (p: Position) => Number(p.department_id) === Number(formData.department_id),
-    );
-  }, [positions, formData.department_id]);
+  // Options endpointi filialning shahrini qaytarmaydi; maydon faqat ko'rsatish uchun.
+  const selectedBranchCity = '';
 
   const hourlyRate = useMemo(() => {
     const workingHours = Number(formData.working_hours);
@@ -638,7 +603,7 @@ export function ContractsCreate({
               <option value={0}>{t('contracts.selectPlaceholder')}</option>
               {branches?.map((b) => (
                 <option key={b.id} value={b.id}>
-                  {getLocalized(b, 'name', lang)}
+                  {b.label}
                 </option>
               ))}
             </select>
@@ -646,7 +611,7 @@ export function ContractsCreate({
 
           <div className="ct-form-group">
             <label>{t('contracts.city')}</label>
-            <input type="text" value={selectedBranch?.city || ''} readOnly disabled />
+            <input type="text" value={selectedBranchCity} readOnly disabled />
           </div>
 
           <div className="ct-form-group">
@@ -851,7 +816,7 @@ export function ContractsCreate({
               <option value={0}>{t('contracts.selectPlaceholder')}</option>
               {departments?.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {getLocalized(d, 'name', lang)}
+                  {d.label}
                 </option>
               ))}
             </select>
@@ -871,9 +836,9 @@ export function ContractsCreate({
               }
             >
               <option value={0}>{t('contracts.selectPlaceholder')}</option>
-              {filteredPositions?.map((p) => (
+              {positions?.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {getLocalized(p, 'name', lang)}
+                  {p.label}
                 </option>
               ))}
             </select>

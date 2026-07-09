@@ -8,9 +8,10 @@ import { useTranslation } from 'react-i18next';
 import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
-import type { Course, CoursePayload, Level } from '../../types';
+import type { Course, CoursePayload } from '../../types';
 import { useTableSettingsStore } from '../../store/useTableSettingsStore';
 import { Protected } from '../../components/Protected';
+import { useOptions } from '../../hooks/useOptions';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -56,25 +57,8 @@ const Courses = () => {
     placeholderData: keepPreviousData,
   });
 
-  const { data: branches } = useQuery<{ id: number; name: string }[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get('/branches');
-      return Array.isArray(data) ? data : (data as any)?.data || [];
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const { data: levels } = useQuery<Level[]>({
-    queryKey: ['levels'],
-    queryFn: async () => {
-      const { data } = await API.get<Level[]>('/levels');
-      return Array.isArray(data) ? data : (data as any)?.data || [];
-    },
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
+  const { data: branches } = useOptions('branches');
+  const { data: levels } = useOptions('levels');
 
   const createMutation = useMutation({
     mutationFn: async (payload: CoursePayload) => API.post('/courses', payload),
@@ -273,7 +257,7 @@ const Courses = () => {
                             &times;
                           </button>
                           <span style={{ fontSize: 13 }}>
-                            {branch ? getLocalized(branch, 'name', i18n.language) : id}
+                            {branch?.label ?? id}
                           </span>
                         </div>
                       );
@@ -328,7 +312,7 @@ const Courses = () => {
                                 justifyContent: 'space-between',
                               }}
                             >
-                              {getLocalized(b, 'name', i18n.language)}
+                              {b.label}
                               {isSelected && (
                                 <i className="fa-solid fa-check" style={{ color: '#003366' }}></i>
                               )}
@@ -394,7 +378,7 @@ const Courses = () => {
                             &times;
                           </button>
                           <span style={{ fontSize: 13 }}>
-                            {level ? getLocalized(level, 'name', i18n.language) : id}
+                            {level?.label ?? id}
                           </span>
                         </div>
                       );
@@ -449,7 +433,7 @@ const Courses = () => {
                                 justifyContent: 'space-between',
                               }}
                             >
-                              {getLocalized(l, 'name', i18n.language)}
+                              {l.label}
                               {isSelected && (
                                 <i className="fa-solid fa-check" style={{ color: '#003366' }}></i>
                               )}
@@ -657,6 +641,7 @@ const Courses = () => {
               {isVisible('name') && <th>{t('courses.courseName')}</th>}
               {isVisible('branches') && <th>{t('courses.branch')}</th>}
               {isVisible('levels') && <th>{t('levels.level')}</th>}
+              {isVisible('status') && <th>{t('courses.status')}</th>}
               {isVisible('created_at') && <th>{t('courses.createdDate')}</th>}
               <th>{t('courses.actions')}</th>
             </tr>
@@ -664,7 +649,7 @@ const Courses = () => {
 
           <tbody>
             {isLoading ? (
-              <TableSkeleton rowCount={8} columnCount={7} />
+              <TableSkeleton rowCount={8} columnCount={8} />
             ) : courses && courses.length > 0 ? (
               [...(courses || [])]
                 .sort((a, b) => (sortAsc ? a.id - b.id : b.id - a.id))
@@ -692,6 +677,15 @@ const Courses = () => {
                       {isVisible('name') && <td>{getLocalized(item, 'name', i18n.language)}</td>}
                       {isVisible('branches') && <td>{branchLabel}</td>}
                       {isVisible('levels') && <td>{levelLabel}</td>}
+                      {isVisible('status') && (
+                        <td>
+                          <span
+                            className={`status-badge ${item.is_active ? 'active' : 'inactive'}`}
+                          >
+                            {item.is_active ? t('courses.active') : t('courses.inactive')}
+                          </span>
+                        </td>
+                      )}
                       {isVisible('created_at') && (
                         <td>{item.created_at ? formatDate(item.created_at) : '-'}</td>
                       )}
@@ -720,7 +714,7 @@ const Courses = () => {
                   );
                 })
             ) : (
-              <EmptyState colSpan={7} message={t('courses.notFound')} />
+              <EmptyState colSpan={8} message={t('courses.notFound')} />
             )}
           </tbody>
         </table>

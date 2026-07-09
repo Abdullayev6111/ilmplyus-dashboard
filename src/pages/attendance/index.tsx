@@ -123,12 +123,12 @@ const AttendancePage = () => {
     employees.forEach((e) => {
       groupedById[e.id] = {
         id: e.id,
-        full_name: e.full_name,
+        full_name: e.label,
         position: null,
         attendances: [],
       };
-      nameToId[e.full_name] = e.id;
-      const twoWord = e.full_name.split(' ').slice(0, 2).join(' ');
+      nameToId[e.label] = e.id;
+      const twoWord = e.label.split(' ').slice(0, 2).join(' ');
       if (twoWord && !nameToId[twoWord]) nameToId[twoWord] = e.id;
     });
 
@@ -458,9 +458,9 @@ const AttendancePage = () => {
             </tr>
           </thead>
           <tbody>
-            {employeesWithAttendances.map((employee, idx) => (
+            {employeesWithAttendances.map((employee) => (
               <tr key={employee.id}>
-                <td>{idx + 1}</td>
+                <td>{employee.id}</td>
                 <td className="col-name">{employee?.full_name}</td>
                 <td className="col-position">{employee?.position}</td>
                 {daysInMonth.map((day) => {

@@ -8,10 +8,9 @@ import { getLocalized } from '../../utils/getLocalized';
 import { useTranslation } from 'react-i18next';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
-import type { Group, GroupPayload, GroupsApiResponse, Room, ScheduleTeacher } from '../../types/groups.types';
-import type { Branch } from '../../types/common.types';
-import type { Course } from '../../types/course.types';
+import type { Group, GroupPayload, GroupsApiResponse, ScheduleTeacher } from '../../types/groups.types';
 import { Protected } from '../../components/Protected';
+import { useOptions, findLabel } from '../../hooks/useOptions';
 import useAuthStore from '../../store/useAuthStore';
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
@@ -202,29 +201,10 @@ const Groups = () => {
     },
   });
 
-  const { data: branchesData } = useQuery<Branch[]>({
-    queryKey: ['branches'],
-    queryFn: async () => {
-      const { data } = await API.get<Branch[] | { data: Branch[] }>('/branches');
-      return Array.isArray(data) ? data : data.data;
-    },
-  });
-
-  const { data: coursesData } = useQuery<Course[]>({
-    queryKey: ['courses'],
-    queryFn: async () => {
-      const { data } = await API.get<Course[] | { data: Course[] }>('/courses');
-      return Array.isArray(data) ? data : data.data;
-    },
-  });
-
-  const { data: roomsData } = useQuery<Room[]>({
-    queryKey: ['rooms'],
-    queryFn: async () => {
-      const { data } = await API.get<{ data: Room[] }>('/rooms');
-      return data.data;
-    },
-  });
+  const { data: branchesData } = useOptions('branches');
+  const { data: coursesData } = useOptions('courses');
+  const { data: levelsData } = useOptions('levels');
+  const { data: roomsData } = useOptions('rooms');
 
   // ── Mutations ──────────────────────────────────────────────────────────────
 
@@ -281,21 +261,10 @@ const Groups = () => {
     return result;
   }, [allGroups]);
 
-  const branches: Branch[] = branchesData ?? [];
-  const courses: Course[] = coursesData ?? [];
-  const rooms: Room[] = roomsData ?? [];
-
-  const filteredCourses = useMemo(
-    () => courses.filter((c) => c.branches?.some((b) => b.id === Number(formData.branch_id))),
-    [courses, formData.branch_id],
-  );
-
-  const selectedCourse = useMemo(
-    () => courses.find((c) => c.id === Number(formData.course_id)) ?? null,
-    [courses, formData.course_id],
-  );
-
-  const filteredLevels = useMemo(() => selectedCourse?.levels ?? [], [selectedCourse]);
+  const branches = branchesData ?? [];
+  const filteredCourses = coursesData ?? [];
+  const filteredLevels = levelsData ?? [];
+  const rooms = roomsData ?? [];
 
   const selectedRoom = rooms.find((r) => r.id === Number(formData.room_id)) ?? null;
 
@@ -325,7 +294,7 @@ const Groups = () => {
   }, [allGroups, formData.days, editingGroup]);
 
   const roomOptions: SelectOption[] = useMemo(
-    () => rooms.map((r) => ({ value: r.id.toString(), label: r.name, busy: isRoomBusy(r.id) })),
+    () => rooms.map((r) => ({ value: r.id.toString(), label: r.label, busy: isRoomBusy(r.id) })),
     [rooms, isRoomBusy],
   );
 
@@ -388,7 +357,7 @@ const Groups = () => {
       end_date: formData.end_date,
       start_time: formData.start_time,
       end_time: formData.end_time,
-      max_students: selectedRoom?.capacity ?? 0,
+      max_students: Number(selectedRoom?.capacity ?? 0),
       days: formData.days,
       is_active: true,
       duration: computedDuration || undefined,
@@ -442,7 +411,7 @@ const Groups = () => {
                     <option value="">{t('groups.choose')}</option>
                     {branches.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {getLocalized(b, 'name', i18n.language)}
+                        {b.label}
                       </option>
                     ))}
                   </select>
@@ -462,7 +431,7 @@ const Groups = () => {
                     </option>
                     {filteredCourses.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {getLocalized(c, 'name', i18n.language)}
+                        {c.label}
                       </option>
                     ))}
                   </select>
@@ -476,7 +445,7 @@ const Groups = () => {
                     onChange={(e) => {
                       const levelId = e.target.value;
                       const level = filteredLevels.find((l) => l.id === Number(levelId));
-                      setFormData({ ...formData, level_id: levelId, name: level?.name_uz ?? '' });
+                      setFormData({ ...formData, level_id: levelId, name: level?.label ?? '' });
                     }}
                   >
                     <option value="">
@@ -484,7 +453,7 @@ const Groups = () => {
                     </option>
                     {filteredLevels.map((l) => (
                       <option key={l.id} value={l.id}>
-                        {getLocalized(l, 'name', i18n.language)}
+                        {l.label}
                       </option>
                     ))}
                   </select>
@@ -520,9 +489,10 @@ const Groups = () => {
                   />
                   {selectedRoom && (
                     <span style={{ fontSize: '13px', color: '#003366', marginTop: '4px' }}>
-                      {t('groups.capacity')}: <strong>{selectedRoom.capacity}</strong> {t('groups.pieces')}
-                      &nbsp;·&nbsp;{selectedRoom.floor}-{t('groups.floor')}
-                      &nbsp;·&nbsp;{selectedRoom.branch}
+                      {t('groups.capacity')}: <strong>{String(selectedRoom.capacity ?? '')}</strong>{' '}
+                      {t('groups.pieces')}
+                      &nbsp;·&nbsp;{String(selectedRoom.floor ?? '')}-{t('groups.floor')}
+                      &nbsp;·&nbsp;{findLabel(branches, selectedRoom.branch_id as number)}
                     </span>
                   )}
                 </div>

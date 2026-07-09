@@ -52,7 +52,7 @@
 .sc-search-wrapper input {
   border: none;
   outline: none;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 14px;
   color: #374151;
   background: transparent;
@@ -188,7 +188,7 @@
 
 .sc-table tbody td {
   padding: 14px 20px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 14px;
   color: #374151;
   vertical-align: middle;
@@ -226,7 +226,7 @@
 }
 
 .sc-student-phone {
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 12px;
   color: #94a3b8;
   margin-top: 2px;
@@ -408,7 +408,7 @@
 }
 
 .sc-table-info {
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 13px;
   color: #64748b;
 }
@@ -453,7 +453,7 @@
 }
 
 .sc-page-dots {
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 13px;
   color: #94a3b8;
   padding: 0 4px;
@@ -706,7 +706,7 @@
 }
 
 .sc-form-page-subtitle {
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 13px;
   color: #94a3b8;
   margin-top: 2px;
@@ -791,7 +791,7 @@
   padding: 0 14px;
   border: 1.5px solid #e2e8f0;
   border-radius: 10px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 14px;
   color: #1e293b;
   background: #f8faff;
@@ -816,7 +816,7 @@
   padding: 0 14px;
   border: 1.5px solid #e2e8f0;
   border-radius: 10px;
-  font-family: noto-r;
+  font-family: noto-m;
   font-size: 14px;
   color: #1e293b;
   background: #f8faff;

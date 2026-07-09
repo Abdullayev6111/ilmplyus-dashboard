@@ -295,7 +295,7 @@ export default function SotuvTab() {
                   width={120}
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 13, fill: '#475569', fontFamily: 'noto-r' }}
+                  tick={{ fontSize: 13, fill: '#475569', fontFamily: 'noto-m' }}
                 />
                 <Tooltip
                   cursor={{ fill: 'rgba(0,0,0,0.04)' }}

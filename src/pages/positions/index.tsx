@@ -8,8 +8,8 @@ import { getLocalized } from '../../utils/getLocalized';
 import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import type { PositionItem, PositionPayload } from '../../types';
-import type { DepartmentType } from '../../types';
 import { Protected } from '../../components/Protected';
+import { useOptions } from '../../hooks/useOptions';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -46,13 +46,7 @@ const Positions = () => {
     placeholderData: keepPreviousData,
   });
 
-  const { data: departments } = useQuery<DepartmentType[]>({
-    queryKey: ['departments'],
-    queryFn: async () => {
-      const { data } = await API.get<DepartmentType[] | { data: DepartmentType[] }>('/departments');
-      return Array.isArray(data) ? data : (data?.data ?? []);
-    },
-  });
+  const { data: departments } = useOptions('departments');
 
   const createMutation = useMutation({
     mutationFn: (payload: PositionPayload) => API.post('/positions', payload),
@@ -165,7 +159,7 @@ const Positions = () => {
                   <option value="">{t('positions.choose')}</option>
                   {departments?.map((dept) => (
                     <option key={dept.id} value={dept.id}>
-                      {getLocalized(dept, 'name', i18n.language)}
+                      {dept.label}
                     </option>
                   ))}
                 </select>

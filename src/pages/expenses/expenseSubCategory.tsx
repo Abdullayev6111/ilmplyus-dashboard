@@ -9,6 +9,7 @@ import TableSkeleton from '../../components/TableSkeleton';
 import EmptyState from '../../components/EmptyState';
 import { getLocalized } from '../../utils/getLocalized';
 import { Protected } from '../../components/Protected';
+import { useOptions } from '../../hooks/useOptions';
 
 interface ExpenseCategory {
   id: number;
@@ -82,13 +83,7 @@ const ExpensesSubcategory = () => {
     },
   });
 
-  const { data: categories } = useQuery<ExpenseCategory[]>({
-    queryKey: ['expense-categories'],
-    queryFn: async () => {
-      const { data } = await API.get('/expense-categories');
-      return data.data ?? data;
-    },
-  });
+  const { data: categories } = useOptions('expense-categories');
 
   const createMutation = useMutation({
     mutationFn: async () =>
@@ -195,7 +190,7 @@ const ExpensesSubcategory = () => {
                   <option value="">{t('expenses.choose')}</option>
                   {categories?.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {getLocalized(c, 'name', i18n.language)}
+                      {c.label}
                     </option>
                   ))}
                 </select>

@@ -4,15 +4,10 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import './RegistrationModal.css';
 import { API } from '@/api/api';
-import type { Region as LidRegion } from '@/types/region.types';
-import type { District as LidDistrict } from '@/types/district.types';
-import type { Branch as LidBranch } from '@/types/users.types';
-import type { Course as LidCourse } from '@/types/course.types';
-import type { Group as LidGroup } from '@/types/groups.types';
-import { type LidSource, type CreateLidPayload, type Lid, LID_STATUS } from '@/types/lid.types';
+import { type CreateLidPayload, type Lid, LID_STATUS } from '@/types/lid.types';
 import { queryClient } from '@/main';
 import useAuthStore from '@/store/useAuthStore';
-import { getLocalized } from '@/utils/getLocalized';
+import { useOptions, toIdName } from '@/hooks/useOptions';
 
 export type StudentGender = 'Erkak' | 'Ayol';
 
@@ -34,16 +29,6 @@ export interface RegistrationFormState {
 }
 
 type FormErrors = Partial<Record<keyof RegistrationFormState, string>>;
-
-const DAY_MAP: Record<string, string> = {
-  monday: 'Du',
-  tuesday: 'Se',
-  wednesday: 'Ch',
-  thursday: 'Pa',
-  friday: 'Ju',
-  saturday: 'Sh',
-  sunday: 'Ya',
-};
 
 const INITIAL_FORM: RegistrationFormState = {
   lastName: '',
@@ -206,8 +191,7 @@ interface RegistrationModalProps {
 }
 
 export const RegistrationModal = ({ onClose, editId, initialStatus }: RegistrationModalProps) => {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
+  const { t } = useTranslation();
   const isEditMode = editId != null;
   const [form, setForm] = useState<RegistrationFormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -234,59 +218,23 @@ export const RegistrationModal = ({ onClose, editId, initialStatus }: Registrati
     }
   }, [isEditMode, lidData]);
 
-  const { data: regions } = useQuery<LidRegion[]>({
-    queryKey: ['regions'],
-    queryFn: () =>
-      API.get('/regions').then((res) =>
-        Array.isArray(res.data) ? res.data : res.data?.data || [],
-      ),
-  });
+  const { data: regions } = useOptions('regions');
 
-  const { data: districts } = useQuery<LidDistrict[]>({
-    queryKey: ['districts', form.regionId],
-    queryFn: async () => {
-      if (!form.regionId) return [];
-      const res = await API.get(`/regions/${form.regionId}/districts`);
-      return Array.isArray(res.data) ? res.data : res.data?.data || [];
-    },
-  });
+  const { data: districts } = useOptions(
+    'districts',
+    { region_id: form.regionId },
+    { enabled: !!form.regionId },
+  );
 
-  const { data: branches } = useQuery<LidBranch[]>({
-    queryKey: ['branches'],
-    queryFn: () =>
-      API.get('/branches').then((res) =>
-        Array.isArray(res.data) ? res.data : res.data?.data || [],
-      ),
-    enabled: true,
-  });
+  const { data: branches } = useOptions('branches');
 
-  const { data: courses } = useQuery<LidCourse[]>({
-    queryKey: ['courses', form.branchId],
-    queryFn: () =>
-      API.get('/courses', {
-        params: { branch_id: form.branchId || undefined },
-      }).then((res) => (Array.isArray(res.data) ? res.data : res.data?.data || [])),
-    enabled: true,
-  });
+  const { data: courses } = useOptions('courses');
 
-  const selectedCourse = courses?.find((c) => String(c.id) === form.courseId);
+  const { data: levels } = useOptions('levels');
 
-  const { data: groups } = useQuery<LidGroup[]>({
-    queryKey: ['groups', form.levelId],
-    queryFn: () =>
-      API.get('/groups', {
-        params: { level_id: form.levelId || undefined },
-      }).then((res) => (Array.isArray(res.data) ? res.data : res.data?.data || [])),
-    enabled: true,
-  });
+  const { data: groups } = useOptions('groups', { level_id: form.levelId });
 
-  const { data: sources } = useQuery<LidSource[]>({
-    queryKey: ['sources'],
-    queryFn: () =>
-      API.get('/sources').then((res) =>
-        Array.isArray(res.data) ? res.data : res.data?.data || [],
-      ),
-  });
+  const { data: sources } = useOptions('sources');
 
   const { data: contracts } = useQuery<Contract[]>({
     queryKey: ['contracts'],
@@ -760,9 +708,7 @@ export const RegistrationModal = ({ onClose, editId, initialStatus }: Registrati
                 value={form.branchId}
                 onChange={handleBranchChange}
                 placeholder={t('registrationModal.placeholders.branchId')}
-                options={
-                  branches?.map((b) => ({ id: b.id, name: getLocalized(b, 'name', lang) })) ?? []
-                }
+                options={toIdName(branches)}
                 required
                 error={!!errors.branchId}
               />
@@ -779,9 +725,7 @@ export const RegistrationModal = ({ onClose, editId, initialStatus }: Registrati
                 value={form.courseId}
                 onChange={handleCourseChange}
                 placeholder={t('registrationModal.placeholders.courseId')}
-                options={
-                  courses?.map((c) => ({ id: c.id, name: getLocalized(c, 'name', lang) })) ?? []
-                }
+                options={toIdName(courses)}
                 disabled={!form.branchId}
                 required
                 error={!!errors.courseId}
@@ -795,12 +739,7 @@ export const RegistrationModal = ({ onClose, editId, initialStatus }: Registrati
                 value={form.levelId}
                 onChange={handleLevelChange}
                 placeholder={t('registrationModal.placeholders.levelId')}
-                options={
-                  selectedCourse?.levels?.map((l) => ({
-                    id: l.id,
-                    name: getLocalized(l, 'name', lang),
-                  })) ?? []
-                }
+                options={toIdName(levels)}
                 disabled={!form.courseId}
               />
             </FormField>
@@ -812,22 +751,7 @@ export const RegistrationModal = ({ onClose, editId, initialStatus }: Registrati
                 value={form.groupId}
                 onChange={handleInputChange}
                 placeholder={t('registrationModal.placeholders.groupId')}
-                options={
-                  groups?.map((g) => {
-                    const daysShort = g.days?.map((d) => DAY_MAP[d.toLowerCase()] || d).join('-');
-                    const time =
-                      g.start_time && g.end_time
-                        ? `${g.start_time.slice(0, 5)}-${g.end_time.slice(0, 5)}`
-                        : '';
-                    const info = [daysShort, time].filter(Boolean).join(' ');
-                    return {
-                      id: g.id,
-                      name: info
-                        ? `${getLocalized(g, 'name', lang)} (${info})`
-                        : getLocalized(g, 'name', lang),
-                    };
-                  }) ?? []
-                }
+                options={toIdName(groups)}
                 disabled={!form.levelId && !isEditMode}
               />
             </FormField>
@@ -843,9 +767,7 @@ export const RegistrationModal = ({ onClose, editId, initialStatus }: Registrati
                 value={form.regionId}
                 onChange={handleRegionChange}
                 placeholder={t('registrationModal.placeholders.regionId')}
-                options={
-                  regions?.map((r) => ({ id: r.id, name: getLocalized(r, 'name', lang) })) ?? []
-                }
+                options={toIdName(regions)}
                 required
                 error={!!errors.regionId}
               />
@@ -862,9 +784,7 @@ export const RegistrationModal = ({ onClose, editId, initialStatus }: Registrati
                 value={form.districtId}
                 onChange={handleDistrictChange}
                 placeholder={t('registrationModal.placeholders.districtId')}
-                options={
-                  districts?.map((d) => ({ id: d.id, name: getLocalized(d, 'name', lang) })) ?? []
-                }
+                options={toIdName(districts)}
                 disabled={!form.regionId}
                 required
                 error={!!errors.districtId}
@@ -882,9 +802,7 @@ export const RegistrationModal = ({ onClose, editId, initialStatus }: Registrati
                 value={form.sourceId}
                 onChange={handleInputChange}
                 placeholder={t('registrationModal.placeholders.sourceId')}
-                options={
-                  sources?.map((s) => ({ id: s.id, name: getLocalized(s, 'name', lang) })) ?? []
-                }
+                options={toIdName(sources)}
                 required
                 error={!!errors.sourceId}
               />

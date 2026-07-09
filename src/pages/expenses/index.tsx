@@ -8,35 +8,7 @@ import { getLocalized } from "../../utils/getLocalized";
 import TableSkeleton from "../../components/TableSkeleton";
 import EmptyState from "../../components/EmptyState";
 import { Protected } from "../../components/Protected";
-
-interface Category {
-  id: number;
-  name_uz: string;
-  name_ru?: string;
-  name_en?: string;
-  jamgarmas?: Jamgarma[];
-}
-
-interface Subcategory {
-  id: number;
-  name_uz: string;
-  name_ru?: string;
-  name_en?: string;
-  expense_category_id: number;
-}
-
-interface Cashier {
-  id: number;
-  full_name: string;
-}
-
-interface Jamgarma {
-  id: number;
-  name_uz: string;
-  name_ru?: string;
-  name_en?: string;
-  status: string;
-}
+import { useOptions } from "../../hooks/useOptions";
 
 interface Branch {
   id: number;
@@ -46,6 +18,18 @@ interface Branch {
   address?: string;
 }
 
+interface Named {
+  id: number;
+  name_uz: string;
+  name_ru?: string;
+  name_en?: string;
+}
+
+interface Cashier {
+  id: number;
+  full_name: string;
+}
+
 interface Expense {
   id: number;
   amount: string;
@@ -53,8 +37,8 @@ interface Expense {
   info: string;
   created_at: string;
   updated_at: string;
-  category?: Category;
-  subcategory?: Subcategory;
+  category?: Named;
+  subcategory?: Named;
   cashier?: Cashier;
   branch?: Branch;
 }
@@ -114,42 +98,11 @@ const Expenses = () => {
     queryFn: async () => (await API.get("/expenses")).data,
   });
 
-  const { data: jamgarmas } = useQuery<Jamgarma[]>({
-    queryKey: ["jamgarmas"],
-    queryFn: async () => {
-      const { data } = await API.get("/jamgarmas");
-      return data.data ?? data;
-    },
-  });
-
-  const { data: categories } = useQuery<Category[]>({
-    queryKey: ["expense-categories"],
-    queryFn: async () => {
-      const { data } = await API.get("/expense-categories");
-      return data.data ?? data;
-    },
-  });
-
-  const formCategories = categories?.filter(
-    (c) =>
-      !formData.jamgarma_id ||
-      c.jamgarmas?.some((j) => String(j.id) === formData.jamgarma_id),
-  );
-
-  const { data: subcategories } = useQuery<Subcategory[]>({
-    queryKey: ["expense-subcategories"],
-    queryFn: async () => (await API.get("/expense-subcategories")).data,
-  });
-
-  const { data: cashiers } = useQuery<Cashier[]>({
-    queryKey: ["cashiers"],
-    queryFn: async () => (await API.get("/users")).data?.data || [],
-  });
-
-  const { data: branches } = useQuery<Branch[]>({
-    queryKey: ["branches"],
-    queryFn: async () => (await API.get("/branches")).data,
-  });
+  const { data: jamgarmas } = useOptions("jamgarmas");
+  const { data: categories } = useOptions("expense-categories");
+  const { data: subcategories } = useOptions("expense-subcategories");
+  const { data: cashiers } = useOptions("users");
+  const { data: branches } = useOptions("branches");
 
   const filteredExpenses = expenses
     ?.filter((e) => {
@@ -304,7 +257,7 @@ const Expenses = () => {
                     <option value="">{t("expenses.chooseFund")}</option>
                     {jamgarmas?.map((j) => (
                       <option key={j.id} value={j.id}>
-                        {getLocalized(j, 'name', i18n.language) || j.name_uz}
+                        {j.label}
                       </option>
                     ))}
                   </select>
@@ -327,9 +280,9 @@ const Expenses = () => {
                     required
                   >
                     <option value="">{t("expenses.choose")}</option>
-                    {formCategories?.map((c) => (
+                    {categories?.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {getLocalized(c, 'name', i18n.language)}
+                        {c.label}
                       </option>
                     ))}
                   </select>
@@ -351,7 +304,7 @@ const Expenses = () => {
                     <option value="">{t("expenses.choose")}</option>
                     {filteredSubcategories?.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {getLocalized(s, 'name', i18n.language)}
+                        {s.label}
                       </option>
                     ))}
                   </select>
@@ -372,7 +325,7 @@ const Expenses = () => {
                     <option value="">{t("expenses.choose")}</option>
                     {cashiers?.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.full_name}
+                        {c.label}
                       </option>
                     ))}
                   </select>
@@ -419,7 +372,7 @@ const Expenses = () => {
                     <option value="">{t("expenses.choose")}</option>
                     {branches?.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {getLocalized(b, 'name', i18n.language) || b.name_uz}
+                        {b.label}
                       </option>
                     ))}
                   </select>
@@ -526,7 +479,7 @@ const Expenses = () => {
           <option value="">{t("expenses.category")}</option>
           {categories?.map((c) => (
             <option key={c.id} value={c.id}>
-              {getLocalized(c, 'name', i18n.language)}
+              {c.label}
             </option>
           ))}
         </select>
@@ -544,7 +497,7 @@ const Expenses = () => {
             )
             ?.map((s) => (
               <option key={s.id} value={s.id}>
-                {getLocalized(s, 'name', i18n.language)}
+                {s.label}
               </option>
             ))}
         </select>

@@ -1,8 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { API } from "../api/api";
 import { useMemo } from "react";
+import { useOptions } from "../hooks/useOptions";
 
 type ControlItem = {
   id: number;
@@ -11,30 +10,14 @@ type ControlItem = {
   path: string;
 };
 
-type UsersResponse = {
-  total: number;
-};
-
 const ControlCard = () => {
   const { t } = useTranslation();
 
-  const { data: usersCount = 0 } = useQuery({
-    queryKey: ["users-count"],
-    queryFn: async () => {
-      const res = await API.get<UsersResponse>("/users");
-      return res.data;
-    },
-    select: (data) => data.total,
-  });
+  const { data: users } = useOptions("users");
+  const { data: branches } = useOptions("branches");
 
-  const { data: branchesCount = 0 } = useQuery({
-    queryKey: ["branches-count"],
-    queryFn: async () => {
-      const res = await API.get("/branches");
-      return res.data;
-    },
-    select: (data) => data?.length ?? 0,
-  });
+  const usersCount = users?.length ?? 0;
+  const branchesCount = branches?.length ?? 0;
 
   const controlData: ControlItem[] = useMemo(
     () => [

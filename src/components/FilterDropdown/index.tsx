@@ -7,9 +7,9 @@ import type {
   FilterState,
   StudentGender,
 } from './Filterdropdown.constants';
-import type { LidSource } from '@/types/lid.types';
 import type { Course } from '@/types/course.types';
 import { getLocalized } from '@/utils/getLocalized';
+import { useOptions } from '@/hooks/useOptions';
 import './FilterDropdown.css';
 
 function toggleItem<T>(arr: T[], value: T): T[] {
@@ -149,11 +149,7 @@ const FilterDropdown = ({ filters, onChange, trigger, align = 'right' }: FilterD
   const containerRef = useRef<HTMLDivElement>(null);
   const activeCount = countActiveFilters(filters);
 
-  // Fetch Sources
-  const { data: sources = [] } = useQuery<LidSource[]>({
-    queryKey: ['sources'],
-    queryFn: () => API.get('/sources').then((res) => Array.isArray(res.data) ? res.data : res.data?.data || []),
-  });
+  const { data: sources = [] } = useOptions('sources');
 
   // Fetch Courses
   const { data: courses = [] } = useQuery<Course[]>({
@@ -276,18 +272,15 @@ const FilterDropdown = ({ filters, onChange, trigger, align = 'right' }: FilterD
               {t('filterDropdown.source')}
             </h3>
             <div className="fd-section__body" role="group" aria-labelledby="fd-source-heading">
-              {sources.map((src) => {
-                const srcName = getLocalized(src, 'name', lang) || src.name;
-                return (
-                  <CheckboxItem
-                    key={src.id}
-                    id={`src-${src.id}`}
-                    label={srcName}
-                    checked={filters.sources.includes(src.id)}
-                    onChange={() => handleSourceToggle(src.id)}
-                  />
-                );
-              })}
+              {sources.map((src) => (
+                <CheckboxItem
+                  key={src.id}
+                  id={`src-${src.id}`}
+                  label={src.label}
+                  checked={filters.sources.includes(src.id)}
+                  onChange={() => handleSourceToggle(src.id)}
+                />
+              ))}
             </div>
           </section>
 
