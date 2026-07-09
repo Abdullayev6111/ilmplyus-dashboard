@@ -742,7 +742,7 @@
 
 @media (max-width: 1400px) {
   .tasks {
-    margin-left: 80px !important;
+    margin-left: 32px !important;
     gap: 30px;
   }
   .tasks-title {
@@ -768,7 +768,7 @@
 
 @media (max-width: 1200px) {
   .tasks {
-    margin-left: 60px !important;
+    margin-left: 24px !important;
     gap: 20px;
   }
   .tasks-title {

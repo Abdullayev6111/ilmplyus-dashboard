@@ -57,9 +57,10 @@ body {
 }
 
 .container {
-  max-width: 1440px;
+  max-width: 1750px;
   width: 100%;
   margin: 0 auto;
+  padding-inline: 24px;
 }
 
 .loader {
@@ -911,4 +912,156 @@ td:last-child > * {
   background: #003366;
   border-color: #003366;
   color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GLOBAL RESPONSIVE FOUNDATION (1920px → 768px)
+   Shared structure so every page adapts to the screen.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Grid child must be allowed to shrink, otherwise wide tables
+   push the whole layout past the viewport and cause horizontal
+   scroll on the <body>. `min-width: 0` is the real fix; we avoid
+   `overflow` here so sticky table headers keep working. */
+.layout-main {
+  min-width: 0;
+}
+
+.page {
+  min-width: 0;
+  width: 100%;
+}
+
+/* Shared page container (used by most CRUD pages via `.users`)
+   now fills the available width instead of being capped narrow. */
+.users {
+  max-width: 100% !important;
+}
+
+/* Any table that is wider than its column can scroll inside its
+   own wrapper instead of stretching the page. */
+.users-table-wrapper,
+.table-wrapper,
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---- ≤1600px ---- */
+@media (max-width: 1600px) {
+  .container {
+    padding-inline: 20px;
+  }
+  .control-top {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ---- ≤1280px ---- */
+@media (max-width: 1280px) {
+  .container {
+    padding-inline: 16px;
+  }
+  .control-content {
+    grid-template-columns: 1fr;
+  }
+  .control-content-left.collapsed,
+  .control-content-right {
+    width: 100%;
+  }
+  .control-top {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---- ≤1024px ---- */
+@media (max-width: 1024px) {
+  .header {
+    padding: 20px;
+  }
+  .users {
+    padding: 18px !important;
+  }
+  .users-filters {
+    flex-wrap: wrap;
+  }
+  .control {
+    padding: 30px 16px;
+  }
+  .control-top {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .form-grid,
+  .add-user-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- ≤768px ---- */
+@media (max-width: 768px) {
+  header {
+    height: auto;
+  }
+  .header {
+    padding: 14px 16px;
+    gap: 10px;
+  }
+  .users {
+    padding: 14px !important;
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+  }
+  .users-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .users-filters select,
+  .users-filters input {
+    width: 100%;
+    min-width: 0;
+  }
+  .users-table {
+    font-size: 13px;
+  }
+  .users-table th,
+  .users-table td {
+    padding: 7px;
+  }
+  .control-top {
+    grid-template-columns: 1fr;
+  }
+  .modal,
+  .modal.add-user-modal {
+    width: 100% !important;
+    max-width: 95vw !important;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+  .modal-actions {
+    flex-wrap: wrap;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Fixed-margin page wrappers.
+   These page roots carry BOTH `.container` (which already centers &
+   pads the content) and a legacy `margin-left:40/50px !important`.
+   That left margin, on top of a full-width box, pushed them past the
+   viewport → horizontal scroll. Re-center them: `.container.X`
+   (specificity 0,2,0 + !important) beats the page's own
+   `.X { margin-left: … !important }` (0,1,0).
+   ═══════════════════════════════════════════════════════════ */
+.container.contracts-container,
+.container.dashboard,
+.container.lessons-container,
+.container.attendance-container,
+.container.tasks,
+.container.ipt-page,
+.container.registration,
+.container.lesson-schedule-container,
+.container.dl-page,
+.container.students-contract {
+  margin-left: auto !important;
+  margin-right: auto !important;
 }

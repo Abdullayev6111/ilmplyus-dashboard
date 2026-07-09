@@ -40,7 +40,10 @@ interface Jamgarma {
 
 interface Branch {
   id: number;
-  address: string;
+  name_uz: string;
+  name_ru?: string | null;
+  name_en?: string | null;
+  address?: string;
 }
 
 interface Expense {
@@ -416,7 +419,7 @@ const Expenses = () => {
                     <option value="">{t("expenses.choose")}</option>
                     {branches?.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {b.address}
+                        {getLocalized(b, 'name', i18n.language) || b.name_uz}
                       </option>
                     ))}
                   </select>
@@ -640,7 +643,7 @@ const Expenses = () => {
                   <td>{item.cashier?.full_name || "-"}</td>
                   <td>{item.amount}</td>
                   <td>{item.expense_date}</td>
-                  <td>{item.branch?.address || "-"}</td>
+                  <td>{item.branch ? getLocalized(item.branch, 'name', i18n.language) || item.branch.name_uz : "-"}</td>
                   <td>{formatDateTime(item.created_at)}</td>
                   <td>{formatDateTime(item.updated_at)}</td>
 

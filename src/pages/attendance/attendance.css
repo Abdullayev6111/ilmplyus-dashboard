@@ -7,10 +7,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
   margin-bottom: 25px;
   padding: 12px 20px;
   border-radius: 8px;
   background: #003366 !important;
+}
+
+@media (max-width: 768px) {
+  .attendance-page {
+    padding: 12px;
+  }
+  .attendance-controls {
+    flex-wrap: wrap;
+    width: 100%;
+  }
 }
 
 .attendance-controls {

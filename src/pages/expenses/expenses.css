@@ -61,6 +61,7 @@
 
 .subcategory-form-group input {
   width: 330px;
+  max-width: 100%;
   height: 40px;
   border-radius: 15px;
   border: 1px solid #003366;
@@ -69,6 +70,7 @@
 
 .subcategory-form-group select {
   width: 330px;
+  max-width: 100%;
   height: 40px;
   border-radius: 15px;
   border: 1px solid #003366;
@@ -131,6 +133,7 @@
 
 .create-form-input {
   width: 330px;
+  max-width: 100%;
   height: 40px;
 }
 

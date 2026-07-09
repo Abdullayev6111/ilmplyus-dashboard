@@ -984,3 +984,65 @@
   font-family: noto-m;
   font-size: 15px;
 }
+
+/* ---- Responsive (1920px → 768px) ---- */
+.students-contract {
+  max-width: calc(100% - 80px);
+}
+
+.sc-table-card {
+  overflow-x: auto;
+}
+
+@media (max-width: 1200px) {
+  .sc-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sc-form-grid.cols-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sc-details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .students-contract {
+    margin-top: 24px !important;
+    margin-left: 20px !important;
+    max-width: calc(100% - 40px);
+  }
+  .sc-page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .sc-header-actions {
+    flex-wrap: wrap;
+  }
+  .sc-search-wrapper {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .students-contract {
+    margin-top: 16px !important;
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+    max-width: calc(100% - 24px);
+  }
+  .sc-form-grid,
+  .sc-form-grid.cols-2,
+  .sc-form-grid.cols-3,
+  .sc-details-grid {
+    grid-template-columns: 1fr;
+  }
+  .sc-form-group.span-2,
+  .sc-form-group.span-3 {
+    grid-column: span 1;
+  }
+  .sc-page-title {
+    font-size: 20px;
+  }
+}

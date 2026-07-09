@@ -1,5 +1,12 @@
 .fid-modal {
   width: 560px !important;
+  max-width: 95vw !important;
+}
+
+@media (max-width: 768px) {
+  .fid-form-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .fid-form-grid {

@@ -522,7 +522,7 @@
 
 @media (max-width: 1400px) {
   .registration {
-    margin-left: 80px !important;
+    margin-left: 32px !important;
     gap: 24px;
     padding: 20px 0;
   }
@@ -544,7 +544,7 @@
 
 @media (max-width: 1200px) {
   .registration {
-    margin-left: 60px !important;
+    margin-left: 24px !important;
     gap: 20px;
   }
   .registration-top__search {
