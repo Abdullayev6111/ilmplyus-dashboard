@@ -543,18 +543,43 @@
     },
     "table": {
       "fullName": "Full Name",
-      "position": "Position"
+      "position": "Position",
+      "date": "Date",
+      "time": "Time",
+      "type": "State",
+      "status": "Status",
+      "branch": "Branch",
+      "actions": "Actions"
     },
     "popover": {
       "writeComment": "Write a comment...",
       "save": "Save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "saving": "Saving..."
     },
     "tooltips": {
       "print": "Print",
       "edit": "Edit"
     },
-    "clearFilter": "Clear filter"
+    "clearFilter": "Clear filter",
+    "listTitle": "Employee attendance",
+    "editTitle": "Edit attendance",
+    "notFound": "No data found",
+    "searchPlaceholder": "Search by full name",
+    "back": "Back",
+    "type": {
+      "in": "Checked in",
+      "out": "Checked out"
+    },
+    "detail": {
+      "workedDays": "Worked days",
+      "totalHours": "Total worked",
+      "duration": "Duration",
+      "comment": "Comment",
+      "byDay": "By day",
+      "allRecords": "All check-in / check-out records"
+    },
+    "confirmDelete": "Delete this record?"
   },
   "refusalReasons": {
     "title": "Refusal Reasons",

@@ -550,6 +550,16 @@ body {
 }
 
 /* Action Icons Refinement */
+.work-time-icon {
+  background-color: #f0f7ff;
+  color: #003366;
+}
+
+.work-time-icon:hover {
+  background-color: #003366;
+  color: white;
+}
+
 .view-icon {
   background-color: #f0f7ff;
   color: #003366;

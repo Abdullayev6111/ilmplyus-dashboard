@@ -682,18 +682,43 @@
     },
     "table": {
       "fullName": "F.I.SH",
-      "position": "Lavozimi"
+      "position": "Lavozimi",
+      "date": "Sana",
+      "time": "Vaqti",
+      "type": "Holati",
+      "status": "Status",
+      "branch": "Filial",
+      "actions": "Amallar"
     },
     "popover": {
       "writeComment": "Izoh yozing...",
       "save": "Saqlash",
-      "cancel": "Bekor qilish"
+      "cancel": "Bekor qilish",
+      "saving": "Saqlanmoqda..."
     },
     "tooltips": {
       "print": "Printer",
       "edit": "Tahrirlash"
     },
-    "clearFilter": "Filterni tozalash"
+    "clearFilter": "Filterni tozalash",
+    "listTitle": "Xodimlar davomati",
+    "editTitle": "Davomatni tahrirlash",
+    "notFound": "Maʼlumot topilmadi",
+    "searchPlaceholder": "F.I.SH boʻyicha qidirish",
+    "back": "Orqaga",
+    "type": {
+      "in": "Kirdi",
+      "out": "Chiqdi"
+    },
+    "detail": {
+      "workedDays": "Ish kunlari",
+      "totalHours": "Jami ish vaqti",
+      "duration": "Davomiyligi",
+      "comment": "Izoh",
+      "byDay": "Kunlar boʻyicha",
+      "allRecords": "Barcha kirdi-chiqdi vaqtlari"
+    },
+    "confirmDelete": "Yozuvni oʻchirishni tasdiqlaysizmi?"
   },
   "contractsValidation": {
     "required": "Bu maydon to‘ldirilishi shart",

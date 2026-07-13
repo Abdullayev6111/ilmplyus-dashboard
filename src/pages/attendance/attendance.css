@@ -1,221 +1,53 @@
 .attendance-page {
-  padding: 20px;
-  min-height: calc(100vh - 100px);
-}
-
-.attendance-header {
+  width: 100%;
+  max-width: 1262px;
+  padding: 25px;
+  margin-top: 30px !important;
+  margin-bottom: 30px !important;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 25px;
-  padding: 12px 20px;
-  border-radius: 8px;
-  background: #003366 !important;
-}
-
-@media (max-width: 768px) {
-  .attendance-page {
-    padding: 12px;
-  }
-  .attendance-controls {
-    flex-wrap: wrap;
-    width: 100%;
-  }
-}
-
-.attendance-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.month-picker {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #f8f9fa;
-  padding: 6px 16px;
-  border-radius: 25px;
-  border: 1px solid #dee2e6;
-  font-family: noto-m;
-  font-size: 16px;
-  min-width: 160px;
-  justify-content: space-between;
-}
-
-.month-picker span {
-  cursor: pointer;
-  user-select: none;
-}
-
-.month-picker-label {
-  cursor: pointer;
-  user-select: none;
-  transition: opacity 0.15s;
-}
-
-.month-picker-label:hover {
-  opacity: 0.7;
-}
-
-.month-picker-container {
+  flex-direction: column;
   position: relative;
 }
 
-.date-picker-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 200;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
-  padding: 14px;
-  min-width: 240px;
-}
-
-.date-picker-year-row {
+/* Filters */
+.attendance-filters {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  gap: 8px;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.dp-nav-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: #000;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 12px;
-  transition: opacity 0.2s;
-  flex-shrink: 0;
-}
-
-.dp-nav-btn:hover {
-  opacity: 0.75;
-}
-
-.dp-year-select {
-  flex: 1;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  padding: 4px 8px;
+.attendance-filters select,
+.attendance-filters input {
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 15px;
+  border: 1px solid #003366;
+  outline: none;
+  min-width: 170px;
   font-family: noto-m;
-  font-size: 14px;
-  text-align: center;
-  cursor: pointer;
-  background: #fff;
 }
 
-.date-picker-months {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-bottom: 10px;
-}
-
-.dp-month-btn {
-  height: 34px;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  background: #fff;
-  cursor: pointer;
-  font-family: noto-m;
-  font-size: 13px;
-  transition:
-    background 0.15s,
-    color 0.15s;
-}
-
-.dp-month-btn:hover {
-  background: #f1f3f5;
-}
-
-.dp-month-btn.dp-month-active {
-  background: #000;
-  color: #fff;
-  border-color: #000;
-}
-
-.dp-clear-btn {
-  width: 100%;
-  height: 34px;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  background: #fff;
-  cursor: pointer;
-  font-family: noto-m;
-  font-size: 13px;
-  color: #dc3545;
-  transition: background 0.15s;
-}
-
-.dp-clear-btn:hover {
-  background: #fff0f0;
-}
-
-.nav-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: #000;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.nav-btn:hover {
-  opacity: 0.8;
-}
-
-.action-btns {
-  display: flex;
-  gap: 10px;
-}
-
-.icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  background: #000;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.icon-btn.edit-mode {
-  background: #fe9100;
+.attendance-filters input::placeholder {
+  color: #888;
 }
 
 .legend {
   display: flex;
-  gap: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-left: auto;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-size: 13px;
   font-family: noto-m;
-  color: #fff;
+  color: #333 !important;
+  white-space: nowrap;
 }
 
 .legend-item b {
@@ -223,7 +55,7 @@
 }
 
 .status-plus {
-  color: #000;
+  color: #1a7f37;
 }
 .status-nb {
   color: #ff0000;
@@ -238,252 +70,350 @@
   color: #ff4d00;
 }
 
-/* Table Section */
-.attendance-table-container {
+/* Table (users.css bilan bir xil ko'rinish) */
+.attendance-table-wrapper {
   overflow-x: auto;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
+  flex: 1;
 }
 
-.attendance-table {
+.attendance-list-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: noto-m;
+  font-size: 14px;
 }
 
-.attendance-table th,
-.attendance-table td {
-  border: 1px solid #dee2e6;
-  height: 40px;
-  padding: 0;
+.attendance-list-table thead {
+  background: #e6e6e6;
+}
+
+.attendance-list-table th,
+.attendance-list-table td {
+  border: 1px solid #d9d9d9;
+  padding: 10px;
   text-align: center;
-  font-size: 13px;
-}
-
-.attendance-table th:last-child,
-.attendance-table td:last-child {
-  width: 25px !important;
-}
-
-.attendance-table th:nth-child(2),
-.attendance-table td:nth-child(2) {
-  width: 150px !important;
-}
-
-.attendance-table th {
-  color: #000;
-  padding: 4px;
   font-family: noto-m;
 }
 
-.attendance-table .day-name {
-  color: rgba(255, 255, 255, 0.75);
+.attendance-list-table thead th {
+  position: sticky;
+  top: 0;
+  background: #e6e6e6;
+  z-index: 2;
 }
 
-.col-id {
-  width: 25px !important;
-}
-.col-name {
-  min-width: 280px !important;
-  text-align: left !important;
-  padding-left: 10px !important;
-  white-space: nowrap !important;
-  overflow: visible !important;
-}
-.col-position {
-  width: 80px !important;
-  text-align: left !important;
-  padding-left: 10px !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  max-width: 80px !important;
-}
-.col-day {
-  width: 25px !important;
+.attendance-list-table tbody tr:hover {
+  background-color: #00336617;
 }
 
-.day-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.day-name {
-  font-size: 11px;
-  color: #666;
-}
-.day-num {
-  font-size: 13px;
-  font-family: noto-b;
-}
-
-.attendance-cell {
-  cursor: default;
-  transition: background 0.2s;
-  position: relative;
-}
-
-.attendance-cell.editable:hover {
-  background: #f1f3f5;
+.attendance-list-table input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
   cursor: pointer;
 }
 
-.cell-status {
+/* users.css dagi global `.actions { display: flex }` td ni qatordan chiqarib
+   yuboradi — jadval katagi sifatida qoldiramiz */
+.attendance-list-table td.actions {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.attendance-list-table td.actions .actions-row {
   display: flex;
-  gap: 2px;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  width: 100%;
+  gap: 14px;
+}
+
+.attendance-list-table td.actions button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+}
+
+.employee-link {
+  border: none;
+  background: transparent;
+  color: #003366;
+  font-family: noto-m;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.employee-link:hover {
   font-family: noto-b;
 }
 
-/* Modal / Card stylings */
-.attendance-popover {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  background: #fff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  padding: 15px;
-  width: 240px;
-  margin-top: 5px;
+/* Status (type) ustuni */
+.type-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-family: noto-m;
+  white-space: nowrap;
+}
+
+.type-badge b {
+  font-family: noto-b;
+}
+
+.type-in {
+  background: #e6f4ea;
+  color: #1a7f37;
+}
+
+.type-out {
+  background: #fdecea;
+  color: #c62828;
+}
+
+.type-none {
+  background: #f1f3f5;
+  color: #555;
+}
+
+.status-codes {
+  display: inline-flex;
+  gap: 4px;
+  font-family: noto-b;
+}
+
+/* Edit modal */
+.attendance-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.attendance-page .form-group {
+  margin-bottom: 12px;
 }
 
 .popover-btns {
   display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
 }
 
 .status-btn {
   flex: 1;
   height: 36px;
   border: 1px solid #dee2e6;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #fff;
   cursor: pointer;
   font-family: noto-b;
 }
 
 .status-btn.selected {
-  background: #003366 !important;
-  color: #fff !important;
-  border-color: #003366 !important;
-}
-
-.status-btn.f-btn.selected {
-  background: #003366 !important;
-  color: #fff !important;
-  border-color: #003366 !important;
-}
-
-.status-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  background: #003366;
+  color: #fff;
+  border-color: #003366;
 }
 
 .comment-area {
   width: 100%;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  padding: 8px;
-  font-size: 13px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 14px;
   resize: none;
-  margin-bottom: 12px;
   font-family: noto-r;
+  outline: none;
 }
 
-.popover-actions {
+.comment-area:focus {
+  border-color: #003366;
+}
+
+/* Detail page */
+.detail-topbar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
-.popover-actions button {
-  flex: 1;
-  height: 32px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
+.detail-topbar input[type='month'] {
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 15px;
+  border: 1px solid #003366;
+  outline: none;
   font-family: noto-m;
-  font-size: 13px;
 }
 
-.popover-save {
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 15px;
+  border: 2px solid #003366;
   background: #003366;
   color: #fff;
+  font-family: noto-m;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
-.popover-cancel {
-  background: #dc3545;
-  color: #fff;
+
+.back-btn:hover {
+  background: #fff;
+  color: #003366;
 }
 
-/* Print Styles */
-@media print {
-  @page {
-    size: landscape;
-    margin: 1cm;
-  }
+.detail-section-title {
+  font-family: noto-b;
+  font-size: 16px;
+  color: #003366;
+  margin: 24px 0 10px;
+}
 
-  body {
-    background: #fff;
-  }
+.detail-card {
+  border: 1px solid #d9d9d9;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
 
-  .cell-status {
-    flex-direction: column;
-  }
-  header,
-  aside,
-  .attendance-header {
-    display: none !important;
-  }
+.detail-name {
+  font-family: noto-b;
+  font-size: 20px;
+  color: #003366;
+  margin-bottom: 10px;
+}
 
+.detail-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-family: noto-m;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 18px;
+}
+
+.detail-meta b {
+  font-family: noto-b;
+  color: #003366;
+}
+
+.detail-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.detail-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #f5f7fa;
+}
+
+.detail-stat span {
+  font-size: 13px;
+  font-family: noto-m;
+  color: #666;
+}
+
+.detail-stat b {
+  font-size: 20px;
+  font-family: noto-b;
+  color: #003366;
+}
+
+.time-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.attendance-list-table .col-date {
+  white-space: nowrap;
+  width: 110px;
+  min-width: 110px;
+}
+
+/* Izoh — kesilmasin, to'liq o'ralib chiqsin */
+.attendance-list-table .col-comment {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-break: break-word;
+  max-width: none;
+  min-width: 220px;
+  text-align: center;
+}
+
+.attendance-list-table .col-times {
+  width: 120px;
+  min-width: 120px;
+  vertical-align: middle;
+}
+
+/* Juftlikda mos vaqt yo'q bo'lsa — qatorlar bir chiziqda turishi uchun bo'sh chip */
+.time-empty {
+  background: #f1f3f5;
+  color: #aaa;
+}
+
+.time-chip {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-family: noto-m;
+}
+
+.time-in {
+  background: #e6f4ea;
+  color: #1a7f37;
+}
+
+.time-out {
+  background: #fdecea;
+  color: #c62828;
+}
+
+@media (max-width: 768px) {
   .attendance-page {
-    padding: 0;
-    margin: 0;
+    padding: 12px;
   }
 
-  .attendance-table-container {
-    overflow: visible;
-    border: none;
+  .attendance-filters select,
+  .attendance-filters input {
+    min-width: 140px;
+    flex: 1;
   }
 
-  .attendance-table {
-    table-layout: auto;
-    width: 100%;
+  .detail-stats {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .col-name {
-    width: 100% !important;
-    white-space: normal !important;
-  }
-
-  .attendance-table th:last-child,
-  .attendance-table td:last-child {
-    width: 22px !important;
-    min-width: 22px !important;
-    max-width: 22px !important;
-    padding: 0 !important;
-  }
-
-  .col-day {
-    width: 22px !important;
-    min-width: 22px !important;
-    max-width: 22px !important;
-    padding: 0 !important;
-  }
-
-  .status-plus,
-  .status-nb,
-  .status-s,
-  .status-f,
-  .status-k {
-    color: #000 !important;
+  .detail-topbar {
+    flex-wrap: wrap;
   }
 }

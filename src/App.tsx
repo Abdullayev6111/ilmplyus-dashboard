@@ -30,6 +30,7 @@ import AreaDistricts from './pages/regions/areaDistricts';
 import Levels from './pages/levels';
 import Positions from './pages/positions';
 import AttendancePage from './pages/attendance';
+import AttendanceDetail from './pages/attendance/AttendanceDetail';
 import Operators from './pages/operators';
 import Sources from './pages/sources';
 import RefusalReasons from './pages/refusal-reasons';
@@ -135,6 +136,7 @@ const App = () => {
 
           {/* Xodimlar bo'limi */}
           <Route path="/attendance" element={<AttendancePage />} />
+          <Route path="/attendance/:employeeId" element={<AttendanceDetail />} />
           <Route path="/positions" element={<Positions />} />
           <Route path="/contracts" element={<Contracts />} />
           <Route path="/contracts/create" element={<ContractsCreate />} />

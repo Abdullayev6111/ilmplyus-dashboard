@@ -41,7 +41,8 @@
       "Bash(awk -F: '$1>=722 && $1<=1135')",
       "PowerShell(npx tsc --noEmit -p tsconfig.app.json)",
       "PowerShell(npx eslint src/hooks/useRequiredFields.ts src/pages/students-contract src/pages/contracts/ContractsCreate.tsx)",
-      "PowerShell(npx vite build 2>&1)"
+      "PowerShell(npx vite build 2>&1)",
+      "Bash(python -c ' *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src\\pages\\set-password",

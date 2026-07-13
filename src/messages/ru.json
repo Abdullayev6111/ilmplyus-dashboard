@@ -547,18 +547,43 @@
     },
     "table": {
       "fullName": "Ф.И.О",
-      "position": "Должность"
+      "position": "Должность",
+      "date": "Дата",
+      "time": "Время",
+      "type": "Состояние",
+      "status": "Статус",
+      "branch": "Филиал",
+      "actions": "Действия"
     },
     "popover": {
       "writeComment": "Напишите комментарий...",
       "save": "Сохранить",
-      "cancel": "Отмена"
+      "cancel": "Отмена",
+      "saving": "Сохранение..."
     },
     "tooltips": {
       "print": "Печать",
       "edit": "Редактировать"
     },
-    "clearFilter": "Сбросить фильтр"
+    "clearFilter": "Сбросить фильтр",
+    "listTitle": "Посещаемость сотрудников",
+    "editTitle": "Редактировать посещаемость",
+    "notFound": "Данные не найдены",
+    "searchPlaceholder": "Поиск по Ф.И.О",
+    "back": "Назад",
+    "type": {
+      "in": "Вошёл",
+      "out": "Вышел"
+    },
+    "detail": {
+      "workedDays": "Рабочие дни",
+      "totalHours": "Всего отработано",
+      "duration": "Длительность",
+      "comment": "Комментарий",
+      "byDay": "По дням",
+      "allRecords": "Все отметки входа-выхода"
+    },
+    "confirmDelete": "Подтвердить удаление записи?"
   },
   "refusalReasons": {
     "title": "Причины отказов",

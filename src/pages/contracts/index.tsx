@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { getLocalized } from "../../utils/getLocalized";
 import ContractsCreate from "./ContractsCreate";
 import { Protected } from "@/components/Protected";
+import WorkScheduleModal from "@/components/WorkScheduleModal";
 import { formatDate as formatDisplayDate } from "@/utils/date";
 import { printFromDocxTemplate } from "@/utils/contractPdf";
 import { buildEmployeeContractData } from "@/utils/employeeContractPdf";
@@ -107,6 +108,7 @@ const Contracts: React.FC = () => {
     contractId: number;
   } | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [workTimeEmployeeId, setWorkTimeEmployeeId] = useState<number | null>(null);
   const [busyDoc, setBusyDoc] = useState<{
     contractId: number;
     mode: "pdf" | "print";
@@ -230,6 +232,14 @@ const Contracts: React.FC = () => {
 
   return (
     <div className="contracts-container container">
+      {workTimeEmployeeId !== null && (
+        <WorkScheduleModal
+          userId={workTimeEmployeeId}
+          idKey="employee_id"
+          onClose={() => setWorkTimeEmployeeId(null)}
+        />
+      )}
+
       <div className="contracts-header">
         <h1>
           <div className="icon-box">
@@ -301,6 +311,13 @@ const Contracts: React.FC = () => {
                     <td>{formatDate(contract.contract_end_date)}</td>
                     <td>
                       <div className="action-btns">
+                        <div
+                          className="action-icon work-time-icon"
+                          onClick={() => setWorkTimeEmployeeId(emp.id)}
+                          title={t("workSchedule.title")}
+                        >
+                          <i className="fa-solid fa-clock"></i>
+                        </div>
                         <div
                           className="action-icon view-icon"
                           onClick={() => navigate(`/contracts/${contract.id}`)}

@@ -16,6 +16,9 @@ interface WorkSchedule {
 interface Props {
   userId: number;
   onClose: () => void;
+  /** Payload va so'rovda qaysi kalit yuborilsin. Users sahifasi `user_id`,
+   *  xodimlar shartnomasi sahifasi `employee_id` bilan ishlaydi. */
+  idKey?: 'user_id' | 'employee_id';
 }
 
 const DAYS: { num: number; key: string }[] = [
@@ -34,7 +37,7 @@ interface FormProps extends Props {
   existing: WorkSchedule[];
 }
 
-const WorkScheduleForm = ({ userId, onClose, existing }: FormProps) => {
+const WorkScheduleForm = ({ userId, onClose, existing, idKey = 'user_id' }: FormProps) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
@@ -57,7 +60,7 @@ const WorkScheduleForm = ({ userId, onClose, existing }: FormProps) => {
 
       if (selectedDays.length === 1) {
         await API.post('/work_schedules', {
-          user_id: userId,
+          [idKey]: userId,
           week_day: selectedDays[0],
           start_time: startTime,
           end_time: endTime,
@@ -66,7 +69,7 @@ const WorkScheduleForm = ({ userId, onClose, existing }: FormProps) => {
         });
       } else {
         await API.put('/work_schedules/bulk', {
-          user_id: userId,
+          [idKey]: userId,
           days: selectedDays,
           start_time: startTime,
           end_time: endTime,
@@ -76,7 +79,7 @@ const WorkScheduleForm = ({ userId, onClose, existing }: FormProps) => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['work_schedules', userId] });
+      queryClient.invalidateQueries({ queryKey: ['work_schedules', idKey, userId] });
       onClose();
     },
   });
@@ -264,13 +267,13 @@ const WorkScheduleForm = ({ userId, onClose, existing }: FormProps) => {
   );
 };
 
-const WorkScheduleModal = ({ userId, onClose }: Props) => {
+const WorkScheduleModal = ({ userId, onClose, idKey = 'user_id' }: Props) => {
   const { t } = useTranslation();
 
   const { data: existing, isLoading } = useQuery<WorkSchedule[]>({
-    queryKey: ['work_schedules', userId],
+    queryKey: ['work_schedules', idKey, userId],
     queryFn: async () => {
-      const { data } = await API.get(`/work_schedules?user_id=${userId}`);
+      const { data } = await API.get('/work_schedules', { params: { [idKey]: userId } });
       return Array.isArray(data) ? data : data?.data || [];
     },
   });
@@ -288,6 +291,7 @@ const WorkScheduleModal = ({ userId, onClose }: Props) => {
           <WorkScheduleForm
             key={userId}
             userId={userId}
+            idKey={idKey}
             onClose={onClose}
             existing={existing}
           />

@@ -21,14 +21,27 @@ export interface AttendanceRecord {
   check_out?: string;
 }
 
+export interface AttendanceBranch {
+  id?: number;
+  name_uz: string | null;
+  name_ru: string | null;
+  name_en: string | null;
+}
+
 export interface FlatAttendanceRecord {
   id: number;
   employee_id: number;
   employee: string;
   position: string;
+  branch_id?: number;
+  branch?: AttendanceBranch | null;
   date: string;
-  check_in: string;
-  check_out: string;
+  /** "in" — kirdi, "out" — chiqdi */
+  type?: 'in' | 'out' | null;
+  /** HH:mm:ss — type sodir bo'lgan vaqt */
+  time?: string | null;
+  check_in?: string;
+  check_out?: string;
   comment: string | null;
   status: string[];
 }
