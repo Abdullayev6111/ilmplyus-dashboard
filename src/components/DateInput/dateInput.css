@@ -1,0 +1,197 @@
+/* Reusable date input — `input[type="date"]` o'rniga. */
+
+.date-input {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+/* Chaqiruvchi sahifaning `className` i input'ga beriladi, shuning uchun bu yerda
+   faqat kalendar tugmasi uchun joy ajratamiz — ranglar/chegaralar tegilmaydi. */
+.date-input__field {
+  width: 100%;
+  font-family: inherit;
+}
+
+/* Ba'zi sahifalar `padding` ni inline style yoki yuqori spetsifiklikdagi qoida bilan
+   beradi — `!important` bo'lmasa kalendar tugmasi matn ustiga tushib qoladi. */
+.date-input .date-input__field {
+  padding-right: 34px !important;
+}
+
+.date-input--disabled {
+  opacity: 0.7;
+}
+
+.date-input__toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.date-input__toggle:hover:not(:disabled) {
+  color: #032140;
+}
+
+.date-input__toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Kalendar `body` ga portal qilinadi — modal `overflow` i kesmasligi uchun. */
+.date-input__calendar {
+  position: fixed;
+  z-index: 10000;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgb(3 33 64 / 16%);
+  font-family: inherit;
+  font-size: 13px;
+  color: #032140;
+}
+
+.date-input__calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.date-input__selects {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+}
+
+.date-input__select {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.date-input__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 16px;
+  line-height: 1;
+  color: #032140;
+  cursor: pointer;
+}
+
+.date-input__nav:hover {
+  background: #f1f5f9;
+}
+
+.date-input__weekdays,
+.date-input__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.date-input__weekday {
+  padding: 4px 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.date-input__day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  color: #032140;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.date-input__day--empty {
+  cursor: default;
+}
+
+.date-input__day:hover:not(:disabled):not(.date-input__day--empty) {
+  background: #eff6ff;
+}
+
+.date-input__day:disabled {
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.date-input__day--today:not(.date-input__day--selected) {
+  box-shadow: inset 0 0 0 1px #2563eb;
+}
+
+.date-input__day--selected {
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+}
+
+.date-input__day--selected:hover {
+  background: #1d4ed8;
+}
+
+.date-input__calendar-footer {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.date-input__action {
+  flex: 1;
+  padding: 6px 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  color: #032140;
+  cursor: pointer;
+}
+
+.date-input__action:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.date-input__action:disabled {
+  color: #cbd5e1;
+  cursor: not-allowed;
+}

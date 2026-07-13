@@ -34,12 +34,17 @@
 
 .login-left-center {
   margin: 0 auto;
-  margin-top: 20%;
+  /* 1920x1080 da 20% ≈ 22vh — past ekranlarda vh chegarasi ushlab qoladi. */
+  margin-top: min(20%, 22vh);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
   perspective: 1000px;
+}
+
+.login-left-center img {
+  max-width: 100%;
 }
 
 .login-left-center h1 {
@@ -48,11 +53,17 @@
 }
 
 .login-left-bottom {
-  margin-top: 14%;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-left: 60px;
+}
+
+/* Inline `gap: 200` ni bosib o'tadi — 1920 da 200px, tor ekranda ergashib kichrayadi. */
+.login-left-bottom .login-support {
+  flex-wrap: wrap;
+  gap: clamp(20px, 10.4vw, 200px) !important;
 }
 
 .login-left-bottom h1 {
@@ -84,13 +95,18 @@
   justify-content: flex-start;
 }
 
+/* `margin-top: auto` ikkala bolada ham — qolgan bo'sh joy teng bo'linadi:
+   forma vertikal markazda qoladi, h4 esa har qanday ekran balandligida pastga
+   yopishadi. Foiz margin ishlatilmaydi — u konteyner *kengligidan* hisoblanib,
+   past ekranlarda matnni `overflow: hidden` ostiga surib yuborar edi. */
 .login-right-content {
   width: 320px;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 15px;
-  margin-top: 50%;
+  margin-top: auto;
 }
 
 .login-right-content h1 {
@@ -106,19 +122,18 @@
   font-family: noto-b;
   font-size: 15px;
   letter-spacing: 2%;
-  font-weight: 700;
-  margin-top: 30%;
-  margin-left: 10px;
+  margin-top: auto;
+  padding-top: 24px;
+  flex-shrink: 0;
 }
 
 .login-right h4 span {
   font-family: noto-m !important;
   font-size: 15px;
   letter-spacing: 2%;
-  font-weight: 500;
 }
 
-form {
+.login-right-content form {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -127,7 +142,7 @@ form {
   margin-top: 10px;
 }
 
-form input {
+.login-right-content form input {
   width: 100%;
   height: 60px;
   border: 2px solid #003366;
@@ -138,7 +153,7 @@ form input {
   font-size: 18px;
 }
 
-form input::placeholder {
+.login-right-content form input::placeholder {
   font-family: noto-m;
   font-size: 18px;
   color: #032140;
@@ -219,7 +234,7 @@ form input::placeholder {
   border: 2px solid #032140;
   color: #032140;
   background: #fff;
-  font-weight: 800;
+  font-family: noto-b;
 }
 
 .phone-logo {
@@ -308,78 +323,101 @@ form input::placeholder {
   }
 }
 
-@media (max-width: 1920px) {
-  .login-right h4 {
-    margin-top: 46%;
-  }
-  .login-left-bottom {
-    margin-top: 24%;
+/* Noutbuk kengliklari — o'ng ustunga 320px forma + padding sig'ishi uchun joy beriladi. */
+@media (max-width: 1440px) {
+  .login-right {
+    width: 38%;
+    padding: 32px;
   }
 }
 
 @media (max-width: 1280px) {
-  .login-right h4 {
-    margin-top: 150px;
-    font-size: 14px;
-    margin-left: -20px;
+  .login-right {
+    width: 40%;
   }
-  .login-right h4 span {
-    text-align: center;
-    margin-left: -4px;
+  .login-right h4 {
+    font-size: 14px;
   }
   .white-logo-big {
     right: -250px;
   }
   .login-left-bottom {
-    margin-top: 140px;
+    margin-top: auto;
     margin-left: 0px;
-  }
-  .login-support {
-    gap: 120px !important;
   }
 }
 
-@media (max-width: 480px) {
+/* Chap ustun juda torayib ketadigan nuqta — planshetda faqat forma qoladi. */
+@media (max-width: 900px) {
   .login-left {
     display: none;
   }
   .login-right {
     width: 100%;
   }
+}
+
+/* Past ekranlar (masalan 1366x768, 1280x720) — forma va pastki matn birga sig'sin. */
+@media (max-height: 800px) {
+  .login-right-content {
+    gap: 10px;
+  }
+  .login-right-content h1 {
+    font-size: 26px;
+  }
+  .login-right-content form {
+    gap: 14px;
+  }
+  .login-right-content form input {
+    height: 52px;
+    padding: 14px 18px;
+    font-size: 16px;
+  }
+  .login-right-content form input::placeholder {
+    font-size: 16px;
+  }
+  .login-btn {
+    height: 46px;
+    font-size: 18px;
+  }
+  .login-right h4 {
+    padding-top: 16px;
+  }
+}
+
+@media (max-height: 680px) {
+  .login-right {
+    padding: 24px;
+  }
+  .login-right-content form input {
+    height: 46px;
+  }
+  .login-left-center {
+    margin-top: 12vh;
+  }
+}
+
+@media (max-width: 480px) {
   .login-support-phone {
     display: flex !important;
     gap: 20px !important;
-    margin-top: 15%;
+    margin-top: 24px;
   }
   .login-support-phone a {
     font-size: 25px;
-  }
-  .login-right h4 {
-    margin-top: 15px;
-    margin-left: 20px;
   }
   .phone-logo {
     width: 170px;
     height: 150px;
     display: block;
-    position: absolute;
-    top: 150px;
+    margin-top: 48px;
+    flex-shrink: 0;
   }
   .login-right-content {
     gap: 10px;
-    margin-top: 310px;
+    margin-top: 24px;
   }
   .login-right-content h1 {
     margin-bottom: -5px;
-  }
-}
-
-@media (height: 945px) {
-  .login-right h4 {
-    margin-top: calc(46% - 50px);
-  }
-
-  .login-left-bottom {
-    margin-top: calc(24% - 35px);
   }
 }

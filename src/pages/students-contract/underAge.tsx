@@ -1,27 +1,42 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import './studentsContracts.css';
-import { emptyMinorStudent, emptyRepresentative } from '../../types/studentContract.types';
+import { useState, useMemo, useRef, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import "./studentsContracts.css";
+import {
+  emptyMinorStudent,
+  emptyRepresentative,
+} from "@/types/studentContract.types";
 import type {
   MinorStudentFormData,
   RepresentativeFormData,
-} from '../../types/studentContract.types';
-import type { Lid } from '@/types/lid.types';
-import type { Group } from '@/types/groups.types';
-import { notifications } from '@mantine/notifications';
-import { API } from '@/api/api';
-import { useOptions, type OptionItem } from '@/hooks/useOptions';
+} from "@/types/studentContract.types";
+import type { Lid } from "@/types/lid.types";
+import type { Group } from "@/types/group.types";
+import { notifications } from "@mantine/notifications";
+import { API } from "@/api/api";
+import { useOptions, optionLabel, type Option } from "@/api/options";
+import DateInput from '@/components/DateInput';
 
+// Minimal shape of a /users record used for representative auto-fill
+interface UserMatch {
+  id: number;
+  full_name: string | null;
+  pinfl: string | null;
+  phone: string | null;
+}
+
+// Helper: convert ISO date string to YYYY-MM-DD for date inputs
 const formatDateForInput = (dateStr: string | null | undefined): string => {
-  if (!dateStr) return '';
+  if (!dateStr) return "";
+  // Already in YYYY-MM-DD format
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  // ISO format: extract date part
   const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return '';
+  if (isNaN(d.getTime())) return "";
   const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
 
@@ -34,20 +49,22 @@ const MinorStudentCard = ({
   allLids,
   allGroups,
   allCourses,
-  allLevels,
 }: {
   student: MinorStudentFormData;
   index: number;
-  onChange: (index: number, field: keyof MinorStudentFormData, value: string) => void;
+  onChange: (
+    index: number,
+    field: keyof MinorStudentFormData,
+    value: string,
+  ) => void;
   onRemove: (index: number) => void;
   showRemove: boolean;
   allLids: Lid[];
   allGroups: Group[];
-  allCourses: OptionItem[];
-  allLevels: OptionItem[];
+  allCourses: Option[];
 }) => {
-  const { t } = useTranslation();
-  const [lidSearchTerm, setLidSearchTerm] = useState(student.lid_id || '');
+  const { t, i18n } = useTranslation();
+  const [lidSearchTerm, setLidSearchTerm] = useState(student.lid_id || "");
   const [showLidDropdown, setShowLidDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +73,8 @@ const MinorStudentCard = ({
     const term = lidSearchTerm.toLowerCase();
     return (allLids || [])
       .filter((lid: Lid) => {
-        const fullName = `${lid.first_name || ''} ${lid.last_name || ''}`.toLowerCase();
+        const fullName =
+          `${lid.first_name || ""} ${lid.last_name || ""}`.toLowerCase();
         const idStr = String(lid.id);
         return idStr === term || fullName.includes(term);
       })
@@ -69,24 +87,44 @@ const MinorStudentCard = ({
       lid.district?.name_uz || lid.district?.name_uz,
     ]
       .filter(Boolean)
-      .join(', ');
+      .join(", ");
 
-    onChange(index, 'lid_id', String(lid.id));
-    onChange(index, 'first_name', lid.first_name || student.first_name);
-    onChange(index, 'last_name', lid.last_name || student.last_name);
-    onChange(index, 'father_name', lid.father_name || student.father_name);
-    onChange(index, 'birth_date', lid.birth_date || student.birth_date);
-    onChange(index, 'phone', lid.phone ? lid.phone.replace('+', '') : student.phone);
-    onChange(index, 'course_id', lid.course_id ? String(lid.course_id) : student.course_id);
-    onChange(index, 'group_id', lid.group_id ? String(lid.group_id) : student.group_id);
-    onChange(index, 'level_id', lid.level_id ? String(lid.level_id) : student.level_id);
-    onChange(index, 'residential_address', addressStr || student.residential_address);
+    onChange(index, "lid_id", String(lid.id));
+    onChange(index, "first_name", lid.first_name || student.first_name);
+    onChange(index, "last_name", lid.last_name || student.last_name);
+    onChange(index, "father_name", lid.father_name || student.father_name);
+    onChange(index, "birth_date", lid.birth_date || student.birth_date);
     onChange(
       index,
-      'monthly_price',
+      "phone",
+      lid.phone ? lid.phone.replace("+", "") : student.phone,
+    );
+    onChange(
+      index,
+      "course_id",
+      lid.course_id ? String(lid.course_id) : student.course_id,
+    );
+    onChange(
+      index,
+      "group_id",
+      lid.group_id ? String(lid.group_id) : student.group_id,
+    );
+    onChange(
+      index,
+      "level_id",
+      lid.level_id ? String(lid.level_id) : student.level_id,
+    );
+    onChange(
+      index,
+      "residential_address",
+      addressStr || student.residential_address,
+    );
+    onChange(
+      index,
+      "monthly_price",
       lid.course_price?.new_price
         ? String(lid.course_price.new_price)
-        : student.monthly_price || '',
+        : student.monthly_price || "",
     );
 
     setLidSearchTerm(String(lid.id));
@@ -95,13 +133,16 @@ const MinorStudentCard = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowLidDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -109,40 +150,44 @@ const MinorStudentCard = ({
     <div
       className="sc-student-card"
       style={{
-        background: '#fff',
-        padding: '24px',
-        borderRadius: '12px',
-        marginBottom: '20px',
-        position: 'relative',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
+        background: "#fff",
+        padding: "24px",
+        borderRadius: "12px",
+        marginBottom: "20px",
+        position: "relative",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
       }}
     >
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '20px',
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
         }}
       >
-        <div style={{ flex: 1, display: 'flex', gap: '20px' }}>
-          <div className="sc-form-col" style={{ position: 'relative', flex: 1 }} ref={dropdownRef}>
+        <div style={{ flex: 1, display: "flex", gap: "20px" }}>
+          <div
+            className="sc-form-col"
+            style={{ position: "relative", flex: 1 }}
+            ref={dropdownRef}
+          >
             <label className="sc-form-label">
-              {t('studentsContract.lidIdSearch')} <span>*</span>
+              {t('studentsContract.form.lidId')} <span>*</span>
             </label>
             <input
               type="text"
               className="sc-form-input"
               style={{
-                borderColor: '#003366',
-                borderRadius: '10px',
-                padding: '12px 16px',
+                borderColor: "#003366",
+                borderRadius: "10px",
+                padding: "12px 16px",
               }}
-              placeholder={t('studentsContract.lidSearchPlaceholder')}
+              placeholder={t('studentsContract.form.lidSearchPlaceholder')}
               value={lidSearchTerm || student.lid_id}
               onChange={(e) => {
                 setLidSearchTerm(e.target.value);
-                onChange(index, 'lid_id', e.target.value);
+                onChange(index, "lid_id", e.target.value);
                 setShowLidDropdown(true);
               }}
               onFocus={() => setShowLidDropdown(true)}
@@ -151,16 +196,16 @@ const MinorStudentCard = ({
               <div
                 className="sc-lid-dropdown"
                 style={{
-                  position: 'absolute',
-                  top: '100%',
+                  position: "absolute",
+                  top: "100%",
                   left: 0,
                   right: 0,
                   zIndex: 1000,
-                  background: '#fff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  marginTop: '4px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  background: "#fff",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "8px",
+                  marginTop: "4px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 }}
               >
                 {searchResults.length > 0 ? (
@@ -168,36 +213,40 @@ const MinorStudentCard = ({
                     <div
                       className="sc-lid-dropdown-header"
                       style={{
-                        display: 'flex',
-                        background: '#f8fafc',
-                        padding: '8px 12px',
-                        borderBottom: '1px solid #e2e8f0',
-                        fontSize: '12px',
-                        color: '#64748b',
-                        fontWeight: '500',
+                        display: "flex",
+                        background: "#f8fafc",
+                        padding: "8px 12px",
+                        borderBottom: "1px solid #e2e8f0",
+                        fontSize: "12px",
+                        color: "#64748b",
+                        fontWeight: "500",
                       }}
                     >
-                      <div style={{ width: '60px' }}>ID</div>
-                      <div style={{ flex: 2 }}>{t('studentsContract.nameCol')}</div>
-                      <div style={{ flex: 2 }}>{t('studentsContract.telephoneCol')}</div>
+                      <div style={{ width: "60px" }}>{t('studentsContract.form.dropdownId')}</div>
+                      <div style={{ flex: 2 }}>{t('studentsContract.form.dropdownName')}</div>
+                      <div style={{ flex: 2 }}>{t('studentsContract.form.dropdownPhone')}</div>
                     </div>
                     {searchResults.map((lid: Lid) => (
                       <div
                         key={lid.id}
                         className="sc-lid-dropdown-item"
                         style={{
-                          display: 'flex',
-                          padding: '10px 12px',
-                          borderBottom: '1px solid #f1f5f9',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          transition: 'background 0.2s',
+                          display: "flex",
+                          padding: "10px 12px",
+                          borderBottom: "1px solid #f1f5f9",
+                          cursor: "pointer",
+                          fontSize: "14px",
+                          transition: "background 0.2s",
                         }}
                         onClick={() => handleLidSelect(lid)}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f1f5f9')}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background = "#f1f5f9")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background = "transparent")
+                        }
                       >
-                        <div style={{ width: '60px' }}>{lid.id}</div>
+                        <div style={{ width: "60px" }}>{lid.id}</div>
                         <div style={{ flex: 2 }}>
                           {lid.first_name} {lid.last_name}
                         </div>
@@ -208,44 +257,34 @@ const MinorStudentCard = ({
                 ) : (
                   <div
                     style={{
-                      padding: '12px',
-                      textAlign: 'center',
-                      color: '#64748b',
+                      padding: "12px",
+                      textAlign: "center",
+                      color: "#64748b",
                     }}
                   >
-                    {t('studentsContract.noResults')}
+                    {t('studentsContract.form.notFound')}
                   </div>
                 )}
               </div>
             )}
-          </div>
-          <div className="sc-form-col" style={{ flex: 1 }}>
-            <label className="sc-form-label">JSHSHIR</label>
-            <input
-              type="text"
-              className="sc-form-input"
-              placeholder="00000000000000"
-              value={student.jshshir}
-              onChange={(e) => onChange(index, 'jshshir', e.target.value)}
-            />
           </div>
         </div>
         {showRemove && (
           <button
             className="sc-remove-student-btn"
             style={{
-              background: '#ffefef',
-              color: '#ff4d4f',
-              border: 'none',
-              padding: '6px 12px',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '13px',
-              marginLeft: '20px',
+              background: "#ffefef",
+              color: "#ff4d4f",
+              border: "none",
+              padding: "6px 12px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "13px",
+              marginLeft: "20px",
             }}
             onClick={() => onRemove(index)}
           >
-            X {t('studentsContract.delete')}
+            {t('studentsContract.minor.removeStudent')}
           </button>
         )}
       </div>
@@ -253,12 +292,12 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.contractLanguage')} <span>*</span>
+            {t('studentsContract.form.language')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
             value={student.language}
-            onChange={(e) => onChange(index, 'language', e.target.value)}
+            onChange={(e) => onChange(index, "language", e.target.value)}
           >
             <option value="uz">UZ</option>
             <option value="ru">RU</option>
@@ -267,15 +306,15 @@ const MinorStudentCard = ({
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.citizenship')} <span>*</span>
+            {t('studentsContract.form.citizenship')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
             value={student.citizenship}
-            onChange={(e) => onChange(index, 'citizenship', e.target.value)}
+            onChange={(e) => onChange(index, "citizenship", e.target.value)}
           >
-            <option value="citizen">{t('studentsContract.uzbekistan')}</option>
-            <option value="foreign">{t('studentsContract.foreign')}</option>
+            <option value="citizen">{t('studentsContract.form.citizenUz')}</option>
+            <option value="foreign">{t('studentsContract.form.citizenForeign')}</option>
           </select>
         </div>
       </div>
@@ -283,88 +322,84 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.certPassport')} <span>*</span>
+            {t('studentsContract.form.passport')} <span>*</span>
           </label>
-          <div className="sc-passport-group" style={{ display: 'flex', gap: '8px' }}>
+          <div
+            className="sc-passport-group"
+            style={{ display: "flex", gap: "8px" }}
+          >
             <input
               type="text"
               className="sc-passport-series"
               style={{
-                width: '80px',
-                padding: '10px',
-                borderRadius: '8px',
-                border: '1px solid #e2e8f0',
-                textTransform: 'uppercase',
+                width: "80px",
+                padding: "10px",
+                borderRadius: "8px",
+                border: "1px solid #e2e8f0",
+                textTransform: "uppercase",
               }}
               placeholder="A-AA"
               maxLength={4}
               value={student.birth_cert_series}
-              onChange={(e) => onChange(index, 'birth_cert_series', e.target.value.toUpperCase())}
+              onChange={(e) =>
+                onChange(
+                  index,
+                  "birth_cert_series",
+                  e.target.value.toUpperCase(),
+                )
+              }
             />
             <input
               type="text"
               className="sc-passport-number"
               style={{
                 flex: 1,
-                padding: '10px',
-                borderRadius: '8px',
-                border: '1px solid #e2e8f0',
+                padding: "10px",
+                borderRadius: "8px",
+                border: "1px solid #e2e8f0",
               }}
-              placeholder={t('studentsContract.number')}
+              placeholder="Raqam"
               maxLength={7}
               value={student.birth_cert_number}
               onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, '');
-                if (val.length <= 7) onChange(index, 'birth_cert_number', val);
+                const val = e.target.value.replace(/\D/g, "");
+                if (val.length <= 7) onChange(index, "birth_cert_number", val);
               }}
             />
           </div>
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.issuedDate')} <span>*</span>
+            {t('studentsContract.form.passportGivenDate')} <span>*</span>
           </label>
-          <input
-            type="date"
+          <DateInput
             className="sc-form-input"
             style={{
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #e2e8f0',
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #e2e8f0",
             }}
             value={student.birth_cert_given_date}
-            onChange={(e) => onChange(index, 'birth_cert_given_date', e.target.value)}
-          />
-        </div>
-        <div className="sc-form-col">
-          <label className="sc-form-label">{t('studentsContract.expiryDateLabel')}</label>
-          <input
-            type="date"
-            className="sc-form-input"
-            style={{
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #e2e8f0',
-            }}
-            value={student.birth_cert_expiry_date}
-            onChange={(e) => onChange(index, 'birth_cert_expiry_date', e.target.value)}
+            onChange={(e) =>
+              onChange(index, "birth_cert_given_date", e.target.value)
+            }
           />
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.birthPlace')} <span>*</span>
+            {t('studentsContract.form.birthPlace')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
             style={{
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #e2e8f0',
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #e2e8f0",
             }}
-            placeholder={t('studentsContract.enter')}
+            placeholder="Kiriting"
             value={student.birth_place}
-            onChange={(e) => onChange(index, 'birth_place', e.target.value)}
+            onChange={(e) => onChange(index, "birth_place", e.target.value)}
           />
         </div>
       </div>
@@ -372,14 +407,14 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.lastName')} <span>*</span>
+            {t('studentsContract.form.lastName')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
-            placeholder={t('studentsContract.enter')}
+            placeholder="Kiriting"
             value={student.last_name}
-            onChange={(e) => onChange(index, 'last_name', e.target.value)}
+            onChange={(e) => onChange(index, "last_name", e.target.value)}
           />
         </div>
       </div>
@@ -387,26 +422,26 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.firstName')} <span>*</span>
+            {t('studentsContract.form.firstName')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
-            placeholder={t('studentsContract.enter')}
+            placeholder="Kiriting"
             value={student.first_name}
-            onChange={(e) => onChange(index, 'first_name', e.target.value)}
+            onChange={(e) => onChange(index, "first_name", e.target.value)}
           />
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.fatherName')} <span>*</span>
+            {t('studentsContract.form.fatherName')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
-            placeholder={t('studentsContract.enter')}
+            placeholder="Kiriting"
             value={student.father_name}
-            onChange={(e) => onChange(index, 'father_name', e.target.value)}
+            onChange={(e) => onChange(index, "father_name", e.target.value)}
           />
         </div>
       </div>
@@ -414,25 +449,24 @@ const MinorStudentCard = ({
       <div className="sc-form-row">
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.birthDate')} <span>*</span>
+            {t('studentsContract.form.birthDate')} <span>*</span>
           </label>
-          <input
-            type="date"
+          <DateInput
             className="sc-form-input"
             value={student.birth_date}
-            onChange={(e) => onChange(index, 'birth_date', e.target.value)}
+            onChange={(e) => onChange(index, "birth_date", e.target.value)}
           />
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.group')} <span>*</span>
+            {t('studentsContract.form.group')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
             value={student.group_id}
-            onChange={(e) => onChange(index, 'group_id', e.target.value)}
+            onChange={(e) => onChange(index, "group_id", e.target.value)}
           >
-            <option value="">{t('studentsContract.select')}</option>
+            <option value="">{t('studentsContract.form.select')}</option>
             {(allGroups || []).map((g: Group) => (
               <option key={g.id} value={g.id}>
                 {g.name}
@@ -442,17 +476,17 @@ const MinorStudentCard = ({
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.course')} <span>*</span>
+            {t('studentsContract.form.course')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
             value={student.course_id}
             onChange={(e) => {
-              onChange(index, 'course_id', e.target.value);
-              onChange(index, 'level_id', '');
+              onChange(index, "course_id", e.target.value);
+              onChange(index, "level_id", ""); // Reset level when course changes
             }}
           >
-            <option value="">{t('studentsContract.select')}</option>
+            <option value="">{t('studentsContract.form.select')}</option>
             {(allCourses || []).map((c) => (
               <option key={c.id} value={c.id}>
                 {c.label}
@@ -462,17 +496,19 @@ const MinorStudentCard = ({
         </div>
         <div className="sc-form-col">
           <label className="sc-form-label">
-            {t('studentsContract.level')} <span>*</span>
+            {t('studentsContract.form.level')} <span>*</span>
           </label>
           <select
             className="sc-form-select"
             value={student.level_id}
-            onChange={(e) => onChange(index, 'level_id', e.target.value)}
+            onChange={(e) => onChange(index, "level_id", e.target.value)}
           >
-            <option value="">{t('studentsContract.select')}</option>
-            {(allLevels || []).map((l) => (
+            <option value="">{t('studentsContract.form.select')}</option>
+            {(
+              (allCourses || []).find((c) => String(c.id) === student.course_id)?.levels || []
+            ).map((l) => (
               <option key={l.id} value={l.id}>
-                {l.label}
+                {optionLabel(l, i18n.language)}
               </option>
             ))}
           </select>
@@ -481,78 +517,80 @@ const MinorStudentCard = ({
 
       <div className="sc-form-row">
         <div className="sc-form-col">
-          <label className="sc-form-label">{t('studentsContract.monthlyPayment')}</label>
+          <label className="sc-form-label">{t('studentsContract.form.monthlyPrice')}</label>
           <input
             type="number"
             className="sc-form-input"
             placeholder="500000"
             value={student.monthly_price}
-            onChange={(e) => onChange(index, 'monthly_price', e.target.value)}
+            onChange={(e) => onChange(index, "monthly_price", e.target.value)}
           />
         </div>
         <div className="sc-form-col">
-          <label className="sc-form-label">{t('studentsContract.totalPrice')}</label>
+          <label className="sc-form-label">{t('studentsContract.form.totalPrice')}</label>
           <input
             type="number"
             className="sc-form-input"
             placeholder="3000000"
             value={student.total_price}
-            onChange={(e) => onChange(index, 'total_price', e.target.value)}
+            onChange={(e) => onChange(index, "total_price", e.target.value)}
           />
         </div>
       </div>
 
       <div className="sc-form-row">
         <div className="sc-form-col">
-          <label className="sc-form-label">{t('studentsContract.courseStartDate')}</label>
-          <input
-            type="date"
+          <label className="sc-form-label">{t('studentsContract.form.courseStartDate')}</label>
+          <DateInput
             className="sc-form-input"
             value={student.course_start_date}
-            onChange={(e) => onChange(index, 'course_start_date', e.target.value)}
+            onChange={(e) =>
+              onChange(index, "course_start_date", e.target.value)
+            }
           />
         </div>
         <div className="sc-form-col">
-          <label className="sc-form-label">{t('studentsContract.courseEndDate')}</label>
-          <input
-            type="date"
+          <label className="sc-form-label">{t('studentsContract.form.courseEndDate')}</label>
+          <DateInput
             className="sc-form-input"
             value={student.course_end_date}
-            onChange={(e) => onChange(index, 'course_end_date', e.target.value)}
+            onChange={(e) => onChange(index, "course_end_date", e.target.value)}
           />
         </div>
       </div>
 
       <div className="sc-form-row">
-        <div className="sc-form-col" style={{ flex: '0 0 50%' }}>
+        <div className="sc-form-col" style={{ flex: "0 0 50%" }}>
           <label className="sc-form-label">
-            {t('studentsContract.phoneNo')} <span>*</span>
+            {t('studentsContract.form.phone')} <span>*</span>
           </label>
           <input
             type="text"
             className="sc-form-input"
             placeholder="+998"
             value={student.phone}
-            onChange={(e) => onChange(index, 'phone', e.target.value)}
+            onChange={(e) => onChange(index, "phone", e.target.value)}
           />
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
           <label className="sc-form-label">
-            {t('studentsContract.primaryAddress')} <span>*</span>
+            {t('studentsContract.form.residentialAddress')} <span>*</span>
           </label>
           <textarea
             className="sc-form-textarea"
             style={{
-              minHeight: '80px',
-              width: '100%',
-              padding: '12px',
-              borderRadius: '8px',
-              border: '1px solid #e2e8f0',
-              fontSize: '14px',
+              minHeight: "80px",
+              width: "100%",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #e2e8f0",
+              fontSize: "14px",
             }}
-            placeholder={t('studentsContract.enter')}
+            placeholder="Kiriting"
             value={student.residential_address}
-            onChange={(e) => onChange(index, 'residential_address', e.target.value)}
+            onChange={(e) =>
+              onChange(index, "residential_address", e.target.value)
+            }
           />
         </div>
       </div>
@@ -568,63 +606,73 @@ const UnderAge = () => {
   const [step, setStep] = useState(1);
   const [representative, setRepresentative] = useState<RepresentativeFormData>({
     ...emptyRepresentative,
-    phones: ['+998'],
+    phones: ["+998"],
   });
   const [students, setStudents] = useState<MinorStudentFormData[]>([
-    { ...emptyMinorStudent, phone: '+998' },
+    { ...emptyMinorStudent, phone: "+998" },
   ]);
 
   const { data: contractToEdit, isLoading: isFetchingContract } = useQuery({
-    queryKey: ['student-contract', id],
+    queryKey: ["student-contract", id],
     queryFn: () => API.get(`/student-contracts/${id}`).then((res) => res.data),
     enabled: !!id,
   });
 
   useEffect(() => {
     if (contractToEdit && id) {
-      const contract = contractToEdit.contract || contractToEdit.data || contractToEdit;
+      const contract =
+        contractToEdit.contract || contractToEdit.data || contractToEdit;
       if (contract.representative) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setRepresentative({
-          representative_type: contract.representative.representative_type || 'Ota',
-          first_name: contract.representative.first_name || '',
-          last_name: contract.representative.last_name || '',
-          father_name: contract.representative.father_name || '',
-          jshshir: contract.representative.jshshir || '',
-          citizenship: contract.representative.citizenship || 'citizen',
-          phones: [contract.representative.phone || '+998'],
-          passport_series: contract.representative.passport_series || '',
-          passport_number: contract.representative.passport_number || '',
+          representative_type:
+            contract.representative.representative_type || "Ota",
+          first_name: contract.representative.first_name || "",
+          last_name: contract.representative.last_name || "",
+          father_name: contract.representative.father_name || "",
+          jshshir: contract.representative.jshshir || "",
+          citizenship: contract.representative.citizenship || "citizen",
+          phones: [contract.representative.phone || "+998"],
+          passport_series: contract.representative.passport_series || "",
+          passport_number: contract.representative.passport_number || "",
           birth_date: formatDateForInput(contract.representative.birth_date),
-          passport_given_date: formatDateForInput(contract.representative.passport_given_date),
-          passport_expiry_date: formatDateForInput(contract.representative.passport_expiry_date),
-          registered_address: contract.representative.registered_address || '',
-          residential_address: contract.representative.residential_address || '',
-          language: contract.language || 'uz',
-          passport_given_by: contract.representative.passport_given_by || '',
+          passport_given_date: formatDateForInput(
+            contract.representative.passport_given_date,
+          ),
+          passport_expiry_date: formatDateForInput(
+            contract.representative.passport_expiry_date,
+          ),
+          registered_address: contract.representative.registered_address || "",
+          residential_address:
+            contract.representative.residential_address || "",
+          language: contract.language || "uz",
+          passport_given_by: contract.representative.passport_given_by || "",
         });
       }
 
       if (contract.contract_students && contract.contract_students.length > 0) {
         setStudents(
-          contract.contract_students.map((s: any) => ({
+          contract.contract_students.map((s: Record<string, unknown>) => ({
             lid_id: String(s.lid_id),
-            first_name: s.first_name || '',
-            last_name: s.last_name || '',
-            father_name: s.father_name || '',
-            birth_date: formatDateForInput(s.birth_date),
-            birth_cert_series: s.birth_cert_series || '',
-            birth_cert_number: s.birth_cert_number || '',
-            birth_cert_given_date: formatDateForInput(s.birth_cert_given_date),
-            birth_cert_expiry_date: formatDateForInput(s.birth_cert_expiry_date),
-            birth_place: s.birth_place || '',
-            phone: s.phone ? s.phone.replace('+', '') : '998',
-            course_id: String(s.course_id || ''),
-            level_id: String(s.level_id || ''),
-            group_id: String(s.group_id || ''),
-            residential_address: s.residential_address || '',
-            jshshir: s.jshshir || '',
-            language: contract.language || 'uz',
-            citizenship: s.citizenship || 'citizen',
+            first_name: s.first_name || "",
+            last_name: s.last_name || "",
+            father_name: s.father_name || "",
+            birth_date: formatDateForInput(s.birth_date as string | null | undefined),
+            birth_cert_series: s.birth_cert_series || "",
+            birth_cert_number: s.birth_cert_number || "",
+            birth_cert_given_date: formatDateForInput(s.birth_cert_given_date as string | null | undefined),
+            birth_cert_expiry_date: formatDateForInput(
+              s.birth_cert_expiry_date as string | null | undefined,
+            ),
+            birth_place: s.birth_place || "",
+            phone: s.phone ? (s.phone as string).replace("+", "") : "998",
+            course_id: String(s.course_id || ""),
+            level_id: String(s.level_id || ""),
+            group_id: String(s.group_id || ""),
+            residential_address: s.residential_address || "",
+            jshshir: s.jshshir || "",
+            language: contract.language || "uz",
+            citizenship: s.citizenship || "citizen",
           })) as MinorStudentFormData[],
         );
       }
@@ -632,73 +680,71 @@ const UnderAge = () => {
   }, [contractToEdit, id]);
 
   const { data: allLids } = useQuery({
-    queryKey: ['lids-all'],
+    queryKey: ["lids-all"],
     queryFn: () =>
-      API.get('/lids', { params: { per_page: 1000 } }).then((res) =>
+      API.get("/lids", { params: { per_page: 1000 } }).then((res) =>
         Array.isArray(res.data) ? res.data : res.data?.data || [],
       ),
   });
 
+  // Guruh tanlanganda shartnoma sanalari `start_date` / `end_date` dan olinadi —
+  // /options/groups bularni bermaydi.
   const { data: allGroups } = useQuery({
-    queryKey: ['groups-all'],
+    queryKey: ["groups-all"],
     queryFn: () =>
-      API.get('/groups', { params: { per_page: 1000 } }).then((res) =>
+      API.get("/groups", { params: { per_page: 1000 } }).then((res) =>
         Array.isArray(res.data) ? res.data : res.data?.data || [],
       ),
   });
 
-  const { data: allCourses } = useOptions('courses');
-  const { data: allLevels } = useOptions('levels');
+  const { data: allCourses } = useOptions("courses");
 
-  const jshshrTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // JSHSHIR (pinfl) bo'yicha foydalanuvchi avtomatik topiladi — /options/users `pinfl` ni bermaydi.
+  const { data: allUsers } = useQuery<UserMatch[]>({
+    queryKey: ["users-all"],
+    queryFn: () =>
+      API.get("/users", { params: { per_page: 1000 } }).then((res) =>
+        Array.isArray(res.data) ? res.data : res.data?.data || [],
+      ),
+  });
 
-  useEffect(() => {
-    if (jshshrTimerRef.current) clearTimeout(jshshrTimerRef.current);
-    if (representative.jshshir.length !== 14) return;
-
-    jshshrTimerRef.current = setTimeout(async () => {
-      try {
-        const res = await API.get('/users');
-        const users: Array<{ full_name: string; pinfl: string; phone: string | null }> =
-          Array.isArray(res.data) ? res.data : res.data?.data || [];
-
-        const matched = users.find((u) => u.pinfl === representative.jshshir);
-        if (matched) {
-          const parts = (matched.full_name || '').trim().split(/\s+/);
-          setRepresentative((prev) => ({
-            ...prev,
-            last_name: parts[0] || prev.last_name,
-            first_name: parts[1] || prev.first_name,
-            father_name: parts.slice(2).join(' ') || prev.father_name,
-            phones: matched.phone ? [matched.phone.replace(/\s/g, '')] : prev.phones,
-          }));
-        }
-      } catch {
-        // silently ignore lookup errors
-      }
-    }, 400);
-
-    return () => {
-      if (jshshrTimerRef.current) clearTimeout(jshshrTimerRef.current);
-    };
-  }, [representative.jshshir]);
-
-  const handleRepChange = (field: keyof RepresentativeFormData, value: string) => {
+  const handleRepChange = (
+    field: keyof RepresentativeFormData,
+    value: string,
+  ) => {
     let finalValue = value;
-    if (field === 'passport_series') finalValue = value.toUpperCase();
-    if (field === 'passport_number' || field === 'jshshir') {
-      finalValue = value.replace(/\D/g, '');
-      if (field === 'passport_number' && finalValue.length > 7) return;
-      if (field === 'jshshir' && finalValue.length > 14) return;
+    if (field === "passport_series") finalValue = value.toUpperCase();
+    if (field === "passport_number" || field === "jshshir") {
+      finalValue = value.replace(/\D/g, "");
+      if (field === "passport_number" && finalValue.length > 7) return;
+      if (field === "jshshir" && finalValue.length > 14) return;
     }
+
+    // Auto-fill representative info when a 14-digit JSHSHR matches a /users PINFL
+    if (field === "jshshir" && finalValue.length === 14 && allUsers) {
+      const matchedUser = allUsers.find((u) => u.pinfl === finalValue);
+      if (matchedUser) {
+        const nameParts = (matchedUser.full_name || "").trim().split(/\s+/);
+        setRepresentative((prev) => ({
+          ...prev,
+          jshshir: finalValue,
+          last_name: nameParts[0] || prev.last_name,
+          first_name: nameParts[1] || prev.first_name,
+          father_name: nameParts[2] || prev.father_name,
+          phones: matchedUser.phone ? [matchedUser.phone] : prev.phones,
+        }));
+        return;
+      }
+    }
+
     setRepresentative((prev) => ({ ...prev, [field]: finalValue }));
   };
 
   const handleRepPhoneChange = (pIdx: number, value: string) => {
-    const digits = value.replace(/\D/g, '');
-    let finalValue = '';
-    if (!digits.startsWith('998')) finalValue = '+998' + digits;
-    else finalValue = '+' + digits;
+    const digits = value.replace(/\D/g, "");
+    let finalValue = "";
+    if (!digits.startsWith("998")) finalValue = "+998" + digits;
+    else finalValue = "+" + digits;
 
     if (finalValue.length > 13) return;
 
@@ -712,7 +758,7 @@ const UnderAge = () => {
   const addRepPhone = () => {
     setRepresentative((prev) => ({
       ...prev,
-      phones: [...prev.phones, '+998'],
+      phones: [...prev.phones, "+998"],
     }));
   };
 
@@ -723,16 +769,20 @@ const UnderAge = () => {
     }));
   };
 
-  const handleStudentChange = (index: number, field: keyof MinorStudentFormData, value: string) => {
+  const handleStudentChange = (
+    index: number,
+    field: keyof MinorStudentFormData,
+    value: string,
+  ) => {
     let finalValue = value;
-    if (field === 'phone') {
-      const digits = value.replace(/\D/g, '');
-      if (!digits.startsWith('998')) {
-        finalValue = '+998' + digits;
+    if (field === "phone") {
+      const digits = value.replace(/\D/g, "");
+      if (!digits.startsWith("998")) {
+        finalValue = "+998" + digits;
       } else {
-        finalValue = '+' + digits;
+        finalValue = "+" + digits;
       }
-      if (finalValue.length < 4) finalValue = '+998';
+      if (finalValue.length < 4) finalValue = "+998";
       if (finalValue.length > 13) return;
     }
     setStudents((prev) =>
@@ -740,7 +790,8 @@ const UnderAge = () => {
         if (i !== index) return s;
         const updated = { ...s, [field]: finalValue };
 
-        if (field === 'group_id' && value && allGroups) {
+        // Auto-fill dates when group is selected
+        if (field === "group_id" && value && allGroups) {
           const group = allGroups.find((g: Group) => String(g.id) === value);
           if (group) {
             updated.course_start_date = formatDateForInput(group.start_date);
@@ -748,11 +799,12 @@ const UnderAge = () => {
           }
         }
 
+        // Auto-calculate total price
         if (
-          (field === 'monthly_price' ||
-            field === 'group_id' ||
-            field === 'course_start_date' ||
-            field === 'course_end_date') &&
+          (field === "monthly_price" ||
+            field === "group_id" ||
+            field === "course_start_date" ||
+            field === "course_end_date") &&
           updated.monthly_price &&
           updated.course_start_date &&
           updated.course_end_date
@@ -761,8 +813,11 @@ const UnderAge = () => {
           const end = new Date(updated.course_end_date);
           if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
             const months =
-              (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
-            updated.total_price = String(Number(updated.monthly_price) * Math.max(months, 1));
+              (end.getFullYear() - start.getFullYear()) * 12 +
+              (end.getMonth() - start.getMonth());
+            updated.total_price = String(
+              Number(updated.monthly_price) * Math.max(months, 1),
+            );
           }
         }
 
@@ -772,7 +827,7 @@ const UnderAge = () => {
   };
 
   const addStudent = () => {
-    setStudents((prev) => [...prev, { ...emptyMinorStudent, phone: '+998' }]);
+    setStudents((prev) => [...prev, { ...emptyMinorStudent, phone: "+998" }]);
   };
 
   const removeStudent = (index: number) => {
@@ -799,24 +854,26 @@ const UnderAge = () => {
   };
 
   const createMutation = useMutation({
-    mutationFn: (payload: Record<string, unknown>) => API.post('/student-contracts', payload),
+    mutationFn: (payload: Record<string, unknown>) =>
+      API.post("/student-contracts", payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['student-contracts'] });
-      navigate('/students-contract');
+      queryClient.invalidateQueries({ queryKey: ["student-contracts"] });
+      navigate("/students-contract");
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: (payload: Record<string, unknown>) => API.put(`/student-contracts/${id}`, payload),
+    mutationFn: (payload: Record<string, unknown>) =>
+      API.put(`/student-contracts/${id}`, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['student-contracts'] });
-      navigate('/students-contract');
+      queryClient.invalidateQueries({ queryKey: ["student-contracts"] });
+      navigate("/students-contract");
     },
   });
 
   const handleSubmit = () => {
     const payload = {
-      contract_type: 'minor',
+      contract_type: "minor",
       language: representative.language,
       branch_id: 1,
       representative: {
@@ -859,8 +916,10 @@ const UnderAge = () => {
           course_start_date: s.course_start_date,
           course_end_date: s.course_end_date,
         };
+        // Include student id for update
         if (id && contractToEdit) {
-          const contract = contractToEdit.contract || contractToEdit.data || contractToEdit;
+          const contract =
+            contractToEdit.contract || contractToEdit.data || contractToEdit;
           const existingStudent = contract.contract_students?.[idx];
           if (existingStudent?.id) studentPayload.id = existingStudent.id;
         }
@@ -877,34 +936,40 @@ const UnderAge = () => {
 
   if (id && isFetchingContract) {
     return (
-      <div className="students-contract container" style={{ marginTop: 50, marginLeft: 140 }}>
-        <div style={{ textAlign: 'center', padding: 40 }}>{t('studentsContract.loading')}</div>
+      <div
+        className="students-contract container"
+        style={{ marginTop: 50, marginLeft: 140 }}
+      >
+        <div style={{ textAlign: "center", padding: 40 }}>{t('studentsContract.details.loading')}</div>
       </div>
     );
   }
 
   return (
-    <div className="students-contract container" style={{ marginTop: 50, marginLeft: 140 }}>
+    <div
+      className="students-contract container"
+      style={{ marginTop: 50, marginLeft: 140 }}
+    >
       <div
         className="sc-page-top"
         style={{
           marginBottom: 20,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
         }}
       >
         <div
           className="sc-page-top-icon"
           style={{
-            background: '#FFEFDB',
-            color: '#FE9100',
-            padding: '10px 24px',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '16px',
+            background: "#FFEFDB",
+            color: "#FE9100",
+            padding: "10px 24px",
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "16px",
           }}
         >
           <i className="fa-solid fa-user"></i>
@@ -912,70 +977,70 @@ const UnderAge = () => {
         <span
           className="sc-page-top-title"
           style={{
-            textTransform: 'uppercase',
-            fontFamily: 'noto-sb',
-            fontSize: '16px',
-            color: '#000',
+            textTransform: "uppercase",
+            fontFamily: "noto-sb",
+            fontSize: "16px",
+            color: "#000",
           }}
         >
-          {t('studentsContract.contractWithRep')}
+          {t('studentsContract.minor.title')}
         </span>
       </div>
 
       <div
         className="sc-step-bar"
         style={{
-          display: 'flex',
-          background: '#003366',
-          borderRadius: '40px',
-          margin: '16px 0',
-          padding: '0',
-          overflow: 'hidden',
+          display: "flex",
+          background: "#003366",
+          borderRadius: "40px",
+          margin: "16px 0",
+          padding: "0",
+          overflow: "hidden",
         }}
       >
         <div
-          className={`sc-step-item ${step === 1 ? 'active' : ''}`}
+          className={`sc-step-item ${step === 1 ? "active" : ""}`}
           style={{
             flex: 1,
-            textAlign: 'center',
-            padding: '14px',
-            cursor: 'pointer',
-            background: '#003366',
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: '14px',
-            textTransform: 'uppercase',
-            borderRight: '1px solid rgba(255,255,255,0.1)',
+            textAlign: "center",
+            padding: "14px",
+            cursor: "pointer",
+            background: "#003366",
+            color: "#fff",
+            fontWeight: "bold",
+            fontSize: "14px",
+            textTransform: "uppercase",
+            borderRight: "1px solid rgba(255,255,255,0.1)",
           }}
           onClick={() => setStep(1)}
         >
-          {t('studentsContract.step1Rep')}
+          {t('studentsContract.minor.step1')}
         </div>
         <div
-          className={`sc-step-item ${step === 2 ? 'active' : ''}`}
+          className={`sc-step-item ${step === 2 ? "active" : ""}`}
           style={{
             flex: 1,
-            textAlign: 'center',
-            padding: '14px',
-            cursor: 'pointer',
-            background: step === 2 ? '#003366' : '#5d7ca4',
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: '14px',
-            textTransform: 'uppercase',
+            textAlign: "center",
+            padding: "14px",
+            cursor: "pointer",
+            background: step === 2 ? "#003366" : "#5d7ca4",
+            color: "#fff",
+            fontWeight: "bold",
+            fontSize: "14px",
+            textTransform: "uppercase",
           }}
           onClick={() => {
             if (isStep1Valid()) setStep(2);
             else {
               notifications.show({
-                title: t('studentsContract.error'),
-                message: t('studentsContract.fillRepDetails'),
-                color: 'red',
+                title: t('studentsContract.minor.errorTitle'),
+                message: t('studentsContract.minor.errorRepMsg'),
+                color: "red",
               });
             }
           }}
         >
-          {t('studentsContract.step2StudentMinor')}
+          {t('studentsContract.minor.step2')}
         </div>
       </div>
 
@@ -984,17 +1049,17 @@ const UnderAge = () => {
           <div
             className="sc-form-card"
             style={{
-              background: '#fff',
-              padding: '24px',
-              borderRadius: '12px',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
-              marginBottom: '20px',
+              background: "#fff",
+              padding: "24px",
+              borderRadius: "12px",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+              marginBottom: "20px",
             }}
           >
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  JSHSHIR <span>*</span>
+                  {t('studentsContract.form.jshshir')} <span>*</span>
                 </label>
                 <input
                   type="text"
@@ -1002,47 +1067,51 @@ const UnderAge = () => {
                   placeholder="00000000000000"
                   maxLength={14}
                   value={representative.jshshir}
-                  onChange={(e) => handleRepChange('jshshir', e.target.value)}
+                  onChange={(e) => handleRepChange("jshshir", e.target.value)}
                 />
               </div>
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  {t('studentsContract.citizenship')} <span>*</span>
+                  {t('studentsContract.form.citizenship')} <span>*</span>
                 </label>
                 <select
                   className="sc-form-select"
                   style={{
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #e2e8f0',
-                    background: '#fff',
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
+                    background: "#fff",
                   }}
                   value={representative.citizenship}
-                  onChange={(e) => handleRepChange('citizenship', e.target.value)}
+                  onChange={(e) =>
+                    handleRepChange("citizenship", e.target.value)
+                  }
                 >
-                  <option value="citizen">{t('studentsContract.uzbekistan')}</option>
-                  <option value="foreign">{t('studentsContract.foreign')}</option>
+                  <option value="citizen">{t('studentsContract.form.citizenUz')}</option>
+                  <option value="foreign">{t('studentsContract.form.citizenForeign')}</option>
                 </select>
               </div>
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  {t('studentsContract.representative')} <span>*</span>
+                  {t('studentsContract.minor.representative')} <span>*</span>
                 </label>
                 <select
                   className="sc-form-select"
                   style={{
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #e2e8f0',
-                    background: '#fff',
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
+                    background: "#fff",
                   }}
                   value={representative.representative_type}
-                  onChange={(e) => handleRepChange('representative_type', e.target.value)}
+                  onChange={(e) =>
+                    handleRepChange("representative_type", e.target.value)
+                  }
                 >
-                  <option value="Ota">{t('studentsContract.fatherRole')}</option>
-                  <option value="Ona">{t('studentsContract.motherRole')}</option>
-                  <option value="Vasiy">{t('studentsContract.guardian')}</option>
-                  <option value="Boshqa">{t('studentsContract.other')}</option>
+                  <option value="Ota">{t('studentsContract.minor.repTypeFather')}</option>
+                  <option value="Ona">{t('studentsContract.minor.repTypeMother')}</option>
+                  <option value="Vasiy">{t('studentsContract.minor.repTypeGuardian')}</option>
+                  <option value="Boshqa">{t('studentsContract.minor.repTypeOther')}</option>
                 </select>
               </div>
             </div>
@@ -1050,12 +1119,12 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  {t('studentsContract.contractLanguage')} <span>*</span>
+                  {t('studentsContract.form.language')} <span>*</span>
                 </label>
                 <select
                   className="sc-form-select"
                   value={representative.language}
-                  onChange={(e) => handleRepChange('language', e.target.value)}
+                  onChange={(e) => handleRepChange("language", e.target.value)}
                 >
                   <option value="uz">UZ</option>
                   <option value="ru">RU</option>
@@ -1064,48 +1133,56 @@ const UnderAge = () => {
               </div>
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  {t('studentsContract.birthDate')} <span>*</span>
+                  {t('studentsContract.form.birthDate')} <span>*</span>
                 </label>
-                <input
-                  type="date"
+                <DateInput
                   className="sc-form-input"
                   value={representative.birth_date}
-                  onChange={(e) => handleRepChange('birth_date', e.target.value)}
+                  onChange={(e) =>
+                    handleRepChange("birth_date", e.target.value)
+                  }
                 />
               </div>
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  {t('studentsContract.passportSeriesSlashNo')} <span>*</span>
+                  {t('studentsContract.form.passport')} <span>*</span>
                 </label>
-                <div className="sc-passport-group" style={{ display: 'flex', gap: '8px' }}>
+                <div
+                  className="sc-passport-group"
+                  style={{ display: "flex", gap: "8px" }}
+                >
                   <input
                     type="text"
                     className="sc-passport-series"
                     style={{
-                      width: '80px',
-                      padding: '10px',
-                      borderRadius: '8px',
-                      border: '1px solid #e2e8f0',
-                      textTransform: 'uppercase',
+                      width: "80px",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      border: "1px solid #e2e8f0",
+                      textTransform: "uppercase",
                     }}
                     placeholder="AA"
                     maxLength={2}
                     value={representative.passport_series}
-                    onChange={(e) => handleRepChange('passport_series', e.target.value)}
+                    onChange={(e) =>
+                      handleRepChange("passport_series", e.target.value)
+                    }
                   />
                   <input
                     type="text"
                     className="sc-passport-number"
                     style={{
                       flex: 1,
-                      padding: '10px',
-                      borderRadius: '8px',
-                      border: '1px solid #e2e8f0',
+                      padding: "10px",
+                      borderRadius: "8px",
+                      border: "1px solid #e2e8f0",
                     }}
                     placeholder="1234567"
                     maxLength={7}
                     value={representative.passport_number}
-                    onChange={(e) => handleRepChange('passport_number', e.target.value)}
+                    onChange={(e) =>
+                      handleRepChange("passport_number", e.target.value)
+                    }
                   />
                 </div>
               </div>
@@ -1114,32 +1191,34 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  {t('studentsContract.issuedDate')} <span>*</span>
+                  {t('studentsContract.form.passportGivenDate')} <span>*</span>
                 </label>
-                <input
-                  type="date"
+                <DateInput
                   className="sc-form-input"
                   style={{
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #e2e8f0',
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
                   }}
                   value={representative.passport_given_date}
-                  onChange={(e) => handleRepChange('passport_given_date', e.target.value)}
+                  onChange={(e) =>
+                    handleRepChange("passport_given_date", e.target.value)
+                  }
                 />
               </div>
               <div className="sc-form-col">
-                <label className="sc-form-label">{t('studentsContract.expiryDateLabel')}</label>
-                <input
-                  type="date"
+                <label className="sc-form-label">{t('studentsContract.minor.passportExpiry')}</label>
+                <DateInput
                   className="sc-form-input"
                   style={{
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #e2e8f0',
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
                   }}
                   value={representative.passport_expiry_date}
-                  onChange={(e) => handleRepChange('passport_expiry_date', e.target.value)}
+                  onChange={(e) =>
+                    handleRepChange("passport_expiry_date", e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -1147,14 +1226,14 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  {t('studentsContract.lastName')} <span>*</span>
+                  {t('studentsContract.form.lastName')} <span>*</span>
                 </label>
                 <input
                   type="text"
                   className="sc-form-input"
-                  placeholder={t('studentsContract.enter')}
+                  placeholder="Kiriting"
                   value={representative.last_name}
-                  onChange={(e) => handleRepChange('last_name', e.target.value)}
+                  onChange={(e) => handleRepChange("last_name", e.target.value)}
                 />
               </div>
             </div>
@@ -1162,26 +1241,30 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  {t('studentsContract.firstName')} <span>*</span>
+                  {t('studentsContract.form.firstName')} <span>*</span>
                 </label>
                 <input
                   type="text"
                   className="sc-form-input"
-                  placeholder={t('studentsContract.enter')}
+                  placeholder="Kiriting"
                   value={representative.first_name}
-                  onChange={(e) => handleRepChange('first_name', e.target.value)}
+                  onChange={(e) =>
+                    handleRepChange("first_name", e.target.value)
+                  }
                 />
               </div>
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  {t('studentsContract.fatherName')} <span>*</span>
+                  {t('studentsContract.form.fatherName')} <span>*</span>
                 </label>
                 <input
                   type="text"
                   className="sc-form-input"
-                  placeholder={t('studentsContract.enter')}
+                  placeholder="Kiriting"
                   value={representative.father_name}
-                  onChange={(e) => handleRepChange('father_name', e.target.value)}
+                  onChange={(e) =>
+                    handleRepChange("father_name", e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -1191,36 +1274,38 @@ const UnderAge = () => {
                 key={pIdx}
                 className="sc-form-row"
                 style={{
-                  display: 'flex',
-                  gap: '18px',
-                  marginTop: pIdx > 0 ? '18px' : '0',
+                  display: "flex",
+                  gap: "18px",
+                  marginTop: pIdx > 0 ? "18px" : "0",
                 }}
               >
-                <div className="sc-form-col" style={{ flex: '0 0 32%' }}>
+                <div className="sc-form-col" style={{ flex: "0 0 32%" }}>
                   <label className="sc-form-label">
-                    {t('studentsContract.phoneNo')} {pIdx + 1} <span>*</span>
+                    {t('studentsContract.minor.phoneLabel', { num: pIdx + 1 })} <span>*</span>
                   </label>
-                  <div style={{ display: 'flex', gap: '12px' }}>
+                  <div style={{ display: "flex", gap: "12px" }}>
                     <input
                       type="text"
                       className="sc-form-input"
                       placeholder="+998"
                       value={phone}
-                      onChange={(e) => handleRepPhoneChange(pIdx, e.target.value)}
+                      onChange={(e) =>
+                        handleRepPhoneChange(pIdx, e.target.value)
+                      }
                     />
                     {pIdx === representative.phones.length - 1 ? (
                       <div
                         onClick={addRepPhone}
                         style={{
-                          background: '#003366',
-                          color: '#fff',
-                          height: '42px',
-                          width: '42px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          borderRadius: '10px',
-                          cursor: 'pointer',
+                          background: "#003366",
+                          color: "#fff",
+                          height: "42px",
+                          width: "42px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: "10px",
+                          cursor: "pointer",
                           flexShrink: 0,
                         }}
                       >
@@ -1230,15 +1315,15 @@ const UnderAge = () => {
                       <div
                         onClick={() => removeRepPhone(pIdx)}
                         style={{
-                          background: '#fee2e2',
-                          color: '#ef4444',
-                          height: '42px',
-                          width: '42px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          borderRadius: '10px',
-                          cursor: 'pointer',
+                          background: "#fee2e2",
+                          color: "#ef4444",
+                          height: "42px",
+                          width: "42px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: "10px",
+                          cursor: "pointer",
                           flexShrink: 0,
                         }}
                       >
@@ -1253,14 +1338,16 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col">
                 <label className="sc-form-label">
-                  {t('studentsContract.registeredAddressShort')} <span>*</span>
+                  {t('studentsContract.minor.registeredAddress')} <span>*</span>
                 </label>
                 <input
                   type="text"
                   className="sc-form-input"
-                  placeholder={t('studentsContract.enter')}
+                  placeholder="Kiriting"
                   value={representative.registered_address}
-                  onChange={(e) => handleRepChange('registered_address', e.target.value)}
+                  onChange={(e) =>
+                    handleRepChange("registered_address", e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -1268,20 +1355,22 @@ const UnderAge = () => {
             <div className="sc-form-row">
               <div className="sc-form-col" style={{ flex: 1 }}>
                 <label className="sc-form-label">
-                  {t('studentsContract.actualAddress')} <span>*</span>
+                  {t('studentsContract.minor.realAddress')} <span>*</span>
                 </label>
                 <textarea
                   className="sc-form-textarea"
                   style={{
-                    minHeight: '100px',
-                    width: '100%',
-                    borderRadius: '8px',
-                    border: '1px solid #e2e8f0',
-                    padding: '12px',
+                    minHeight: "100px",
+                    width: "100%",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
+                    padding: "12px",
                   }}
-                  placeholder={t('studentsContract.enter')}
+                  placeholder="Kiriting"
                   value={representative.residential_address}
-                  onChange={(e) => handleRepChange('residential_address', e.target.value)}
+                  onChange={(e) =>
+                    handleRepChange("residential_address", e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -1290,50 +1379,50 @@ const UnderAge = () => {
           <div
             className="sc-form-actions"
             style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              gap: '12px',
-              marginTop: '20px',
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "12px",
+              marginTop: "20px",
             }}
           >
             <button
               className="sc-form-cancel-btn"
               style={{
-                padding: '10px 24px',
-                borderRadius: '8px',
-                border: '1px solid #e2e8f0',
-                background: '#fff',
-                color: '#64748b',
-                cursor: 'pointer',
-                fontWeight: '500',
+                padding: "10px 24px",
+                borderRadius: "8px",
+                border: "1px solid #e2e8f0",
+                background: "#fff",
+                color: "#64748b",
+                cursor: "pointer",
+                fontWeight: "500",
               }}
-              onClick={() => navigate('/students-contract')}
+              onClick={() => navigate("/students-contract")}
             >
-              {t('studentsContract.cancel')}
+              {t('studentsContract.form.cancel')}
             </button>
             <button
               className="sc-form-next-btn"
               style={{
-                padding: '10px 24px',
-                borderRadius: '8px',
-                border: 'none',
-                background: '#FE9100',
-                color: '#fff',
-                cursor: 'pointer',
-                fontWeight: '500',
+                padding: "10px 24px",
+                borderRadius: "8px",
+                border: "none",
+                background: "#FE9100",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: "500",
               }}
               onClick={() => {
                 if (isStep1Valid()) setStep(2);
                 else {
                   notifications.show({
-                    title: t('studentsContract.error'),
-                    message: t('studentsContract.fillRepDetails'),
-                    color: 'red',
+                    title: t('studentsContract.minor.errorTitle'),
+                    message: t('studentsContract.minor.errorRepMsg'),
+                    color: "red",
                   });
                 }
               }}
             >
-              {t('studentsContract.next')}
+              {t('studentsContract.minor.next')}
             </button>
           </div>
         </>
@@ -1352,84 +1441,83 @@ const UnderAge = () => {
               allLids={allLids || []}
               allGroups={allGroups || []}
               allCourses={allCourses || []}
-              allLevels={allLevels || []}
             />
           ))}
 
           <button
             className="sc-add-student-btn"
             style={{
-              width: '100%',
-              padding: '12px',
-              border: '1px dashed #FE9100',
-              borderRadius: '8px',
-              background: '#fff',
-              color: '#FE9100',
-              cursor: 'pointer',
-              fontWeight: '500',
-              marginBottom: '20px',
+              width: "100%",
+              padding: "12px",
+              border: "1px dashed #FE9100",
+              borderRadius: "8px",
+              background: "#fff",
+              color: "#FE9100",
+              cursor: "pointer",
+              fontWeight: "500",
+              marginBottom: "20px",
             }}
             onClick={addStudent}
           >
-            {t('studentsContract.addStudent')}
+            {t('studentsContract.minor.addStudent')}
           </button>
 
           <div
             className="sc-form-actions"
             style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              gap: '12px',
-              marginTop: '20px',
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "12px",
+              marginTop: "20px",
             }}
           >
             <button
               className="sc-form-cancel-btn"
               style={{
-                padding: '10px 24px',
-                borderRadius: '8px',
-                border: '1px solid #e2e8f0',
-                background: '#fff',
-                color: '#64748b',
-                cursor: 'pointer',
-                fontWeight: '500',
+                padding: "10px 24px",
+                borderRadius: "8px",
+                border: "1px solid #e2e8f0",
+                background: "#fff",
+                color: "#64748b",
+                cursor: "pointer",
+                fontWeight: "500",
               }}
-              onClick={() => navigate('/students-contract')}
+              onClick={() => navigate("/students-contract")}
             >
-              {t('studentsContract.cancel')}
+              {t('studentsContract.form.cancel')}
             </button>
             <button
               className="sc-form-prev-btn"
               style={{
-                padding: '10px 24px',
-                borderRadius: '8px',
-                border: '1px solid #FE9100',
-                background: '#fff',
-                color: '#FE9100',
-                cursor: 'pointer',
-                fontWeight: '500',
+                padding: "10px 24px",
+                borderRadius: "8px",
+                border: "1px solid #FE9100",
+                background: "#fff",
+                color: "#FE9100",
+                cursor: "pointer",
+                fontWeight: "500",
               }}
               onClick={() => setStep(1)}
             >
-              {t('studentsContract.prev')}
+              {t('studentsContract.minor.prev')}
             </button>
             <button
               className="sc-form-save-btn"
               style={{
-                padding: '10px 24px',
-                borderRadius: '8px',
-                border: 'none',
-                background: '#FE9100',
-                color: '#fff',
-                cursor: 'pointer',
-                fontWeight: '500',
+                padding: "10px 24px",
+                borderRadius: "8px",
+                border: "none",
+                background: "#FE9100",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: "500",
               }}
               onClick={handleSubmit}
               disabled={createMutation.isPending || updateMutation.isPending}
             >
               {createMutation.isPending || updateMutation.isPending
-                ? t('studentsContract.saving')
-                : t('studentsContract.save')}
+                ? t('studentsContract.form.saving')
+                : t('studentsContract.form.save')}
             </button>
           </div>
         </>

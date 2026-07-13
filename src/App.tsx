@@ -38,6 +38,7 @@ import RefusalReasons from './pages/refusal-reasons';
 import FaceId from './pages/face-id';
 import Contracts from './pages/contracts';
 import ContractsCreate from './pages/contracts/ContractsCreate';
+import ContractDetailPage from './pages/contracts/ContractDetailPage';
 import CoursePrices from './pages/course-prices';
 import LessonSchedule from './pages/lesson-schedule';
 import DemoLesson from './pages/demo-lesson';
@@ -137,6 +138,7 @@ const App = () => {
           <Route path="/positions" element={<Positions />} />
           <Route path="/contracts" element={<Contracts />} />
           <Route path="/contracts/create" element={<ContractsCreate />} />
+          <Route path="/contracts/:id" element={<ContractDetailPage />} />
           <Route path="/teachers" element={<Teachers />} />
 
           {/* Kurslar */}
@@ -171,14 +173,14 @@ const App = () => {
           <Route path="/students-contract/adult/edit/:id" element={<StudentsContract />} />
           <Route path="/students-contract/minor" element={<UnderAge />} />
           <Route path="/students-contract/minor/edit/:id" element={<UnderAge />} />
-          <Route path="/students-contract/legal" element={<LegalEntity />} />
-          <Route path="/students-contract/legal/edit/:id" element={<LegalEntity />} />
+          <Route path="/students-contract/legal_bilateral" element={<LegalEntity />} />
+          <Route path="/students-contract/legal_bilateral/edit/:id" element={<LegalEntity />} />
           <Route
-            path="/students-contract/legal-representative"
+            path="/students-contract/legal_trilateral"
             element={<RepresentativeEntity />}
           />
           <Route
-            path="/students-contract/legal-representative/edit/:id"
+            path="/students-contract/legal_trilateral/edit/:id"
             element={<RepresentativeEntity />}
           />
           <Route path="/students-contract/:id" element={<ContractDetails />} />

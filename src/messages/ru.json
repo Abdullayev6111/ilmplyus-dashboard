@@ -5,7 +5,8 @@
     "delete": "Удалить",
     "save": "Сохранить",
     "cancel": "Отмена",
-    "saving": "Сохранение..."
+    "saving": "Сохранение...",
+    "choose": "Выберите"
   },
   "login": {
     "logout": "Выход",
@@ -101,7 +102,8 @@
     "finances": "Финансы",
     "jamgarma": "Джамгармалар",
     "debts": "Долги",
-    "commissions": "Комиссии"
+    "commissions": "Комиссии",
+    "scoreSheet": "Отчёты"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -157,7 +159,15 @@
     "confirm": "Подтвердить",
     "restoreSelected": "Восстановить выбранные",
     "deleteSelected": "Удалить выбранные",
-    "confirmBatchDelete": "Вы действительно хотите удалить выбранные платежи?"
+    "confirmBatchDelete": "Вы действительно хотите удалить выбранные платежи?",
+    "allFieldsRequiredAlert": "Заполните все поля платежа!",
+    "confirmDelete": "Вы действительно хотите удалить?",
+    "courseBranchCashierRequiredAlert": "Курс, филиал и кассир обязательны!",
+    "createdAt": "Время создания",
+    "filter": {
+      "close": "Закрыть"
+    },
+    "updatedAt": "Время изменения"
   },
   "commissions": {
     "mainTitle": "Комиссии",
@@ -281,7 +291,8 @@
     "archiveQuestion": "Архивировать?",
     "yes": "Да",
     "no": "Нет",
-    "notFound": "Филиалы не найдены"
+    "notFound": "Филиалы не найдены",
+    "archiveTitle": "Архив филиалов"
   },
   "roles": {
     "pageTitle": "Добавить новую роль",
@@ -342,7 +353,8 @@
       "remove_transfer_maker": "Удалить исполнителя перевода",
       "add_withdrawer": "Добавить получателя",
       "remove_withdrawer": "Удалить получателя"
-    }
+    },
+    "dashboardSections": "Разделы дашборда"
   },
   "rooms": {
     "rooms": "Комнаты",
@@ -358,7 +370,8 @@
     "branch": "Филиал",
     "confirmDelete": "Вы уверены, что хотите удалить?",
     "cancel": "Отмена",
-    "save": "Сохранить"
+    "save": "Сохранить",
+    "archiveTitle": "Архив комнат"
   },
   "sources": {
     "title": "Источники",
@@ -378,7 +391,8 @@
     "confirmDelete": "Вы уверены, что хотите удалить?",
     "cancel": "Отмена",
     "save": "Сохранить",
-    "saving": "Сохранение..."
+    "saving": "Сохранение...",
+    "archiveTitle": "Архив источников"
   },
   "expenses": {
     "expenseTitle": "Расходы",
@@ -434,7 +448,8 @@
     "confirmDelete": "Вы действительно хотите удалить?",
     "notFound": "Отделы не найдены",
     "deleteSelected": "Удалить",
-    "confirmBatchDelete": "Вы действительно хотите удалить выбранные?"
+    "confirmBatchDelete": "Вы действительно хотите удалить выбранные?",
+    "archiveTitle": "Архив отделов"
   },
   "courses": {
     "mainTitle": "Курсы",
@@ -454,7 +469,8 @@
     "addTitle": "Добавить курс",
     "detailsTitle": "Детали курса",
     "availableLevels": "ДОСТУПНЫЕ УРОВНИ",
-    "back": "Назад"
+    "back": "Назад",
+    "archiveTitle": "Архив курсов"
   },
   "header": {
     "administrator": "Администратор"
@@ -473,7 +489,8 @@
     "levelName": "Название уровня",
     "createdDate": "Дата создания",
     "actions": "Действия",
-    "notFound": "Уровни не найдены"
+    "notFound": "Уровни не найдены",
+    "archiveTitle": "Архив уровней"
   },
   "positions": {
     "mainTitle": "Должности",
@@ -484,7 +501,8 @@
     "createdDate": "Дата создания",
     "actions": "Действия",
     "choose": "Выберите",
-    "notFound": "Данные отсутствуют"
+    "notFound": "Данные отсутствуют",
+    "archiveTitle": "Архив должностей"
   },
   "settingsGroup": {
     "mainTitle": "Настройки",
@@ -557,7 +575,8 @@
     "confirmDelete": "Вы уверены, что хотите удалить?",
     "cancel": "Отмена",
     "save": "Сохранить",
-    "saving": "Сохранение..."
+    "saving": "Сохранение...",
+    "archiveTitle": "Архив причин отказа"
   },
   "students": {
     "title": "Студенты",
@@ -610,7 +629,8 @@
     "selectContract": "Выберите договор",
     "newPassword": "Новый пароль",
     "passwordHint": "Оставьте пустым, чтобы не менять пароль",
-    "archiveTitle": "Архив учеников"
+    "archiveTitle": "Архив учеников",
+    "passwordPlaceholder": "Пароль"
   },
   "regions": {
     "notFound": "Регионы не найдены"
@@ -685,7 +705,8 @@
     "mustBeGreater": "Дата окончания должна быть позже даты начала",
     "fields": {
       "contractType": "Тип договора",
-      "vacationType": "Тип отпуска"
+      "vacationType": "Тип отпуска",
+      "contractNumber": "Номер договора"
     },
     "options": {
       "doimiy": "Постоянный",
@@ -694,7 +715,9 @@
       "annual": "Ежегодный",
       "partial": "Частичный",
       "other": "Нет"
-    }
+    },
+    "maxLength50": "Не должно превышать 50 символов",
+    "numbersOnly": "Только цифры (Например: 123)"
   },
   "coursePrices": {
     "mainTitle": "Цены на курсы",
@@ -853,7 +876,95 @@
     "photoError": "Не удалось сжать изображение до 200KB",
     "photoProcessError": "Ошибка обработки изображения",
     "employeeIdError": "ID не возвращён при создании записи сотрудника",
-    "contractNumberError": "Ошибка при формировании номера договора"
+    "contractNumberError": "Ошибка при формировании номера договора",
+    "status": {
+      "active": "Активный",
+      "inactive": "Неактивный",
+      "terminated": "Завершён",
+      "cancelled": "Отменён"
+    },
+    "detail": {
+      "terminateDateLabel": "Выберите дату завершения",
+      "cancelDateLabel": "Выберите дату отмены",
+      "activateDateLabel": "Выберите дату активации",
+      "loading": "Загрузка...",
+      "titlePrefix": "Договор №",
+      "back": "Назад",
+      "cancelAction": "Отменить",
+      "terminateAction": "Завершить",
+      "activateAction": "Активировать",
+      "confirm": "Подтвердить",
+      "cancel": "Отмена",
+      "sections": {
+        "personal": "Личные данные",
+        "passport": "Паспортные данные",
+        "workplace": "Место работы и Договор",
+        "salary": "Зарплата и Рабочее время",
+        "address": "Адресные данные"
+      },
+      "fields": {
+        "fullName": "ФИО",
+        "pinfl": "ПИНФЛ",
+        "birthDate": "Дата рождения",
+        "phone": "Телефон",
+        "citizenship": "Гражданство",
+        "language": "Язык",
+        "passportSeries": "Серия и номер",
+        "passportGivenDate": "Дата выдачи",
+        "passportGivenBy": "Кем выдан",
+        "contractNumber": "Номер договора",
+        "department": "Отдел",
+        "position": "Должность",
+        "status": "Статус",
+        "workStartDate": "Дата начала работы",
+        "startDate": "Дата начала",
+        "endDate": "Дата окончания",
+        "contractType": "Тип договора",
+        "contractDuration": "Срок заключения договора",
+        "salaryType": "Тип месячной оплаты",
+        "probation": "Испытательный срок",
+        "baseSalary": "Базовая зарплата",
+        "workingHours": "Рабочие часы в месяц",
+        "hourlyRate": "Почасовая ставка",
+        "totalSalary": "Итого зарплата в месяц",
+        "salaryPeriod": "Период зарплаты",
+        "vacationType": "Тип отпуска",
+        "addressRegistration": "Адрес прописки",
+        "addressLiving": "Фактический адрес проживания"
+      },
+      "values": {
+        "naLanguage": "Н/Д",
+        "defaultPosition": "Сотрудник",
+        "noProbation": "Нет",
+        "hours": "ч.",
+        "noVacation": "Отсутствует"
+      }
+    },
+    "deleteConfirm": "Вы действительно хотите удалить эту запись?",
+    "title": "Договоры",
+    "newContract": "Новый договор",
+    "table": {
+      "id": "ID",
+      "fullName": "ФИО",
+      "phone": "Телефон",
+      "department": "Отдел",
+      "status": "Статус",
+      "startDate": "Начало",
+      "endDate": "Конец",
+      "actions": "Действия"
+    },
+    "actions": {
+      "view": "Просмотр",
+      "edit": "Редактировать",
+      "salary": "Распределить зарплату",
+      "pdf": "Скачать PDF",
+      "print": "Печать",
+      "delete": "Удалить"
+    },
+    "show": "Показать:",
+    "perPage": "шт.",
+    "pdfError": "Ошибка при создании PDF.",
+    "printError": "Ошибка при печати."
   },
   "demoLesson": {
     "title": "Пробные уроки",
@@ -1869,7 +1980,26 @@
     "studentNo": "Ученик #",
     "thisPerson": "Данное лицо",
     "adult": "Совершеннолетний",
-    "minor": "Несовершеннолетний",
+    "minor": {
+      "next": "Далее",
+      "prev": "Назад",
+      "representative": "Представитель",
+      "removeStudent": "Удалить",
+      "title": "ДОГОВОР: С ПРЕДСТАВИТЕЛЕМ",
+      "step1": "Шаг 1: Представитель",
+      "errorTitle": "Ошибка",
+      "errorRepMsg": "Пожалуйста, заполните все данные представителя!",
+      "step2": "Шаг 2: Обучающийся",
+      "repTypeFather": "Отец",
+      "repTypeMother": "Мать",
+      "repTypeGuardian": "Опекун",
+      "repTypeOther": "Другой",
+      "passportExpiry": "Срок действия",
+      "phoneLabel": "Номер телефона {{num}}",
+      "registeredAddress": "Адрес (по прописке)",
+      "realAddress": "Фактический адрес",
+      "addStudent": "+ Добавить ещё обучающегося"
+    },
     "lidIdSearch": "Lid ID / Поиск",
     "lidIdPlaceholder": "Lid ID или имя...",
     "noCourse": "Нет курса",
@@ -2009,7 +2139,192 @@
     "regAddressLabel": "Зарегистрированный адрес",
     "contractDateLabel": "Дата договора",
     "note": "Примечание",
-    "notePlaceholder": "Введите примечание"
+    "notePlaceholder": "Введите примечание",
+    "details": {
+      "loading": "Загрузка...",
+      "error": "Данные не найдены или произошла ошибка.",
+      "back": "Назад",
+      "title": "ДАННЫЕ ДОГОВОРА",
+      "statusUnknown": "Статус неизвестен",
+      "typeUnknown": "Тип неизвестен",
+      "contractLang": "Язык договора",
+      "orgInfo": "Данные организации",
+      "orgName": "Название организации",
+      "orgStir": "ИНН организации",
+      "contractDate": "Дата договора",
+      "directorFullName": "Ф.И.О. руководителя",
+      "bankName": "Название банка",
+      "bankAccount": "Расчётный счёт",
+      "mfo": "МФО",
+      "repInfo": "Данные представителя",
+      "repFullName": "Ф.И.О. представителя",
+      "jshshir": "ПИНФЛ",
+      "passportSeriesNum": "Серия и номер паспорта",
+      "phone": "Номер телефона",
+      "residentialAddress": "Адрес проживания",
+      "studentInfo": "Данные обучающегося",
+      "studentFullName": "Ф.И.О. обучающегося",
+      "birthDate": "Дата рождения",
+      "notEntered": "Не введено",
+      "isMinor": "Совершеннолетний",
+      "yes": "Да",
+      "no": "Нет",
+      "certOrPassport": "Свидетельство / Паспорт",
+      "hasPassport": "Есть паспорт",
+      "givenDate": "Дата выдачи",
+      "expiryDate": "Срок действия",
+      "extraPhones": "Дополнительные телефоны",
+      "registeredAddress": "Адрес регистрации",
+      "course": "Учебный курс",
+      "group": "Группа",
+      "monthlyPrice": "Ежемесячный платёж",
+      "totalPrice": "Общая сумма",
+      "notes": "Примечания"
+    },
+    "action": {
+      "cancel": "Отменить",
+      "terminate": "Завершить",
+      "print": "Печать / PDF",
+      "actions": "Действия",
+      "edit": "Редактировать",
+      "sms": "Отправить SMS подтверждение",
+      "delete": "Удалить"
+    },
+    "form": {
+      "loading": "Загрузка...",
+      "title": "ДОГОВОР СО СТУДЕНТОМ",
+      "step1": "ШАГ 1: СТУДЕНТ",
+      "lidId": "Lid ID / Поиск",
+      "lidSearchPlaceholder": "ID или Имя...",
+      "searching": "Поиск...",
+      "dropdownId": "ID",
+      "dropdownName": "Имя",
+      "dropdownPhone": "Телефон",
+      "notFound": "Результат не найден",
+      "jshshir": "ПИНФЛ",
+      "language": "Язык договора",
+      "citizenship": "Гражданство",
+      "citizenUz": "Узбекистан",
+      "citizenForeign": "Иностранец",
+      "branch": "Филиал",
+      "select": "Выбрать",
+      "city": "Город",
+      "passport": "Удостоверение / Паспорт",
+      "passportGivenDate": "Дата выдачи",
+      "birthPlace": "Место рождения",
+      "passportExpiry": "Срок действия паспорта",
+      "passportGivenBy": "Кем выдан",
+      "lastName": "Фамилия",
+      "firstName": "Имя",
+      "fatherName": "Отчество",
+      "birthDate": "Дата рождения",
+      "group": "Группа",
+      "course": "Курс",
+      "level": "Уровень",
+      "phone": "Номер телефона",
+      "residentialAddress": "Адрес проживания (основной)",
+      "registeredAddress": "Адрес регистрации",
+      "monthlyPrice": "Ежемесячная оплата",
+      "totalPrice": "Общая стоимость",
+      "courseStartDate": "Дата начала курса",
+      "courseEndDate": "Дата окончания курса",
+      "contractDate": "Дата договора",
+      "contractEndDate": "Дата окончания договора",
+      "notes": "Примечание",
+      "notesPlaceholder": "Введите примечание",
+      "saving": "Сохранение...",
+      "save": "Сохранить",
+      "cancel": "Отмена"
+    },
+    "table": {
+      "branch": "Филиал",
+      "direction": "Направление",
+      "group": "Группа",
+      "status": "Статус",
+      "date": "Дата",
+      "student": "Студент",
+      "actions": "Действия"
+    },
+    "deleteConfirm": "Вы хотите удалить договор?",
+    "filter": "Фильтр",
+    "createBtn": "Создать договор",
+    "sectionTitle": "Новые студенты",
+    "footer": "Показано {{start}}-{{end}} из {{total}}",
+    "modal": {
+      "title": "Выберите тип договора",
+      "adult": "Договор с совершеннолетним",
+      "minor": "Договор с несовершеннолетним",
+      "legalBilateral": "Договор с юридическим лицом",
+      "legalTrilateral": "Договор с юридическим лицом и представителем"
+    },
+    "legal": {
+      "studentNum": "Обучающийся #{{num}}",
+      "remove": "Удалить",
+      "thisPerson": "Данное лицо",
+      "adultPerson": "Совершеннолетнее лицо",
+      "minorPerson": "Несовершеннолетнее лицо",
+      "noCourse": "Курс отсутствует",
+      "birthCertSeriesNum": "Серия и номер свидетельства о рождении",
+      "passportSeriesNum": "Серия и номер паспорта",
+      "passportExpiry": "Срок действия",
+      "residentialAddress": "Адрес проживания",
+      "registeredAddress": "Адрес по прописке",
+      "successTitle": "Успешно",
+      "contractCreated": "Договор создан",
+      "errorTitle": "Ошибка",
+      "createError": "Ошибка при создании договора",
+      "contractUpdated": "Договор обновлён",
+      "updateError": "Ошибка при обновлении договора",
+      "title": "ДОГОВОР С ОРГАНИЗАЦИЕЙ",
+      "step1": "Шаг 1: Организация",
+      "errorOrgMsg": "Пожалуйста, заполните все данные организации!",
+      "step2": "Шаг 2: Обучающийся",
+      "orgStir": "ИНН организации",
+      "checkReestor": "Проверить в реестре",
+      "branch": "Филиал",
+      "autoFill": "Заполнится автоматически",
+      "orgInfoTitle": "Данные организации",
+      "trustee": "Доверенность",
+      "noTrustee": "Без доверенности",
+      "hasTrustee": "С доверенностью",
+      "trusteeDate": "Дата доверенности",
+      "trusteeNum": "Номер доверенности",
+      "orgName": "Название организации",
+      "orgBranch": "Филиал организации",
+      "noOrgBranch": "нет",
+      "hasOrgBranch": "есть",
+      "branchName": "Название филиала",
+      "branchAddress": "Адрес филиала",
+      "directorLastName": "Фамилия руководителя",
+      "directorFirstName": "Имя руководителя",
+      "directorFatherName": "Отчество руководителя",
+      "contractStartDate": "Дата начала договора",
+      "contractEndDate": "Дата окончания договора",
+      "phoneLabel": "Номер телефона {{num}}",
+      "ifut": "ИФУТ",
+      "accountNum": "Расчётный счёт",
+      "bankName": "Название банка",
+      "mfo": "МФО",
+      "addStudent": "+ Добавить ещё обучающегося"
+    },
+    "rep": {
+      "repInfo": "Данные представителя",
+      "repTypeFather": "Отец",
+      "repTypeMother": "Мать",
+      "repTypeOther": "Другой",
+      "passportExpiry": "Срок действия",
+      "givenBy": "Кем выдан",
+      "step2": "Шаг 2: Представитель",
+      "step3": "Шаг 3: Обучающийся",
+      "addRep": "+ Добавить представителя"
+    },
+    "status": {
+      "active": "Активный",
+      "completed": "Завершённый",
+      "inProgress": "В процессе",
+      "cancelled": "Отменён",
+      "expired": "Истёк"
+    }
   },
   "setPassword": {
     "title": "Установить пароль",
@@ -2101,8 +2416,6 @@
     "cancellerPerson": "Отменивший",
     "descriptionPlaceholder": "Введите примечание",
     "transferDetails": "Детали перевода",
-    "senderAccount": "Счёт отправителя",
-    "receiverAccount": "Счёт получателя",
     "transferStatus": "Статус перевода",
     "accountStatus": "Статус счёта",
     "selectStatusChange": "Изменить статус",
@@ -2251,5 +2564,155 @@
     "detailsTitle": "Детали перевода",
     "transferType": "Тип перевода",
     "close": "Закрыть"
+  },
+  "contractsCreate": {
+    "contractTypeOptions": {
+      "asosiy": "По основной работе",
+      "orindoshlik": "По совместительству",
+      "boshqa": "Иной договор в соответствии с трудовым законодательством"
+    },
+    "conclusionTermOptions": {
+      "nomuayyan": "На неопределённый срок",
+      "muayyan3": "На определённый срок не более 3 лет",
+      "vaqtinchalik": "На срок выполнения временных (до двух месяцев) работ",
+      "mavsumiy": "На срок выполнения сезонных работ"
+    },
+    "salaryTypeOptions": {
+      "shtat": "Согласно штатному расписанию",
+      "oquvchi": "В соответствии с количеством учеников",
+      "soat": "В соответствии с учебными часами"
+    },
+    "vacationOptions": {
+      "given": "Предоставляется",
+      "notGiven": "Не предоставляется"
+    },
+    "jshshrError": "JSHSHR должен состоять из 14 цифр",
+    "passportSeriesError": "2 заглавные буквы",
+    "passportNumberError": "7 цифр",
+    "employeeCreateError": "При создании записи сотрудника ID не был возвращён",
+    "employeeIdError": "ID сотрудника отсутствует",
+    "contractNumberError": "Ошибка при формировании номера договора",
+    "photoSizeError": "Не удалось сжать фото до 200KB",
+    "photoProcessError": "Ошибка при обработке фото",
+    "pageTitle": "Трудовой договор с сотрудником",
+    "contractLanguage": "Язык договора",
+    "citizenship": "Гражданство",
+    "citizenUz": "Гражданин Узбекистана",
+    "citizenNone": "Без гражданства",
+    "citizenForeign": "Иностранный гражданин",
+    "country": "Страна",
+    "branch": "Филиал",
+    "select": "Выберите",
+    "city": "Город",
+    "contractDate": "Дата договора",
+    "passportSeries": "Серия и номер паспорта",
+    "passportGivenDate": "Дата выдачи",
+    "passportGivenBy": "Кем выдан",
+    "enterPlaceholder": "введите",
+    "photo": "Фото (необязательно, макс. 200KB)",
+    "camera": "Камера",
+    "lastName": "Фамилия",
+    "inputPlaceholder": "Введите",
+    "firstName": "Имя",
+    "middleName": "Отчество",
+    "birthDate": "Дата рождения",
+    "department": "Отдел",
+    "selectPlaceholder": "выберите",
+    "position": "Должность",
+    "workStartDate": "Дата начала работы",
+    "contractStartDate": "Дата начала договора",
+    "contractEndDate": "Дата окончания договора",
+    "contractType": "Тип договора",
+    "contractConclusionTerm": "Срок заключения договора",
+    "salaryType": "Тип оплаты по договору",
+    "contractDuration": "Срок договора",
+    "probation": "Испытательный срок",
+    "probationOptions": {
+      "none": "Без испытания",
+      "yes": "Испытательный срок"
+    },
+    "probationDays": "Испытательный срок (дни)",
+    "workingHours": "Общее рабочее время (в месяц)",
+    "baseSalary": "Базовая зарплата",
+    "hourlyRate": "Почасовая ставка",
+    "additionalTasks": "Дополнительные задачи",
+    "task": "Задача",
+    "salary": "Зарплата",
+    "comment": "Комментарий",
+    "totalSalary": "Общая ежемесячная зарплата",
+    "salaryPeriodStart": "Период зарплаты (начало)",
+    "salaryPeriodEnd": "Период зарплаты (конец)",
+    "vacationType": "Трудовой отпуск",
+    "vacationDays": "Дни отпуска",
+    "vacationPayment": "Оплата за отпуск",
+    "phone": "Номер телефона",
+    "addressReg": "Место жительства (адрес регистрации)",
+    "addressCurrent": "Место проживания",
+    "saving": "Сохранение...",
+    "save": "Сохранить",
+    "cancel": "Отмена"
+  },
+  "dateInput": {
+    "clear": "Очистить",
+    "month": "Месяц",
+    "nextMonth": "Следующий месяц",
+    "openCalendar": "Открыть календарь",
+    "previousMonth": "Предыдущий месяц",
+    "today": "Сегодня",
+    "year": "Год"
+  },
+  "registrationModal": {
+    "add": "Добавить",
+    "cancel": "Отмена",
+    "closeModal": "Закрыть окно",
+    "create": "Регистрация",
+    "edit": "Редактировать",
+    "errors": {
+      "birthDate": "Дата рождения обязательна",
+      "branchId": "Филиал обязателен",
+      "courseId": "Курс обязателен",
+      "districtId": "Город/район обязателен",
+      "firstName": "Имя обязательно",
+      "gender": "Пол обязателен",
+      "lastName": "Фамилия обязательна",
+      "middleName": "Отчество обязательно",
+      "phone": "Номер телефона обязателен",
+      "phoneFormat": "Неверный формат. Пример: +998 90 123 45 67",
+      "regionId": "Регион обязателен",
+      "sourceId": "Источник обязателен"
+    },
+    "fields": {
+      "birthDate": "Дата рождения",
+      "branchId": "Филиал",
+      "courseId": "Курс",
+      "districtId": "Город(район)",
+      "firstName": "Имя",
+      "gender": "Пол",
+      "groupId": "Группа",
+      "lastName": "Фамилия",
+      "levelId": "Уровень",
+      "middleName": "Отчество",
+      "noteOptional": "Примечание(необязательно)",
+      "phone": "Номер телефона",
+      "regionId": "Регион",
+      "sourceId": "Источник"
+    },
+    "gender": {
+      "female": "Женский",
+      "male": "Мужской"
+    },
+    "placeholders": {
+      "branchId": "Выберите филиал",
+      "courseId": "Выберите курс",
+      "districtId": "Город или район",
+      "firstName": "Алижон",
+      "groupId": "Выберите группу",
+      "lastName": "Алиев",
+      "levelId": "Выберите уровень",
+      "middleName": "Алиевич",
+      "regionId": "Выберите регион",
+      "sourceId": "Выберите источник"
+    },
+    "save": "Сохранить"
   }
 }

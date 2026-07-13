@@ -1,12 +1,24 @@
 .contracts-container {
-  width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 20px !important;
-  margin-top: 40px !important;
-  margin-left: 40px !important;
-  box-sizing: border-box !important;
-  overflow-x: hidden !important;
+  width: calc(100% - 80px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 50px !important;
+  margin-left: 80px !important;
+  padding-bottom: 30px;
+  min-height: calc(100vh - 50px);
+  overflow-y: visible;
+}
+
+.layout {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-y: auto !important;
+}
+
+body {
+  overflow-x: hidden;
+  height: auto !important;
 }
 
 .contracts-header {
@@ -38,98 +50,172 @@
 
 /* Form Layout */
 .contracts-form {
-  background: white !important;
-  padding: 40px !important;
-  border-radius: 20px !important;
-  box-shadow: 0 4px 20px rgba(0, 51, 102, 0.05) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 30px !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  border: 1px solid #7a7473 !important;
-  color: #000000 !important;
-  box-sizing: border-box !important;
-  align-items: initial !important;
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 51, 102, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1700px;
+  border: 1px solid #7a7473;
+  margin-left: 0px;
 }
 
-.ct-form-grid {
+.form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px 30px;
 }
 
-.ct-form-grid.ct-form-grid-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.ct-form-group {
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
   position: relative;
 }
 
-.ct-form-group.span-2 {
+.form-group.span-2 {
   grid-column: span 2;
 }
 
-.ct-form-group.full-width {
+.form-group.full-width {
   grid-column: span 3;
 }
 
-.ct-form-group label {
+.form-group label {
   font-family: noto-b;
   font-size: 14px;
   color: #003366;
 }
 
-.ct-form-group label .required {
+.form-group label .required {
   color: #e70a0a;
   margin-left: 4px;
 }
 
-.ct-form-group input,
-.ct-form-group select,
-.ct-form-group textarea {
+.form-group input,
+.form-group select,
+.form-group textarea {
   padding: 12px 16px;
   border: 1.5px solid #7a7473;
   border-radius: 12px;
   font-size: 15px;
-  color: #000;
+  color: #000000;
   outline: none;
   transition: all 0.2s ease;
-  background-color: #fff;
+  background-color: #ffffff;
+  font-family: noto-m;
 }
 
-.ct-form-group input::placeholder {
+/* Bir xil padding'da ham brauzer input va select'ga turli intrinsik balandlik
+   beradi, shuning uchun balandlik qat'iy belgilanadi. `box-sizing: border-box`
+   global bo'lgani uchun bu o'lchamlar chegara bilan birga hisoblanadi.
+   textarea tashqarida qoldirildi — u kontent bo'yicha o'sishi kerak. */
+.form-group input,
+.dynamic-item input,
+.passport-row input {
+  height: 43.69px;
+}
+
+.form-group select {
+  height: 44px;
+}
+
+.form-group input::placeholder {
   color: #7a7473;
   opacity: 0.6;
 }
 
-.ct-form-group input:focus,
-.ct-form-group select:focus {
+.form-group input:focus,
+.form-group select:focus {
   border-color: #003366;
   box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
 }
 
-.ct-form-group input:disabled,
-.ct-form-group select:disabled {
+.form-group input:disabled,
+.form-group select:disabled {
   background-color: #f1f5f9;
   border-color: #e2e8f0;
   color: #64748b;
   cursor: not-allowed;
 }
 
+/* Validation error state: red border on empty / invalid fields */
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error,
+.passport-row input.error {
+  border-color: #e70a0a;
+}
+.form-group input.error:focus,
+.form-group select.error:focus,
+.form-group textarea.error:focus,
+.passport-row input.error:focus {
+  border-color: #e70a0a;
+  box-shadow: 0 0 0 3px rgba(231, 10, 10, 0.12);
+}
+.error-text {
+  color: #e70a0a;
+  font-size: 12px;
+  font-family: noto-m;
+}
+
 /* Multi-input Row (Passport) */
-.ct-passport-row {
+.passport-row {
   display: grid;
   grid-template-columns: 100px 1fr;
   gap: 15px;
 }
 
+/* Contracts form row layout (1 / 2 / 3 inputs per row) */
+.contracts-form .crow {
+  display: grid;
+  gap: 16px 30px;
+}
+.contracts-form .crow-1 {
+  grid-template-columns: 1fr;
+}
+.contracts-form .crow-2 {
+  grid-template-columns: 1fr 1fr;
+}
+.contracts-form .crow-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* Additional task card: "Topshiriq | Maosh" row + "Izoh" row */
+.contracts-form .task-item {
+  position: relative;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px;
+}
+.contracts-form .task-item .crow {
+  margin-bottom: 16px;
+}
+.contracts-form .task-item .crow:last-child {
+  margin-bottom: 0;
+}
+.contracts-form .task-remove {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+@media (max-width: 992px) {
+  .contracts-form .crow-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 768px) {
+  .contracts-form .crow-2,
+  .contracts-form .crow-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Dynamic Sections */
-.ct-dynamic-section {
+.dynamic-section {
   border-top: 1px solid #e2e8f0;
   padding-top: 20px;
   display: flex;
@@ -137,26 +223,26 @@
   gap: 20px;
 }
 
-.ct-dynamic-item {
+.dynamic-item {
   display: grid;
   grid-template-columns: repeat(3, 1fr) 50px;
   gap: 20px;
   align-items: flex-end;
 }
 
-.ct-dynamic-item input {
+.dynamic-item input {
   padding: 12px 16px;
   border: 1.5px solid #7a7473;
   border-radius: 12px;
   font-size: 15px;
-  color: #000000 !important;
+  color: #000000;
   outline: none;
   transition: all 0.2s ease;
-  background-color: #ffffff !important;
-  -webkit-text-fill-color: #000000;
+  background-color: #ffffff;
+  font-family: noto-m;
 }
 
-.ct-add-dynamic-btn {
+.add-dynamic-btn {
   width: 40px;
   height: 40px;
   background-color: #003366;
@@ -171,11 +257,11 @@
   transition: background 0.2s;
 }
 
-.ct-add-dynamic-btn:hover {
+.add-dynamic-btn:hover {
   background-color: #004080;
 }
 
-.ct-remove-dynamic-btn {
+.remove-dynamic-btn {
   color: #e70a0a;
   background: none;
   border: none;
@@ -184,16 +270,14 @@
 }
 
 /* Buttons */
-.ct-form-actions {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: center !important;
-  align-items: center !important;
-  gap: 20px !important;
-  margin-top: 40px !important;
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
 }
 
-.ct-btn {
+.btn {
   padding: 12px 40px;
   border-radius: 12px;
   font-family: noto-b;
@@ -202,29 +286,29 @@
   transition: all 0.2s ease;
 }
 
-.ct-btn-cancel {
+.btn-cancel {
   background: white;
   border: 1.5px solid #7a7473;
   color: #000000;
 }
 
-.ct-btn-cancel:hover {
+.btn-cancel:hover {
   background: #f8fafc;
 }
 
-.ct-btn-save {
+.btn-save {
   background: #fe9100;
   border: none;
   color: white;
   box-shadow: 0 4px 15px rgba(254, 145, 0, 0.3);
 }
 
-.ct-btn-save:hover {
+.btn-save:hover {
   background: #e68200;
   transform: translateY(-2px);
 }
 
-.ct-btn-save:disabled {
+.btn-save:disabled {
   background: #cbd5e1;
   cursor: not-allowed;
   transform: none;
@@ -244,6 +328,27 @@
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
+  table-layout: auto;
+}
+
+/* index.css dagi global `th, td` qoidalari boshqa jadvallar uchun ustunlarni
+   qat'iy kenglikka (53px / 80px / 203px) qotiradi va ellipsis qo'yadi. Bu jadval
+   ustun kengliklarini kontent bo'yicha o'zi hisoblaydi, shuning uchun bekor qilinadi. */
+.contracts-table th,
+.contracts-table td {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.contracts-table th:first-child,
+.contracts-table td:first-child,
+.contracts-table th:nth-child(2),
+.contracts-table td:nth-child(2),
+.contracts-table th:last-child,
+.contracts-table td:last-child {
+  width: auto;
+  min-width: 0;
+  max-width: none;
 }
 
 .contracts-table th {
@@ -262,6 +367,7 @@
   border-bottom: 1px solid #f1f5f9;
   font-size: 15px;
   color: #000000;
+  font-family: noto-m;
 }
 
 .contracts-table tr:last-child td {
@@ -273,7 +379,7 @@
 }
 
 /* Pagination UI */
-.ct-pagination-container {
+.pagination-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -281,28 +387,29 @@
   padding: 0 10px;
 }
 
-.ct-page-size-selector {
+.page-size-selector {
   display: flex;
   align-items: center;
   gap: 10px;
   color: #64748b;
   font-size: 14px;
+  font-family: noto-m;
 }
 
-.ct-page-size-selector select {
+.page-size-selector select {
   padding: 6px 10px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   outline: none;
 }
 
-.ct-pagination-controls {
+.pagination-controls {
   display: flex;
   gap: 8px;
   align-items: center;
 }
 
-.ct-page-btn {
+.page-btn {
   min-width: 36px;
   height: 36px;
   display: flex;
@@ -317,18 +424,18 @@
   transition: all 0.2s;
 }
 
-.ct-page-btn:hover:not(:disabled) {
+.page-btn:hover:not(:disabled) {
   border-color: #fe9100;
   color: #fe9100;
 }
 
-.ct-page-btn.active {
+.page-btn.active {
   background: #fe9100;
   border-color: #fe9100;
   color: white;
 }
 
-.ct-page-btn:disabled {
+.page-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -471,87 +578,150 @@
   color: white;
 }
 
-/* Confirm Dialog Modal — scoped to contracts module */
-.ct-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+.pdf-icon {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.pdf-icon:hover {
+  background-color: #dc2626;
+  color: white;
+}
+
+.print-icon {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.print-icon:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+.salary-icon {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.salary-icon:hover {
+  background-color: #d97706;
+  color: white;
+}
+
+.detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 8px;
+}
+
+.detail-actions--top {
+  justify-content: flex-start;
+  padding-top: 0;
+  padding-bottom: 20px;
+  border-top: none;
+  border-bottom: 1px solid #e2e8f0;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.detail-date-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.detail-date-label {
+  font-family: noto-b;
+  font-size: 14px;
+  color: #003366;
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 9999;
+  gap: 8px;
 }
 
-.ct-modal {
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  width: 500px;
-  border: 1px solid #003366;
-}
-
-.ct-modal.ct-modal--small {
-  width: 320px;
-  text-align: center;
-}
-
-.ct-modal-title {
-  text-align: center;
-  font-family: noto-b;
-  font-size: 20px;
-  color: #003366;
-  margin-bottom: 30px;
-  margin-top: 0;
-}
-
-.ct-modal-actions {
+.detail-date-row {
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 25px;
+  align-items: center;
+  gap: 12px;
 }
 
-.ct-cancel-btn {
-  border: 2px solid #666;
-  background: #fff;
-  color: #666;
-  padding: 10px 24px;
+.detail-date-input {
+  padding: 10px 14px;
+  border: 1.5px solid #d1d5db;
   border-radius: 10px;
-  cursor: pointer;
-  font-family: noto-m;
   font-size: 15px;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  color: #000;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: noto-m;
 }
 
-.ct-cancel-btn:hover {
-  background: #f0f0f0;
+.detail-date-input:focus {
+  border-color: #003366;
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
 }
 
-.ct-danger-btn {
+.btn-detail-activate {
+  background: #16a34a;
   border: none;
-  background: #e70a0a;
-  color: #fff;
-  padding: 10px 24px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-family: noto-m;
-  font-size: 15px;
-  transition: all 0.3s ease;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
 }
 
-.ct-danger-btn:hover {
-  background: #c90000;
+.btn-detail-activate:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.btn-detail-terminate {
+  background: #fe9100;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(254, 145, 0, 0.25);
+}
+
+.btn-detail-terminate:hover {
+  background: #e68200;
+  transform: translateY(-1px);
+}
+
+.btn-detail-cancel {
+  background: white;
+  border: 1.5px solid #e53e3e;
+  color: #e53e3e;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-detail-cancel:hover {
+  background: #e53e3e;
+  color: white;
+  transform: translateY(-1px);
 }
 
 /* Responsive Scaling: 1920px -> 1200px */
 @media (max-width: 1600px) {
   .contracts-form {
     padding: 32px;
-    gap: 24px;
+    gap: 16px;
     max-width: 1500px;
   }
-  .ct-form-grid {
+  .form-grid {
     gap: 16px 24px;
   }
   .contracts-table th,
@@ -566,17 +736,17 @@
 @media (max-width: 1400px) {
   .contracts-form {
     padding: 28px;
-    gap: 20px;
+    gap: 14px;
     max-width: 1300px;
   }
-  .ct-form-grid {
+  .form-grid {
     gap: 14px 20px;
   }
   .contracts-table th,
   .contracts-table td {
     padding: 10px 14px;
   }
-  .ct-btn {
+  .btn {
     padding: 10px 32px;
   }
   .detail-grid {
@@ -590,12 +760,12 @@
 @media (max-width: 1200px) {
   .contracts-form {
     padding: 24px;
-    gap: 16px;
+    gap: 12px;
     max-width: 1000px;
   }
-  .ct-form-group input,
-  .ct-form-group select,
-  .ct-form-group textarea {
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
     padding: 10px 14px;
     font-size: 14px;
   }
@@ -613,7 +783,7 @@
 }
 
 @media (max-width: 1024px) {
-  .ct-form-grid {
+  .form-grid {
     grid-template-columns: repeat(2, 1fr);
   }
   .detail-grid {
@@ -622,7 +792,7 @@
 }
 
 @media (max-width: 768px) {
-  .ct-form-grid {
+  .form-grid {
     grid-template-columns: 1fr;
   }
   .detail-grid {
@@ -630,7 +800,7 @@
   }
 }
 
-.ct-photo-upload-container {
+.photo-upload-container {
   display: flex;
   align-items: center;
   gap: 20px;
@@ -641,12 +811,12 @@
   transition: all 0.2s;
 }
 
-.ct-photo-upload-container:hover {
+.photo-upload-container:hover {
   border-color: #003366;
   background: #f8fbff;
 }
 
-.ct-photo-preview {
+.photo-preview {
   width: 80px;
   height: 80px;
   border-radius: 12px;
@@ -655,13 +825,13 @@
   flex-shrink: 0;
 }
 
-.ct-photo-preview img {
+.photo-preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.ct-photo-upload-container input[type='file'] {
+.photo-upload-container input[type='file'] {
   border: none;
   padding: 0;
   background: transparent;
@@ -669,7 +839,7 @@
   width: 100%;
 }
 
-.ct-camera-btn {
+.camera-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -681,21 +851,24 @@
   border: 1px solid #d1d5db;
 
   color: #111827;
-  font-weight: 500;
+  font-family: noto-m;
 
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.ct-camera-btn:hover {
+/* 🔥 hover */
+.camera-btn:hover {
   background: #eef2f7;
   border-color: #9ca3af;
 }
 
-.ct-camera-btn:active {
+/* 🔥 active */
+.camera-btn:active {
   transform: scale(0.97);
 }
 
-.ct-camera-btn-icon {
+/* icon */
+.camera-btn-icon {
   font-size: 16px;
 }

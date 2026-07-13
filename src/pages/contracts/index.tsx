@@ -1,399 +1,189 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { API } from '../../api/api';
-import '../payments/payments.css';
-import './contracts.css';
-import { useTranslation } from 'react-i18next';
-import { getLocalized } from '../../utils/getLocalized';
-import ContractDetail from './ContractDetail';
-import ContractsCreate from './ContractsCreate';
-import type { Contract } from '../../types';
-import { Protected } from '../../components/Protected';
+import React, { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { API } from "../../api/api";
+import "./contracts.css";
+import { useTranslation } from "react-i18next";
+import { getLocalized } from "../../utils/getLocalized";
+import ContractsCreate from "./ContractsCreate";
+import { Protected } from "@/components/Protected";
+import { formatDate as formatDisplayDate } from "@/utils/date";
+import { printFromDocxTemplate } from "@/utils/contractPdf";
+import { buildEmployeeContractData } from "@/utils/employeeContractPdf";
+import employmentTemplate from "@/assets/documents/ILM_PLYUS_Mehnat_shartnomasi_TEMPLATE.docx?url";
 
-function formatDate(dateStr: string): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('ru-RU');
+interface Employee {
+  id: number;
+  first_name: string;
+  last_name: string;
+  middle_name: string;
+  full_name: string;
+  phone: string;
+  birth_date: string;
+  pinfl: string;
+  citizenship: string;
+  passport_series: string;
+  passport_number: string;
+  passport_given_date: string;
+  passport_given_by: string;
+  address_registration: string;
+  address_living: string;
+  photo_url?: string;
+  branch_id?: number;
 }
 
-interface PaginationProps {
-  currentPage: number;
-  lastPage: number;
-  from: number;
-  to: number;
-  total: number;
-  onPageChange: (page: number) => void;
+interface Department {
+  id: number;
+  name_uz: string | null;
+  name_ru: string | null;
+  name_en: string | null;
+  code?: string;
 }
 
-function Pagination({ currentPage, lastPage, from, to, total, onPageChange }: PaginationProps) {
-  const pages = useMemo<(number | '...')[]>(() => {
-    if (lastPage <= 6) return Array.from({ length: lastPage }, (_, i) => i + 1);
-    return [1, 2, 3, '...', lastPage];
-  }, [lastPage]);
-
-  return (
-    <div className="cp-pagination">
-      <span className="cp-pagination__info">
-        Jami: {total} ta, {from}-{to} k‘rsatilmoqda
-      </span>
-      <div className="cp-pagination__controls">
-        <button
-          type="button"
-          className="cp-pagination__btn"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          ‹
-        </button>
-        {pages.map((p, i) =>
-          p === '...' ? (
-            <span key={`el-${i}`} className="cp-pagination__ellipsis">
-              ...
-            </span>
-          ) : (
-            <button
-              key={p}
-              type="button"
-              className={`cp-pagination__btn${currentPage === p ? ' cp-pagination__btn--active' : ''}`}
-              onClick={() => onPageChange(p as number)}
-            >
-              {p}
-            </button>
-          ),
-        )}
-        <button
-          type="button"
-          className="cp-pagination__btn"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === lastPage}
-        >
-          ›
-        </button>
-      </div>
-    </div>
-  );
+interface BranchRekvizit {
+  id: number;
+  name_uz?: string | null;
+  legal_name?: string | null;
+  city?: string | null;
+  address_uz?: string | null;
+  legal_address_uz?: string | null;
+  inn?: string | null;
+  phone?: string | null;
+  bank_name?: string | null;
+  account_number?: string | null;
+  mfo?: string | null;
+  director_name?: string | null;
 }
 
-interface TableRowProps {
-  row: Contract;
-  isSelected: boolean;
-  onToggle: (id: number) => void;
-  onView: (row: Contract) => void;
-  onEdit: (row: Contract) => void;
-  onDelete: (row: Contract) => void;
-  onTerminate: (row: Contract) => void;
+interface Contract {
+  id: number;
+  employee_id: number;
+  contract_number: number;
+  contract_date: string;
+  contract_start_date: string;
+  contract_end_date: string;
+  status: string;
+  base_salary: string;
+  employee: Employee;
+  department: Department;
+  position_id: number;
+  position?: {
+    id: number;
+    name_uz: string | null;
+    name_ru: string | null;
+    name_en: string | null;
+  };
+  contract_type: string;
+  contract_duration_months?: string | null;
+  monthly_salary_type?: string | null;
+  work_start_date?: string | null;
+  vacation_type: string;
+  vacation_days?: number | string | null;
+  working_hours_monthly: string;
+  hourly_rate: string;
+  total_monthly_salary: string;
+  salary_start_date: string;
+  salary_end_date: string;
+  signed_by: string;
+  language: string;
+  probation_period: string | null;
+  probation_end_date: string | null;
+  /** Word shablonidagi NTM rekvizitlari (STIR, MFO, bank, H/R, rahbar) uchun. */
+  branch?: BranchRekvizit;
 }
 
-function TableRow({
-  row,
-  isSelected,
-  onToggle,
-  onView,
-  onEdit,
-  onDelete,
-  onTerminate,
-}: TableRowProps) {
+const Contracts: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const lang = i18n.language;
-  const emp = row.employee;
-
-  const isActive = row.status === 'active';
-  const statusColor = isActive ? '#16a34a' : '#dc2626';
-  const statusBg = isActive ? '#dcfce7' : '#fef2f2';
-  const statusLabel = isActive ? t('contracts.statusActive') : t('contracts.statusInactive');
-
-  return (
-    <tr style={isSelected ? { background: '#eef4ff' } : undefined}>
-      <td>
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => onToggle(row.id)}
-          style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#003366' }}
-        />
-      </td>
-      <td style={{ fontWeight: 600, color: '#003366' }}>{row.id}</td>
-      <td style={{ textAlign: 'left' }}>
-        {emp?.full_name ||
-          `${emp?.last_name ?? ''} ${emp?.first_name ?? ''} ${emp?.middle_name ?? ''}`.trim() ||
-          '-'}
-      </td>
-      <td>{emp?.phone || '-'}</td>
-      <td>{getLocalized(row.department, 'name', lang) || '-'}</td>
-      <td style={{ fontWeight: 600 }}>#{row.contract_number}</td>
-      <td>
-        <span
-          style={{
-            background: statusBg,
-            color: statusColor,
-            padding: '3px 10px',
-            borderRadius: 5,
-            fontSize: 12,
-            fontWeight: 600,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {statusLabel}
-        </span>
-      </td>
-      <td>{formatDate(row.contract_start_date)}</td>
-      <td>{formatDate(row.contract_end_date)}</td>
-      <td>
-        <div className="actions">
-          <button
-            type="button"
-            style={{
-              color: '#fe9100',
-              border: 'none',
-              background: 'transparent',
-              cursor: 'pointer',
-              fontSize: 18,
-            }}
-            title={t('contracts.viewTooltip')}
-            onClick={() => onView(row)}
-          >
-            <i className="fa-regular fa-eye" />
-          </button>
-          <Protected permission="employee_contracts.edit">
-            <button
-              type="button"
-              style={{
-                color: '#1a73e8',
-                border: 'none',
-                background: 'transparent',
-                cursor: 'pointer',
-                fontSize: 18,
-              }}
-              title={t('contracts.editTooltip')}
-              onClick={() => onEdit(row)}
-            >
-              <i className="fa-regular fa-pen-to-square" />
-            </button>
-          </Protected>
-          <Protected permission="employee_contracts.delete">
-            <button
-              type="button"
-              className="payment-delete-btn"
-              title={t('contracts.deleteTooltip')}
-              onClick={() => onDelete(row)}
-            >
-              <i className="fa-regular fa-trash-can" />
-            </button>
-          </Protected>
-          {isActive && (
-            <button
-              type="button"
-              style={{
-                color: '#eab308',
-                border: 'none',
-                background: 'transparent',
-                cursor: 'pointer',
-                fontSize: 18,
-              }}
-              title={t('contracts.terminateTooltip')}
-              onClick={() => onTerminate(row)}
-            >
-              <i className="fa-solid fa-ban" />
-            </button>
-          )}
-        </div>
-      </td>
-    </tr>
-  );
-}
-
-interface TableProps {
-  rows: Contract[];
-  selectedIds: Set<number>;
-  onToggleOne: (id: number) => void;
-  onToggleAll: () => void;
-  onView: (row: Contract) => void;
-  onEdit: (row: Contract) => void;
-  onDelete: (row: Contract) => void;
-  onTerminate: (row: Contract) => void;
-  sortAsc: boolean;
-  onToggleSort: () => void;
-}
-
-function Table({
-  rows,
-  selectedIds,
-  onToggleOne,
-  onToggleAll,
-  onView,
-  onEdit,
-  onDelete,
-  onTerminate,
-  sortAsc,
-  onToggleSort,
-}: TableProps) {
-  const { t } = useTranslation();
-  const allSelected = rows.length > 0 && rows.every((r) => selectedIds.has(r.id));
-  const someSelected = rows.some((r) => selectedIds.has(r.id)) && !allSelected;
-  const cbRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    if (cbRef.current) cbRef.current.indeterminate = someSelected;
-  }, [someSelected]);
-
-  return (
-    <div className="payments-table-wrapper">
-      <table className="payments-table">
-        <thead>
-          <tr>
-            <th style={{ width: 46 }}>
-              <input
-                ref={cbRef}
-                type="checkbox"
-                checked={allSelected}
-                onChange={onToggleAll}
-                style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#003366' }}
-              />
-            </th>
-            <th style={{ cursor: 'pointer', userSelect: 'none' }} onClick={onToggleSort}>
-              {t('contracts.tableId')} {sortAsc ? '↑' : '↓'}
-            </th>
-            <th>{t('contracts.tableFullName')}</th>
-            <th>{t('contracts.tablePhone')}</th>
-            <th>{t('contracts.tableDepartment')}</th>
-            <th>{t('contracts.tableContractNo')}</th>
-            <th>{t('contracts.tableStatus')}</th>
-            <th>{t('contracts.tableStartDate')}</th>
-            <th>{t('contracts.tableEndDate')}</th>
-            <th>{t('contracts.tableActions')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.id}
-              row={row}
-              isSelected={selectedIds.has(row.id)}
-              onToggle={onToggleOne}
-              onView={onView}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              onTerminate={onTerminate}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-type ConfirmAction = { type: 'delete' | 'terminate'; row: Contract } | null;
-
-export default function Contracts() {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const [sortAsc, setSortAsc] = useState(true);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const [viewContract, setViewContract] = useState<Contract | null>(null);
+  const [pageSize, setPageSize] = useState(10);
   const [editContract, setEditContract] = useState<{
     employeeId: number;
     contractId: number;
   } | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
-
-  useEffect(() => {
-    const isOpen = !!viewContract || !!confirmAction;
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [viewContract, confirmAction]);
+  const [busyDoc, setBusyDoc] = useState<{
+    contractId: number;
+    mode: "pdf" | "print";
+  } | null>(null);
 
   const {
     data: contracts,
     isLoading,
     isError,
   } = useQuery<Contract[]>({
-    queryKey: ['contracts'],
+    queryKey: ["contracts"],
     queryFn: async () => {
-      const { data } = await API.get('/contracts');
+      const { data } = await API.get("/contracts");
       return data;
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: ({ employeeId, contractId }: { employeeId: number; contractId: number }) =>
-      API.delete(`/employees/${employeeId}/contracts/${contractId}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['contracts'] }),
-  });
-
-  const terminateMutation = useMutation({
-    mutationFn: ({ employeeId, contractId }: { employeeId: number; contractId: number }) =>
-      API.patch(`/employees/${employeeId}/contracts/${contractId}/terminate`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['contracts'] }),
-  });
-
-  const sortedData = useMemo(() => {
+  const processedData = useMemo(() => {
     if (!contracts) return [];
-    return [...contracts].sort((a, b) => (sortAsc ? a.id - b.id : b.id - a.id));
-  }, [contracts, sortAsc]);
+    // Eng oxirgi qo'shilgan shartnoma jadval boshida turishi kerak. sortByNewest
+    // avval `created_at` ga qaraydi, u esa bu yerda ishonchli emas — id bo'yicha saralaymiz.
+    return [...contracts].sort((a, b) => b.id - a.id);
+  }, [contracts]);
 
-  const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize));
-  const safePage = Math.min(currentPage, totalPages);
+  const totalPages = Math.ceil(processedData.length / pageSize);
 
   const paginatedData = useMemo(() => {
-    const start = (safePage - 1) * pageSize;
-    return sortedData.slice(start, start + pageSize);
-  }, [sortedData, safePage, pageSize]);
+    const start = (currentPage - 1) * pageSize;
+    return processedData.slice(start, start + pageSize);
+  }, [processedData, currentPage, pageSize]);
 
-  const from = sortedData.length ? (safePage - 1) * pageSize + 1 : 0;
-  const to = Math.min(safePage * pageSize, sortedData.length);
+  const deleteMutation = useMutation({
+    mutationFn: async ({
+      employeeId,
+      contractId,
+    }: {
+      employeeId: number;
+      contractId: number;
+    }) => {
+      await API.delete(`/employees/${employeeId}/contracts/${contractId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contracts"] });
+    },
+  });
 
-  const handleToggleOne = useCallback((id: number) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
-
-  const handleToggleAll = useCallback(() => {
-    setSelectedIds((prev) => {
-      const allSel = paginatedData.every((r) => prev.has(r.id));
-      const next = new Set(prev);
-      paginatedData.forEach((r) => (allSel ? next.delete(r.id) : next.add(r.id)));
-      return next;
-    });
-  }, [paginatedData]);
-
-  const handleDeleteSelected = useCallback(() => {
-    if (selectedIds.size === 0) return;
-    const first = sortedData.find((r) => selectedIds.has(r.id));
-    if (first) setConfirmAction({ type: 'delete', row: first });
-  }, [selectedIds, sortedData]);
-
-  const handleConfirm = useCallback(() => {
-    if (!confirmAction) return;
-    if (confirmAction.type === 'delete') {
-      if (selectedIds.size > 1) {
-        sortedData
-          .filter((r) => selectedIds.has(r.id))
-          .forEach((r) => deleteMutation.mutate({ employeeId: r.employee.id, contractId: r.id }));
-        setSelectedIds(new Set());
-      } else {
-        const row = confirmAction.row;
-        deleteMutation.mutate({ employeeId: row.employee.id, contractId: row.id });
-        setSelectedIds((prev) => {
-          const next = new Set(prev);
-          next.delete(row.id);
-          return next;
-        });
-      }
-    } else {
-      const row = confirmAction.row;
-      terminateMutation.mutate({ employeeId: row.employee.id, contractId: row.id });
+  const handleDelete = (employeeId: number, contractId: number) => {
+    if (window.confirm(t("contracts.deleteConfirm"))) {
+      deleteMutation.mutate({ employeeId, contractId });
     }
-    setConfirmAction(null);
-  }, [confirmAction, selectedIds, sortedData, deleteMutation, terminateMutation]);
+  };
+  // Delete tugmasi izohga olingan; tugma qaytarilganda quyidagi qatorni o'chirish kerak
+  void handleDelete;
+
+  /**
+   * Mehnat shartnomasini Word shabloni asosida PDF/chop etishga uzatadi.
+   * Jadvaldagi shartnoma obyekti to'liq ishlatiladi — alohida so'rov yuborilmaydi
+   * (backendda GET /contracts/{id} yo'q).
+   *
+   * O'quvchi shartnomalari bilan bir xil `printFromDocxTemplate` chaqiriladi,
+   * shuning uchun PDF/print parametrlari aynan bir xil bo'ladi.
+   */
+  const handleGenerate = async (contract: Contract, mode: "pdf" | "print") => {
+    setBusyDoc({ contractId: contract.id, mode });
+    try {
+      await printFromDocxTemplate(
+        employmentTemplate,
+        buildEmployeeContractData(contract),
+        String(contract.contract_number ?? contract.id),
+        mode,
+      );
+    } catch (err) {
+      console.error(`${mode} xatosi:`, err);
+      alert(t(mode === "pdf" ? "contracts.pdfError" : "contracts.printError"));
+    } finally {
+      setBusyDoc(null);
+    }
+  };
+
+  const formatDate = (dateStr: string) => formatDisplayDate(dateStr, "-");
 
   if (isCreating) {
     return (
@@ -416,104 +206,225 @@ export default function Contracts() {
   }
 
   return (
-    <section className="payments container">
-      <h1 className="main-title">{t('contracts.mainTitle')}</h1>
-
-      <div className="payments-filters">
-        <Protected permission="employee_contracts.create">
-          <button type="button" className="add-new-payment" onClick={() => setIsCreating(true)}>
-            {t('contracts.add')}
-          </button>
-        </Protected>
-        <Protected permission="employee_contracts.delete">
-          <button
-            type="button"
-            className="delete-all"
-            onClick={handleDeleteSelected}
-            disabled={selectedIds.size === 0}
-          >
-            {t('contracts.delete')}
-          </button>
-        </Protected>
+    <div className="contracts-container container">
+      <div className="contracts-header">
+        <h1>
+          <div className="icon-box">
+            <i className="fas fa-file-contract"></i>
+          </div>
+          {t("contracts.title")}
+        </h1>
+        <button className="btn btn-save" onClick={() => setIsCreating(true)}>
+          <i className="fas fa-plus"></i> {t("contracts.newContract")}
+        </button>
       </div>
 
-      {isLoading && (
-        <div style={{ padding: 40, textAlign: 'center', color: '#7a8fa6' }}>
-          {t('contracts.loading')}
-        </div>
-      )}
-      {isError && (
-        <div style={{ padding: 40, textAlign: 'center', color: '#e70a0a' }}>
-          {t('contracts.error')}
-        </div>
-      )}
-      {!isLoading && !isError && sortedData.length === 0 && (
-        <div style={{ padding: 48, textAlign: 'center', color: '#7a8fa6' }}>
-          {t('contracts.noData')}
-        </div>
-      )}
+      <div className="contracts-table-card">
+        <table className="contracts-table">
+          <thead>
+            <tr>
+              <th>{t("contracts.table.id")}</th>
+              <th>{t("contracts.table.fullName")}</th>
+              <th>{t("contracts.table.phone")}</th>
+              <th>{t("contracts.table.department")}</th>
+              <th>{t("contracts.table.status")}</th>
+              <th>{t("contracts.table.startDate")}</th>
+              <th>{t("contracts.table.endDate")}</th>
+              <th>{t("contracts.table.actions")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <tr>
+                <td colSpan={8} align="center">
+                  {t("contracts.loading")}
+                </td>
+              </tr>
+            ) : isError ? (
+              <tr>
+                <td colSpan={8} align="center">
+                  {t("contracts.error")}
+                </td>
+              </tr>
+            ) : paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan={8} align="center">
+                  {t("contracts.noData")}
+                </td>
+              </tr>
+            ) : (
+              paginatedData?.map((contract) => {
+                const emp = contract.employee || {};
+                return (
+                  <tr key={contract.id}>
+                    <td>{contract.id}</td>
+                    <td>
+                      {emp.full_name ||
+                        `${emp.last_name || ""} ${emp.first_name || ""} ${emp.middle_name || ""}`.trim() ||
+                        "-"}
+                    </td>
+                    <td>{emp.phone || "-"}</td>
+                    <td>
+                      {getLocalized(contract.department, "name", i18n.language)}
+                    </td>
+                    <td>
+                      <span className={`badge ${contract.status}`}>
+                        {contract.status === "active"
+                          ? t("contracts.status.active")
+                          : t("contracts.status.inactive")}
+                      </span>
+                    </td>
+                    <td>{formatDate(contract.contract_start_date)}</td>
+                    <td>{formatDate(contract.contract_end_date)}</td>
+                    <td>
+                      <div className="action-btns">
+                        <div
+                          className="action-icon view-icon"
+                          onClick={() => navigate(`/contracts/${contract.id}`)}
+                          title={t("contracts.actions.view")}
+                        >
+                          <i className="fas fa-eye"></i>
+                        </div>
+                        <Protected permission="employee_contracts.edit">
+                          <div
+                            className="action-icon edit-icon"
+                            onClick={() =>
+                              setEditContract({
+                                employeeId: emp.id,
+                                contractId: contract.id,
+                              })
+                            }
+                            title={t("contracts.actions.edit")}
+                          >
+                            <i className="fas fa-pen"></i>
+                          </div>
+                        </Protected>
+                        <Protected permission="employee_contracts.edit">
+                          <div
+                            className="action-icon salary-icon"
+                            onClick={() => navigate(`/contracts/${contract.id}?action=salary`)}
+                            title={t("contracts.actions.salary")}
+                          >
+                            <i className="fas fa-coins"></i>
+                          </div>
+                        </Protected>
+                        <div
+                          className="action-icon pdf-icon"
+                          onClick={() => !busyDoc && handleGenerate(contract, "pdf")}
+                          title={t("contracts.actions.pdf")}
+                          style={{
+                            pointerEvents: busyDoc ? "none" : "auto",
+                            opacity: busyDoc ? 0.5 : 1,
+                          }}
+                        >
+                          <i
+                            className={
+                              busyDoc?.contractId === contract.id && busyDoc.mode === "pdf"
+                                ? "fas fa-spinner fa-spin"
+                                : "fas fa-file-pdf"
+                            }
+                          ></i>
+                        </div>
+                        <div
+                          className="action-icon print-icon"
+                          onClick={() => !busyDoc && handleGenerate(contract, "print")}
+                          title={t("contracts.actions.print")}
+                          style={{
+                            pointerEvents: busyDoc ? "none" : "auto",
+                            opacity: busyDoc ? 0.5 : 1,
+                          }}
+                        >
+                          <i
+                            className={
+                              busyDoc?.contractId === contract.id && busyDoc.mode === "print"
+                                ? "fas fa-spinner fa-spin"
+                                : "fas fa-print"
+                            }
+                          ></i>
+                        </div>
+                        {/* Delete tugmasi vaqtincha yopilgan, kerak bo'lganda izohdan chiqariladi
+                        <Protected permission="employee_contracts.delete">
+                          <div
+                            className="action-icon delete-icon"
+                            onClick={() => handleDelete(emp.id, contract.id)}
+                            title={t("contracts.actions.delete")}
+                            style={{
+                              pointerEvents: deleteMutation.isPending ? "none" : "auto",
+                              opacity: deleteMutation.isPending ? 0.5 : 1,
+                            }}
+                          >
+                            <i className="fas fa-trash"></i>
+                          </div>
+                        </Protected>
+                        */}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      {!isLoading && !isError && sortedData.length > 0 && (
-        <Table
-          rows={paginatedData}
-          selectedIds={selectedIds}
-          onToggleOne={handleToggleOne}
-          onToggleAll={handleToggleAll}
-          onView={setViewContract}
-          onEdit={(row) => setEditContract({ employeeId: row.employee.id, contractId: row.id })}
-          onDelete={(row) => {
-            setSelectedIds(new Set([row.id]));
-            setConfirmAction({ type: 'delete', row });
-          }}
-          onTerminate={(row) => setConfirmAction({ type: 'terminate', row })}
-          sortAsc={sortAsc}
-          onToggleSort={() => setSortAsc((p) => !p)}
-        />
-      )}
+      {!isLoading && processedData.length > 0 && (
+        <div className="pagination-container">
+          <div className="page-size-selector">
+            <span>{t("contracts.show")}</span>
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              {[5, 10, 15, 20, 50, 100].map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+            <span>{t("contracts.perPage")}</span>
+          </div>
 
-      {!isLoading && !isError && sortedData.length > pageSize && (
-        <Pagination
-          currentPage={safePage}
-          lastPage={totalPages}
-          from={from}
-          to={to}
-          total={sortedData.length}
-          onPageChange={setCurrentPage}
-        />
-      )}
+          <div className="pagination-controls">
+            <button
+              className="page-btn"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+            >
+              <i className="fas fa-chevron-left"></i>
+            </button>
 
-      {confirmAction && (
-        <div className="ct-modal-overlay">
-          <div className="ct-modal ct-modal--small">
-            <h3 className="ct-modal-title">
-              {confirmAction.type === 'delete'
-                ? t('contracts.deleteConfirmTitle')
-                : t('contracts.terminateConfirmTitle')}
-            </h3>
-            <p style={{ fontSize: 14, color: '#333' }}>
-              {confirmAction.type === 'delete'
-                ? t('contracts.deleteConfirmText')
-                : t('contracts.terminateConfirmText')}
-            </p>
-            <div className="ct-modal-actions">
-              <button type="button" className="ct-danger-btn" onClick={handleConfirm}>
-                {t('contracts.confirm')}
-              </button>
-              <button
-                type="button"
-                className="ct-cancel-btn"
-                onClick={() => setConfirmAction(null)}
-              >
-                {t('contracts.cancel')}
-              </button>
-            </div>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(
+                (p) =>
+                  p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1,
+              )
+              .map((p, idx, arr) => (
+                <React.Fragment key={p}>
+                  {idx > 0 && arr[idx - 1] !== p - 1 && <span>...</span>}
+                  <button
+                    className={`page-btn ${currentPage === p ? "active" : ""}`}
+                    onClick={() => setCurrentPage(p)}
+                  >
+                    {p}
+                  </button>
+                </React.Fragment>
+              ))}
+
+            <button
+              className="page-btn"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+            >
+              <i className="fas fa-chevron-right"></i>
+            </button>
           </div>
         </div>
       )}
-
-      {viewContract && (
-        <ContractDetail contract={viewContract} onClose={() => setViewContract(null)} />
-      )}
-    </section>
+    </div>
   );
-}
+};
+
+export default Contracts;

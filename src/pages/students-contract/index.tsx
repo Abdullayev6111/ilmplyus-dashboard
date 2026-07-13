@@ -1,43 +1,61 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+﻿import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import useAuthStore from '@/store/useAuthStore';
 import './studentsContracts.css';
 import {
   emptyStudent,
   type ContractsResponse,
   type StudentContract,
   type StudentFormData,
-} from '../../types/studentContract.types';
+} from '@/types/studentContract.types';
 import type { Lid } from '@/types/lid.types';
-import type { Group } from '@/types/groups.types';
+import type { Group } from '@/types/group.types';
 import { API } from '@/api/api';
-import { Protected } from '../../components/Protected';
-import { useOptions } from '@/hooks/useOptions';
+import { sortByNewest } from '@/utils/sortByNewest';
+import { useOptions, optionLabel } from '@/api/options';
+import ContractPrintModal from './ContractPrintModal';
+import DateInput from '@/components/DateInput';
+import FilterButton from '@/components/FilterButton';
+import FilterBar, { type FilterBarField } from '@/components/FilterBar';
+import { countFilterBarValues } from '@/components/FilterBar/filterBar.utils';
+
+type ScFilterKey = 'branch' | 'course' | 'group' | 'status' | 'date';
+
+const EMPTY_SC_FILTERS: Record<ScFilterKey, string> = {
+  branch: '',
+  course: '',
+  group: '',
+  status: '',
+  date: '',
+};
 
 const getStatusType = (status: string) => {
   switch (status) {
     case 'active':
       return 'active';
-    case 'pending':
-      return 'pending';
+    case 'completed':
+      return 'completed';
+    case 'in_progress':
+      return 'in_progress';
     case 'cancelled':
       return 'cancelled';
+    case 'expired':
+      return 'expired';
     default:
-      return 'tasdiq';
+      return 'in_progress';
   }
 };
 
-const getStatusLabel = (status: string, t: (key: string) => string) => {
+const getStatusKey = (status: string): string => {
   switch (status) {
-    case 'active':
-      return t('studentsContract.statusActive');
-    case 'pending':
-      return t('studentsContract.statusPending');
-    case 'cancelled':
-      return t('studentsContract.statusCancelled');
-    default:
-      return t('studentsContract.statusApproved');
+    case 'active': return 'studentsContract.status.active';
+    case 'completed': return 'studentsContract.status.completed';
+    case 'in_progress': return 'studentsContract.status.inProgress';
+    case 'cancelled': return 'studentsContract.status.cancelled';
+    case 'expired': return 'studentsContract.status.expired';
+    default: return 'studentsContract.status.inProgress';
   }
 };
 
@@ -46,7 +64,7 @@ const getInitials = (first: string = '', last: string = '') => {
   return `${first[0] || ''}${last[0] || ''}`.toUpperCase();
 };
 
-const getMainPerson = (item: StudentContract, t: (key: string) => string) => {
+const getMainPerson = (item: StudentContract) => {
   const student = item.contract_students?.[0];
   if (student && (student.first_name || student.last_name)) {
     return {
@@ -64,7 +82,7 @@ const getMainPerson = (item: StudentContract, t: (key: string) => string) => {
     };
   }
 
-  return { name: t('studentsContract.unknown'), phone: '', initials: 'N' };
+  return { name: "Noma'lum", phone: '', initials: 'N' };
 };
 
 const formatDateTime = (dateStr: string) => {
@@ -78,11 +96,11 @@ const formatDateTime = (dateStr: string) => {
   return `${hours}:${minutes} ${day}.${month}.${year}`;
 };
 
-const getCourseGroup = (item: StudentContract, t: (key: string) => string) => {
+const getCourseGroup = (item: StudentContract) => {
   const student = item.contract_students?.[0];
   return {
-    course: student?.level?.name_uz || t('studentsContract.notEntered'),
-    group: student?.group?.name || t('studentsContract.notEntered'),
+    course: student?.level?.name_uz || 'Kiritilmagan',
+    group: student?.group?.name || 'Kiritilmagan',
   };
 };
 
@@ -101,11 +119,11 @@ const formatDateForInput = (dateStr: string | null | undefined): string => {
 };
 
 const AdultContractForm = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
   const { id } = useParams();
-  const { t } = useTranslation();
   const [formData, setFormData] = useState<StudentFormData>({
     ...emptyStudent,
   });
@@ -127,13 +145,16 @@ const AdultContractForm = () => {
       const contract = contractToEdit.contract || contractToEdit.data || contractToEdit;
       const student = contract.contract_students?.[0];
       if (student) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setStudentId(student.id || null);
         setFormData({
           lid_id: String(student.lid_id),
           jshshir: student.jshshir || '',
           language: contract.language || 'uz',
           citizenship: student.citizenship || 'citizen',
-          passport_series: student.passport_series || '',
+          branch_id: contract.branch_id ? String(contract.branch_id) : '',
+          city: contract.branch?.city || '',
+          passport_series: (student.passport_series || '').toUpperCase(),
           passport_number: student.passport_number || '',
           passport_given_date: formatDateForInput(student.passport_given_date),
           passport_expiry_date: formatDateForInput(student.passport_expiry_date),
@@ -154,6 +175,7 @@ const AdultContractForm = () => {
           course_start_date: formatDateForInput(student.course_start_date),
           course_end_date: formatDateForInput(student.course_end_date),
           contract_date: formatDateForInput(contract.contract_date),
+          end_date: formatDateForInput(contract.end_date),
           notes: contract.notes || '',
         });
 
@@ -170,6 +192,10 @@ const AdultContractForm = () => {
       ),
   });
 
+  const { data: allBranches } = useOptions('branches');
+
+  // Guruh tanlanganda shartnoma sanalari `start_date` / `end_date` dan olinadi —
+  // /options/groups bularni bermaydi.
   const { data: allGroups } = useQuery({
     queryKey: ['groups-all'],
     queryFn: () =>
@@ -179,7 +205,6 @@ const AdultContractForm = () => {
   });
 
   const { data: allCourses } = useOptions('courses');
-  const { data: allLevels } = useOptions('levels');
 
   const searchResults = useMemo(() => {
     if (!lidSearchTerm) return [];
@@ -230,7 +255,6 @@ const AdultContractForm = () => {
       window.history.replaceState({}, '');
       handleLidSelect(lid);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allLids]);
 
   const handleChange = (field: keyof StudentFormData, value: string) => {
@@ -242,7 +266,9 @@ const AdultContractForm = () => {
     if (formData.group_id && allGroups) {
       const selectedGroup = allGroups.find((g: Group) => String(g.id) === formData.group_id);
       if (selectedGroup) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFormData((prev) => {
+          // Only update if dates are empty or just changed group
           const newStartDate = formatDateForInput(selectedGroup.start_date);
           const newEndDate = formatDateForInput(selectedGroup.end_date);
 
@@ -270,6 +296,7 @@ const AdultContractForm = () => {
           (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
         const total = Number(formData.monthly_price) * Math.max(months, 1);
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFormData((prev) => ({ ...prev, total_price: String(total) }));
       }
     }
@@ -317,6 +344,7 @@ const AdultContractForm = () => {
       course_end_date: formData.course_end_date,
     };
 
+    // Include student id for update
     if (id && studentId) {
       studentPayload.id = studentId;
     }
@@ -324,8 +352,9 @@ const AdultContractForm = () => {
     const payload = {
       contract_type: 'adult',
       language: formData.language,
-      branch_id: 1,
+      branch_id: Number(formData.branch_id) || 1,
       contract_date: formData.contract_date,
+      end_date: formData.end_date || null,
       notes: formData.notes,
       students: [studentPayload],
     };
@@ -340,7 +369,7 @@ const AdultContractForm = () => {
   if (id && isFetchingContract) {
     return (
       <div className="students-contract container" style={{ marginTop: 50, marginLeft: 140 }}>
-        <div style={{ textAlign: 'center', padding: 40 }}>{t('studentsContract.loading')}</div>
+        <div style={{ textAlign: 'center', padding: 40 }}>{t('studentsContract.form.loading')}</div>
       </div>
     );
   }
@@ -380,7 +409,7 @@ const AdultContractForm = () => {
             color: '#000',
           }}
         >
-          {t('studentsContract.contractWithStudent')}
+          {t('studentsContract.form.title')}
         </span>
       </div>
 
@@ -404,7 +433,7 @@ const AdultContractForm = () => {
               letterSpacing: '0.5px',
             }}
           >
-            {t('studentsContract.step1Student')}
+            {t('studentsContract.form.step1')}
           </span>
         </div>
 
@@ -413,12 +442,12 @@ const AdultContractForm = () => {
             {}
             <div className="sc-form-group" style={{ position: 'relative' }}>
               <label className="sc-form-label">
-                {t('studentsContract.lidIdSearch')} <span>*</span>
+                {t('studentsContract.form.lidId')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
-                placeholder={t('studentsContract.lidSearchPlaceholder')}
+                placeholder={t('studentsContract.form.lidSearchPlaceholder')}
                 value={lidSearchTerm || formData.lid_id}
                 onChange={(e) => {
                   setLidSearchTerm(e.target.value);
@@ -458,7 +487,7 @@ const AdultContractForm = () => {
                         fontSize: '13px',
                       }}
                     >
-                      {t('studentsContract.searching')}
+                      {t('studentsContract.form.searching')}
                     </div>
                   ) : searchResults && searchResults.length > 0 ? (
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -478,7 +507,7 @@ const AdultContractForm = () => {
                               fontWeight: 600,
                             }}
                           >
-                            ID
+                            {t('studentsContract.form.dropdownId')}
                           </th>
                           <th
                             style={{
@@ -489,7 +518,7 @@ const AdultContractForm = () => {
                               fontWeight: 600,
                             }}
                           >
-                            {t('studentsContract.nameCol')}
+                            {t('studentsContract.form.dropdownName')}
                           </th>
                           <th
                             style={{
@@ -500,7 +529,7 @@ const AdultContractForm = () => {
                               fontWeight: 600,
                             }}
                           >
-                            {t('studentsContract.telephoneCol')}
+                            {t('studentsContract.form.dropdownPhone')}
                           </th>
                         </tr>
                       </thead>
@@ -557,7 +586,7 @@ const AdultContractForm = () => {
                         fontSize: '13px',
                       }}
                     >
-                      {t('studentsContract.noResults')}
+                      {t('studentsContract.form.notFound')}
                     </div>
                   )}
                 </div>
@@ -565,21 +594,30 @@ const AdultContractForm = () => {
             </div>
             <div className="sc-form-group">
               <label className="sc-form-label">
-                JSHSHR <span>*</span>
+                {t('studentsContract.form.jshshir')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
                 placeholder="00000000000000"
+                maxLength={14}
                 value={formData.jshshir}
-                onChange={(e) => handleChange('jshshir', e.target.value)}
+                style={
+                  formData.jshshir.length > 0 && formData.jshshir.length < 14
+                    ? { borderColor: '#ef4444' }
+                    : {}
+                }
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 14);
+                  handleChange('jshshir', val);
+                }}
               />
             </div>
 
             {}
             <div className="sc-form-group">
               <label className="sc-form-label">
-                {t('studentsContract.contractLanguage')} <span>*</span>
+                {t('studentsContract.form.language')} <span>*</span>
               </label>
               <select
                 className="sc-form-select"
@@ -593,16 +631,52 @@ const AdultContractForm = () => {
             </div>
             <div className="sc-form-group">
               <label className="sc-form-label">
-                {t('studentsContract.citizenship')} <span>*</span>
+                {t('studentsContract.form.citizenship')} <span>*</span>
               </label>
               <select
                 className="sc-form-select"
                 value={formData.citizenship}
                 onChange={(e) => handleChange('citizenship', e.target.value)}
               >
-                <option value="citizen">{t('studentsContract.uzbekistan')}</option>
-                <option value="foreign">{t('studentsContract.foreign')}</option>
+                <option value="citizen">{t('studentsContract.form.citizenUz')}</option>
+                <option value="foreign">{t('studentsContract.form.citizenForeign')}</option>
               </select>
+            </div>
+
+            <div className="sc-form-group">
+              <label className="sc-form-label">
+                {t('studentsContract.form.branch')} <span>*</span>
+              </label>
+              <select
+                className="sc-form-select"
+                value={formData.branch_id}
+                onChange={(e) => {
+                  const branchId = e.target.value;
+                  const branch = (allBranches || []).find((b) => String(b.id) === branchId);
+                  setFormData((prev) => ({
+                    ...prev,
+                    branch_id: branchId,
+                    city: branch?.city || '',
+                  }));
+                }}
+              >
+                <option value="">{t('studentsContract.form.select')}</option>
+                {(allBranches || []).map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="sc-form-group">
+              <label className="sc-form-label">{t('studentsContract.form.city')}</label>
+              <input
+                type="text"
+                className="sc-form-input"
+                value={formData.city}
+                readOnly
+                style={{ background: '#f1f5f9', color: '#64748b', cursor: 'not-allowed' }}
+              />
             </div>
           </div>
 
@@ -613,34 +687,40 @@ const AdultContractForm = () => {
             {}
             <div className="sc-form-group span-2">
               <label className="sc-form-label">
-                {t('studentsContract.certPassport')} <span>*</span>
+                {t('studentsContract.form.passport')} <span>*</span>
               </label>
               <div className="sc-passport-group" style={{ display: 'flex', gap: '10px' }}>
                 <input
                   type="text"
                   className="sc-form-input"
-                  style={{ width: '80px' }}
-                  placeholder="A-AA"
-                  maxLength={3}
+                  style={{ width: '70px', textTransform: 'uppercase' }}
+                  placeholder="AA"
+                  maxLength={2}
                   value={formData.passport_series}
-                  onChange={(e) => handleChange('passport_series', e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 2);
+                    handleChange('passport_series', val);
+                  }}
                 />
                 <input
                   type="text"
                   className="sc-form-input"
                   style={{ flex: 1 }}
-                  placeholder=""
+                  placeholder="1234567"
+                  maxLength={7}
                   value={formData.passport_number}
-                  onChange={(e) => handleChange('passport_number', e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '').slice(0, 7);
+                    handleChange('passport_number', val);
+                  }}
                 />
               </div>
             </div>
             <div className="sc-form-group">
               <label className="sc-form-label">
-                {t('studentsContract.issuedDate')} <span>*</span>
+                {t('studentsContract.form.passportGivenDate')} <span>*</span>
               </label>
-              <input
-                type="date"
+              <DateInput
                 className="sc-form-input"
                 value={formData.passport_given_date}
                 onChange={(e) => handleChange('passport_given_date', e.target.value)}
@@ -648,26 +728,46 @@ const AdultContractForm = () => {
             </div>
             <div className="sc-form-group">
               <label className="sc-form-label">
-                {t('studentsContract.birthPlace')} <span>*</span>
+                {t('studentsContract.form.birthPlace')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
-                placeholder={t('studentsContract.enter')}
+                placeholder="Kiriting"
                 value={formData.birth_place}
                 onChange={(e) => handleChange('birth_place', e.target.value)}
               />
             </div>
 
             {}
+            <div className="sc-form-group span-2">
+              <label className="sc-form-label">{t('studentsContract.form.passportExpiry')}</label>
+              <DateInput
+                className="sc-form-input"
+                value={formData.passport_expiry_date}
+                onChange={(e) => handleChange('passport_expiry_date', e.target.value)}
+              />
+            </div>
+            <div className="sc-form-group span-2">
+              <label className="sc-form-label">{t('studentsContract.form.passportGivenBy')}</label>
+              <input
+                type="text"
+                className="sc-form-input"
+                placeholder="Kiriting"
+                value={formData.passport_given_by}
+                onChange={(e) => handleChange('passport_given_by', e.target.value)}
+              />
+            </div>
+
+            {}
             <div className="sc-form-group" style={{ gridColumn: 'span 4' }}>
               <label className="sc-form-label">
-                {t('studentsContract.lastName')} <span>*</span>
+                {t('studentsContract.form.lastName')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
-                placeholder={t('studentsContract.enter')}
+                placeholder="Kiriting"
                 value={formData.last_name}
                 onChange={(e) => handleChange('last_name', e.target.value)}
               />
@@ -676,24 +776,24 @@ const AdultContractForm = () => {
             {}
             <div className="sc-form-group span-2">
               <label className="sc-form-label">
-                {t('studentsContract.firstName')} <span>*</span>
+                {t('studentsContract.form.firstName')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
-                placeholder={t('studentsContract.enter')}
+                placeholder="Kiriting"
                 value={formData.first_name}
                 onChange={(e) => handleChange('first_name', e.target.value)}
               />
             </div>
             <div className="sc-form-group span-2">
               <label className="sc-form-label">
-                {t('studentsContract.fatherName')} <span>*</span>
+                {t('studentsContract.form.fatherName')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
-                placeholder={t('studentsContract.enter')}
+                placeholder="Kiriting"
                 value={formData.father_name}
                 onChange={(e) => handleChange('father_name', e.target.value)}
               />
@@ -702,10 +802,9 @@ const AdultContractForm = () => {
             {}
             <div className="sc-form-group">
               <label className="sc-form-label">
-                {t('studentsContract.birthDate')} <span>*</span>
+                {t('studentsContract.form.birthDate')} <span>*</span>
               </label>
-              <input
-                type="date"
+              <DateInput
                 className="sc-form-input"
                 value={formData.birth_date}
                 onChange={(e) => handleChange('birth_date', e.target.value)}
@@ -713,14 +812,14 @@ const AdultContractForm = () => {
             </div>
             <div className="sc-form-group">
               <label className="sc-form-label">
-                {t('studentsContract.group')} <span>*</span>
+                {t('studentsContract.form.group')} <span>*</span>
               </label>
               <select
                 className="sc-form-select"
                 value={formData.group_id}
                 onChange={(e) => handleChange('group_id', e.target.value)}
               >
-                <option value="">{t('studentsContract.select')}</option>
+                <option value="">{t('studentsContract.form.select')}</option>
                 {(allGroups || []).map((g: Group) => (
                   <option key={g.id} value={g.id}>
                     {g.name}
@@ -730,17 +829,17 @@ const AdultContractForm = () => {
             </div>
             <div className="sc-form-group">
               <label className="sc-form-label">
-                {t('studentsContract.course')} <span>*</span>
+                {t('studentsContract.form.course')} <span>*</span>
               </label>
               <select
                 className="sc-form-select"
                 value={formData.course_id}
                 onChange={(e) => {
                   handleChange('course_id', e.target.value);
-                  handleChange('level_id', '');
+                  handleChange('level_id', ''); // Reset level when course changes
                 }}
               >
-                <option value="">{t('studentsContract.select')}</option>
+                <option value="">{t('studentsContract.form.select')}</option>
                 {(allCourses || []).map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.label}
@@ -750,17 +849,19 @@ const AdultContractForm = () => {
             </div>
             <div className="sc-form-group">
               <label className="sc-form-label">
-                {t('studentsContract.level')} <span>*</span>
+                {t('studentsContract.form.level')} <span>*</span>
               </label>
               <select
                 className="sc-form-select"
                 value={formData.level_id}
                 onChange={(e) => handleChange('level_id', e.target.value)}
               >
-                <option value="">{t('studentsContract.select')}</option>
-                {(allLevels || []).map((l) => (
+                <option value="">{t('studentsContract.form.select')}</option>
+                {(
+                  (allCourses || []).find((c) => String(c.id) === formData.course_id)?.levels || []
+                ).map((l) => (
                   <option key={l.id} value={l.id}>
-                    {l.label}
+                    {optionLabel(l, i18n.language)}
                   </option>
                 ))}
               </select>
@@ -769,7 +870,7 @@ const AdultContractForm = () => {
             {}
             <div className="sc-form-group span-2">
               <label className="sc-form-label">
-                {t('studentsContract.phoneNo')} <span>*</span>
+                {t('studentsContract.form.phone')} <span>*</span>
               </label>
               <input
                 type="text"
@@ -781,29 +882,30 @@ const AdultContractForm = () => {
             </div>
             <div className="sc-form-group span-2">
               <label className="sc-form-label">
-                {t('studentsContract.primaryAddress')} <span>*</span>
+                {t('studentsContract.form.residentialAddress')} <span>*</span>
               </label>
               <input
                 type="text"
                 className="sc-form-input"
-                placeholder={t('studentsContract.enter')}
+                placeholder="Kiriting"
                 value={formData.residential_address}
                 onChange={(e) => handleChange('residential_address', e.target.value)}
               />
             </div>
             <div className="sc-form-group span-2">
-              <label className="sc-form-label">{t('studentsContract.regAddressLabel')}</label>
+              <label className="sc-form-label">{t('studentsContract.form.registeredAddress')}</label>
               <input
                 type="text"
                 className="sc-form-input"
-                placeholder={t('studentsContract.enter')}
+                placeholder="Kiriting"
                 value={formData.registered_address}
                 onChange={(e) => handleChange('registered_address', e.target.value)}
               />
             </div>
 
+            {/* Kurs narxlari */}
             <div className="sc-form-group">
-              <label className="sc-form-label">{t('studentsContract.monthlyPayment')}</label>
+              <label className="sc-form-label">{t('studentsContract.form.monthlyPrice')}</label>
               <input
                 type="number"
                 className="sc-form-input"
@@ -813,7 +915,7 @@ const AdultContractForm = () => {
               />
             </div>
             <div className="sc-form-group">
-              <label className="sc-form-label">{t('studentsContract.totalPrice')}</label>
+              <label className="sc-form-label">{t('studentsContract.form.totalPrice')}</label>
               <input
                 type="number"
                 className="sc-form-input"
@@ -823,39 +925,45 @@ const AdultContractForm = () => {
               />
             </div>
             <div className="sc-form-group">
-              <label className="sc-form-label">{t('studentsContract.courseStartDate')}</label>
-              <input
-                type="date"
+              <label className="sc-form-label">{t('studentsContract.form.courseStartDate')}</label>
+              <DateInput
                 className="sc-form-input"
                 value={formData.course_start_date}
                 onChange={(e) => handleChange('course_start_date', e.target.value)}
               />
             </div>
             <div className="sc-form-group">
-              <label className="sc-form-label">{t('studentsContract.courseEndDate')}</label>
-              <input
-                type="date"
+              <label className="sc-form-label">{t('studentsContract.form.courseEndDate')}</label>
+              <DateInput
                 className="sc-form-input"
                 value={formData.course_end_date}
                 onChange={(e) => handleChange('course_end_date', e.target.value)}
               />
             </div>
 
-            <div className="sc-form-group span-2">
-              <label className="sc-form-label">{t('studentsContract.contractDateLabel')}</label>
-              <input
-                type="date"
+            {/* Shartnoma sanasi va izoh */}
+            <div className="sc-form-group">
+              <label className="sc-form-label">{t('studentsContract.form.contractDate')}</label>
+              <DateInput
                 className="sc-form-input"
                 value={formData.contract_date}
                 onChange={(e) => handleChange('contract_date', e.target.value)}
               />
             </div>
+            <div className="sc-form-group">
+              <label className="sc-form-label">{t('studentsContract.form.contractEndDate')}</label>
+              <DateInput
+                className="sc-form-input"
+                value={formData.end_date}
+                onChange={(e) => handleChange('end_date', e.target.value)}
+              />
+            </div>
             <div className="sc-form-group span-2">
-              <label className="sc-form-label">{t('studentsContract.note')}</label>
+              <label className="sc-form-label">{t('studentsContract.form.notes')}</label>
               <input
                 type="text"
                 className="sc-form-input"
-                placeholder={t('studentsContract.notePlaceholder')}
+                placeholder={t('studentsContract.form.notesPlaceholder')}
                 value={formData.notes}
                 onChange={(e) => handleChange('notes', e.target.value)}
               />
@@ -865,18 +973,6 @@ const AdultContractForm = () => {
       </div>
 
       <div className="sc-form-actions" style={{ justifyContent: 'flex-end', paddingRight: 16 }}>
-        <button
-          className="sc-form-cancel-btn"
-          style={{
-            background: '#fff',
-            border: '1px solid #e2e8f0',
-            color: '#374151',
-            borderRadius: '8px',
-          }}
-          onClick={() => navigate('/students-contract')}
-        >
-          {t('studentsContract.cancel')}
-        </button>
         <button
           className="sc-form-save-btn"
           style={{
@@ -891,9 +987,19 @@ const AdultContractForm = () => {
           onClick={handleSubmit}
           disabled={createMutation.isPending || updateMutation.isPending}
         >
-          {createMutation.isPending || updateMutation.isPending
-            ? t('studentsContract.saving')
-            : t('studentsContract.save')}
+          {createMutation.isPending || updateMutation.isPending ? t('studentsContract.form.saving') : t('studentsContract.form.save')}
+        </button>
+        <button
+          className="sc-form-cancel-btn"
+          style={{
+            background: '#fff',
+            border: '1px solid #e2e8f0',
+            color: '#374151',
+            borderRadius: '8px',
+          }}
+          onClick={() => navigate('/students-contract')}
+        >
+          {t('studentsContract.form.cancel')}
         </button>
       </div>
     </div>
@@ -903,12 +1009,21 @@ const AdultContractForm = () => {
 const StudentsContract = () => {
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filters, setFilters] = useState<Record<ScFilterKey, string>>(EMPTY_SC_FILTERS);
   const [currentPage, setCurrentPage] = useState(1);
-  const [idSortOrder, setIdSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [smsSendingId, setSmsSendingId] = useState<number | null>(null);
+  const [printContractId, setPrintContractId] = useState<number | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.roles?.some((r) => r.name === 'admin' || r.name === 'superadmin') ?? false;
+  const permissions = (user?.roles ?? []).flatMap(
+    (role) => role.permissions?.map((p) => p.name) ?? [],
+  );
+  const can = (p: string) => isAdmin || permissions.includes(p);
 
   const isAdultForm = location.pathname.includes('/students-contract/adult');
 
@@ -930,11 +1045,76 @@ const StudentsContract = () => {
     },
   });
 
+  const sendSmsMutation = useMutation({
+    mutationFn: (id: number) => API.post(`/student-contracts/${id}/send-sms`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['student-contracts'] });
+      setSmsSendingId(null);
+    },
+    onError: () => {
+      setSmsSendingId(null);
+    },
+  });
+
+  const handleSendSms = (id: number) => {
+    setSmsSendingId(id);
+    sendSmsMutation.mutate(id);
+  };
+
   if (isAdultForm) {
     return <AdultContractForm />;
   }
 
-  const contracts = contractsData?.data || [];
+  const allContracts = sortByNewest(contractsData?.data || []);
+
+  // Filial/guruh/yo'nalishda `id` kelmaydi (faqat nom), shuning uchun variantlar
+  // ro'yxatning o'zidan yig'iladi va nom bo'yicha solishtiriladi.
+  const uniqueValues = (pick: (c: StudentContract) => string) =>
+    [...new Set(allContracts.map(pick).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+
+  const contractBranch = (c: StudentContract) => c.branch?.name_uz || c.branch?.city || '';
+  const contractGroup = (c: StudentContract) => c.contract_students?.[0]?.group?.name || '';
+  const contractCourse = (c: StudentContract) => c.contract_students?.[0]?.level?.name_uz || '';
+
+  const filterFields: FilterBarField<ScFilterKey>[] = [
+    {
+      key: 'branch',
+      label: t('studentsContract.table.branch'),
+      options: uniqueValues(contractBranch).map((v) => ({ value: v, label: v })),
+    },
+    {
+      key: 'course',
+      label: t('studentsContract.table.direction'),
+      options: uniqueValues(contractCourse).map((v) => ({ value: v, label: v })),
+    },
+    {
+      key: 'group',
+      label: t('studentsContract.table.group'),
+      options: uniqueValues(contractGroup).map((v) => ({ value: v, label: v })),
+    },
+    {
+      key: 'status',
+      label: t('studentsContract.table.status'),
+      options: uniqueValues((c) => c.status).map((s) => ({ value: s, label: t(getStatusKey(s)) })),
+    },
+    {
+      key: 'date',
+      label: t('studentsContract.table.date'),
+      type: 'date',
+    },
+  ];
+
+  const contracts = allContracts.filter((c) => {
+    if (filters.branch && contractBranch(c) !== filters.branch) return false;
+    if (filters.course && contractCourse(c) !== filters.course) return false;
+    if (filters.group && contractGroup(c) !== filters.group) return false;
+    if (filters.status && c.status !== filters.status) return false;
+    if (filters.date && (c.created_at ?? '').slice(0, 10) !== filters.date) return false;
+    return true;
+  });
+
+  const activeFilterCount = countFilterBarValues(filters);
+
   const totalItems = contractsData?.total || 0;
   const totalPages = contractsData?.last_page || 1;
   const itemsPerPage = contractsData?.per_page || 10;
@@ -950,20 +1130,22 @@ const StudentsContract = () => {
       case 'minor':
         navigate('/students-contract/minor');
         break;
-      case 'legal':
-        navigate('/students-contract/legal');
+      case 'legal_bilateral':
+        navigate('/students-contract/legal_bilateral');
         break;
-      case 'legal-rep':
-        navigate('/students-contract/legal-representative');
+      case 'legal_trilateral':
+        navigate('/students-contract/legal_trilateral');
         break;
     }
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm(t('studentsContract.confirmDelete'))) {
+    if (window.confirm(t('studentsContract.deleteConfirm'))) {
       deleteMutation.mutate(id);
     }
   };
+  // Delete tugmasi izohga olingan; tugma qaytarilganda quyidagi qatorni o'chirish kerak
+  void handleDelete;
 
   const handleEdit = (item: StudentContract) => {
     const type =
@@ -971,10 +1153,10 @@ const StudentsContract = () => {
         ? 'adult'
         : item.contract_type === 'minor'
           ? 'minor'
-          : item.contract_type === 'legal'
-            ? 'legal'
-            : item.contract_type === 'legal-rep' || item.contract_type === 'representative'
-              ? 'legal-representative'
+          : item.contract_type === 'legal_bilateral'
+            ? 'legal_bilateral'
+            : item.contract_type === 'legal_trilateral'
+              ? 'legal_trilateral'
               : 'adult';
 
     navigate(`/students-contract/${type}/edit/${item.id}`);
@@ -1033,44 +1215,48 @@ const StudentsContract = () => {
               }}
             />
           </div>
-          <button className="sc-filter-btn">
-            <i className="fa-solid fa-sliders"></i>
-            {t('studentsContract.filterBtn')}
-          </button>
-          <Protected permission="student_contracts.create">
+          <FilterButton
+            onClick={() => setFilterOpen((v) => !v)}
+            active={filterOpen || activeFilterCount > 0}
+            expanded={filterOpen}
+            count={activeFilterCount}
+            label={t('studentsContract.filter')}
+          />
+          {can('student_contracts.create') && (
             <button className="sc-create-btn" onClick={() => setShowModal(true)}>
-              {t('studentsContract.createContract')}
+              {t('studentsContract.createBtn')}
             </button>
-          </Protected>
+          )}
         </div>
       </div>
 
       <div className="sc-table-card">
-        <div className="sc-table-card-header">
-          <span className="sc-table-section-title">{t('studentsContract.newStudents')}</span>
-        </div>
+        {filterOpen ? (
+          <FilterBar
+            fields={filterFields}
+            values={filters}
+            onChange={setFilters}
+            onReset={() => setFilters(EMPTY_SC_FILTERS)}
+            onClose={() => setFilterOpen(false)}
+            ariaLabel={t('studentsContract.filter')}
+          />
+        ) : (
+          <div className="sc-table-card-header">
+            <span className="sc-table-section-title">{t('studentsContract.sectionTitle')}</span>
+          </div>
+        )}
 
         <table className="sc-table">
           <thead>
             <tr>
-              <th
-                className="sc-th-id"
-                onClick={() => setIdSortOrder((o) => (o === 'asc' ? 'desc' : 'asc'))}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-              >
-                ID{' '}
-                <i
-                  className={`fa-solid fa-sort-${idSortOrder === 'asc' ? 'up' : 'down'}`}
-                  style={{ fontSize: 11, marginLeft: 4 }}
-                ></i>
-              </th>
-              <th className="sc-th-name">{t('studentsContract.colStudent')}</th>
-              <th>{t('studentsContract.colDirection')}</th>
-              <th>{t('studentsContract.group')}</th>
-              <th>{t('studentsContract.colBranch')}</th>
-              <th>{t('studentsContract.colStatus')}</th>
-              <th>{t('studentsContract.colDate')}</th>
-              <th>{t('studentsContract.colActions')}</th>
+              <th>ID</th>
+              <th>{t('studentsContract.table.student')}</th>
+              <th>{t('studentsContract.table.direction')}</th>
+              <th>{t('studentsContract.table.group')}</th>
+              <th>{t('studentsContract.table.branch')}</th>
+              <th>{t('studentsContract.table.status')}</th>
+              <th>{t('studentsContract.table.date')}</th>
+              <th>{t('studentsContract.table.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -1088,10 +1274,10 @@ const StudentsContract = () => {
               </tr>
             ) : (
               [...contracts]
-                .sort((a, b) => (idSortOrder === 'asc' ? a.id - b.id : b.id - a.id))
+                .sort((a, b) => a.id - b.id)
                 .map((item) => {
-                  const person = getMainPerson(item, t);
-                  const courseGroup = getCourseGroup(item, t);
+                  const person = getMainPerson(item);
+                  const courseGroup = getCourseGroup(item);
 
                   return (
                     <tr key={item.id}>
@@ -1116,40 +1302,64 @@ const StudentsContract = () => {
 
                       <td>
                         <span className={`sc-status-badge ${getStatusType(item.status)}`}>
-                          {getStatusLabel(item.status, t)}
+                          {t(getStatusKey(item.status))}
                         </span>
                       </td>
                       <td>{formatDateTime(item.created_at)}</td>
                       <td>
                         <div className="sc-actions">
-                          <button className="sc-action-btn print" title="Print">
-                            <i className="fa-solid fa-print"></i>
-                          </button>
-                          <button
-                            className="sc-action-btn view"
-                            title={t('studentsContract.colActions')}
-                            onClick={() => navigate(`/students-contract/${item.id}`)}
-                          >
-                            <i className="fa-solid fa-eye"></i>
-                          </button>
-                          <Protected permission="student_contracts.edit">
+                          {can('student_contracts.view') && (
+                            <button
+                              className="sc-action-btn print"
+                              title={t('studentsContract.action.print')}
+                              onClick={() => setPrintContractId(item.id)}
+                            >
+                              <i className="fa-solid fa-print"></i>
+                            </button>
+                          )}
+                          {can('student_contracts.view') && (
+                            <button
+                              className="sc-action-btn view"
+                              title={t('studentsContract.action.actions')}
+                              onClick={() => navigate(`/students-contract/${item.id}`)}
+                            >
+                              <i className="fa-solid fa-eye"></i>
+                            </button>
+                          )}
+                          {can('student_contracts.edit') && (
                             <button
                               className="sc-action-btn edit"
-                              title={t('common.edit')}
+                              title={t('studentsContract.action.edit')}
                               onClick={() => handleEdit(item)}
                             >
                               <i className="fa-solid fa-pen"></i>
                             </button>
-                          </Protected>
-                          <Protected permission="student_contracts.delete">
+                          )}
+                          {can('student_contracts.edit') && (
+                            <button
+                              className={`sc-action-btn sms${item.sms_send_info ? ' sent' : ''}`}
+                              title={t('studentsContract.action.sms')}
+                              onClick={() => handleSendSms(item.id)}
+                              disabled={smsSendingId === item.id}
+                            >
+                              {smsSendingId === item.id ? (
+                                <i className="fa-solid fa-spinner fa-spin"></i>
+                              ) : (
+                                <i className="fa-solid fa-paper-plane"></i>
+                              )}
+                            </button>
+                          )}
+                          {/* Delete tugmasi vaqtincha yopilgan, kerak bo'lganda izohdan chiqariladi
+                          {can('student_contracts.delete') && (
                             <button
                               className="sc-action-btn delete"
-                              title={t('studentsContract.delete')}
+                              title={t('studentsContract.action.delete')}
                               onClick={() => handleDelete(item.id)}
                             >
                               <i className="fa-solid fa-trash"></i>
                             </button>
-                          </Protected>
+                          )}
+                          */}
                         </div>
                       </td>
                     </tr>
@@ -1161,11 +1371,7 @@ const StudentsContract = () => {
 
         <div className="sc-table-footer">
           <span className="sc-table-info">
-            {t('studentsContract.showingInfo', {
-              total: totalItems,
-              start: startItem,
-              end: endItem,
-            })}
+            {t('studentsContract.footer', { total: totalItems, start: startItem, end: endItem })}
           </span>
           <div className="sc-pagination">
             <button
@@ -1191,9 +1397,7 @@ const StudentsContract = () => {
         <div className="sc-modal-overlay" onClick={() => setShowModal(false)}>
           <div className="sc-modal" onClick={(e) => e.stopPropagation()}>
             <div className="sc-modal-header">
-              <span className="sc-modal-header-title">
-                {t('studentsContract.selectContractType')}
-              </span>
+              <span className="sc-modal-header-title">{t('studentsContract.modal.title')}</span>
               <button className="sc-modal-close" onClick={() => setShowModal(false)}>
                 <i className="fa-solid fa-xmark"></i>
               </button>
@@ -1204,7 +1408,7 @@ const StudentsContract = () => {
                   <i className="fa-solid fa-user"></i>
                 </span>
                 <span className="sc-contract-option-text">
-                  {t('studentsContract.adultContract')}
+                  {t('studentsContract.modal.adult')}
                 </span>
                 <span className="sc-contract-option-arrow">
                   <i className="fa-solid fa-chevron-right"></i>
@@ -1215,18 +1419,18 @@ const StudentsContract = () => {
                   <i className="fa-solid fa-child"></i>
                 </span>
                 <span className="sc-contract-option-text">
-                  {t('studentsContract.minorContract')}
+                  {t('studentsContract.modal.minor')}
                 </span>
                 <span className="sc-contract-option-arrow">
                   <i className="fa-solid fa-chevron-right"></i>
                 </span>
               </button>
-              <button className="sc-contract-option" onClick={() => handleContractSelect('legal')}>
+              <button className="sc-contract-option" onClick={() => handleContractSelect('legal_bilateral')}>
                 <span className="sc-contract-option-icon">
                   <i className="fa-solid fa-building"></i>
                 </span>
                 <span className="sc-contract-option-text">
-                  {t('studentsContract.legalContract')}
+                  {t('studentsContract.modal.legalBilateral')}
                 </span>
                 <span className="sc-contract-option-arrow">
                   <i className="fa-solid fa-chevron-right"></i>
@@ -1234,13 +1438,13 @@ const StudentsContract = () => {
               </button>
               <button
                 className="sc-contract-option"
-                onClick={() => handleContractSelect('legal-rep')}
+                onClick={() => handleContractSelect('legal_trilateral')}
               >
                 <span className="sc-contract-option-icon">
                   <i className="fa-solid fa-users"></i>
                 </span>
                 <span className="sc-contract-option-text">
-                  {t('studentsContract.legalRepContract')}
+                  {t('studentsContract.modal.legalTrilateral')}
                 </span>
                 <span className="sc-contract-option-arrow">
                   <i className="fa-solid fa-chevron-right"></i>
@@ -1249,6 +1453,13 @@ const StudentsContract = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {printContractId !== null && (
+        <ContractPrintModal
+          contractId={printContractId}
+          onClose={() => setPrintContractId(null)}
+        />
       )}
     </div>
   );

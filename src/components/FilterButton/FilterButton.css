@@ -1,0 +1,42 @@
+/* Barcha sahifalardagi "Saralash" tugmasi — bitta ko'rinish. */
+.filter-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border: 1.5px solid #bdbdbd;
+  border-radius: 10px;
+  background: #fff;
+  font-family: noto-m;
+  font-size: 14px;
+  color: #000;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+
+/* Ikonka `color` dan rang oladi, shuning uchun hover'da u ham to'q sariq bo'ladi. */
+.filter-trigger-btn:hover,
+.filter-trigger-btn--active {
+  border-color: #fe9100;
+  color: #fe9100;
+}
+
+.filter-trigger-btn__icon {
+  font-size: 15px;
+}
+
+.filter-trigger-btn__badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #fe9100;
+  color: #fff;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+}

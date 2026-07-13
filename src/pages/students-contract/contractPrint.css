@@ -1,0 +1,355 @@
+.cp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cp-modal-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-width: 900px;
+}
+
+/* Action bar */
+.cp-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #1e293b;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.cp-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-family: noto-m;
+  font-size: 14px;
+}
+
+.cp-modal-title i {
+  color: #fe9100;
+}
+
+.cp-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cp-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-family: noto-m;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cp-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cp-btn-docx {
+  background: #1d6f42;
+  color: #fff;
+}
+.cp-btn-docx:hover:not(:disabled) {
+  background: #155232;
+}
+
+.cp-btn-pdf {
+  background: #dc2626;
+  color: #fff;
+}
+.cp-btn-pdf:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.cp-btn-print {
+  background: #0f3460;
+  color: #fff;
+}
+.cp-btn-print:hover:not(:disabled) {
+  background: #0a2444;
+}
+
+.cp-btn-close {
+  background: #374151;
+  color: #fff;
+  padding: 8px 12px;
+}
+.cp-btn-close:hover {
+  background: #1f2937;
+}
+
+/* Scroll area */
+.cp-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 40px;
+  background: #6b7280;
+}
+
+.cp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #fff;
+  font-family: noto-m;
+  font-size: 16px;
+  min-height: 300px;
+}
+
+.cp-loading i {
+  font-size: 32px;
+}
+
+/* A4 page */
+.cp-a4 {
+  background: #fff;
+  width: 794px;
+  min-height: 1123px;
+  padding: 40px 50px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12px;
+  color: #000;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Header */
+.cp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.cp-header-org {
+  flex: 1;
+}
+
+.cp-org-name {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.cp-org-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: #444;
+}
+
+.cp-header-right {
+  text-align: right;
+}
+
+.cp-contract-label {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #0f3460;
+}
+
+.cp-contract-number {
+  font-size: 14px;
+  font-weight: bold;
+  color: #0f3460;
+}
+
+.cp-contract-date,
+.cp-contract-city {
+  font-size: 11px;
+  color: #555;
+  margin-top: 2px;
+}
+
+.cp-divider {
+  border: none;
+  border-top: 2px solid #0f3460;
+  margin: 12px 0;
+}
+
+/* Title */
+.cp-title {
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+  color: #0f3460;
+}
+
+/* Section */
+.cp-section {
+  margin-bottom: 14px;
+}
+
+.cp-section-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #0f3460;
+  border-bottom: 1px solid #0f3460;
+  padding-bottom: 3px;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.cp-para {
+  margin: 0 0 8px;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+/* Table */
+.cp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.cp-table td {
+  padding: 4px 8px 4px 0;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.cp-table td:nth-child(odd) {
+  color: #555;
+  white-space: nowrap;
+  width: 1%;
+}
+
+.cp-table td:nth-child(even) {
+  color: #000;
+  padding-right: 20px;
+}
+
+.cp-note {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: #555;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Signatures */
+.cp-signatures {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32px;
+  gap: 40px;
+}
+
+.cp-sig-block {
+  flex: 1;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.cp-sig-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #0f3460;
+  text-align: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 6px;
+}
+
+.cp-sig-name {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.cp-sig-person {
+  font-size: 11px;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.cp-sig-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: #555;
+}
+
+.cp-sig-underline {
+  flex: 1;
+  border-bottom: 1px solid #000;
+  min-width: 80px;
+}
+
+.cp-sig-seal {
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 50%;
+}
+
+/* Footer */
+.cp-footer {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* Print media */
+@media print {
+  .cp-modal-overlay {
+    position: static;
+    background: none;
+  }
+  .cp-modal-header,
+  .cp-modal-actions {
+    display: none !important;
+  }
+  .cp-scroll-area {
+    background: none;
+    padding: 0;
+    overflow: visible;
+  }
+  .cp-a4 {
+    box-shadow: none;
+    margin: 0;
+    padding: 20mm 20mm;
+    width: 210mm;
+    min-height: 297mm;
+  }
+}

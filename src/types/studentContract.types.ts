@@ -10,11 +10,27 @@ export interface ContractStudent {
   group?: { name: string };
 }
 
+export interface SmsSendInfo {
+  id: string;
+  sent_at: string;
+  status: string;
+  contract_backend_id: number;
+}
+
 export interface StudentContract {
   id: number;
   contract_number: string;
   contract_type: string;
   status: string;
+  language?: string;
+  hash_link?: string;
+  short_code?: string;
+  otp_code?: string | null;
+  otp_expires_at?: string | null;
+  sms_send_info?: SmsSendInfo | null;
+  sms_confirm_info?: SmsSendInfo | null;
+  contract_date?: string;
+  notes?: string | null;
   created_at: string;
   branch?: {
     name_uz: string;
@@ -45,6 +61,8 @@ export interface StudentFormData {
   jshshir: string;
   language: string;
   citizenship: string;
+  branch_id: string;
+  city: string;
   passport_series: string;
   passport_number: string;
   passport_given_date: string;
@@ -66,36 +84,40 @@ export interface StudentFormData {
   course_start_date: string;
   course_end_date: string;
   contract_date: string;
+  end_date: string;
   notes: string;
 }
 
 export const emptyStudent: StudentFormData = {
-  lid_id: '',
-  jshshir: '',
-  language: 'uz',
-  citizenship: 'citizen',
-  passport_series: '',
-  passport_number: '',
-  passport_given_date: '',
-  passport_expiry_date: '',
-  passport_given_by: '',
-  birth_place: '',
-  last_name: '',
-  first_name: '',
-  father_name: '',
-  birth_date: '',
-  group_id: '',
-  course_id: '',
-  level_id: '',
-  phone: '',
-  residential_address: '',
-  registered_address: '',
-  monthly_price: '',
-  total_price: '',
-  course_start_date: '',
-  course_end_date: '',
-  contract_date: '',
-  notes: '',
+  lid_id: "",
+  jshshir: "",
+  language: "uz",
+  citizenship: "citizen",
+  branch_id: "",
+  city: "",
+  passport_series: "",
+  passport_number: "",
+  passport_given_date: "",
+  passport_expiry_date: "",
+  passport_given_by: "",
+  birth_place: "",
+  last_name: "",
+  first_name: "",
+  father_name: "",
+  birth_date: "",
+  group_id: "",
+  course_id: "",
+  level_id: "",
+  phone: "",
+  residential_address: "",
+  registered_address: "",
+  monthly_price: "",
+  total_price: "",
+  course_start_date: "",
+  course_end_date: "",
+  contract_date: "",
+  end_date: "",
+  notes: "",
 };
 
 export interface RepresentativeFormData {
@@ -143,47 +165,47 @@ export interface MinorStudentFormData {
 }
 
 export const emptyRepresentative: RepresentativeFormData = {
-  jshshir: '',
-  citizenship: 'citizen',
-  representative_type: 'Ota',
-  language: 'uz',
-  birth_date: '',
-  passport_series: '',
-  passport_number: '',
-  passport_given_date: '',
-  passport_expiry_date: '',
-  passport_given_by: '',
-  last_name: '',
-  first_name: '',
-  father_name: '',
-  phones: ['+998'],
-  registered_address: '',
-  residential_address: '',
+  jshshir: "",
+  citizenship: "citizen",
+  representative_type: "Ota",
+  language: "uz",
+  birth_date: "",
+  passport_series: "",
+  passport_number: "",
+  passport_given_date: "",
+  passport_expiry_date: "",
+  passport_given_by: "",
+  last_name: "",
+  first_name: "",
+  father_name: "",
+  phones: ["+998"],
+  registered_address: "",
+  residential_address: "",
 };
 
 export const emptyMinorStudent: MinorStudentFormData = {
-  lid_id: '',
-  jshshir: '',
-  language: 'uz',
-  citizenship: 'citizen',
-  birth_cert_series: '',
-  birth_cert_number: '',
-  birth_cert_given_date: '',
-  birth_place: '',
-  last_name: '',
-  first_name: '',
-  father_name: '',
-  birth_date: '',
-  group_id: '',
-  course_id: '',
-  level_id: '',
-  phone: '',
-  residential_address: '',
-  birth_cert_expiry_date: '',
-  monthly_price: '',
-  total_price: '',
-  course_start_date: '',
-  course_end_date: '',
+  lid_id: "",
+  jshshir: "",
+  language: "uz",
+  citizenship: "citizen",
+  birth_cert_series: "",
+  birth_cert_number: "",
+  birth_cert_given_date: "",
+  birth_place: "",
+  last_name: "",
+  first_name: "",
+  father_name: "",
+  birth_date: "",
+  group_id: "",
+  course_id: "",
+  level_id: "",
+  phone: "",
+  residential_address: "",
+  birth_cert_expiry_date: "",
+  monthly_price: "",
+  total_price: "",
+  course_start_date: "",
+  course_end_date: "",
 };
 export interface OrganizationFormData {
   inn: string;
@@ -211,29 +233,31 @@ export interface OrganizationFormData {
 }
 
 export const emptyOrganization: OrganizationFormData = {
-  inn: '',
-  language: 'uz',
-  branch_id: '',
-  city: '',
-  contract_date: '',
-  has_trustee: 'Ishonchnomasiz',
-  trustee_date: '',
-  trustee_number: '',
-  organization_name: '',
-  organization_branch: 'yo‘q',
-  branch_name: '',
-  branch_address: '',
-  director_last_name: '',
-  director_first_name: '',
-  director_father_name: '',
-  contract_start_date: '',
-  contract_end_date: '',
-  phones: ['+998'],
-  ifut: '',
-  account_number: '',
-  bank_name: '',
-  mfo: '',
+  inn: "",
+  language: "uz",
+  branch_id: "",
+  city: "",
+  contract_date: "",
+  has_trustee: "Ishonchnomasiz",
+  trustee_date: "",
+  trustee_number: "",
+  organization_name: "",
+  organization_branch: "yo'q",
+  branch_name: "",
+  branch_address: "",
+  director_last_name: "",
+  director_first_name: "",
+  director_father_name: "",
+  contract_start_date: "",
+  contract_end_date: "",
+  phones: ["+998"],
+  ifut: "",
+  account_number: "",
+  bank_name: "",
+  mfo: "",
 };
+
+
 
 export interface OrganizationStudentFormData extends MinorStudentFormData {
   is_minor: boolean;
@@ -247,10 +271,11 @@ export interface OrganizationStudentFormData extends MinorStudentFormData {
 export const emptyOrganizationStudent: OrganizationStudentFormData = {
   ...emptyMinorStudent,
   is_minor: false,
-  phone: '+998',
-  passport_series: '',
-  passport_number: '',
-  passport_given_date: '',
-  passport_expiry_date: '',
-  registered_address: '',
+  phone: "+998",
+  passport_series: "",
+  passport_number: "",
+  passport_given_date: "",
+  passport_expiry_date: "",
+  registered_address: "",
 };
+

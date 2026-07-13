@@ -1,6 +1,6 @@
 .students-contract {
   margin-top: 50px !important;
-  margin-left: 40px !important;
+  margin-left: 140px !important;
 }
 
 .sc-page-header {
@@ -63,31 +63,6 @@
   color: #9ca3af;
 }
 
-/* ---- Filter Button ---- */
-.sc-filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 18px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  background: #fff;
-  font-family: noto-m;
-  font-size: 14px;
-  color: #374151;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.sc-filter-btn:hover {
-  border-color: #003366;
-  color: #003366;
-}
-
-.sc-filter-btn i {
-  font-size: 14px;
-}
-
 /* ---- Create Button ---- */
 .sc-create-btn {
   display: flex;
@@ -136,25 +111,31 @@
   color: #fe9100;
 }
 
-/* ---- Column widths ---- */
-.sc-table .sc-th-id {
-  width: 80px !important;
-  min-width: 80px !important;
-  font-size: 15px !important;
-}
-
-.sc-table .sc-th-name {
-  width: 240px !important;
-  min-width: 240px !important;
-  font-size: 15px !important;
-  text-align: left !important;
-}
-
 /* ---- Table ---- */
 .sc-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: auto;
+}
+
+/* index.css dagi global `th, td` qoidalari boshqa jadvallar uchun ustunlarni
+   qat'iy kenglikka (53px / 80px / 203px) qotiradi va ellipsis qo'yadi. Bu jadval
+   ustun kengliklarini kontent bo'yicha o'zi hisoblaydi, shuning uchun bekor qilinadi. */
+.sc-table th,
+.sc-table td {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.sc-table th:first-child,
+.sc-table td:first-child,
+.sc-table th:nth-child(2),
+.sc-table td:nth-child(2),
+.sc-table th:last-child,
+.sc-table td:last-child {
+  width: auto;
+  min-width: 0;
+  max-width: none;
 }
 
 .sc-table thead tr {
@@ -168,7 +149,7 @@
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  text-align: center !important;
+  text-align: left;
   border-bottom: 1px solid #e8f0fb;
   white-space: nowrap;
 }
@@ -193,14 +174,12 @@
   color: #374151;
   vertical-align: middle;
   white-space: nowrap;
-  text-align: center !important;
 }
 
 /* ---- Student Cell ---- */
 .sc-student-cell {
   display: flex;
   align-items: center;
-  justify-content: center !important;
   gap: 12px;
 }
 
@@ -315,12 +294,25 @@
   background: #dc2626;
 }
 
-.sc-status-badge.tasdiq {
+.sc-status-badge.in_progress {
+  background: rgba(254, 145, 0, 0.12);
+  color: #d97706;
+}
+
+.sc-status-badge.in_progress::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d97706;
+}
+
+.sc-status-badge.completed {
   background: rgba(34, 197, 94, 0.1);
   color: #16a34a;
 }
 
-.sc-status-badge.tasdiq::before {
+.sc-status-badge.completed::before {
   content: '';
   width: 6px;
   height: 6px;
@@ -328,11 +320,23 @@
   background: #16a34a;
 }
 
+.sc-status-badge.expired {
+  background: rgba(100, 116, 139, 0.1);
+  color: #64748b;
+}
+
+.sc-status-badge.expired::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #64748b;
+}
+
 /* ---- Action Buttons ---- */
 .sc-actions {
   display: flex;
   align-items: center;
-  justify-content: center !important;
   gap: 6px;
 }
 
@@ -395,6 +399,87 @@
   color: #fff;
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+}
+
+.sc-action-btn.sms {
+  background: #eff6ff;
+  color: #0f3460;
+  border: 1px solid #bfdbfe;
+}
+
+.sc-action-btn.sms:hover:not(:disabled) {
+  background: #0f3460;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 52, 96, 0.25);
+}
+
+.sc-action-btn.sms.sent {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.sc-action-btn.sms.sent:hover:not(:disabled) {
+  background: #16a34a;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.25);
+}
+
+.sc-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.sc-action-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  min-width: 170px;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.sc-action-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-family: noto-m;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.sc-action-dropdown-item:hover {
+  background: #f8faff;
+}
+
+.sc-action-dropdown-item.activate {
+  color: #16a34a;
+}
+
+.sc-action-dropdown-item.cancel {
+  color: #dc2626;
+}
+
+.sc-action-dropdown-item.terminate {
+  color: #d97706;
+}
+
+.sc-action-dropdown-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ---- Table Footer / Pagination ---- */
@@ -787,7 +872,7 @@
 
 .sc-form-input {
   width: 100%;
-  height: 42px;
+  height: 43.69px;
   padding: 0 14px;
   border: 1.5px solid #e2e8f0;
   border-radius: 10px;
@@ -812,7 +897,7 @@
 
 .sc-form-select {
   width: 100%;
-  height: 42px;
+  height: 44px;
   padding: 0 14px;
   border: 1.5px solid #e2e8f0;
   border-radius: 10px;
@@ -834,6 +919,19 @@
   border-color: #003366;
   background-color: #fff;
   box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.08);
+}
+
+/* Passport seriya/raqam maydonlari inline uslub bilan chiziladi — balandligi
+   qolgan inputlar bilan bir xil bo'lishi uchun shu yerdan beriladi. */
+.sc-passport-series,
+.sc-passport-number {
+  height: 43.69px;
+  box-sizing: border-box;
+  font-family: noto-m;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
 /* ---- Form Submit Area ---- */
@@ -973,6 +1071,54 @@
   word-break: break-word;
 }
 
+/* ---- Details Page Actions (bekor qilish / tugatish) ---- */
+.sc-details-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sc-details-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  font-family: noto-m;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sc-details-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sc-details-action-btn.cancel {
+  border: 1.5px solid #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.sc-details-action-btn.cancel:hover:not(:disabled) {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+
+.sc-details-action-btn.terminate {
+  border: 1.5px solid #fed7aa;
+  background: #fff7ed;
+  color: #d97706;
+}
+
+.sc-details-action-btn.terminate:hover:not(:disabled) {
+  background: #d97706;
+  border-color: #d97706;
+  color: #fff;
+}
+
 .sc-details-student-card {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -985,64 +1131,73 @@
   font-size: 15px;
 }
 
-/* ---- Responsive (1920px → 768px) ---- */
-.students-contract {
-  max-width: calc(100% - 80px);
+/* Responsive: 1920px -> 768px */
+@media (max-width: 1600px) {
+  .students-contract {
+    margin-left: 110px !important;
+  }
 }
 
-.sc-table-card {
-  overflow-x: auto;
+@media (max-width: 1400px) {
+  .students-contract {
+    margin-left: 100px !important;
+  }
+  .sc-form-grid,
+  .sc-details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 1200px) {
-  .sc-form-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .students-contract {
+    margin-left: 92px !important;
   }
-  .sc-form-grid.cols-3 {
-    grid-template-columns: repeat(2, 1fr);
+  /* Wide table scrolls horizontally inside its card */
+  .sc-table-card {
+    overflow-x: auto;
   }
-  .sc-details-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .sc-table {
+    min-width: 860px;
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 992px) {
   .students-contract {
-    margin-top: 24px !important;
-    margin-left: 20px !important;
-    max-width: calc(100% - 40px);
+    margin-left: 90px !important;
+    margin-right: 16px !important;
   }
   .sc-page-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 14px;
-  }
-  .sc-header-actions {
     flex-wrap: wrap;
-  }
-  .sc-search-wrapper {
-    width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .students-contract {
-    margin-top: 16px !important;
-    margin-left: 12px !important;
-    margin-right: 12px !important;
-    max-width: calc(100% - 24px);
-  }
-  .sc-form-grid,
-  .sc-form-grid.cols-2,
-  .sc-form-grid.cols-3,
-  .sc-details-grid {
-    grid-template-columns: 1fr;
+    gap: 12px;
   }
   .sc-form-group.span-2,
   .sc-form-group.span-3 {
     grid-column: span 1;
   }
-  .sc-page-title {
-    font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .students-contract {
+    margin-left: 88px !important;
+    margin-right: 12px !important;
+    margin-top: 24px !important;
+  }
+  .sc-header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .sc-search-wrapper {
+    width: 100%;
+  }
+  .sc-form-grid,
+  .sc-form-grid.cols-2,
+  .sc-details-grid {
+    grid-template-columns: 1fr;
+  }
+  .sc-form-actions {
+    flex-wrap: wrap;
+  }
+  .sc-details-page {
+    padding: 20px 16px;
   }
 }

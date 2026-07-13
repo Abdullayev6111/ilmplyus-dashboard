@@ -31,7 +31,12 @@
       "Bash(npx playwright *)",
       "Read(//c/Users/HP/AppData/Local/ms-playwright/**)",
       "Bash(cp \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/99d684f3-099f-43fe-91bb-9261ed859d98/scratchpad/resp-test.mjs\" \"c:/Users/HP/OneDrive/Desktop/Work/ilmplyus dashboard/resp-test.mjs\")",
-      "Bash(node resp-test.mjs)"
+      "Bash(node resp-test.mjs)",
+      "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/959ee1f8-daf9-4a24-bb0e-3b83bed7c998/scratchpad/checkkeys.cjs\")",
+      "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/959ee1f8-daf9-4a24-bb0e-3b83bed7c998/scratchpad/mergekeys.cjs\")",
+      "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/959ee1f8-daf9-4a24-bb0e-3b83bed7c998/scratchpad/i18n-audit.cjs\")",
+      "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/959ee1f8-daf9-4a24-bb0e-3b83bed7c998/scratchpad/i18n-fix.cjs\")",
+      "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/959ee1f8-daf9-4a24-bb0e-3b83bed7c998/scratchpad/i18n-fix.cjs\" --apply)"
     ],
     "additionalDirectories": [
       "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src\\pages\\set-password",
