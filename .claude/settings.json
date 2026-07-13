@@ -36,7 +36,12 @@
       "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/959ee1f8-daf9-4a24-bb0e-3b83bed7c998/scratchpad/mergekeys.cjs\")",
       "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/959ee1f8-daf9-4a24-bb0e-3b83bed7c998/scratchpad/i18n-audit.cjs\")",
       "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/959ee1f8-daf9-4a24-bb0e-3b83bed7c998/scratchpad/i18n-fix.cjs\")",
-      "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/959ee1f8-daf9-4a24-bb0e-3b83bed7c998/scratchpad/i18n-fix.cjs\" --apply)"
+      "Bash(node \"C:/Users/HP/AppData/Local/Temp/claude/c--Users-HP-OneDrive-Desktop-Work-ilmplyus-dashboard/959ee1f8-daf9-4a24-bb0e-3b83bed7c998/scratchpad/i18n-fix.cjs\" --apply)",
+      "Bash(python -)",
+      "Bash(awk -F: '$1>=722 && $1<=1135')",
+      "PowerShell(npx tsc --noEmit -p tsconfig.app.json)",
+      "PowerShell(npx eslint src/hooks/useRequiredFields.ts src/pages/students-contract src/pages/contracts/ContractsCreate.tsx)",
+      "PowerShell(npx vite build 2>&1)"
     ],
     "additionalDirectories": [
       "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src\\pages\\set-password",

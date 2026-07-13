@@ -118,8 +118,23 @@ body {
   height: 43.69px;
 }
 
+/* Qat'iy balandlik ichida 12px vertikal padding matnni qirqib qo'yardi (44px - 3px
+   chegara - 24px padding = 17px, 15px shrift uchun yetmaydi). Padding olib
+   tashlandi — matn balandlik ichida o'zi markazlashadi, balandlik o'zgarmaydi. */
 .form-group select {
   height: 44px;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+}
+
+/* Ochilgan ro'yxatdagi variantlar input bilan bir xil shriftda bo'lishi uchun. */
+.form-group select option {
+  font-family: noto-m;
+  font-size: 15px;
+  color: #000000;
+  background-color: #ffffff;
 }
 
 .form-group input::placeholder {
@@ -353,16 +368,19 @@ body {
 
 .contracts-table th {
   padding: 16px 20px;
-  text-align: left;
+  text-align: center;
   color: #003366;
   font-family: noto-b;
   background-color: #f8fafc;
   border-bottom: 2px solid #e2e8f0;
   font-size: 14px;
+  white-space: nowrap;
 }
 
 .contracts-table td {
   padding: 14px 20px;
+  text-align: center;
+  vertical-align: middle;
   background: #ffffff;
   border-bottom: 1px solid #f1f5f9;
   font-size: 15px;
@@ -544,6 +562,7 @@ body {
 
 .action-btns {
   display: flex;
+  justify-content: center;
   gap: 10px;
 }
 
@@ -767,6 +786,14 @@ body {
   .form-group select,
   .form-group textarea {
     padding: 10px 14px;
+    font-size: 14px;
+  }
+  /* Kichik ekranda ham select'ning matni qat'iy balandlik ichida qirqilmasligi kerak. */
+  .form-group select {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .form-group select option {
     font-size: 14px;
   }
   .contracts-table th,

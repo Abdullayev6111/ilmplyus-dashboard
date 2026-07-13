@@ -14,6 +14,7 @@ import type { Group } from "@/types/group.types";
 import "./studentsContracts.css";
 import { API } from "@/api/api";
 import { useOptions, optionLabel, type Option } from "@/api/options";
+import useRequiredFields from "@/hooks/useRequiredFields";
 import DateInput from '@/components/DateInput';
 
 const formatDateForInput = (dateStr: string | null | undefined): string => {
@@ -590,7 +591,9 @@ const OrganizationStudentCard = ({
 
       <div className="sc-form-row" style={{ display: "flex", gap: "18px" }}>
         <div className="sc-form-col" style={{ flex: 1 }}>
-          <label className="sc-form-label">{t('studentsContract.form.monthlyPrice')}</label>
+          <label className="sc-form-label">
+            {t('studentsContract.form.monthlyPrice')} <span>*</span>
+          </label>
           <input
             type="number"
             className="sc-form-input"
@@ -600,7 +603,9 @@ const OrganizationStudentCard = ({
           />
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
-          <label className="sc-form-label">{t('studentsContract.form.totalPrice')}</label>
+          <label className="sc-form-label">
+            {t('studentsContract.form.totalPrice')} <span>*</span>
+          </label>
           <input
             type="number"
             className="sc-form-input"
@@ -643,7 +648,9 @@ const OrganizationStudentCard = ({
           />
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
-          <label className="sc-form-label">{t('studentsContract.form.courseStartDate')}</label>
+          <label className="sc-form-label">
+            {t('studentsContract.form.courseStartDate')} <span>*</span>
+          </label>
           <DateInput
             className="sc-form-input"
             value={student.course_start_date}
@@ -653,7 +660,9 @@ const OrganizationStudentCard = ({
           />
         </div>
         <div className="sc-form-col" style={{ flex: 1 }}>
-          <label className="sc-form-label">{t('studentsContract.form.courseEndDate')}</label>
+          <label className="sc-form-label">
+            {t('studentsContract.form.courseEndDate')} <span>*</span>
+          </label>
           <DateInput
             className="sc-form-input"
             value={student.course_end_date}
@@ -719,6 +728,7 @@ const LegalEntity = () => {
   const queryClient = useQueryClient();
   const { id } = useParams();
   const { t } = useTranslation();
+  const { formRef, validate, arm } = useRequiredFields();
   const [step, setStep] = useState(1);
   const [organization, setOrganization] = useState<OrganizationFormData>({
     ...emptyOrganization,
@@ -930,16 +940,42 @@ const LegalEntity = () => {
 
   const isStep1Valid = () => {
     const o = organization;
-    return (
+    const branchFilled =
+      o.organization_branch !== "bor" || Boolean(o.branch_name && o.branch_address);
+    return Boolean(
       o.inn &&
-      o.organization_name &&
-      o.phones[0].length > 4 &&
-      o.account_number &&
-      o.bank_name &&
-      o.mfo &&
-      o.director_first_name &&
-      o.director_last_name
+        o.language &&
+        o.branch_id &&
+        o.contract_date &&
+        o.has_trustee &&
+        o.trustee_date &&
+        o.trustee_number &&
+        o.organization_name &&
+        o.organization_branch &&
+        branchFilled &&
+        o.director_last_name &&
+        o.director_first_name &&
+        o.director_father_name &&
+        o.contract_start_date &&
+        o.contract_end_date &&
+        o.phones.every((p) => p.length > 4) &&
+        o.ifut &&
+        o.account_number &&
+        o.bank_name &&
+        o.mfo,
     );
+  };
+
+  const goToStep2 = () => {
+    if (!validate()) {
+      notifications.show({
+        title: t('studentsContract.legal.errorTitle'),
+        message: t('studentsContract.legal.errorOrgMsg'),
+        color: "red",
+      });
+      return;
+    }
+    setStep(2);
   };
 
   const createMutation = useMutation({
@@ -983,6 +1019,20 @@ const LegalEntity = () => {
   });
 
   const handleSubmit = () => {
+    // 1-bosqich DOM'da yo'q, shuning uchun avval holat bo'yicha tekshiriladi;
+    // qaytganda `arm()` o'sha yerdagi bo'sh maydonlarni qizil qiladi.
+    if (!isStep1Valid()) {
+      arm();
+      setStep(1);
+      notifications.show({
+        title: t('studentsContract.legal.errorTitle'),
+        message: t('studentsContract.legal.errorOrgMsg'),
+        color: "red",
+      });
+      return;
+    }
+    if (!validate()) return;
+
     const payload = {
       contract_type: "legal_bilateral",
       language: organization.language,
@@ -1052,6 +1102,7 @@ const LegalEntity = () => {
     <div
       className="students-contract container"
       style={{ marginTop: 50, marginLeft: 140 }}
+      ref={formRef}
     >
       <div
         className="sc-page-top"
@@ -1129,15 +1180,7 @@ const LegalEntity = () => {
             fontSize: "14px",
             textTransform: "uppercase",
           }}
-          onClick={() => {
-            if (isStep1Valid()) setStep(2);
-            else
-              notifications.show({
-                title: t('studentsContract.legal.errorTitle'),
-                message: t('studentsContract.legal.errorOrgMsg'),
-                color: "red",
-              });
-          }}
+          onClick={goToStep2}
         >
           {t('studentsContract.legal.step2')}
         </div>
@@ -1693,15 +1736,7 @@ const LegalEntity = () => {
                 fontWeight: "600",
                 boxShadow: "0 4px 12px rgba(254, 145, 0, 0.2)",
               }}
-              onClick={() => {
-                if (isStep1Valid()) setStep(2);
-                else
-                  notifications.show({
-                    title: t('studentsContract.legal.errorTitle'),
-                    message: t('studentsContract.legal.errorOrgMsg'),
-                    color: "red",
-                  });
-              }}
+              onClick={goToStep2}
             >
               {t('studentsContract.minor.next')}
             </button>

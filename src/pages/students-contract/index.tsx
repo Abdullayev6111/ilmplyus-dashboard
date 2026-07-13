@@ -15,6 +15,7 @@ import type { Group } from '@/types/group.types';
 import { API } from '@/api/api';
 import { sortByNewest } from '@/utils/sortByNewest';
 import { useOptions, optionLabel } from '@/api/options';
+import useRequiredFields from '@/hooks/useRequiredFields';
 import ContractPrintModal from './ContractPrintModal';
 import DateInput from '@/components/DateInput';
 import FilterButton from '@/components/FilterButton';
@@ -124,6 +125,7 @@ const AdultContractForm = () => {
   const location = useLocation();
   const queryClient = useQueryClient();
   const { id } = useParams();
+  const { formRef, validate } = useRequiredFields();
   const [formData, setFormData] = useState<StudentFormData>({
     ...emptyStudent,
   });
@@ -319,6 +321,8 @@ const AdultContractForm = () => {
   });
 
   const handleSubmit = () => {
+    if (!validate()) return;
+
     const studentPayload: Record<string, unknown> = {
       lid_id: Number(formData.lid_id),
       is_minor: false,
@@ -375,7 +379,11 @@ const AdultContractForm = () => {
   }
 
   return (
-    <div className="students-contract container" style={{ marginTop: 50, marginLeft: 140 }}>
+    <div
+      className="students-contract container"
+      style={{ marginTop: 50, marginLeft: 140 }}
+      ref={formRef}
+    >
       <div
         className="sc-page-top"
         style={{
@@ -741,7 +749,9 @@ const AdultContractForm = () => {
 
             {}
             <div className="sc-form-group span-2">
-              <label className="sc-form-label">{t('studentsContract.form.passportExpiry')}</label>
+              <label className="sc-form-label">
+                {t('studentsContract.form.passportExpiry')} <span>*</span>
+              </label>
               <DateInput
                 className="sc-form-input"
                 value={formData.passport_expiry_date}
@@ -749,7 +759,9 @@ const AdultContractForm = () => {
               />
             </div>
             <div className="sc-form-group span-2">
-              <label className="sc-form-label">{t('studentsContract.form.passportGivenBy')}</label>
+              <label className="sc-form-label">
+                {t('studentsContract.form.passportGivenBy')} <span>*</span>
+              </label>
               <input
                 type="text"
                 className="sc-form-input"
@@ -893,7 +905,9 @@ const AdultContractForm = () => {
               />
             </div>
             <div className="sc-form-group span-2">
-              <label className="sc-form-label">{t('studentsContract.form.registeredAddress')}</label>
+              <label className="sc-form-label">
+                {t('studentsContract.form.registeredAddress')} <span>*</span>
+              </label>
               <input
                 type="text"
                 className="sc-form-input"
@@ -905,7 +919,9 @@ const AdultContractForm = () => {
 
             {/* Kurs narxlari */}
             <div className="sc-form-group">
-              <label className="sc-form-label">{t('studentsContract.form.monthlyPrice')}</label>
+              <label className="sc-form-label">
+                {t('studentsContract.form.monthlyPrice')} <span>*</span>
+              </label>
               <input
                 type="number"
                 className="sc-form-input"
@@ -915,7 +931,9 @@ const AdultContractForm = () => {
               />
             </div>
             <div className="sc-form-group">
-              <label className="sc-form-label">{t('studentsContract.form.totalPrice')}</label>
+              <label className="sc-form-label">
+                {t('studentsContract.form.totalPrice')} <span>*</span>
+              </label>
               <input
                 type="number"
                 className="sc-form-input"
@@ -925,7 +943,9 @@ const AdultContractForm = () => {
               />
             </div>
             <div className="sc-form-group">
-              <label className="sc-form-label">{t('studentsContract.form.courseStartDate')}</label>
+              <label className="sc-form-label">
+                {t('studentsContract.form.courseStartDate')} <span>*</span>
+              </label>
               <DateInput
                 className="sc-form-input"
                 value={formData.course_start_date}
@@ -933,7 +953,9 @@ const AdultContractForm = () => {
               />
             </div>
             <div className="sc-form-group">
-              <label className="sc-form-label">{t('studentsContract.form.courseEndDate')}</label>
+              <label className="sc-form-label">
+                {t('studentsContract.form.courseEndDate')} <span>*</span>
+              </label>
               <DateInput
                 className="sc-form-input"
                 value={formData.course_end_date}
@@ -943,7 +965,9 @@ const AdultContractForm = () => {
 
             {/* Shartnoma sanasi va izoh */}
             <div className="sc-form-group">
-              <label className="sc-form-label">{t('studentsContract.form.contractDate')}</label>
+              <label className="sc-form-label">
+                {t('studentsContract.form.contractDate')} <span>*</span>
+              </label>
               <DateInput
                 className="sc-form-input"
                 value={formData.contract_date}
@@ -951,7 +975,9 @@ const AdultContractForm = () => {
               />
             </div>
             <div className="sc-form-group">
-              <label className="sc-form-label">{t('studentsContract.form.contractEndDate')}</label>
+              <label className="sc-form-label">
+                {t('studentsContract.form.contractEndDate')} <span>*</span>
+              </label>
               <DateInput
                 className="sc-form-input"
                 value={formData.end_date}
@@ -959,7 +985,9 @@ const AdultContractForm = () => {
               />
             </div>
             <div className="sc-form-group span-2">
-              <label className="sc-form-label">{t('studentsContract.form.notes')}</label>
+              <label className="sc-form-label">
+                {t('studentsContract.form.notes')} <span>*</span>
+              </label>
               <input
                 type="text"
                 className="sc-form-input"

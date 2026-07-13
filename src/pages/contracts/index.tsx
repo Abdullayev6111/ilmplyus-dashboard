@@ -53,6 +53,8 @@ interface BranchRekvizit {
   account_number?: string | null;
   mfo?: string | null;
   director_name?: string | null;
+  oked?: string | null;
+  email?: string | null;
 }
 
 interface Contract {
@@ -88,6 +90,7 @@ interface Contract {
   language: string;
   probation_period: string | null;
   probation_end_date: string | null;
+  branch_id?: number;
   /** Word shablonidagi NTM rekvizitlari (STIR, MFO, bank, H/R, rahbar) uchun. */
   branch?: BranchRekvizit;
 }
@@ -119,6 +122,21 @@ const Contracts: React.FC = () => {
       const { data } = await API.get("/contracts");
       return data;
     },
+  });
+
+  /**
+   * `GET /contracts` shartnoma bilan birga `branch` relation'ini qaytarmaydi, shuning
+   * uchun Word shablonidagi NTM rekvizitlari (STIR, MFO, bank, H/R, manzil, rahbar)
+   * bo'sh chiqardi. `/options/branches` ham yaramaydi — u faqat id/label/city beradi.
+   * Rekvizitlar bor to'liq ro'yxat shu yerdan olinib, PDF vaqtida biriktiriladi.
+   */
+  const { data: branches } = useQuery<BranchRekvizit[]>({
+    queryKey: ["branches"],
+    queryFn: async () => {
+      const { data } = await API.get("/branches");
+      return Array.isArray(data) ? data : data?.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
   });
 
   const processedData = useMemo(() => {
@@ -160,8 +178,9 @@ const Contracts: React.FC = () => {
 
   /**
    * Mehnat shartnomasini Word shabloni asosida PDF/chop etishga uzatadi.
-   * Jadvaldagi shartnoma obyekti to'liq ishlatiladi — alohida so'rov yuborilmaydi
-   * (backendda GET /contracts/{id} yo'q).
+   * Jadvaldagi shartnoma obyekti ishlatiladi — alohida so'rov yuborilmaydi
+   * (backendda GET /contracts/{id} yo'q). Yagona istisno: `branch` javobda
+   * kelmagani uchun `/branches` ro'yxatidan `branch_id` bo'yicha topib qo'shiladi.
    *
    * O'quvchi shartnomalari bilan bir xil `printFromDocxTemplate` chaqiriladi,
    * shuning uchun PDF/print parametrlari aynan bir xil bo'ladi.
@@ -169,9 +188,13 @@ const Contracts: React.FC = () => {
   const handleGenerate = async (contract: Contract, mode: "pdf" | "print") => {
     setBusyDoc({ contractId: contract.id, mode });
     try {
+      const branchId = contract.branch_id ?? contract.employee?.branch_id;
+      const branch =
+        contract.branch ?? branches?.find((b) => b.id === Number(branchId));
+
       await printFromDocxTemplate(
         employmentTemplate,
-        buildEmployeeContractData(contract),
+        buildEmployeeContractData({ ...contract, branch }),
         String(contract.contract_number ?? contract.id),
         mode,
       );

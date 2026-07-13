@@ -206,7 +206,8 @@ export function ContractsCreate({
             contract.contract_duration_months || contract.contract_conclusion_term || '',
           salary_type: contract.monthly_salary_type || contract.salary_type || '',
           contract_number: contract.contract_number ? String(contract.contract_number) : '',
-          contract_duration: contract.contract_duration || '',
+          contract_duration:
+            contract.contract_duration != null ? String(contract.contract_duration) : '',
 
           probation_enabled: !!contract.probation_period,
           probation_choice: contract.probation_period ? 'sinov' : '',
@@ -442,6 +443,7 @@ export function ContractsCreate({
         contract_start_date: formData.contract_start_date,
         contract_end_date: formData.contract_end_date,
         contract_type: formData.contract_type,
+        contract_duration: String(formData.contract_duration),
         contract_duration_months: formData.contract_conclusion_term,
         monthly_salary_type: formData.salary_type,
         probation_period: formData.probation_enabled ? `${formData.probation_days} kun` : null,
@@ -1051,7 +1053,9 @@ export function ContractsCreate({
             <label>
               {t('contractsCreate.contractDuration')} <span className="required">*</span>
             </label>
-            <DateInput
+            <input
+              type="text"
+              placeholder={t('contractsCreate.inputPlaceholder')}
               value={formData.contract_duration}
               onChange={(e) => setFormData({ ...formData, contract_duration: e.target.value })}
               className={errors.contract_duration ? 'error' : ''}

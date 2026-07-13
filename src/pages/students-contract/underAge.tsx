@@ -16,6 +16,7 @@ import type { Group } from "@/types/group.types";
 import { notifications } from "@mantine/notifications";
 import { API } from "@/api/api";
 import { useOptions, optionLabel, type Option } from "@/api/options";
+import useRequiredFields from "@/hooks/useRequiredFields";
 import DateInput from '@/components/DateInput';
 
 // Minimal shape of a /users record used for representative auto-fill
@@ -517,7 +518,9 @@ const MinorStudentCard = ({
 
       <div className="sc-form-row">
         <div className="sc-form-col">
-          <label className="sc-form-label">{t('studentsContract.form.monthlyPrice')}</label>
+          <label className="sc-form-label">
+            {t('studentsContract.form.monthlyPrice')} <span>*</span>
+          </label>
           <input
             type="number"
             className="sc-form-input"
@@ -527,7 +530,9 @@ const MinorStudentCard = ({
           />
         </div>
         <div className="sc-form-col">
-          <label className="sc-form-label">{t('studentsContract.form.totalPrice')}</label>
+          <label className="sc-form-label">
+            {t('studentsContract.form.totalPrice')} <span>*</span>
+          </label>
           <input
             type="number"
             className="sc-form-input"
@@ -540,7 +545,9 @@ const MinorStudentCard = ({
 
       <div className="sc-form-row">
         <div className="sc-form-col">
-          <label className="sc-form-label">{t('studentsContract.form.courseStartDate')}</label>
+          <label className="sc-form-label">
+            {t('studentsContract.form.courseStartDate')} <span>*</span>
+          </label>
           <DateInput
             className="sc-form-input"
             value={student.course_start_date}
@@ -550,7 +557,9 @@ const MinorStudentCard = ({
           />
         </div>
         <div className="sc-form-col">
-          <label className="sc-form-label">{t('studentsContract.form.courseEndDate')}</label>
+          <label className="sc-form-label">
+            {t('studentsContract.form.courseEndDate')} <span>*</span>
+          </label>
           <DateInput
             className="sc-form-input"
             value={student.course_end_date}
@@ -603,6 +612,7 @@ const UnderAge = () => {
   const queryClient = useQueryClient();
   const { id } = useParams();
   const { t } = useTranslation();
+  const { formRef, validate, arm } = useRequiredFields();
   const [step, setStep] = useState(1);
   const [representative, setRepresentative] = useState<RepresentativeFormData>({
     ...emptyRepresentative,
@@ -838,18 +848,19 @@ const UnderAge = () => {
 
   const isStep1Valid = () => {
     const r = representative;
-    return (
+    return Boolean(
       r.first_name &&
-      r.last_name &&
-      r.father_name &&
-      r.jshshir &&
-      r.phones &&
-      r.passport_series &&
-      r.passport_number &&
-      r.birth_date &&
-      r.passport_given_date &&
-      r.registered_address &&
-      r.residential_address
+        r.last_name &&
+        r.father_name &&
+        r.jshshir &&
+        r.phones.every((p) => p.length > 4) &&
+        r.passport_series &&
+        r.passport_number &&
+        r.birth_date &&
+        r.passport_given_date &&
+        r.passport_expiry_date &&
+        r.registered_address &&
+        r.residential_address,
     );
   };
 
@@ -871,7 +882,33 @@ const UnderAge = () => {
     },
   });
 
+  const goToStep2 = () => {
+    if (!validate()) {
+      notifications.show({
+        title: t('studentsContract.minor.errorTitle'),
+        message: t('studentsContract.minor.errorRepMsg'),
+        color: "red",
+      });
+      return;
+    }
+    setStep(2);
+  };
+
   const handleSubmit = () => {
+    // 1-bosqich DOM'da yo'q, shuning uchun avval holat bo'yicha tekshiriladi;
+    // qaytganda `arm()` o'sha yerdagi bo'sh maydonlarni qizil qiladi.
+    if (!isStep1Valid()) {
+      arm();
+      setStep(1);
+      notifications.show({
+        title: t('studentsContract.minor.errorTitle'),
+        message: t('studentsContract.minor.errorRepMsg'),
+        color: "red",
+      });
+      return;
+    }
+    if (!validate()) return;
+
     const payload = {
       contract_type: "minor",
       language: representative.language,
@@ -949,6 +986,7 @@ const UnderAge = () => {
     <div
       className="students-contract container"
       style={{ marginTop: 50, marginLeft: 140 }}
+      ref={formRef}
     >
       <div
         className="sc-page-top"
@@ -1029,16 +1067,7 @@ const UnderAge = () => {
             fontSize: "14px",
             textTransform: "uppercase",
           }}
-          onClick={() => {
-            if (isStep1Valid()) setStep(2);
-            else {
-              notifications.show({
-                title: t('studentsContract.minor.errorTitle'),
-                message: t('studentsContract.minor.errorRepMsg'),
-                color: "red",
-              });
-            }
-          }}
+          onClick={goToStep2}
         >
           {t('studentsContract.minor.step2')}
         </div>
@@ -1207,7 +1236,9 @@ const UnderAge = () => {
                 />
               </div>
               <div className="sc-form-col">
-                <label className="sc-form-label">{t('studentsContract.minor.passportExpiry')}</label>
+                <label className="sc-form-label">
+                  {t('studentsContract.minor.passportExpiry')} <span>*</span>
+                </label>
                 <DateInput
                   className="sc-form-input"
                   style={{
@@ -1411,16 +1442,7 @@ const UnderAge = () => {
                 cursor: "pointer",
                 fontWeight: "500",
               }}
-              onClick={() => {
-                if (isStep1Valid()) setStep(2);
-                else {
-                  notifications.show({
-                    title: t('studentsContract.minor.errorTitle'),
-                    message: t('studentsContract.minor.errorRepMsg'),
-                    color: "red",
-                  });
-                }
-              }}
+              onClick={goToStep2}
             >
               {t('studentsContract.minor.next')}
             </button>
