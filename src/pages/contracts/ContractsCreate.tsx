@@ -576,7 +576,7 @@ export function ContractsCreate({
   };
 
   return (
-    <div className="contracts-container">
+    <div className="contracts-container ccr-create-page">
       <div className="contracts-header">
         <h1>
           <div className="icon-box">

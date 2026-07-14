@@ -21,6 +21,15 @@ body {
   height: auto !important;
 }
 
+/* Shartnoma yaratish sahifasi: 1600px va undan tor ekranda chapga surilsin */
+@media (max-width: 1600px) {
+  .ccr-create-page {
+    width: calc(100% - 48px);
+    margin-left: 24px !important;
+    margin-top: 30px !important;
+  }
+}
+
 .contracts-header {
   display: flex;
   justify-content: space-between;

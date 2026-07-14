@@ -42,7 +42,11 @@
       "PowerShell(npx tsc --noEmit -p tsconfig.app.json)",
       "PowerShell(npx eslint src/hooks/useRequiredFields.ts src/pages/students-contract src/pages/contracts/ContractsCreate.tsx)",
       "PowerShell(npx vite build 2>&1)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(git checkout *)",
+      "PowerShell(node -e \"['uz','ru','en'].forEach\\(l=>{const j=require\\('./src/messages/'+l+'.json'\\);console.log\\(l, JSON.stringify\\(j.demoLesson.table\\)\\)}\\)\")",
+      "PowerShell(npx eslint \"src/pages/demo-lesson/index.tsx\")",
+      "PowerShell(node -e \"['uz','ru','en'].forEach\\(l=>{const j=require\\('./src/messages/'+l+'.json'\\);console.log\\(l,j.demoLesson.deleteSelected,'|',j.demoLesson.confirmDeleteSelected\\)}\\)\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\HP\\OneDrive\\Desktop\\Work\\ilmplyus\\src\\pages\\set-password",

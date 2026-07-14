@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { API } from '@/api/api';
-import { buildTemplateData, printFromDocxTemplate } from '@/utils/contractPdf';
+import {
+  buildTemplateData,
+  printFromDocxTemplate,
+  downloadPdfFromDocxTemplate,
+} from '@/utils/contractPdf';
 import { formatDate as formatDisplayDate } from '@/utils/date';
 import './contractPrint.css';
 
@@ -49,7 +53,11 @@ const ContractPrintModal = ({ contractId, onClose }: ContractPrintModalProps) =>
     try {
       const templateUrl = getTemplateUrl(contract.contract_type || 'adult');
       const data = buildTemplateData(contract);
-      await printFromDocxTemplate(templateUrl, data, contract.contract_number || String(contractId), 'pdf');
+      await downloadPdfFromDocxTemplate(
+        templateUrl,
+        data,
+        contract.contract_number || String(contractId),
+      );
     } catch (err) {
       console.error('PDF xatosi:', err);
       alert('PDF yaratishda xatolik yuz berdi.');

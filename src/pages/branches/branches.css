@@ -247,6 +247,62 @@
   width: 95%;
 }
 
+/* Filial qo'shish / tahrirlash sahifasi (header'dan tashqari 100vh, scroll'siz) */
+
+.brf-page {
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+.brf-card {
+  flex: 1;
+  min-height: 0;
+  background: #fff;
+  padding: 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.brf-heading {
+  flex: 0 0 auto;
+  text-align: center;
+  font-family: noto-b;
+  font-size: 20px;
+  color: #003366;
+  margin: 0;
+}
+
+.brf-body {
+  flex: 0 0 auto;
+  display: flex;
+}
+
+.brf-body .branch-form-wrapper {
+  width: 100%;
+  margin: 0;
+  align-content: start;
+  gap: 0 40px;
+}
+
+.brf-body .branch-form-left,
+.brf-body .branch-form-right {
+  gap: 10px;
+}
+
+.brf-body .branch-input-group input {
+  padding: 8px 12px;
+}
+
+.brf-footer {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 .dept-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -8,9 +8,15 @@ import TableSkeleton from '@/components/TableSkeleton';
 import EmptyState from '@/components/EmptyState';
 import { Protected } from '@/components/Protected';
 import { usePermission } from '@/hooks/usePermission';
+import { useOptions } from '@/hooks/useOptions';
 import type { Branch } from '@/types/common.types';
 
 // ─── Local Type Definitions ──────────────────────────────────────────────────
+
+interface TransferMaker {
+  id: number;
+  full_name: string;
+}
 
 interface FinanceAccount {
   id: number;
@@ -25,6 +31,7 @@ interface FinanceAccount {
   created_at: string;
   updated_at: string;
   branch?: Branch;
+  transfer_makers?: TransferMaker[];
 }
 
 interface TransferPerson {
@@ -101,6 +108,12 @@ interface Jamgarma {
 
 const ITEMS_PER_PAGE = 10;
 
+const ACCOUNT_TYPES = [
+  { code: '0001', label: '0001 - Naqd' },
+  { code: '0002', label: '0002 - Naqdsiz' },
+];
+
+type FinanceTab = 'accounts' | 'transfers';
 type TransferView = 'list' | 'select-type' | 'create' | 'savings';
 
 // ─── Pagination Sub-Component ────────────────────────────────────────────────
@@ -197,8 +210,28 @@ const Finances = () => {
   const canCreateSavingsTransfer = usePermission('account_to_jamgarma_transfers.create');
   const canCreateAnyTransfer = canCreateAccountTransfer || canCreateSavingsTransfer;
 
-  // ── View state ──────────────────────────────────────────────────
+  // ── Tab & view state ────────────────────────────────────────────
+  const [activeTab, setActiveTab] = useState<FinanceTab>('accounts');
   const [transferView, setTransferView] = useState<TransferView>('list');
+
+  // ── Accounts UI state ───────────────────────────────────────────
+  const [showCreateAccount, setShowCreateAccount] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<FinanceAccount | null>(null);
+  const [viewingAccount, setViewingAccount] = useState<FinanceAccount | null>(null);
+  const [deleteAccountId, setDeleteAccountId] = useState<number | null>(null);
+  const [viewStatusChange, setViewStatusChange] = useState('');
+  const [viewStatusNote, setViewStatusNote] = useState('');
+  const [accountSearch, setAccountSearch] = useState('');
+  const [accountPage, setAccountPage] = useState(1);
+
+  // ── Account form state ─────────────────────────────────────────
+  const [accountForm, setAccountForm] = useState({
+    branch_id: '',
+    account_type: '',
+    status: 'active',
+  });
+  const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
+  const [signatoryDropdown, setSignatoryDropdown] = useState('');
 
   // ── Transfers UI state ──────────────────────────────────────────
   const [transferSearch, setTransferSearch] = useState('');
@@ -225,7 +258,7 @@ const Finances = () => {
 
   // ─── API Queries ──────────────────────────────────────────────────────────
 
-  const { data: accounts = [] } = useQuery<FinanceAccount[]>({
+  const { data: accounts = [], isLoading: accountsLoading } = useQuery<FinanceAccount[]>({
     queryKey: ['chart-of-accounts'],
     queryFn: async () => {
       const { data } = await API.get('/chart-of-accounts');
@@ -233,6 +266,10 @@ const Finances = () => {
     },
     placeholderData: keepPreviousData,
   });
+
+  // Modal dropdownlari — to'liq ro'yxatlar emas, yengil `/options/*` lookuplari.
+  const { data: branchOptions = [] } = useOptions('branches');
+  const { data: userOptions = [] } = useOptions('users');
 
   const { data: transfers = [], isLoading: transfersListLoading } = useQuery<FinanceTransfer[]>({
     queryKey: ['chart-of-accounts-transfers'],
@@ -265,6 +302,57 @@ const Finances = () => {
   });
 
   // ─── Mutations ────────────────────────────────────────────────────────────
+
+  const createAccountMutation = useMutation({
+    mutationFn: async (payload: object) => {
+      const { data } = await API.post('/chart-of-accounts', payload);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts'] });
+      closeAccountModal();
+    },
+  });
+
+  const updateAccountMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: object }) => {
+      const { data } = await API.put(`/chart-of-accounts/${id}`, payload);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts'] });
+      closeAccountModal();
+    },
+  });
+
+  const changeStatusMutation = useMutation({
+    mutationFn: async ({ id, status, note }: { id: number; status: string; note: string }) => {
+      const { data } = await API.put(`/chart-of-accounts/${id}`, {
+        status,
+        is_active: status === 'active',
+        description_uz: note || undefined,
+      });
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts'] });
+      setViewingAccount((prev) =>
+        prev ? { ...prev, status: vars.status as 'active' | 'inactive' } : prev,
+      );
+      setViewStatusChange('');
+      setViewStatusNote('');
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await API.delete(`/chart-of-accounts/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chart-of-accounts'] });
+      setDeleteAccountId(null);
+    },
+  });
 
   const createTransferMutation = useMutation({
     mutationFn: async (payload: object) => {
@@ -446,6 +534,74 @@ const Finances = () => {
     return accounts.find((a) => a.id === ref.id) ?? ref;
   };
 
+  const getTransferMakersDisplay = (account: FinanceAccount) => {
+    if (!account.transfer_makers?.length) return '-';
+    return account.transfer_makers.map((tm) => tm.full_name).join(', ');
+  };
+
+  // ─── Account Modal Logic ───────────────────────────────────────────────────
+
+  function closeAccountModal() {
+    setShowCreateAccount(false);
+    setEditingAccount(null);
+    setAccountForm({ branch_id: '', account_type: '', status: 'active' });
+    setSelectedUserIds([]);
+    setSignatoryDropdown('');
+  }
+
+  const openEditAccount = (account: FinanceAccount) => {
+    setEditingAccount(account);
+    setAccountForm({
+      branch_id: String(account.branch_id),
+      account_type: account.account_type,
+      status: account.status,
+    });
+    setSelectedUserIds(account.transfer_makers?.map((tm) => tm.id) || []);
+    setShowCreateAccount(true);
+  };
+
+  const handleAccountSubmit = () => {
+    if (!accountForm.branch_id || !accountForm.account_type) return;
+    if (editingAccount) {
+      // Hisob raqam turi va filiali o'zgartirilmaydi — faqat status va transfer qiluvchilar.
+      updateAccountMutation.mutate({
+        id: editingAccount.id,
+        payload: {
+          status: accountForm.status,
+          is_active: accountForm.status === 'active',
+          transfer_maker_ids: selectedUserIds,
+        },
+      });
+    } else {
+      createAccountMutation.mutate({
+        account_type: accountForm.account_type,
+        branch_id: Number(accountForm.branch_id),
+        status: accountForm.status,
+        transfer_maker_ids: selectedUserIds,
+      });
+    }
+  };
+
+  const availableSignatories = userOptions.filter((u) => !selectedUserIds.includes(u.id));
+  const selectedSignatoryUsers = userOptions.filter((u) => selectedUserIds.includes(u.id));
+
+  const filteredAccounts = (() => {
+    if (!accountSearch) return accounts;
+    const q = accountSearch.toLowerCase();
+    return accounts.filter(
+      (a) =>
+        a.account_number?.toLowerCase().includes(q) ||
+        getBranchLabel(a.branch).toLowerCase().includes(q),
+    );
+  })();
+
+  const paginatedAccounts = (() => {
+    const start = (accountPage - 1) * ITEMS_PER_PAGE;
+    return filteredAccounts.slice(start, start + ITEMS_PER_PAGE);
+  })();
+
+  const accountLastPage = Math.max(1, Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE));
+
   // ─── Transfer Logic ────────────────────────────────────────────────────────
 
   const senderAccount = accounts.find((a) => a.id === Number(transferForm.sender_account_id));
@@ -510,8 +666,414 @@ const Finances = () => {
 
   return (
     <section className="finances container">
+      {/* ── Tab Navigation ────────────────────────────────────────── */}
+      <div className="fin-tabs">
+        <button
+          className={`fin-tab${activeTab === 'accounts' ? ' active' : ''}`}
+          onClick={() => setActiveTab('accounts')}
+        >
+          <i className="fa-solid fa-building-columns" />
+          {t('finance.accountsTab')}
+        </button>
+        <button
+          className={`fin-tab${activeTab === 'transfers' ? ' active' : ''}`}
+          onClick={() => setActiveTab('transfers')}
+        >
+          <i className="fa-solid fa-right-left" />
+          {t('finance.transfersTab')}
+        </button>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════════
+          ACCOUNTS TAB
+         ══════════════════════════════════════════════════════════════ */}
+      {activeTab === 'accounts' && (
+        <>
+          {/* ── Create / Edit Account Modal ───────────────────────── */}
+          {showCreateAccount && (
+            <div className="fin-modal-overlay" onClick={closeAccountModal}>
+              <div className="fin-modal" onClick={(e) => e.stopPropagation()}>
+                <h3 className="fin-modal-title">
+                  {editingAccount ? t('finance.editAccount') : t('finance.createAccount')}
+                </h3>
+
+                <div className="fin-form-group">
+                  <label>{t('finance.selectBranch')}</label>
+                  <select
+                    value={accountForm.branch_id}
+                    onChange={(e) => setAccountForm({ ...accountForm, branch_id: e.target.value })}
+                    disabled={!!editingAccount}
+                  >
+                    <option value="">{t('finance.branchPlaceholder')}</option>
+                    {branchOptions.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="fin-form-group">
+                  <label>{t('finance.accountType')}</label>
+                  <select
+                    value={accountForm.account_type}
+                    onChange={(e) =>
+                      setAccountForm({ ...accountForm, account_type: e.target.value })
+                    }
+                    disabled={!!editingAccount}
+                  >
+                    <option value="">{t('finance.choose')}</option>
+                    {ACCOUNT_TYPES.map((at) => (
+                      <option key={at.code} value={at.code}>
+                        {at.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {selectedSignatoryUsers.length > 0 && (
+                  <div className="fin-signatories-selected">
+                    {selectedSignatoryUsers.map((u) => (
+                      <div key={u.id} className="fin-signatory-chip">
+                        <i className="fa-solid fa-check fin-check-icon" />
+                        <span>{u.label}</span>
+                        <button
+                          className="fin-signatory-remove"
+                          type="button"
+                          onClick={() =>
+                            setSelectedUserIds((prev) => prev.filter((id) => id !== u.id))
+                          }
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="fin-form-group">
+                  <label>{t('finance.selectTransactionMakers')}</label>
+                  <select
+                    value={signatoryDropdown}
+                    onChange={(e) => {
+                      const uid = parseInt(e.target.value);
+                      if (uid && !selectedUserIds.includes(uid)) {
+                        setSelectedUserIds((prev) => [...prev, uid]);
+                      }
+                      setSignatoryDropdown('');
+                    }}
+                  >
+                    <option value="">{t('finance.choose')}</option>
+                    {availableSignatories.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="fin-modal-actions">
+                  <button
+                    className="fin-btn-save"
+                    onClick={handleAccountSubmit}
+                    disabled={
+                      !accountForm.branch_id ||
+                      !accountForm.account_type ||
+                      createAccountMutation.isPending ||
+                      updateAccountMutation.isPending
+                    }
+                  >
+                    {createAccountMutation.isPending || updateAccountMutation.isPending
+                      ? t('finance.saving')
+                      : t('finance.saveAccount')}
+                  </button>
+                  <button className="fin-btn-cancel" onClick={closeAccountModal} type="button">
+                    {t('finance.cancel')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Delete Account Confirmation ───────────────────────── */}
+          {deleteAccountId !== null && (
+            <div className="fin-modal-overlay" onClick={() => setDeleteAccountId(null)}>
+              <div className="fin-modal fin-modal-sm" onClick={(e) => e.stopPropagation()}>
+                <p className="fin-confirm-text">{t('finance.confirmDeleteAccount')}</p>
+                <div className="fin-modal-actions">
+                  <button
+                    className="fin-btn-danger"
+                    onClick={() => deleteAccountMutation.mutate(deleteAccountId)}
+                    disabled={deleteAccountMutation.isPending}
+                  >
+                    {t('finance.confirm')}
+                  </button>
+                  <button className="fin-btn-cancel" onClick={() => setDeleteAccountId(null)}>
+                    {t('finance.cancel')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── View Account Detail Modal ─────────────────────────── */}
+          {viewingAccount && (
+            <div className="fin-modal-overlay" onClick={() => setViewingAccount(null)}>
+              <div className="fin-detail-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="fin-detail-header">
+                  <i className="fa-solid fa-building-columns fin-detail-icon" />
+                  <h3>{t('finance.accountDetails')}</h3>
+                </div>
+                <div className="fin-detail-rows">
+                  <div className="fin-detail-row">
+                    <span>{t('finance.id')}</span>
+                    <span>{viewingAccount.id}</span>
+                  </div>
+                  <div className="fin-detail-row">
+                    <span>{t('finance.branch')}</span>
+                    <span>{getBranchLabel(viewingAccount.branch)}</span>
+                  </div>
+                  <div className="fin-detail-row">
+                    <span>{t('finance.accountType')}</span>
+                    <span>
+                      {getAccountTypeName(
+                        viewingAccount.account_type,
+                        viewingAccount.account_type_name,
+                      )}
+                    </span>
+                  </div>
+                  <div className="fin-detail-row">
+                    <span>{t('finance.accountNumber')}</span>
+                    <span className="fin-mono">{viewingAccount.account_number}</span>
+                  </div>
+                  <div className="fin-detail-row">
+                    <span>{t('finance.currentBalance')}</span>
+                    <span className="fin-text-green">
+                      {formatAmount(viewingAccount.balance)} UZS
+                    </span>
+                  </div>
+                  <div className="fin-detail-row">
+                    <span>{t('finance.status')}</span>
+                    <span
+                      className={
+                        viewingAccount.status === 'active' ? 'fin-text-green' : 'fin-text-red'
+                      }
+                    >
+                      {getAccountStatusLabel(viewingAccount.status)}
+                    </span>
+                  </div>
+                  <div className="fin-detail-row">
+                    <span>{t('finance.createdAt')}</span>
+                    <span>{formatDate(viewingAccount.created_at)}</span>
+                  </div>
+                  {viewingAccount.transfer_makers && viewingAccount.transfer_makers.length > 0 && (
+                    <div className="fin-detail-row fin-detail-row-signatories">
+                      <span>{t('finance.transferMakers')}</span>
+                      <div className="fin-signatory-list-view">
+                        {viewingAccount.transfer_makers.map((tm) => (
+                          <span key={tm.id} className="fin-signatory-tag">
+                            {tm.full_name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="fin-status-change-section">
+                  <div className="fin-form-group">
+                    <label>{t('finance.accountStatus')}</label>
+                    <select
+                      value={viewStatusChange}
+                      onChange={(e) => {
+                        setViewStatusChange(e.target.value);
+                        setViewStatusNote('');
+                      }}
+                    >
+                      <option value="">{t('finance.selectStatusChange')}</option>
+                      {viewingAccount.status !== 'active' && (
+                        <option value="active">{t('finance.statusActive')}</option>
+                      )}
+                      {viewingAccount.status !== 'inactive' && (
+                        <option value="inactive">{t('finance.statusInactive')}</option>
+                      )}
+                    </select>
+                  </div>
+
+                  {viewStatusChange && (
+                    <>
+                      <div className="fin-form-group">
+                        <label>{t('finance.statusChangedAt')}</label>
+                        <input
+                          type="text"
+                          readOnly
+                          value={(() => {
+                            const now = new Date();
+                            return `${String(now.getDate()).padStart(2, '0')}.${String(now.getMonth() + 1).padStart(2, '0')}.${now.getFullYear()}`;
+                          })()}
+                          className="fin-readonly-input"
+                        />
+                      </div>
+                      <div className="fin-form-group">
+                        <label>{t('finance.statusNote')}</label>
+                        <textarea
+                          value={viewStatusNote}
+                          onChange={(e) => setViewStatusNote(e.target.value)}
+                          rows={3}
+                          placeholder={t('finance.statusNotePlaceholder')}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div className="fin-modal-actions">
+                  {viewStatusChange && (
+                    <button
+                      className="fin-btn-save"
+                      disabled={changeStatusMutation.isPending}
+                      onClick={() =>
+                        changeStatusMutation.mutate({
+                          id: viewingAccount.id,
+                          status: viewStatusChange,
+                          note: viewStatusNote,
+                        })
+                      }
+                    >
+                      {changeStatusMutation.isPending
+                        ? t('finance.saving')
+                        : t('finance.saveStatus')}
+                    </button>
+                  )}
+                  <button
+                    className="fin-btn-cancel"
+                    onClick={() => {
+                      setViewingAccount(null);
+                      setViewStatusChange('');
+                      setViewStatusNote('');
+                    }}
+                  >
+                    {t('finance.close')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Accounts Toolbar ──────────────────────────────────── */}
+          <div className="fin-toolbar">
+            <div className="fin-search-box">
+              <input
+                placeholder={t('finance.searchPlaceholder')}
+                value={accountSearch}
+                onChange={(e) => {
+                  setAccountSearch(e.target.value);
+                  setAccountPage(1);
+                }}
+              />
+              <i className="fa-solid fa-magnifying-glass" />
+            </div>
+            <button className="fin-btn-filter">
+              <i className="fa-solid fa-filter" />
+              {t('finance.filter')}
+            </button>
+            <Protected permission="chart_of_accounts.create">
+              <button className="fin-btn-add" onClick={() => setShowCreateAccount(true)}>
+                {t('finance.addAccount')}
+              </button>
+            </Protected>
+          </div>
+
+          {/* ── Accounts Table ────────────────────────────────────── */}
+          <div className="fin-table-wrapper">
+            <table className="fin-table">
+              <thead>
+                <tr>
+                  <th>{t('finance.id')}</th>
+                  <th>{t('finance.branch')}</th>
+                  <th>{t('finance.accountNumber')}</th>
+                  <th>{t('finance.transferMakers')}</th>
+                  <th>{t('finance.balance')}</th>
+                  <th>{t('finance.status')}</th>
+                  <th>{t('finance.date')}</th>
+                  <th>{t('finance.actions')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accountsLoading ? (
+                  <TableSkeleton rowCount={10} columnCount={8} />
+                ) : paginatedAccounts.length > 0 ? (
+                  paginatedAccounts.map((acc) => (
+                    <tr key={acc.id}>
+                      <td>{acc.id}</td>
+                      <td className="fin-branch-cell">{getBranchLabel(acc.branch)}</td>
+                      <td className="fin-account-number">{acc.account_number}</td>
+                      <td className="fin-signatories-cell">{getTransferMakersDisplay(acc)}</td>
+                      <td className="fin-text-green fin-amount-cell">
+                        {formatAmount(acc.balance)} UZS
+                      </td>
+                      <td>
+                        <span
+                          className={`fin-status-text${acc.status === 'active' ? ' fin-text-green' : ' fin-text-red'}`}
+                        >
+                          {getAccountStatusLabel(acc.status)}
+                        </span>
+                      </td>
+                      <td className="fin-date-cell">{formatDate(acc.created_at)}</td>
+                      <td>
+                        <div className="fin-actions">
+                          <button
+                            className="fin-action-btn fin-action-view"
+                            onClick={() => setViewingAccount(acc)}
+                            title={t('finance.view')}
+                          >
+                            <i className="fa-solid fa-eye" />
+                          </button>
+
+                          <Protected permission="chart_of_accounts.edit">
+                            <button
+                              className="fin-action-btn fin-action-edit"
+                              onClick={() => openEditAccount(acc)}
+                              title={t('finance.edit')}
+                            >
+                              <i className="fa-solid fa-pen" />
+                            </button>
+                          </Protected>
+                          <Protected permission="chart_of_accounts.delete">
+                            <button
+                              className="fin-action-btn fin-action-delete"
+                              onClick={() => setDeleteAccountId(acc.id)}
+                              title={t('finance.delete')}
+                            >
+                              <i className="fa-solid fa-trash" />
+                            </button>
+                          </Protected>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <EmptyState colSpan={8} message={t('finance.noAccounts')} />
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* ── Accounts Pagination ───────────────────────────────── */}
+          <FinancePagination
+            currentPage={accountPage}
+            lastPage={accountLastPage}
+            from={(accountPage - 1) * ITEMS_PER_PAGE + 1}
+            to={Math.min(accountPage * ITEMS_PER_PAGE, filteredAccounts.length)}
+            total={filteredAccounts.length}
+            onPageChange={setAccountPage}
+            label={t('finance.total')}
+          />
+        </>
+      )}
+
       {/* ── Confirm Transfer Modal ────────────────────────────── */}
-      {showConfirmTransfer && (
+      {activeTab === 'transfers' && showConfirmTransfer && (
         <div className="fin-modal-overlay" onClick={() => setShowConfirmTransfer(false)}>
           <div className="fin-modal fin-modal-sm" onClick={(e) => e.stopPropagation()}>
             <p className="fin-confirm-text">{t('finance.confirmTransfer')}</p>
@@ -532,7 +1094,7 @@ const Finances = () => {
       )}
 
       {/* ── TRANSFER LIST VIEW ─────────────────────────────────── */}
-      {transferView === 'list' && (
+      {activeTab === 'transfers' && transferView === 'list' && (
         <>
           {/* Toolbar */}
           <div className="fin-toolbar">
@@ -591,182 +1153,190 @@ const Finances = () => {
                     const key = getTransferKey(tr);
                     const senderAcc = resolveTransferAccount(tr.source_account);
                     const receiverAcc =
-                      tr.kind === 'account' ? resolveTransferAccount(tr.destination_account) : undefined;
+                      tr.kind === 'account'
+                        ? resolveTransferAccount(tr.destination_account)
+                        : undefined;
                     const approverEntity = tr.approved_by || tr.rejected_by || tr.cancelled_by;
                     const approverDate = tr.approved_at || tr.rejected_at || tr.cancelled_at;
                     const approveMutation =
-                      tr.kind === 'account' ? approveTransferMutation : approveJamgarmaTransferMutation;
+                      tr.kind === 'account'
+                        ? approveTransferMutation
+                        : approveJamgarmaTransferMutation;
                     const rejectMutation =
-                      tr.kind === 'account' ? rejectTransferMutation : rejectJamgarmaTransferMutation;
+                      tr.kind === 'account'
+                        ? rejectTransferMutation
+                        : rejectJamgarmaTransferMutation;
                     const cancelMutation =
-                      tr.kind === 'account' ? cancelTransferMutation : cancelJamgarmaTransferMutation;
+                      tr.kind === 'account'
+                        ? cancelTransferMutation
+                        : cancelJamgarmaTransferMutation;
                     const transferModule =
                       tr.kind === 'account'
                         ? 'chart_of_accounts_transfers'
                         : 'account_to_jamgarma_transfers';
                     return (
-                    <tr key={key}>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={selectedTransferIds.includes(key)}
-                          onChange={() => toggleOneTransfer(key)}
-                        />
-                      </td>
-                      <td>{tr.id}</td>
+                      <tr key={key}>
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={selectedTransferIds.includes(key)}
+                            onChange={() => toggleOneTransfer(key)}
+                          />
+                        </td>
+                        <td>{tr.id}</td>
 
-                      {/* Sender Account */}
-                      <td>
-                        <div className="fin-account-cell">
-                          <span className="fin-branch-name">
-                            {getBranchLabel(senderAcc?.branch)}
-                          </span>
-                          <span className="fin-acct-row">
-                            <span className="fin-acct-number">
-                              {tr.source_account?.account_number || '-'}
-                            </span>
-                            <span
-                              className={`fin-type-badge ${
-                                isCashAccountType(senderAcc) ? 'fin-badge-cash' : 'fin-badge-noncash'
-                              }`}
-                            >
-                              {isCashAccountType(senderAcc)
-                                ? t('finance.typeCash')
-                                : t('finance.typeNonCash')}
-                            </span>
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Receiver Account / Jamgarma Fund */}
-                      <td>
-                        {tr.kind === 'account' ? (
+                        {/* Sender Account */}
+                        <td>
                           <div className="fin-account-cell">
                             <span className="fin-branch-name">
-                              {getBranchLabel(receiverAcc?.branch)}
+                              {getBranchLabel(senderAcc?.branch)}
                             </span>
                             <span className="fin-acct-row">
                               <span className="fin-acct-number">
-                                {tr.destination_account?.account_number || '-'}
+                                {tr.source_account?.account_number || '-'}
                               </span>
                               <span
                                 className={`fin-type-badge ${
-                                  isCashAccountType(receiverAcc)
+                                  isCashAccountType(senderAcc)
                                     ? 'fin-badge-cash'
                                     : 'fin-badge-noncash'
                                 }`}
                               >
-                                {isCashAccountType(receiverAcc)
+                                {isCashAccountType(senderAcc)
                                   ? t('finance.typeCash')
                                   : t('finance.typeNonCash')}
                               </span>
                             </span>
                           </div>
-                        ) : (
-                          <div className="fin-account-cell">
-                            <span className="fin-branch-name">
-                              {getJamgarmaRefName(tr.destination_jamgarma)}
-                            </span>
-                            <span className="fin-acct-row">
-                              <span
-                                className={`fin-type-badge ${
-                                  isCashAccountType({ account_type_name: tr.account_type_name })
-                                    ? 'fin-badge-cash'
-                                    : 'fin-badge-noncash'
-                                }`}
-                              >
-                                {isCashAccountType({ account_type_name: tr.account_type_name })
-                                  ? t('finance.typeCash')
-                                  : t('finance.typeNonCash')}
+                        </td>
+
+                        {/* Receiver Account / Jamgarma Fund */}
+                        <td>
+                          {tr.kind === 'account' ? (
+                            <div className="fin-account-cell">
+                              <span className="fin-branch-name">
+                                {getBranchLabel(receiverAcc?.branch)}
                               </span>
-                            </span>
-                          </div>
-                        )}
-                      </td>
+                              <span className="fin-acct-row">
+                                <span className="fin-acct-number">
+                                  {tr.destination_account?.account_number || '-'}
+                                </span>
+                                <span
+                                  className={`fin-type-badge ${
+                                    isCashAccountType(receiverAcc)
+                                      ? 'fin-badge-cash'
+                                      : 'fin-badge-noncash'
+                                  }`}
+                                >
+                                  {isCashAccountType(receiverAcc)
+                                    ? t('finance.typeCash')
+                                    : t('finance.typeNonCash')}
+                                </span>
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="fin-account-cell">
+                              <span className="fin-branch-name">
+                                {getJamgarmaRefName(tr.destination_jamgarma)}
+                              </span>
+                              <span className="fin-acct-row">
+                                <span
+                                  className={`fin-type-badge ${
+                                    isCashAccountType({ account_type_name: tr.account_type_name })
+                                      ? 'fin-badge-cash'
+                                      : 'fin-badge-noncash'
+                                  }`}
+                                >
+                                  {isCashAccountType({ account_type_name: tr.account_type_name })
+                                    ? t('finance.typeCash')
+                                    : t('finance.typeNonCash')}
+                                </span>
+                              </span>
+                            </div>
+                          )}
+                        </td>
 
-                      {/* Amount */}
-                      <td className="fin-amount-cell fin-text-orange">
-                        {formatAmount(tr.amount)} UZS
-                      </td>
+                        {/* Amount */}
+                        <td className="fin-amount-cell fin-text-orange">
+                          {formatAmount(tr.amount)} UZS
+                        </td>
 
-                      {/* Responsible Persons */}
-                      <td className="fin-responsible-cell">
-                        {tr.sent_by && (
-                          <div className="fin-resp-row">
-                            <span className="fin-resp-label">{t('finance.senderPerson')}:</span>
-                            <span className="fin-resp-name">{tr.sent_by.full_name}</span>
-                            {tr.sent_at && (
-                              <span className="fin-resp-date">{formatDate(tr.sent_at)}</span>
-                            )}
-                          </div>
-                        )}
-                        {approverEntity && (
-                          <div className="fin-resp-row">
-                            <span className="fin-resp-label">
-                              {t('finance.approverPerson')}:
-                            </span>
-                            <span className="fin-resp-name">{approverEntity.full_name}</span>
-                            {approverDate && (
-                              <span className="fin-resp-date">{formatDate(approverDate)}</span>
-                            )}
-                          </div>
-                        )}
-                        {!tr.sent_by && !approverEntity && '-'}
-                      </td>
+                        {/* Responsible Persons */}
+                        <td className="fin-responsible-cell">
+                          {tr.sent_by && (
+                            <div className="fin-resp-row">
+                              <span className="fin-resp-label">{t('finance.senderPerson')}:</span>
+                              <span className="fin-resp-name">{tr.sent_by.full_name}</span>
+                              {tr.sent_at && (
+                                <span className="fin-resp-date">{formatDate(tr.sent_at)}</span>
+                              )}
+                            </div>
+                          )}
+                          {approverEntity && (
+                            <div className="fin-resp-row">
+                              <span className="fin-resp-label">{t('finance.approverPerson')}:</span>
+                              <span className="fin-resp-name">{approverEntity.full_name}</span>
+                              {approverDate && (
+                                <span className="fin-resp-date">{formatDate(approverDate)}</span>
+                              )}
+                            </div>
+                          )}
+                          {!tr.sent_by && !approverEntity && '-'}
+                        </td>
 
-                      {/* Description */}
-                      <td className="fin-description-cell">{tr.notes || '-'}</td>
+                        {/* Description */}
+                        <td className="fin-description-cell">{tr.notes || '-'}</td>
 
-                      {/* Status */}
-                      <td>
-                        <span
-                          className={`fin-status-text${
-                            tr.status === 'approved'
-                              ? ' fin-text-green'
-                              : tr.status === 'cancelled' || tr.status === 'rejected'
-                                ? ' fin-text-red'
-                                : ' fin-text-orange'
-                          }`}
-                        >
-                          {getTransferStatusLabel(tr.status)}
-                        </span>
-                      </td>
+                        {/* Status */}
+                        <td>
+                          <span
+                            className={`fin-status-text${
+                              tr.status === 'approved'
+                                ? ' fin-text-green'
+                                : tr.status === 'cancelled' || tr.status === 'rejected'
+                                  ? ' fin-text-red'
+                                  : ' fin-text-orange'
+                            }`}
+                          >
+                            {getTransferStatusLabel(tr.status)}
+                          </span>
+                        </td>
 
-                      {/* Actions */}
-                      <td>
-                        {isPendingTransferStatus(tr.status) && (
-                          <div className="fin-transfer-action-btns">
-                            <Protected permission={`${transferModule}.approve`}>
-                              <button
-                                className="fin-btn-approve"
-                                onClick={() => approveMutation.mutate(tr.id)}
-                                disabled={approveMutation.isPending}
-                              >
-                                {t('finance.approve')}
-                              </button>
-                            </Protected>
-                            <Protected permission={`${transferModule}.reject`}>
-                              <button
-                                className="fin-btn-reject"
-                                onClick={() => rejectMutation.mutate(tr.id)}
-                                disabled={rejectMutation.isPending}
-                              >
-                                {t('finance.reject')}
-                              </button>
-                            </Protected>
-                            <Protected permission={`${transferModule}.cancel`}>
-                              <button
-                                className="fin-btn-cancel-transfer"
-                                onClick={() => cancelMutation.mutate(tr.id)}
-                                disabled={cancelMutation.isPending}
-                              >
-                                {t('finance.cancelTransfer')}
-                              </button>
-                            </Protected>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
+                        {/* Actions */}
+                        <td>
+                          {isPendingTransferStatus(tr.status) && (
+                            <div className="fin-transfer-action-btns">
+                              <Protected permission={`${transferModule}.approve`}>
+                                <button
+                                  className="fin-btn-approve"
+                                  onClick={() => approveMutation.mutate(tr.id)}
+                                  disabled={approveMutation.isPending}
+                                >
+                                  {t('finance.approve')}
+                                </button>
+                              </Protected>
+                              <Protected permission={`${transferModule}.reject`}>
+                                <button
+                                  className="fin-btn-reject"
+                                  onClick={() => rejectMutation.mutate(tr.id)}
+                                  disabled={rejectMutation.isPending}
+                                >
+                                  {t('finance.reject')}
+                                </button>
+                              </Protected>
+                              <Protected permission={`${transferModule}.cancel`}>
+                                <button
+                                  className="fin-btn-cancel-transfer"
+                                  onClick={() => cancelMutation.mutate(tr.id)}
+                                  disabled={cancelMutation.isPending}
+                                >
+                                  {t('finance.cancelTransfer')}
+                                </button>
+                              </Protected>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
                     );
                   })
                 ) : (
@@ -790,7 +1360,7 @@ const Finances = () => {
       )}
 
       {/* ── SELECT TRANSFER TYPE MODAL ───────────────────────── */}
-      {transferView === 'select-type' && (
+      {activeTab === 'transfers' && transferView === 'select-type' && (
         <div className="fin-modal-overlay" onClick={() => setTransferView('list')}>
           <div className="fin-transfer-type-select" onClick={(e) => e.stopPropagation()}>
             <h3 className="fin-type-select-title">{t('finance.selectTransferType')}</h3>
@@ -809,7 +1379,7 @@ const Finances = () => {
       )}
 
       {/* ── TRANSFER CREATE VIEW ──────────────────────────────── */}
-      {transferView === 'create' && (
+      {activeTab === 'transfers' && transferView === 'create' && (
         <div className="fin-transfer-create">
           <button
             className="fin-back-btn"
@@ -844,9 +1414,7 @@ const Finances = () => {
                     </div>
                     <div className="fin-card-row">
                       <span className="fin-card-label">{t('finance.branch')}</span>
-                      <span className="fin-card-value">
-                        {getBranchLabel(senderAccount.branch)}
-                      </span>
+                      <span className="fin-card-value">{getBranchLabel(senderAccount.branch)}</span>
                     </div>
                     <div className="fin-card-row">
                       <span className="fin-card-label">{t('finance.accountType')}</span>
@@ -877,9 +1445,7 @@ const Finances = () => {
                     </div>
                     <div className="fin-card-row">
                       <span className="fin-card-label">{t('finance.createdAt')}</span>
-                      <span className="fin-card-value">
-                        {formatDate(senderAccount.created_at)}
-                      </span>
+                      <span className="fin-card-value">{formatDate(senderAccount.created_at)}</span>
                     </div>
                   </div>
                 ) : (
@@ -994,9 +1560,7 @@ const Finances = () => {
                   <input
                     type="text"
                     value={transferForm.amount}
-                    onChange={(e) =>
-                      setTransferForm({ ...transferForm, amount: e.target.value })
-                    }
+                    onChange={(e) => setTransferForm({ ...transferForm, amount: e.target.value })}
                     placeholder="0"
                     className={
                       senderAccount &&
@@ -1012,8 +1576,7 @@ const Finances = () => {
                   transferForm.amount &&
                   Number(transferForm.amount.replace(/\s/g, '')) > senderAccount.balance && (
                     <span className="fin-field-error">
-                      {t('finance.amountExceedsBalance')}: {formatAmount(senderAccount.balance)}{' '}
-                      UZS
+                      {t('finance.amountExceedsBalance')}: {formatAmount(senderAccount.balance)} UZS
                     </span>
                   )}
               </div>
@@ -1048,7 +1611,7 @@ const Finances = () => {
         </div>
       )}
       {/* ── SAVINGS TRANSFER CREATE VIEW ─────────────────────── */}
-      {transferView === 'savings' && (
+      {activeTab === 'transfers' && transferView === 'savings' && (
         <div className="fin-transfer-create">
           <button
             className="fin-back-btn"
@@ -1089,10 +1652,7 @@ const Finances = () => {
                       ? t('finance.saving')
                       : t('finance.confirm')}
                   </button>
-                  <button
-                    className="fin-btn-cancel"
-                    onClick={() => setShowConfirmSavings(false)}
-                  >
+                  <button className="fin-btn-cancel" onClick={() => setShowConfirmSavings(false)}>
                     {t('finance.cancel')}
                   </button>
                 </div>
@@ -1173,9 +1733,7 @@ const Finances = () => {
                     </div>
                     <div className="fin-card-row">
                       <span className="fin-card-label">{t('finance.savingsName')}</span>
-                      <span className="fin-card-value">
-                        {getJamgarmaName(selectedJamgarma)}
-                      </span>
+                      <span className="fin-card-value">{getJamgarmaName(selectedJamgarma)}</span>
                     </div>
                     <div className="fin-card-row">
                       <span className="fin-card-label">{t('finance.cashBalance')}</span>
@@ -1238,9 +1796,7 @@ const Finances = () => {
                 <label>{t('finance.savingsLabel')}</label>
                 <select
                   value={savingsForm.jamgarma_id}
-                  onChange={(e) =>
-                    setSavingsForm({ ...savingsForm, jamgarma_id: e.target.value })
-                  }
+                  onChange={(e) => setSavingsForm({ ...savingsForm, jamgarma_id: e.target.value })}
                 >
                   <option value="">{t('finance.choose')}</option>
                   {jamgarmas.map((j) => (
@@ -1262,8 +1818,7 @@ const Finances = () => {
                     className={
                       savingsSenderAccount &&
                       savingsForm.amount &&
-                      Number(savingsForm.amount.replace(/\s/g, '')) >
-                        savingsSenderAccount.balance
+                      Number(savingsForm.amount.replace(/\s/g, '')) > savingsSenderAccount.balance
                         ? 'fin-input-error'
                         : ''
                     }
@@ -1272,8 +1827,7 @@ const Finances = () => {
                 </div>
                 {savingsSenderAccount &&
                   savingsForm.amount &&
-                  Number(savingsForm.amount.replace(/\s/g, '')) >
-                    savingsSenderAccount.balance && (
+                  Number(savingsForm.amount.replace(/\s/g, '')) > savingsSenderAccount.balance && (
                     <span className="fin-field-error">
                       {t('finance.amountExceedsBalance')}:{' '}
                       {formatAmount(savingsSenderAccount.balance)} UZS
@@ -1285,9 +1839,7 @@ const Finances = () => {
                 <label>{t('finance.description')}</label>
                 <textarea
                   value={savingsForm.description}
-                  onChange={(e) =>
-                    setSavingsForm({ ...savingsForm, description: e.target.value })
-                  }
+                  onChange={(e) => setSavingsForm({ ...savingsForm, description: e.target.value })}
                   rows={4}
                   placeholder={t('finance.descriptionPlaceholder')}
                 />
@@ -1301,8 +1853,7 @@ const Finances = () => {
                   !savingsForm.jamgarma_id ||
                   !savingsForm.amount ||
                   (!!savingsSenderAccount &&
-                    Number(savingsForm.amount.replace(/\s/g, '')) >
-                      savingsSenderAccount.balance)
+                    Number(savingsForm.amount.replace(/\s/g, '')) > savingsSenderAccount.balance)
                 }
               >
                 {t('finance.sendTransfer')}

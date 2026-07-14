@@ -1000,6 +1000,8 @@
     "searchPlaceholder": "Поиск...",
     "filter": "Фильтр",
     "confirmDelete": "Вы уверены, что хотите удалить этот пробный урок?",
+    "confirmDeleteSelected": "Удалить выбранные пробные уроки ({{total}})?",
+    "deleteSelected": "Удалить",
     "deleteTitle": "Удалить пробный урок",
     "editTitle": "Редактировать пробный урок",
     "modal": {
@@ -1032,7 +1034,8 @@
       "teacher": "Учитель",
       "groupName": "Группа",
       "room": "Кабинет",
-      "createdAt": "Создано",
+      "createdAt": "Дата создания",
+      "updatedAt": "Дата изменения",
       "actions": "Действия"
     },
     "attendance": {

@@ -9,7 +9,7 @@ import ContractsCreate from "./ContractsCreate";
 import { Protected } from "@/components/Protected";
 import WorkScheduleModal from "@/components/WorkScheduleModal";
 import { formatDate as formatDisplayDate } from "@/utils/date";
-import { printFromDocxTemplate } from "@/utils/contractPdf";
+import { printFromDocxTemplate, downloadPdfFromDocxTemplate } from "@/utils/contractPdf";
 import { buildEmployeeContractData } from "@/utils/employeeContractPdf";
 import employmentTemplate from "@/assets/documents/ILM_PLYUS_Mehnat_shartnomasi_TEMPLATE.docx?url";
 
@@ -194,12 +194,14 @@ const Contracts: React.FC = () => {
       const branch =
         contract.branch ?? branches?.find((b) => b.id === Number(branchId));
 
-      await printFromDocxTemplate(
-        employmentTemplate,
-        buildEmployeeContractData({ ...contract, branch }),
-        String(contract.contract_number ?? contract.id),
-        mode,
-      );
+      const templateData = buildEmployeeContractData({ ...contract, branch });
+      const contractNumber = String(contract.contract_number ?? contract.id);
+
+      if (mode === "pdf") {
+        await downloadPdfFromDocxTemplate(employmentTemplate, templateData, contractNumber);
+      } else {
+        await printFromDocxTemplate(employmentTemplate, templateData, contractNumber, mode);
+      }
     } catch (err) {
       console.error(`${mode} xatosi:`, err);
       alert(t(mode === "pdf" ? "contracts.pdfError" : "contracts.printError"));

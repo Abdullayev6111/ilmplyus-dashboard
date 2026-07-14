@@ -6,8 +6,10 @@ import Home from './pages/Home';
 import LoginPage from './pages/login';
 import Layout from './components/Layout';
 import Users from './pages/users';
+import UserForm from './pages/users/userForm';
 import Settings from './pages/settings';
 import Branches from './pages/branches';
+import BranchForm from './pages/branches/branchForm';
 import Classes from './pages/classes';
 import Students from './pages/students';
 import Teachers from './pages/teachers';
@@ -120,6 +122,8 @@ const App = () => {
 
           {/* Foydalanuvchilar */}
           <Route path="/users" element={<Users />} />
+          <Route path="/users/add" element={<UserForm />} />
+          <Route path="/users/:id/edit" element={<UserForm />} />
           <Route path="/roles" element={<Roles />} />
           <Route path="/roles/create" element={<CreateRole />} />
           <Route path="/roles/:id/permissions" element={<RolePermissions />} />
@@ -127,6 +131,8 @@ const App = () => {
 
           {/* Tashkilot */}
           <Route path="/branches" element={<Branches />} />
+          <Route path="/branches/add" element={<BranchForm />} />
+          <Route path="/branches/:id/edit" element={<BranchForm />} />
           <Route path="/areas" element={<Areas />} />
           <Route path="/areas/regions" element={<AreaRegions />} />
           <Route path="/areas/districts" element={<AreaDistricts />} />

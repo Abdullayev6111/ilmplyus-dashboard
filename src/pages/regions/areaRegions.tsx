@@ -101,10 +101,11 @@ const AreaRegions = () => {
 
       {showAddModal && (
         <div className="modal-overlay">
-          <div className="regions-category">
-            <h1>{t("aside.regions")}</h1>
+          <div className="rgn-modal-card">
+            <h1 className="rgn-modal-title">{t("aside.regions")}</h1>
 
             <form
+              className="rgn-form"
               onSubmit={(e) => {
                 e.preventDefault();
                 if (editingItem) {
@@ -117,14 +118,16 @@ const AreaRegions = () => {
                 }
               }}
             >
-              <label>{t("branches.name")}</label>
+              <div className="rgn-form-group">
+                <label>{t("branches.name")}</label>
 
-              <input
-                type="text"
-                value={regionName}
-                onChange={(e) => setRegionName(e.target.value)}
-                required
-              />
+                <input
+                  type="text"
+                  value={regionName}
+                  onChange={(e) => setRegionName(e.target.value)}
+                  required
+                />
+              </div>
 
               <div className="modal-actions">
                 <button className="primary" type="submit">

@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import LanguageSelect from '../../components/LanguageSelect/LanguageSelect';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { Modal, Button, Text, TextInput, Group, Stack, Paper, PasswordInput } from '@mantine/core';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './loginPage.css';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
@@ -66,6 +66,12 @@ const LoginPage = () => {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  const loginInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (opened || resetOpened) return;
+    loginInputRef.current?.focus();
+  }, [opened, resetOpened]);
 
   const handleResetOpen = () => {
     resetHandlers.open();
@@ -283,6 +289,7 @@ const LoginPage = () => {
             }}
           >
             <input
+              ref={loginInputRef}
               type="text"
               value={login}
               onChange={(e) => {

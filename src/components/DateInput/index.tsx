@@ -147,9 +147,18 @@ function DateInput({
     setOpen(true);
   }, [disabled, iso]);
 
+  // Kalendar yopilgach input qayta fokuslanadi — bu `onFocus` ni qo'zg'atib
+  // kalendarni darhol qayta ochib yuborardi, shuning uchun bir martalik bayroq.
+  const skipFocusOpen = useRef(false);
+
   const closeCalendar = useCallback((refocus = false) => {
     setOpen(false);
-    if (refocus) inputRef.current?.focus();
+    // Input allaqachon fokusda bo'lsa (masalan Escape) `focus()` hodisa yubormaydi —
+    // bayroq eskirib qolmasligi uchun faqat haqiqiy qayta-fokusda qo'yamiz.
+    if (refocus && document.activeElement !== inputRef.current) {
+      skipFocusOpen.current = true;
+      inputRef.current?.focus();
+    }
   }, []);
 
   // Modal ichidagi `overflow` kesib qo'ymasligi uchun kalendar `body` ga portal qilinadi.
@@ -388,17 +397,26 @@ function DateInput({
             emit(parsed);
           }
         }}
-        onFocus={() => setFocused(true)}
-        // Faqat ikonka emas, input bosilganda ham kalendar ochiladi.
-        // `onFocus` emas, `onClick`: kun tanlangach `closeCalendar(true)` input'ni
-        // qayta fokuslaydi va bu kalendarni cheksiz qayta ochib yuborardi.
+        // Tab bilan yoki sichqoncha bilan — fokus tushishi bilan kalendar ochiladi.
+        onFocus={() => {
+          setFocused(true);
+          if (skipFocusOpen.current) {
+            skipFocusOpen.current = false;
+            return;
+          }
+          openCalendar();
+        }}
         onClick={() => {
           if (!open) openCalendar();
         }}
         onBlur={(e) => {
-          // Kalendar ichiga bosilganda `commit` qilmaymiz — tanlov o'zi yakunlaydi.
-          if (popupRef.current?.contains(e.relatedTarget as Node)) return;
+          // Kalendar yoki ikonka tugmasi bosilganda `commit` qilmaymiz —
+          // tanlov / toggle o'zi yakunlaydi.
+          const next = e.relatedTarget as Node | null;
+          if (popupRef.current?.contains(next) || wrapperRef.current?.contains(next)) return;
           setFocused(false);
+          // Tab bilan boshqa maydonga o'tilganda `mousedown` bo'lmaydi — shu yerda yopamiz.
+          setOpen(false);
           commit();
           onBlur?.();
         }}

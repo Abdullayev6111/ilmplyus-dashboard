@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { useTranslation } from 'react-i18next';
 import { API } from '@/api/api';
+import BaseDateInput from '@/components/DateInput';
+import { dateToIso } from '@/utils/date';
 import { getLocalized } from '@/utils/getLocalized';
 import type { Group } from '@/types/groups.types';
 import { useOptions, type OptionItem } from '@/hooks/useOptions';
@@ -14,8 +16,13 @@ import {
   useDeleteDemoLesson,
   useAttendanceDemoLesson,
 } from './useDemoLesson';
-import './demoLesson.css';
+import '../users/users.css';
 import { Protected } from '../../components/Protected';
+import TableSkeleton from '../../components/TableSkeleton';
+import EmptyState from '../../components/EmptyState';
+import FilterButton from '@/components/FilterButton';
+import FilterBar, { type FilterBarField } from '@/components/FilterBar';
+import { countFilterBarValues } from '@/components/FilterBar/filterBar.utils';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -218,106 +225,19 @@ function TimeInput({ value, onChange }: { value: string; onChange: (v: string) =
 function DateInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const { t } = useTranslation();
   const isPast = isDateInPast(value);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    const isDeleting = raw.length < value.length;
-    const digits = raw.replace(/[^0-9]/g, '').slice(0, 8);
-
-    // ── Deletion: rebuild from digits without blocking ────
-    if (isDeleting) {
-      if (digits.length <= 2) {
-        onChange(digits);
-        return;
-      }
-      if (digits.length <= 4) {
-        onChange(digits.slice(0, 2) + '.' + digits.slice(2));
-        return;
-      }
-      onChange(digits.slice(0, 2) + '.' + digits.slice(2, 4) + '.' + digits.slice(4));
-      return;
-    }
-
-    if (!digits) {
-      onChange('');
-      return;
-    }
-
-    // ── Day (01–31) ───────────────────────────────────────
-    const d1 = +digits[0];
-    if (d1 > 3) {
-      onChange(value);
-      return;
-    } // reject 4–9 as first day digit
-
-    if (digits.length === 1) {
-      onChange(digits[0]);
-      return;
-    }
-
-    const d2 = +digits[1];
-    if (d1 === 0 && d2 === 0) {
-      onChange(value);
-      return;
-    } // 00 invalid
-    if (d1 === 3 && d2 > 1) {
-      onChange(digits[0]);
-      return;
-    } // 32–39 invalid
-
-    const dayStr = digits.slice(0, 2);
-    if (digits.length === 2) {
-      onChange(dayStr + '.');
-      return;
-    }
-
-    // ── Month (01–12) ─────────────────────────────────────
-    const m1 = +digits[2];
-    if (m1 > 1) {
-      onChange(dayStr + '.');
-      return;
-    } // reject 2–9 as first month digit
-
-    if (digits.length === 3) {
-      onChange(dayStr + '.' + digits[2]);
-      return;
-    }
-
-    const m2 = +digits[3];
-    if (m1 === 0 && m2 === 0) {
-      onChange(value);
-      return;
-    } // 00 invalid
-    if (m1 === 1 && m2 > 2) {
-      onChange(dayStr + '.' + digits[2]);
-      return;
-    } // 13–19 invalid
-
-    const monthStr = digits.slice(2, 4);
-    if (digits.length === 4) {
-      onChange(dayStr + '.' + monthStr + '.');
-      return;
-    }
-
-    // ── Year (4 digits, no restriction) ──────────────────
-    onChange(dayStr + '.' + monthStr + '.' + digits.slice(4, 8));
-  };
+  const todayIso = dateToIso(new Date());
 
   return (
     <div className="dl-date-field">
-      <div className="dl-input-wrap">
-        <input
-          className={`dl-input${isPast ? ' dl-input--error' : ''}`}
-          type="text"
-          value={value}
-          onChange={handleChange}
-          placeholder={t('demoLesson.modal.datePlaceholder')}
-          maxLength={10}
-        />
-        <span className="dl-input-icon">
-          <i className="fa-regular fa-calendar" />
-        </span>
-      </div>
+      <BaseDateInput
+        // Forma `dd.mm.yyyy` saqlaydi, komponent esa ISO bilan ishlaydi.
+        value={value.length === 10 ? formDateToApi(value) : ''}
+        onChange={(e) => onChange(e.target.value ? apiDateToForm(e.target.value) : '')}
+        min={todayIso}
+        className={`dl-input${isPast ? ' dl-input--error' : ''}`}
+        placeholder={t('demoLesson.modal.datePlaceholder')}
+        aria-invalid={isPast}
+      />
       <span className="dl-date-hint">{t('demoLesson.modal.dateHint')}</span>
     </div>
   );
@@ -721,6 +641,21 @@ const EMPTY_FORM: FormState = {
 
 const PER_PAGE = 10;
 
+// ─── filter ──────────────────────────────────────────────────────────────────
+
+type DlFilterKey = 'group' | 'room' | 'teacher' | 'date';
+
+const EMPTY_DL_FILTERS: Record<DlFilterKey, string> = {
+  group: '',
+  room: '',
+  teacher: '',
+  date: '',
+};
+
+const lessonTeacherName = (lesson: DemoLesson): string =>
+  lesson.teacher?.full_name ??
+  (lesson.teacher ? `${lesson.teacher.first_name} ${lesson.teacher.last_name}`.trim() : '');
+
 // ─── page ─────────────────────────────────────────────────────────────────────
 
 const DemoLessonPage = () => {
@@ -730,6 +665,12 @@ const DemoLessonPage = () => {
   const [editing, setEditing] = useState<DemoLesson | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [attendanceLessonId, setAttendanceLessonId] = useState<number | null>(null);
+  const [selected, setSelected] = useState<number[]>([]);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filters, setFilters] = useState<Record<DlFilterKey, string>>(EMPTY_DL_FILTERS);
+  const [sortAsc, setSortAsc] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<number | 'all' | null>(null);
 
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
@@ -801,16 +742,63 @@ const DemoLessonPage = () => {
   const remove = useDeleteDemoLesson();
 
   // ── derived ──
+  // Saralash uchun qayta so'rov yuborilmaydi — kelgan ro'yxatning o'zi filtrlanadi.
+  const lessonRoomName = (lesson: DemoLesson) => getLocalized(lesson.room, 'name', lang) || '';
+
+  const uniqueValues = (pick: (l: DemoLesson) => string) =>
+    [...new Set(lessons.map(pick).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+
+  const filterFields: FilterBarField<DlFilterKey>[] = [
+    {
+      key: 'group',
+      label: t('demoLesson.table.groupName'),
+      options: uniqueValues((l) => l.group?.name ?? '').map((v) => ({ value: v, label: v })),
+    },
+    {
+      key: 'room',
+      label: t('demoLesson.table.room'),
+      options: uniqueValues(lessonRoomName).map((v) => ({ value: v, label: v })),
+    },
+    {
+      key: 'teacher',
+      label: t('demoLesson.table.teacher'),
+      options: uniqueValues(lessonTeacherName).map((v) => ({ value: v, label: v })),
+    },
+    {
+      key: 'date',
+      label: t('demoLesson.table.lessonDay'),
+      type: 'date',
+    },
+  ];
+
+  const activeFilterCount = countFilterBarValues(filters);
+
   const filtered = useMemo(() => {
-    if (!search) return lessons;
     const s = search.toLowerCase();
-    return lessons.filter(
-      (l) => l.group?.name?.toLowerCase().includes(s) || l.date?.toLowerCase().includes(s),
-    );
-  }, [lessons, search]);
+    return lessons
+      .filter((l) => {
+        if (s && !l.group?.name?.toLowerCase().includes(s) && !l.date?.toLowerCase().includes(s)) {
+          return false;
+        }
+        if (filters.group && (l.group?.name ?? '') !== filters.group) return false;
+        if (filters.room && getLocalized(l.room, 'name', lang) !== filters.room) return false;
+        if (filters.teacher && lessonTeacherName(l) !== filters.teacher) return false;
+        if (filters.date && (l.date ?? '').slice(0, 10) !== filters.date) return false;
+        return true;
+      })
+      .sort((a, b) => (sortAsc ? a.id - b.id : b.id - a.id));
+  }, [lessons, search, filters, lang, sortAsc]);
 
   const lastPage = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  useEffect(() => {
+    setSelected([]);
+  }, [page, search, filters]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filters]);
 
   const employeeOptions = employees.map((e) => ({
     value: String(e.id),
@@ -820,6 +808,14 @@ const DemoLessonPage = () => {
   const isSaving = create.isPending || update.isPending;
 
   // ── handlers ──
+  const toggleAll = (checked: boolean) => {
+    setSelected(checked ? paginated.map((l) => l.id) : []);
+  };
+
+  const toggleOne = (id: number) => {
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
   const openCreate = () => {
     setEditing(null);
     setForm(EMPTY_FORM);
@@ -840,16 +836,29 @@ const DemoLessonPage = () => {
     setModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    if (!window.confirm(t('demoLesson.confirmDelete'))) return;
-    remove.mutate(id, {
-      onSuccess: () =>
-        notifications.show({
-          title: t('demoLesson.notification.success'),
-          message: t('demoLesson.notification.deleted'),
-          color: 'green',
-        }),
-    });
+  const askDelete = (target: number | 'all') => {
+    setDeleteTarget(target);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    const notifyDeleted = () =>
+      notifications.show({
+        title: t('demoLesson.notification.success'),
+        message: t('demoLesson.notification.deleted'),
+        color: 'green',
+      });
+
+    if (deleteTarget === 'all') {
+      selected.forEach((id) => remove.mutate(id, { onSuccess: notifyDeleted }));
+      setSelected([]);
+    } else if (typeof deleteTarget === 'number') {
+      remove.mutate(deleteTarget, { onSuccess: notifyDeleted });
+      setSelected((p) => p.filter((x) => x !== deleteTarget));
+    }
+
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
   };
 
   const handleSave = () => {
@@ -906,125 +915,174 @@ const DemoLessonPage = () => {
   // ── render ──
   if (attendanceLessonId !== null) {
     return (
-      <div className="dl-page container">
+      <section className="users container">
         <DemoLessonAttendanceView
           lessonId={attendanceLessonId}
           onClose={() => setAttendanceLessonId(null)}
         />
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="dl-page container">
-      {/* ── header ── */}
-      <div className="dl-header">
-        <h1 className="dl-title">{t('demoLesson.title')}</h1>
-        <div className="dl-controls">
-          <div className="dl-search-box">
-            <i className="fa-solid fa-magnifying-glass dl-search-icon" />
-            <input
-              type="text"
-              className="dl-search-input"
-              placeholder={t('demoLesson.searchPlaceholder')}
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-            />
+    <section className="users container">
+      <h1 className="main-title">{t('demoLesson.title')}</h1>
+
+      {showDeleteModal && (
+        <div className="modal-overlay">
+          <div className="modal small">
+            <h3>
+              {deleteTarget === 'all'
+                ? t('demoLesson.confirmDeleteSelected', { total: selected.length })
+                : t('demoLesson.confirmDelete')}
+            </h3>
+
+            <div className="modal-actions">
+              <button className="danger" onClick={confirmDelete}>
+                {t('users.confirm')}
+              </button>
+              <button className="cancel" onClick={() => setShowDeleteModal(false)}>
+                {t('users.cancel')}
+              </button>
+            </div>
           </div>
-          <button className="dl-filter-btn">
-            <i className="fa-solid fa-sliders" />
-            {t('demoLesson.filter')}
-          </button>
-          <Protected permission="demo_lessons.create">
-            <button className="dl-create-btn" onClick={openCreate}>
-              {t('demoLesson.createBtn')}
-            </button>
-          </Protected>
         </div>
+      )}
+
+      {/* ── header ── */}
+      <div className="users-filters">
+        <Protected permission="demo_lessons.create">
+          <button className="add-new-user" onClick={openCreate}>
+            {t('users.addNew')}
+          </button>
+        </Protected>
+
+        <Protected permission="demo_lessons.delete">
+          <button
+            className="delete-all"
+            disabled={!selected.length}
+            onClick={() => askDelete('all')}
+          >
+            {t('users.delete')}
+          </button>
+        </Protected>
+
+        <FilterButton
+          onClick={() => setFilterOpen((v) => !v)}
+          active={filterOpen || activeFilterCount > 0}
+          expanded={filterOpen}
+          count={activeFilterCount}
+        />
+
+        <input
+          placeholder={t('demoLesson.searchPlaceholder')}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+        />
       </div>
 
       {/* ── table ── */}
       <div className="dl-card">
-        <table className="dl-table">
-          <thead>
-            <tr>
-              <th>{t('demoLesson.table.id')}</th>
-              <th>{t('demoLesson.table.groupName')}</th>
-              <th>{t('demoLesson.table.lessonDay')}</th>
-              <th>{t('demoLesson.table.startTime')}</th>
-              <th>{t('demoLesson.table.endTime')}</th>
-              <th>{t('demoLesson.table.room')}</th>
-              <th>{t('demoLesson.table.teacher')}</th>
-              <th>{t('demoLesson.table.createdAt')}</th>
-              <th>{t('demoLesson.table.actions')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
+        {filterOpen && (
+          <FilterBar
+            fields={filterFields}
+            values={filters}
+            onChange={setFilters}
+            onReset={() => setFilters(EMPTY_DL_FILTERS)}
+            onClose={() => setFilterOpen(false)}
+          />
+        )}
+
+        <div className="users-table-wrapper" style={{ overflowX: 'auto' }}>
+          <table className="users-table">
+            <thead>
               <tr>
-                <td colSpan={9} className="dl-td-empty">
-                  {t('demoLesson.loading')}
-                </td>
+                <th>
+                  <input
+                    type="checkbox"
+                    checked={paginated.length > 0 && selected.length === paginated.length}
+                    onChange={(e) => toggleAll(e.target.checked)}
+                  />
+                </th>
+                <th className="th-sortable" onClick={() => setSortAsc((p) => !p)}>
+                  ID {sortAsc ? '↑' : '↓'}
+                </th>
+                <th>{t('demoLesson.table.groupName')}</th>
+                <th>{t('demoLesson.table.lessonDay')}</th>
+                <th>{t('demoLesson.table.startTime')}</th>
+                <th>{t('demoLesson.table.endTime')}</th>
+                <th>{t('demoLesson.table.room')}</th>
+                <th>{t('demoLesson.table.teacher')}</th>
+                <th>{t('demoLesson.table.createdAt')}</th>
+                <th>{t('demoLesson.table.updatedAt')}</th>
+                <th>{t('demoLesson.table.actions')}</th>
               </tr>
-            ) : paginated.length === 0 ? (
-              <tr>
-                <td colSpan={9} className="dl-td-empty">
-                  {t('demoLesson.notFound')}
-                </td>
-              </tr>
-            ) : (
-              paginated.map((lesson) => (
-                <tr key={lesson.id}>
-                  <td>{lesson.id}</td>
-                  <td>{lesson.group?.name ?? '-'}</td>
-                  <td>{formatDateDisplay(lesson.date)}</td>
-                  <td>{lesson.start_time ?? '-'}</td>
-                  <td>{lesson.end_time ?? '-'}</td>
-                  <td>{getLocalized(lesson.room, 'name', lang)}</td>
-                  <td>
-                    {lesson.teacher?.full_name ??
-                      (lesson.teacher
-                        ? `${lesson.teacher.first_name} ${lesson.teacher.last_name}`
-                        : '-')}
-                  </td>
-                  <td>{formatCreatedAt(lesson.created_at)}</td>
-                  <td>
-                    <div className="dl-actions">
-                      <Protected permission="demo_lessons.edit">
-                        <button
-                          className="dl-action dl-action--edit"
-                          title={t('demoLesson.editTitle')}
-                          onClick={() => openEdit(lesson)}
-                        >
-                          <i className="fa-solid fa-pen-to-square" />
-                        </button>
-                      </Protected>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <TableSkeleton rowCount={8} columnCount={11} />
+              ) : paginated.length === 0 ? (
+                <EmptyState colSpan={11} message={t('demoLesson.notFound')} />
+              ) : (
+                paginated.map((lesson) => (
+                  <tr key={lesson.id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(lesson.id)}
+                        onChange={() => toggleOne(lesson.id)}
+                      />
+                    </td>
+                    <td>{lesson.id}</td>
+                    <td>{lesson.group?.name ?? '-'}</td>
+                    <td>{formatDateDisplay(lesson.date)}</td>
+                    <td>{lesson.start_time ?? '-'}</td>
+                    <td>{lesson.end_time ?? '-'}</td>
+                    <td>{getLocalized(lesson.room, 'name', lang)}</td>
+                    <td>
+                      {lesson.teacher?.full_name ??
+                        (lesson.teacher
+                          ? `${lesson.teacher.first_name} ${lesson.teacher.last_name}`
+                          : '-')}
+                    </td>
+                    <td>{formatCreatedAt(lesson.created_at)}</td>
+                    <td>{formatCreatedAt(lesson.updated_at)}</td>
+                    <td className="actions">
                       <button
-                        className="dl-action dl-action--attendance"
+                        className="user-view-btn"
                         title={t('demoLesson.attendanceTitle')}
                         onClick={() => setAttendanceLessonId(lesson.id)}
                       >
                         <i className="fa-solid fa-clipboard-list" />
                       </button>
+                      <Protected permission="demo_lessons.edit">
+                        <button
+                          className="user-edit-btn"
+                          title={t('demoLesson.editTitle')}
+                          onClick={() => openEdit(lesson)}
+                        >
+                          <i className="fa-solid fa-pen" />
+                        </button>
+                      </Protected>
                       <Protected permission="demo_lessons.delete">
                         <button
-                          className="dl-action dl-action--delete"
+                          className="user-delete-btn"
                           title={t('demoLesson.deleteTitle')}
-                          onClick={() => handleDelete(lesson.id)}
+                          onClick={() => askDelete(lesson.id)}
                         >
                           <i className="fa-solid fa-trash" />
                         </button>
                       </Protected>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
         <div className="dl-pagination-row">
           <Pagination page={page} lastPage={lastPage} onChange={setPage} />
@@ -1131,7 +1189,7 @@ const DemoLessonPage = () => {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

@@ -526,6 +526,179 @@ export const printFromDocxTemplate = async (
   }
 };
 
+/**
+ * Word shablon → docx-preview (Word ko'rinishi) → jsPDF → avtomatik .pdf yuklab olish.
+ * Print oynasi ochilmaydi, brauzer dialogi ko'rsatilmaydi.
+ *
+ * docx-preview butun hujjatni bitta <section> qilib beradi (Word da aniq page-break yo'q,
+ * sahifalarni brauzer print paytida oqim bo'yicha bo'ladi). Shuning uchun bu yerda
+ * sahifalash printdagi @page bilan bir xil parametrlarda qo'lda bajariladi:
+ * A4, margin 2cm (yuqori) 1.5cm (o'ng) 2cm (past) 3cm (chap).
+ * Bloklar (paragraf/jadval) butunligicha ko'chiriladi — matn qator o'rtasidan kesilmaydi.
+ */
+const MM_PER_PX = 25.4 / 96; // CSS px → mm (96 dpi)
+
+export const downloadPdfFromDocxTemplate = async (
+  templatePath: string,
+  data: DocxTemplateData,
+  contractNumber: string,
+): Promise<void> => {
+  const response = await fetch(templatePath);
+  if (!response.ok) throw new Error('Word shablon topilmadi');
+  const arrayBuffer = await response.arrayBuffer();
+
+  const zip = new PizZip(arrayBuffer);
+  const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+  doc.setData(data as unknown as Record<string, unknown>);
+  doc.render();
+
+  const filledBlob = doc.getZip().generate({ type: 'blob' });
+
+  // Print bilan bir xil sahifa parametrlari
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const marginTop = 20; // 2cm
+  const marginRight = 15; // 1.5cm
+  const marginBottom = 20; // 2cm
+  const marginLeft = 30; // 3cm
+
+  const contentWidthMm = pageWidth - marginLeft - marginRight;
+  const contentHeightMm = pageHeight - marginTop - marginBottom;
+  const contentWidthPx = Math.round(contentWidthMm / MM_PER_PX);
+  const contentHeightPx = Math.round(contentHeightMm / MM_PER_PX);
+
+  // html2canvas o'lchov olishi uchun elementlar DOM da bo'lishi shart — ekrandan tashqarida
+  const stage = document.createElement('div');
+  stage.style.cssText = `position:fixed;left:-10000px;top:0;width:${contentWidthPx}px;background:#fff;z-index:-1;`;
+  document.body.appendChild(stage);
+
+  const source = document.createElement('div');
+  source.style.cssText = `width:${contentWidthPx}px;background:#fff;`;
+  stage.appendChild(source);
+
+  try {
+    await renderAsync(filledBlob as Blob, source, undefined, {
+      className: 'docx',
+      inWrapper: true,
+      // Word sahifa o'lchamlari e'tiborga olinmaydi — kontent print dagidek erkin oqadi
+      ignoreWidth: true,
+      ignoreHeight: true,
+      ignoreFonts: false,
+      breakPages: true,
+      useBase64URL: true,
+      renderHeaders: true,
+      renderFooters: true,
+      renderFootnotes: true,
+    });
+
+    // Sahifalanadigan bloklar: har bir section (yoki article) ning bevosita bolalari
+    const blocks: HTMLElement[] = [];
+    const sections = Array.from(source.querySelectorAll<HTMLElement>('section'));
+
+    let sectionTemplate: HTMLElement | null = null;
+    let articleTemplate: HTMLElement | null = null;
+
+    for (const section of sections) {
+      const article = section.querySelector<HTMLElement>('article');
+      const holder = article ?? section;
+
+      if (!sectionTemplate) {
+        sectionTemplate = section;
+        articleTemplate = article;
+      }
+
+      blocks.push(...(Array.from(holder.children) as HTMLElement[]));
+    }
+
+    if (!blocks.length) {
+      blocks.push(...(Array.from(source.children) as HTMLElement[]));
+    }
+
+    // Sahifa konteyneri asl <section class="docx"> nusxasi bo'lishi shart:
+    // docx-preview stillari `.docx ...` selektorlariga bog'langan, ajdod yo'qolsa
+    // paragraf/jadval oraliqlari brauzer defaultiga tushib, matn "sochilib" ketadi.
+    const buildPageShell = (): { page: HTMLElement; holder: HTMLElement } => {
+      const page = (
+        sectionTemplate ? sectionTemplate.cloneNode(false) : document.createElement('div')
+      ) as HTMLElement;
+
+      page.style.width = `${contentWidthPx}px`;
+      page.style.minWidth = '0';
+      page.style.height = 'auto';
+      page.style.minHeight = '0';
+      page.style.maxHeight = 'none';
+      page.style.padding = '0';
+      page.style.margin = '0';
+      page.style.boxShadow = 'none';
+      page.style.background = '#fff';
+
+      let holder = page;
+
+      if (articleTemplate) {
+        const article = articleTemplate.cloneNode(false) as HTMLElement;
+        article.style.padding = '0';
+        article.style.margin = '0';
+        page.appendChild(article);
+        holder = article;
+      }
+
+      stage.appendChild(page);
+      return { page, holder };
+    };
+
+    // Bloklarni sahifalarga taqsimlash — blok hech qachon ikkiga bo'linmaydi
+    const pageEls: HTMLElement[] = [];
+
+    let current = buildPageShell();
+    pageEls.push(current.page);
+
+    for (const block of blocks) {
+      current.holder.appendChild(block.cloneNode(true));
+
+      // Sig'masa — blokni butunligicha keyingi sahifaga ko'chiramiz
+      if (current.page.scrollHeight > contentHeightPx && current.holder.childElementCount > 1) {
+        current.holder.removeChild(current.holder.lastElementChild!);
+
+        current = buildPageShell();
+        pageEls.push(current.page);
+        current.holder.appendChild(block.cloneNode(true));
+      }
+    }
+
+    source.remove();
+
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    for (let i = 0; i < pageEls.length; i++) {
+      const canvas = await html2canvas(pageEls[i], {
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        logging: false,
+        imageTimeout: 0,
+      });
+
+      const imgWidth = contentWidthMm;
+      const imgHeight = Math.min((canvas.height / canvas.width) * imgWidth, contentHeightMm);
+
+      if (i > 0) pdf.addPage();
+      pdf.addImage(
+        canvas.toDataURL('image/jpeg', 0.95),
+        'JPEG',
+        marginLeft,
+        marginTop,
+        imgWidth,
+        imgHeight,
+      );
+    }
+
+    pdf.save(`Shartnoma_${contractNumber}.pdf`);
+  } finally {
+    document.body.removeChild(stage);
+  }
+};
+
 export const downloadPdfFromElement = async (
   element: HTMLElement,
   filename: string,

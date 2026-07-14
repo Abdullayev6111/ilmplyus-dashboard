@@ -1001,6 +1001,8 @@
     "searchPlaceholder": "Qidirish...",
     "filter": "Filter",
     "confirmDelete": "Bu demo darsni o‘chirishni tasdiqlaysizmi?",
+    "confirmDeleteSelected": "Tanlangan {{total}} ta demo darsni o‘chirishni tasdiqlaysizmi?",
+    "deleteSelected": "O‘chirish",
     "deleteTitle": "Demo darsni o‘chirish",
     "editTitle": "Demo darsni tahrirlash",
     "modal": {
@@ -1033,7 +1035,8 @@
       "teacher": "O‘qituvchi",
       "groupName": "Guruh",
       "room": "Xona",
-      "createdAt": "Yaratildi",
+      "createdAt": "Yaratilgan sana",
+      "updatedAt": "O‘zgartirilgan sana",
       "actions": "Amallar"
     },
     "attendance": {
@@ -1165,7 +1168,7 @@
     "notifyCleared": "tozalandi",
     "syncConfirmTitle": "Sinxronlash",
     "syncConfirmText": "qurilmasiga barcha xodimlarni sinxronlashni xohlaysizmi?",
-    "syncConfirmBtn": "Ha, sinxronlash",
+    "syncConfirmBtn": "Sinxronlash",
     "syncing": "Yuborilmoqda...",
     "debugTitle": "Debug",
     "debugInputPlaceholder": "Employee No (xodim ID)",
@@ -1207,7 +1210,7 @@
     "notifySynced": "qurilmalarga yuborildi",
     "syncConfirmTitle": "Sinxronlash",
     "syncConfirmText": "xodimini barcha qurilmalarga sinxronlashni xohlaysizmi?",
-    "syncConfirmBtn": "Ha, sinxronlash",
+    "syncConfirmBtn": "Sinxronlash",
     "syncing": "Yuborilmoqda...",
     "photoLabel": "Xodim rasmi",
     "photoChange": "Rasmni almashtirish",
