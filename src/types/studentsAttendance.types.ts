@@ -1,10 +1,19 @@
+/** Backend yangi enum: active/frozen/dropped/graduated. Eski 'Aktiv'/'Noaktiv' ham kelishi mumkin. */
+export type StudentStatus =
+  | 'active'
+  | 'frozen'
+  | 'dropped'
+  | 'graduated'
+  | 'Aktiv'
+  | 'Noaktiv';
+
 export interface Student {
   id: number;
   first_name: string;
   last_name: string;
   middle_name?: string;
   phone: string;
-  status: 'Aktiv' | 'Noaktiv';
+  status: StudentStatus;
   balance: number;
   last_payment_date: string;
   groups?: { id: number }[];

@@ -1,0 +1,441 @@
+/* Ish haqqi tuzatishlar — ro'yxat va tuzatish formasi.
+   Palitra: #003366, #E70A0A, #000000, #2AA411, #FE9100, border #BDBDBD. */
+
+.pa-container {
+  width: calc(100% - 140px);
+  margin-top: 50px !important;
+  margin-left: 140px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: calc(100vh - 50px);
+}
+
+.pa-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pa-title {
+  font-family: noto-b, sans-serif;
+  font-size: 22px;
+  color: #000000;
+}
+
+/* ---------- Jadval kartasi ---------- */
+.pa-card {
+  background: #ffffff;
+  border: 1px solid #bdbdbd;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pa-card-filters {
+  padding: 14px 16px;
+  border-bottom: 1px solid #bdbdbd;
+}
+
+.pa-table-scroll {
+  overflow-x: auto;
+}
+
+.pa-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.pa-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-family: noto-b, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #000000;
+  background: #ffffff;
+  border-bottom: 1px solid #bdbdbd;
+  white-space: nowrap;
+}
+
+.pa-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #bdbdbd;
+  font-family: noto-m, sans-serif;
+  font-size: 13px;
+  color: #000000;
+  vertical-align: top;
+}
+
+.pa-table tr:last-child td {
+  border-bottom: none;
+}
+
+.pa-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: #6b7280;
+  font-family: noto-m, sans-serif;
+}
+
+.pa-emp-name {
+  font-family: noto-b, sans-serif;
+  color: #000000;
+}
+
+.pa-dept {
+  font-family: noto-b, sans-serif;
+  font-size: 12px;
+  color: #000000;
+}
+.pa-position {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* ---------- TUZATISHLAR katagi ---------- */
+.pa-adj-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  line-height: 1.5;
+  min-width: 240px;
+}
+
+.pa-adj-meta {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.pa-status {
+  font-family: noto-b, sans-serif;
+}
+.pa-status--new {
+  color: #fe9100;
+}
+.pa-status--approved {
+  color: #2aa411;
+}
+.pa-status--rejected {
+  color: #e70a0a;
+}
+
+/* ---------- Amallar ustuni: 4 tugma column holatda ---------- */
+.pa-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 130px;
+}
+
+.pa-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-family: noto-b, sans-serif;
+  font-size: 13px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: opacity 0.18s ease;
+  white-space: nowrap;
+}
+.pa-btn:hover:not(:disabled) {
+  opacity: 0.88;
+}
+.pa-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pa-btn--primary {
+  background: #003366;
+}
+.pa-btn--danger {
+  background: #e70a0a;
+}
+.pa-btn--success {
+  background: #2aa411;
+}
+
+/* ---------- Footer / sahifalash ---------- */
+.pa-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border-top: 1px solid #bdbdbd;
+  font-family: noto-m, sans-serif;
+  font-size: 12px;
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+
+.pa-pages {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pa-page-btn {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border: 1px solid #bdbdbd;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #000000;
+  font-family: noto-m, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+}
+.pa-page-btn:hover:not(:disabled) {
+  border-color: #003366;
+  color: #003366;
+}
+.pa-page-btn.active {
+  background: #003366;
+  border-color: #003366;
+  color: #ffffff;
+}
+.pa-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   Tuzatish formasi
+   ========================================================= */
+.pa-form-card {
+  background: #ffffff;
+  border: 1px solid #bdbdbd;
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Ma'lumot bandi */
+.pa-info {
+  background: #003366;
+  border-radius: 8px;
+  padding: 14px 20px;
+  display: grid;
+  gap: 8px 24px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.pa-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.pa-info-label {
+  font-family: noto-b, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #fe9100;
+}
+.pa-info-value {
+  font-family: noto-b, sans-serif;
+  font-size: 13px;
+  color: #ffffff;
+  word-break: break-word;
+}
+
+/* 3 ta tur kartasi */
+.pa-types {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.pa-type {
+  border: 1px solid #bdbdbd;
+  border-radius: 8px;
+  padding: 16px 12px;
+  background: #ffffff;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+.pa-type:hover:not(:disabled) {
+  border-color: #003366;
+}
+.pa-type:disabled {
+  cursor: not-allowed;
+}
+.pa-type.active {
+  background: #e6e6e6;
+  border-color: #bdbdbd;
+}
+
+.pa-type-icon {
+  font-size: 20px;
+  font-family: noto-b, sans-serif;
+  line-height: 1;
+}
+.pa-type--extra .pa-type-icon {
+  color: #2aa411;
+}
+.pa-type--absent .pa-type-icon {
+  color: #e70a0a;
+}
+.pa-type--substitute .pa-type-icon {
+  color: #fe9100;
+}
+
+.pa-type-title {
+  font-family: noto-b, sans-serif;
+  font-size: 14px;
+  color: #000000;
+}
+.pa-type-desc {
+  font-size: 11px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+.pa-type-desc b {
+  color: #000000;
+}
+
+/* Forma maydonlari */
+.pa-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+.pa-row--1 {
+  grid-template-columns: 1fr;
+}
+
+.pa-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.pa-field label {
+  font-family: noto-m, sans-serif;
+  font-size: 13px;
+  color: #000000;
+}
+.pa-field label .req {
+  color: #e70a0a;
+  margin-left: 3px;
+}
+
+.pa-field input,
+.pa-field select,
+.pa-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #bdbdbd;
+  border-radius: 8px;
+  font-family: noto-m, sans-serif;
+  font-size: 13px;
+  color: #000000;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.18s ease;
+}
+.pa-field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.pa-field input:focus,
+.pa-field select:focus,
+.pa-field textarea:focus {
+  border-color: #003366;
+}
+.pa-field input:disabled,
+.pa-field select:disabled,
+.pa-field textarea:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}
+.pa-field input.pa-invalid,
+.pa-field select.pa-invalid {
+  border-color: #e70a0a;
+}
+
+.pa-hint {
+  font-size: 11px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Tugmalar: center'da — chapda Bekor qilish, o'ngda Saqlash */
+.pa-form-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+}
+.pa-form-actions .pa-btn {
+  padding: 10px 32px;
+  font-size: 14px;
+}
+
+.pa-loading,
+.pa-error {
+  padding: 50px 20px;
+  text-align: center;
+  font-family: noto-m, sans-serif;
+  font-size: 14px;
+  color: #003366;
+}
+.pa-error {
+  color: #e70a0a;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1200px) {
+  .pa-container {
+    padding: 20px 22px 34px;
+  }
+}
+
+@media (max-width: 992px) {
+  .pa-container {
+    width: calc(100% - 90px);
+    margin-left: 90px !important;
+  }
+  .pa-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .pa-types {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .pa-container {
+    width: 100%;
+    margin-left: 0 !important;
+    padding: 16px 14px 30px;
+  }
+  .pa-info {
+    grid-template-columns: 1fr;
+  }
+  .pa-row {
+    grid-template-columns: 1fr;
+  }
+  .pa-form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .pa-form-actions .pa-btn {
+    width: 100%;
+  }
+}

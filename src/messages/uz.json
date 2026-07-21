@@ -103,7 +103,10 @@
     "scoreSheet": "Hisobotlar",
     "jamgarma": "Jamg‘armalar",
     "debts": "Qarzlar",
-    "commissions": "Komissiyalar"
+    "commissions": "Komissiyalar",
+    "payrollAdjustments": "Ish haqqi tuzatishlar",
+    "Studentsattendance": "O‘quvchilar davomati",
+    "payroll": "Ish haqqini taqsimlash"
   },
   "payments": {
     "mainTitle": "To‘lovlar",
@@ -497,7 +500,9 @@
     "newPassword": "Yangi parol",
     "passwordPlaceholder": "Parol",
     "passwordHint": "Bo‘sh qoldiring — parol o‘zgarmaydi",
-    "archiveTitle": "O‘quvchilar arxivi"
+    "archiveTitle": "O‘quvchilar arxivi",
+    "rowsLabel": "Qatorlar:",
+    "paginationInfo": "Jami {{total}} tadan {{from}}-{{to}} ko‘rsatilmoqda"
   },
   "regions": {
     "notFound": "Viloyatlar topilmadi"
@@ -1646,7 +1651,31 @@
     "courseLabel": "Kurs",
     "noGroupsFound": "Guruhlar topilmadi",
     "fish": "FISH",
-    "balans": "Balans:"
+    "balans": "Balans:",
+    "no_lesson_today": "Bugun dars yo‘q",
+    "create_today_lesson": "Bugungi darsni yaratish",
+    "lesson_completed": "Dars yakunlangan",
+    "start_confirm_title": "Darsni boshlash",
+    "start_confirm_desc": "Dars faqat dars kunida boshlanadi. Darsni boshlashni tasdiqlaysizmi?",
+    "lesson_topic_label": "Dars mavzusi",
+    "end_lesson_title": "Darsni tugatish",
+    "end_lesson_desc": "Uy vazifasini kiriting va darsni yakunlang.",
+    "end_confirm_desc": "Darsni tugatib, uy vazifasini biriktirish sahifasiga o‘tasizmi?",
+    "end_confirm_btn": "Darsni tugatish",
+    "homework_title_label": "Vazifa nomi",
+    "homework_desc_label": "Vazifa tavsifi",
+    "homework_file_label": "Fayl (ixtiyoriy)",
+    "lesson_started": "Dars boshlandi",
+    "lesson_ended": "Dars yakunlandi",
+    "lesson_start_error": "Darsni boshlashda xatolik",
+    "lesson_end_error": "Darsni tugatishda xatolik",
+    "attendance_error": "Davomatni saqlashda xatolik",
+    "notif_success_title": "Muvaffaqiyatli",
+    "notif_error_title": "Xatolik",
+    "st_active": "Aktiv",
+    "st_frozen": "Muzlatilgan",
+    "st_dropped": "Tashlab ketgan",
+    "st_graduated": "Bitirgan"
   },
   "ipTelephone": {
     "pageTitle": "Qo‘ng‘iroqlar",
@@ -2606,8 +2635,15 @@
     },
     "salaryTypeOptions": {
       "shtat": "Shtat jadvaliga muvofiq",
-      "oquvchi": "O‘quvchi soniga muvofiq",
+      "foiz": "Foiz asosida",
       "soat": "O‘quv soatlariga muvofiq"
+    },
+    "salaryBasisOptions": {
+      "totalHours": "Umumiy ish soati",
+      "baseSalary": "Asosiy maosh",
+      "hourlySalary": "Soatlik maosh",
+      "baseWorkHours": "Asosiy ish soati",
+      "hourlyWorkHours": "Soatlik ish soati"
     },
     "vacationOptions": {
       "given": "Beriladi",
@@ -2651,7 +2687,9 @@
     "contractEndDate": "Shartnoma tugash sanasi",
     "contractType": "Shartnoma turi",
     "contractConclusionTerm": "Shartnoma tuzish muddati",
-    "salaryType": "Ish haqini xisoblash turi",
+    "salaryType": "Shartnoma uchun oylik turi",
+    "salaryBasis": "Oylik hisoblash asosi",
+    "salaryPercent": "Foiz (%)",
     "contractDuration": "Shartnoma muddati",
     "probation": "Sinov muddati",
     "probationOptions": {
@@ -2741,5 +2779,154 @@
       "sourceId": "Manba tanlang"
     },
     "save": "Saqlash"
+  },
+  "payrollDistribution": {
+    "title": "Taqsimlash oynasi",
+    "back": "Orqaga",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "loading": "Yuklanmoqda...",
+    "error": "Ma’lumotni yuklashda xatolik yuz berdi.",
+    "choose": "Tanlang",
+    "soum": "so‘m",
+    "yes": "Ha",
+    "no": "Yo‘q",
+    "savedTitle": "Saqlandi",
+    "savedMessage": "Ish haqi taqsimoti muvaffaqiyatli saqlandi.",
+    "info": {
+      "fullName": "FISH",
+      "departmentPosition": "Bo‘lim va lavozim",
+      "branch": "Filial",
+      "balance": "Balans",
+      "agreedPercent": "Kelishilgan foiz",
+      "contractOklad": "Shartnoma bo‘yicha oklad"
+    },
+    "tabs": {
+      "avans": "AVANS",
+      "oylik": "OYLIK"
+    },
+    "fields": {
+      "comment": "Izoh",
+      "jamiAvansNaqdsiz": "Jami avans naqdsiz",
+      "avansNaqdsiz": "Avans naqdsiz",
+      "avansNaqdAuto": "Avans naqd(avtomatik)",
+      "jamiOylikNaqdsiz": "Jami oylik naqdsiz",
+      "jamiOylikNaqd": "Jami oylik naqd",
+      "oylikNaqdsiz": "Oylik naqdsiz",
+      "oylikNaqdsizAuto": "Oylik naqdsiz(avtomatik)",
+      "oylikNaqdAuto": "Oylik naqd(avtomatik)",
+      "oylikNaqd": "Oylik naqd",
+      "avansNaqd": "Avans naqd",
+      "privilegedPart": "Ish haqining imtiyozli qismi",
+      "taxPayer": "Daromad solig‘i kimning hisobidan to‘lanadi",
+      "cashTax": "Naqd puldan soliq olinsinmi"
+    },
+    "taxPayerOptions": {
+      "employee": "Xodim hisobidan",
+      "organization": "Tashkilot hisobidan"
+    },
+    "errorTitle": "Xatolik",
+    "saveErrorMessage": "Saqlashda xatolik yuz berdi. Qaytadan urinib ko‘ring.",
+    "periodLocked": "Bu davr yopilgan — taqsimotni o‘zgartirib bo‘lmaydi.",
+    "validation": {
+      "maxExceeded": "{{max}} so‘mdan ko‘p bo‘lmasligi kerak"
+    }
+  },
+  "payrollAdjustments": {
+    "title": "Ish haqqi tuzatishlar",
+    "newBtn": "Yangi tuzatish",
+    "loading": "Yuklanmoqda...",
+    "error": "Ma’lumotni yuklashda xatolik yuz berdi.",
+    "noData": "Ma’lumot topilmadi",
+    "select": "Tanlang",
+    "savedTitle": "Bajarildi",
+    "savedMessage": "Tuzatish muvaffaqiyatli saqlandi.",
+    "approvedMessage": "Tuzatishga ruxsat berildi.",
+    "rejectedMessage": "Tuzatish bekor qilindi.",
+    "footer": "Jami: {{total}}tadan {{start}}-{{end}}tagacha ko‘rsatmoqda",
+    "filters": {
+      "period": "Davr",
+      "branch": "Filial",
+      "all": "Barchasi",
+      "employeeId": "Xodim IDsi",
+      "employeeIdPlaceholder": "Masalan: 123",
+      "lastName": "Familiya",
+      "firstName": "Ism",
+      "middleName": "Otasining ismi",
+      "department": "Bo‘lim"
+    },
+    "table": {
+      "employeeId": "Xodim ID",
+      "fullName": "F.I.SH",
+      "departmentPosition": "Bo‘lim / Lavozim",
+      "adjustments": "Tuzatishlar",
+      "lateHours": "Kechikish soatlari",
+      "earlyLeaveHours": "Erta ketish soatlari",
+      "actions": "Amallar",
+      "statusLabel": "Status:",
+      "createdBy": "Kiritgan shaxs:",
+      "approvedBy": "Tasdiqlagan shaxs:",
+      "commentLabel": "Izoh:",
+      "hours": "soat"
+    },
+    "status": {
+      "new": "Yangi",
+      "approved": "Tasdiqlangan",
+      "rejected": "Bekor qilingan"
+    },
+    "actions": {
+      "edit": "Tuzatish",
+      "view": "Ko‘rish",
+      "reject": "Bekor qilish",
+      "approve": "Ruxsat berish",
+      "save": "Saqlash",
+      "cancel": "Bekor qilish"
+    },
+    "info": {
+      "fullName": "FISH",
+      "departmentPosition": "Bo‘lim va lavozim",
+      "branch": "Filial"
+    },
+    "types": {
+      "extra": {
+        "title": "Qo‘shimcha ishladi",
+        "desc": "Kiritilgan soat oylikka",
+        "bold": "qo‘shiladi"
+      },
+      "absent": {
+        "title": "Ishlamadi",
+        "desc": "Kiritilgan soat oylikka",
+        "bold": "ayriladi"
+      },
+      "substitute": {
+        "title": "Boshqasining o‘rniga ishladi",
+        "desc": "Kiritilgan soat oylikka",
+        "bold": "100% qo‘shiladi"
+      }
+    },
+    "fields": {
+      "date": "Sana",
+      "periodHint": "⚠️ Oylik davri o‘tib ketgan (oylik berilgan yoki tasdiqlashga yuborilgan) bo‘lsa — kiritib bo‘lmaydi.",
+      "hoursWorked": "Xodim necha soat ishladi?",
+      "hoursNotWorked": "Xodim necha soat ishlamadi?",
+      "substitute": "Xodim qaysi xodimning o‘rniga ishladi?",
+      "comment": "Izoh",
+      "employee": "Xodim"
+    },
+    "errorTitle": "Xatolik",
+    "saveErrorMessage": "Saqlashda xatolik yuz berdi. Qaytadan urinib ko‘ring.",
+    "decisionErrorMessage": "Amalni bajarishda xatolik yuz berdi. Qaytadan urinib ko‘ring.",
+    "back": "Orqaga",
+    "confirm": {
+      "approveTitle": "Tuzatishga ruxsat berish",
+      "approveMessage": "{{name}} uchun kiritilgan tuzatishga ruxsat berilsinmi? Amalni qaytarib bo‘lmaydi.",
+      "rejectTitle": "Tuzatishni bekor qilish",
+      "rejectMessage": "{{name}} uchun kiritilgan tuzatish bekor qilinsinmi? Amalni qaytarib bo‘lmaydi.",
+      "cancel": "Yopish",
+      "reasonLabel": "Rad etish sababi"
+    }
+  },
+  "modalPattern": {
+    "close": "Yopish"
   }
 }

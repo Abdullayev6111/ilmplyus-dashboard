@@ -4,7 +4,7 @@ import { queryClient } from '../main';
 import { notifications } from '@mantine/notifications';
 
 export const API = axios.create({
-  baseURL: 'https://easypos.uz/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',

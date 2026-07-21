@@ -5,6 +5,7 @@ import {
   type Student,
   type StudentPayload,
   type StudentGroup,
+  type PaginatedStudents,
 } from '../../api/student.api';
 import { API } from '../../api/api';
 import '../users/users.css';
@@ -61,6 +62,62 @@ const fetchList = async <T,>(endpoint: string): Promise<T[]> => {
   return Array.isArray(data) ? data : (data?.data ?? []);
 };
 
+const STUDENTS_PAGE_SIZES = [10, 20, 50, 100];
+
+interface StudentsPaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
+const StudentsPagination = ({ currentPage, totalPages, onPageChange }: StudentsPaginationProps) => {
+  const pages = useMemo((): (number | '...')[] => {
+    if (totalPages <= 6) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (currentPage <= 3) return [1, 2, 3, '...', totalPages];
+    if (currentPage >= totalPages - 2)
+      return [1, '...', totalPages - 2, totalPages - 1, totalPages];
+    return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+  }, [currentPage, totalPages]);
+
+  return (
+    <div className="students-pagination__pages">
+      <button
+        type="button"
+        className="students-pagination__btn"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        <i className="fa-solid fa-chevron-left" />
+      </button>
+      {pages.map((page, idx) =>
+        page === '...' ? (
+          <span key={`ellipsis-${idx}`} className="students-pagination__ellipsis">
+            ...
+          </span>
+        ) : (
+          <button
+            key={page}
+            type="button"
+            className={`students-pagination__btn${currentPage === page ? ' students-pagination__btn--active' : ''}`}
+            onClick={() => onPageChange(page as number)}
+            aria-current={currentPage === page ? 'page' : undefined}
+          >
+            {page}
+          </button>
+        ),
+      )}
+      <button
+        type="button"
+        className="students-pagination__btn"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
+        <i className="fa-solid fa-chevron-right" />
+      </button>
+    </div>
+  );
+};
+
 const Students = () => {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
@@ -79,11 +136,20 @@ const Students = () => {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  const { data: students, isLoading } = useQuery<Student[]>({
-    queryKey: ['students'],
-    queryFn: studentAPI.getAll,
+  const { data, isLoading } = useQuery<PaginatedStudents>({
+    queryKey: ['students', currentPage, pageSize],
+    queryFn: () => studentAPI.getAll({ page: currentPage, per_page: pageSize }),
+    placeholderData: (prev) => prev,
   });
+
+  const students = data?.data;
+  const total = data?.meta.total ?? 0;
+  const totalPages = data?.meta.last_page ?? 1;
+  const fromItem = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const toItem = Math.min(currentPage * pageSize, total);
 
   const { data: branches = [] } = useQuery<BranchItem[]>({
     queryKey: ['branches-lookup'],
@@ -175,6 +241,10 @@ const Students = () => {
   };
 
   const confirmDelete = () => {
+    const removingCount = deleteTarget === 'all' ? selected.length : 1;
+    // Sahifadagi oxirgi yozuvlar o'chirilsa, bo'sh sahifada qolib ketmaslik uchun orqaga qaytamiz.
+    const pageBecomesEmpty = (students?.length ?? 0) - removingCount <= 0 && currentPage > 1;
+
     if (deleteTarget === 'all') {
       selected.forEach((id) => deleteMutation.mutate(id));
       setSelected([]);
@@ -182,8 +252,21 @@ const Students = () => {
       deleteMutation.mutate(deleteTarget);
       setSelected((p) => p.filter((x) => x !== deleteTarget));
     }
+
+    if (pageBecomesEmpty) setCurrentPage((p) => p - 1);
     setShowDeleteModal(false);
     setDeleteTarget(null);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setSelected([]);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+    setSelected([]);
   };
 
   const toggleAll = (checked: boolean) =>
@@ -538,6 +621,21 @@ const Students = () => {
             {t('students.delete')}
           </button>
         </Protected>
+
+        <div className="students-pagesize">
+          <label htmlFor="students-pagesize-select">{t('students.rowsLabel')}</label>
+          <select
+            id="students-pagesize-select"
+            value={pageSize}
+            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+          >
+            {STUDENTS_PAGE_SIZES.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Table */}
@@ -643,6 +741,21 @@ const Students = () => {
           </tbody>
         </table>
       </div>
+
+      {!isLoading && total > 0 && (
+        <div className="students-pagination">
+          <span className="students-pagination__info">
+            {t('students.paginationInfo', { total, from: fromItem, to: toItem })}
+          </span>
+          {totalPages > 1 && (
+            <StudentsPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
+        </div>
+      )}
     </section>
   );
 };

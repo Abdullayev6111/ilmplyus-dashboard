@@ -103,7 +103,7 @@ const CONTRACT_TERM_UZ: Record<string, string> = {
  */
 const SALARY_TYPE_UZ: Record<string, string> = {
   shtat: 'Shtat jadvaliga',
-  oquvchi: 'O‘quvchi soniga',
+  foiz: 'Foiz asosida',
   soat: 'O‘quv soatlariga',
 };
 

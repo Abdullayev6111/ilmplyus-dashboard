@@ -103,7 +103,10 @@
     "jamgarma": "Джамгармалар",
     "debts": "Долги",
     "commissions": "Комиссии",
-    "scoreSheet": "Отчёты"
+    "scoreSheet": "Отчёты",
+    "payrollAdjustments": "Корректировки зарплаты",
+    "Studentsattendance": "Посещаемость студентов",
+    "payroll": "Распределение зарплаты"
   },
   "payments": {
     "mainTitle": "Платежи",
@@ -655,7 +658,9 @@
     "newPassword": "Новый пароль",
     "passwordHint": "Оставьте пустым, чтобы не менять пароль",
     "archiveTitle": "Архив учеников",
-    "passwordPlaceholder": "Пароль"
+    "passwordPlaceholder": "Пароль",
+    "rowsLabel": "Строк:",
+    "paginationInfo": "Показано {{from}}-{{to}} из {{total}}"
   },
   "regions": {
     "notFound": "Регионы не найдены"
@@ -1699,7 +1704,31 @@
     "courseLabel": "Курс",
     "noGroupsFound": "Группы не найдены",
     "fish": "Ф.И.О",
-    "balans": "Баланс:"
+    "balans": "Баланс:",
+    "no_lesson_today": "Сегодня нет урока",
+    "create_today_lesson": "Создать сегодняшний урок",
+    "lesson_completed": "Урок завершён",
+    "start_confirm_title": "Начать урок",
+    "start_confirm_desc": "Урок можно начать только в день урока. Подтвердить начало урока?",
+    "lesson_topic_label": "Тема урока",
+    "end_lesson_title": "Завершить урок",
+    "end_lesson_desc": "Введите домашнее задание и завершите урок.",
+    "end_confirm_desc": "Завершить урок и перейти к странице назначения домашнего задания?",
+    "end_confirm_btn": "Завершить урок",
+    "homework_title_label": "Название задания",
+    "homework_desc_label": "Описание задания",
+    "homework_file_label": "Файл (необязательно)",
+    "lesson_started": "Урок начат",
+    "lesson_ended": "Урок завершён",
+    "lesson_start_error": "Ошибка при начале урока",
+    "lesson_end_error": "Ошибка при завершении урока",
+    "attendance_error": "Ошибка при сохранении посещаемости",
+    "notif_success_title": "Успешно",
+    "notif_error_title": "Ошибка",
+    "st_active": "Активный",
+    "st_frozen": "Заморожен",
+    "st_dropped": "Отчислен",
+    "st_graduated": "Выпустился"
   },
   "studentTasks": {
     "pageTitle": "Задания учеников",
@@ -2607,8 +2636,15 @@
     },
     "salaryTypeOptions": {
       "shtat": "Согласно штатному расписанию",
-      "oquvchi": "В соответствии с количеством учеников",
+      "foiz": "На процентной основе",
       "soat": "В соответствии с учебными часами"
+    },
+    "salaryBasisOptions": {
+      "totalHours": "Общее рабочее время",
+      "baseSalary": "Базовая зарплата",
+      "hourlySalary": "Почасовая зарплата",
+      "baseWorkHours": "Основные рабочие часы",
+      "hourlyWorkHours": "Почасовые рабочие часы"
     },
     "vacationOptions": {
       "given": "Предоставляется",
@@ -2653,6 +2689,8 @@
     "contractType": "Тип договора",
     "contractConclusionTerm": "Срок заключения договора",
     "salaryType": "Тип оплаты по договору",
+    "salaryBasis": "Основа расчёта оплаты",
+    "salaryPercent": "Процент (%)",
     "contractDuration": "Срок договора",
     "probation": "Испытательный срок",
     "probationOptions": {
@@ -2742,5 +2780,154 @@
       "sourceId": "Выберите источник"
     },
     "save": "Сохранить"
+  },
+  "payrollDistribution": {
+    "title": "Окно распределения",
+    "back": "Назад",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "loading": "Загрузка...",
+    "error": "Ошибка при загрузке данных.",
+    "choose": "Выберите",
+    "soum": "сум",
+    "yes": "Да",
+    "no": "Нет",
+    "savedTitle": "Сохранено",
+    "savedMessage": "Распределение заработной платы успешно сохранено.",
+    "info": {
+      "fullName": "ФИО",
+      "departmentPosition": "Отдел и должность",
+      "branch": "Филиал",
+      "balance": "Баланс",
+      "agreedPercent": "Согласованный процент",
+      "contractOklad": "Оклад по договору"
+    },
+    "tabs": {
+      "avans": "АВАНС",
+      "oylik": "ЗАРПЛАТА"
+    },
+    "fields": {
+      "comment": "Комментарий",
+      "jamiAvansNaqdsiz": "Всего аванс безналичный",
+      "avansNaqdsiz": "Аванс безналичный",
+      "avansNaqdAuto": "Аванс наличный (автоматически)",
+      "jamiOylikNaqdsiz": "Всего зарплата безналичная",
+      "jamiOylikNaqd": "Всего зарплата наличная",
+      "oylikNaqdsiz": "Зарплата безналичная",
+      "oylikNaqdsizAuto": "Зарплата безналичная (автоматически)",
+      "oylikNaqdAuto": "Зарплата наличная (автоматически)",
+      "oylikNaqd": "Зарплата наличная",
+      "avansNaqd": "Аванс наличный",
+      "privilegedPart": "Льготная часть заработной платы",
+      "taxPayer": "За чей счёт уплачивается подоходный налог",
+      "cashTax": "Удерживать ли налог с наличных"
+    },
+    "taxPayerOptions": {
+      "employee": "За счёт сотрудника",
+      "organization": "За счёт организации"
+    },
+    "errorTitle": "Ошибка",
+    "saveErrorMessage": "При сохранении произошла ошибка. Попробуйте ещё раз.",
+    "periodLocked": "Период закрыт — распределение изменить нельзя.",
+    "validation": {
+      "maxExceeded": "Не должно превышать {{max}} сум"
+    }
+  },
+  "payrollAdjustments": {
+    "title": "Корректировки зарплаты",
+    "newBtn": "Новая корректировка",
+    "loading": "Загрузка...",
+    "error": "Ошибка при загрузке данных.",
+    "noData": "Данные не найдены",
+    "select": "Выберите",
+    "savedTitle": "Готово",
+    "savedMessage": "Корректировка успешно сохранена.",
+    "approvedMessage": "Корректировка одобрена.",
+    "rejectedMessage": "Корректировка отклонена.",
+    "footer": "Показано {{start}}-{{end}} из {{total}}",
+    "filters": {
+      "period": "Период",
+      "branch": "Филиал",
+      "all": "Все",
+      "employeeId": "ID сотрудника",
+      "employeeIdPlaceholder": "Например: 123",
+      "lastName": "Фамилия",
+      "firstName": "Имя",
+      "middleName": "Отчество",
+      "department": "Отдел"
+    },
+    "table": {
+      "employeeId": "ID сотрудника",
+      "fullName": "ФИО",
+      "departmentPosition": "Отдел / Должность",
+      "adjustments": "Корректировки",
+      "lateHours": "Часы опоздания",
+      "earlyLeaveHours": "Часы раннего ухода",
+      "actions": "Действия",
+      "statusLabel": "Статус:",
+      "createdBy": "Внёс:",
+      "approvedBy": "Одобрил:",
+      "commentLabel": "Комментарий:",
+      "hours": "ч."
+    },
+    "status": {
+      "new": "Новый",
+      "approved": "Одобрено",
+      "rejected": "Отклонено"
+    },
+    "actions": {
+      "edit": "Корректировать",
+      "view": "Просмотр",
+      "reject": "Отклонить",
+      "approve": "Одобрить",
+      "save": "Сохранить",
+      "cancel": "Отмена"
+    },
+    "info": {
+      "fullName": "ФИО",
+      "departmentPosition": "Отдел и должность",
+      "branch": "Филиал"
+    },
+    "types": {
+      "extra": {
+        "title": "Работал дополнительно",
+        "desc": "Введённые часы к зарплате",
+        "bold": "добавляются"
+      },
+      "absent": {
+        "title": "Не работал",
+        "desc": "Введённые часы из зарплаты",
+        "bold": "вычитаются"
+      },
+      "substitute": {
+        "title": "Работал вместо другого",
+        "desc": "Введённые часы к зарплате",
+        "bold": "добавляются на 100%"
+      }
+    },
+    "fields": {
+      "date": "Дата",
+      "periodHint": "⚠️ Если период зарплаты закрыт (зарплата выдана или отправлена на утверждение) — ввод невозможен.",
+      "hoursWorked": "Сколько часов сотрудник работал?",
+      "hoursNotWorked": "Сколько часов сотрудник не работал?",
+      "substitute": "Вместо какого сотрудника работал?",
+      "comment": "Комментарий",
+      "employee": "Сотрудник"
+    },
+    "errorTitle": "Ошибка",
+    "saveErrorMessage": "При сохранении произошла ошибка. Попробуйте ещё раз.",
+    "decisionErrorMessage": "При выполнении действия произошла ошибка. Попробуйте ещё раз.",
+    "back": "Назад",
+    "confirm": {
+      "approveTitle": "Одобрить корректировку",
+      "approveMessage": "Одобрить корректировку для {{name}}? Действие нельзя отменить.",
+      "rejectTitle": "Отклонить корректировку",
+      "rejectMessage": "Отклонить корректировку для {{name}}? Действие нельзя отменить.",
+      "cancel": "Закрыть",
+      "reasonLabel": "Причина отклонения"
+    }
+  },
+  "modalPattern": {
+    "close": "Закрыть"
   }
 }

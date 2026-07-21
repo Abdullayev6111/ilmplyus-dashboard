@@ -12,6 +12,8 @@ export interface Teacher {
   full_name: string;
 }
 
+export type LessonStatus = 'scheduled' | 'ongoing' | 'completed';
+
 export interface Lesson {
   id: number;
   group_id: number;
@@ -21,6 +23,10 @@ export interface Lesson {
   homework_title: string;
   homework_description: string;
   homework_file: string;
+  /** scheduled → ongoing → completed */
+  status?: LessonStatus;
+  started_at?: string | null;
+  ended_at?: string | null;
   group?: Group;
   teacher?: Teacher;
 }

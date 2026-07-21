@@ -55,10 +55,50 @@ export interface StudentPayload {
   is_contract_confirmed?: boolean;
 }
 
+export interface StudentsQueryParams {
+  page: number;
+  per_page: number;
+}
+
+export interface PaginatedStudents {
+  data: Student[];
+  meta: {
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+  };
+}
+
 export const studentAPI = {
-  getAll: async (): Promise<Student[]> => {
-    const { data } = await API.get('/students');
-    return Array.isArray(data) ? data : (data?.data ?? []);
+  getAll: async (params: StudentsQueryParams): Promise<PaginatedStudents> => {
+    const { data } = await API.get('/students', { params });
+
+    if (Array.isArray(data)) {
+      return {
+        data,
+        meta: {
+          current_page: 1,
+          per_page: data.length,
+          total: data.length,
+          last_page: 1,
+        },
+      };
+    }
+
+    const list: Student[] = data?.data ?? [];
+    // Backend paginatsiya meta'ni yo `meta` obyektida, yo javob ildizida qaytaradi.
+    const meta = data?.meta ?? data ?? {};
+
+    return {
+      data: list,
+      meta: {
+        current_page: meta.current_page ?? params.page,
+        per_page: meta.per_page ?? params.per_page,
+        total: meta.total ?? list.length,
+        last_page: meta.last_page ?? 1,
+      },
+    };
   },
 
   update: async (id: number, payload: StudentPayload): Promise<Student> => {

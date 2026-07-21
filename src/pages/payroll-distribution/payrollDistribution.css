@@ -1,0 +1,318 @@
+/* Ish haqini taqsimlash sahifasi (modal emas, alohida page).
+   Palitra: #003366, #FE9100, #000000, #FFFFFF, #E70A0A.
+   Dastlab container ga moslashadi, keyin 1920px -> 768px oralig'ida responsive. */
+
+.pd-container {
+  width: calc(100% - 140px);
+  margin-top: 50px !important;
+  margin-left: 140px !important;
+  /* padding: 24px 30px 40px; */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: calc(100vh - 50px);
+}
+
+/* Sahifa kartasi */
+.pd-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(0, 51, 102, 0.06);
+  padding: 26px 28px 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Sarlavha qatori: chapda orqaga tugma + oyna nomi */
+.pd-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pd-back-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fe9100;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-family: noto-b, sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.pd-back-pill:hover {
+  background: #e68200;
+}
+
+.pd-title {
+  font-family: noto-b, sans-serif;
+  font-size: 20px;
+  color: #000000;
+}
+
+/* Ma'lumot bandi (dark blue) */
+.pd-info {
+  background: #003366;
+  border-radius: 10px;
+  padding: 16px 22px;
+  display: grid;
+  gap: 8px 26px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.pd-info--oklad {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.pd-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.pd-info-label {
+  font-family: noto-b, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  color: #fe9100;
+  text-transform: uppercase;
+}
+.pd-info-value {
+  font-family: noto-m, sans-serif;
+  font-size: 14px;
+  color: #ffffff;
+  word-break: break-word;
+}
+
+/* Tab lar (AVANS / OYLIK) */
+.pd-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.pd-tab {
+  padding: 13px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #000000;
+  font-family: noto-b, sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.pd-tab:hover {
+  border-color: #003366;
+}
+.pd-tab.active {
+  background: #003366;
+  border-color: #003366;
+  color: #ffffff;
+}
+
+/* Forma to'ri */
+.pd-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.pd-row {
+  display: grid;
+  gap: 16px 26px;
+  grid-template-columns: 1fr 1fr;
+}
+.pd-row--1 {
+  grid-template-columns: 1fr;
+}
+
+.pd-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.pd-field label {
+  font-family: noto-m, sans-serif;
+  font-size: 13px;
+  color: #000000;
+}
+.pd-field label .req {
+  color: #e70a0a;
+  margin-left: 3px;
+}
+
+.pd-field input,
+.pd-field select,
+.pd-field textarea {
+  padding: 12px 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #000000;
+  background: #ffffff;
+  outline: none;
+  font-family: noto-m, sans-serif;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+  width: 100%;
+}
+.pd-field textarea {
+  min-height: 74px;
+  resize: vertical;
+}
+.pd-field input:focus,
+.pd-field select:focus,
+.pd-field textarea:focus {
+  border-color: #003366;
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+}
+
+/* Avtomatik (read-only) maydon: kulrang fon */
+.pd-field input.pd-auto {
+  background: #d9dde2;
+  border-color: #cbd5e1;
+  color: #000000;
+  cursor: not-allowed;
+}
+
+.pd-field input.pd-invalid,
+.pd-field select.pd-invalid {
+  border-color: #e70a0a;
+}
+
+/* Chegara buzilganda maydon ostidagi izoh (faqat xato bo'lganda chiziladi) */
+.pd-field-error {
+  display: block;
+  margin-top: 4px;
+  font-family: noto-r, sans-serif;
+  font-size: 12px;
+  color: #e70a0a;
+}
+
+/* Davr yopilgan — formaning tepasidagi ogohlantirish */
+.pd-locked {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  border: 1px solid #f0c14b;
+  background: #fff8e5;
+  border-radius: 6px;
+  font-family: noto-m, sans-serif;
+  font-size: 13px;
+  color: #7a5c00;
+}
+
+/* Pastki tugmalar: chapda Saqlash, o'ngda Bekor qilish */
+.pd-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin-top: 6px;
+}
+.pd-btn {
+  padding: 11px 34px;
+  border-radius: 9px;
+  border: none;
+  font-family: noto-b, sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.pd-btn-save {
+  background: #003366;
+  color: #ffffff;
+}
+.pd-btn-save:hover {
+  background: #00284f;
+}
+.pd-btn-save:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+.pd-btn-cancel {
+  background: #e70a0a;
+  color: #ffffff;
+}
+.pd-btn-cancel:hover {
+  background: #c50808;
+}
+
+.pd-loading,
+.pd-error {
+  padding: 60px 20px;
+  text-align: center;
+  font-family: noto-m, sans-serif;
+  font-size: 15px;
+  color: #003366;
+}
+.pd-error {
+  color: #e70a0a;
+}
+
+/* ---- Responsive: 1920px -> 768px ---- */
+@media (max-width: 1400px) {
+  .pd-card {
+    max-width: 960px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .pd-container {
+    padding: 20px 22px 34px;
+  }
+  .pd-info {
+    gap: 10px 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .pd-container {
+    width: calc(100% - 90px);
+    margin-left: 90px !important;
+  }
+  /* Sarlavha va qiymatlarni ikki ustunga joylash */
+  .pd-info,
+  .pd-info--oklad {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .pd-container {
+    width: 100%;
+    margin-left: 0 !important;
+    padding: 16px 14px 30px;
+  }
+  .pd-card {
+    padding: 20px 16px 24px;
+    border-radius: 14px;
+  }
+  .pd-info,
+  .pd-info--oklad {
+    grid-template-columns: 1fr;
+  }
+  .pd-row {
+    grid-template-columns: 1fr;
+  }
+  .pd-tabs {
+    grid-template-columns: 1fr;
+  }
+  .pd-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .pd-btn {
+    width: 100%;
+  }
+}

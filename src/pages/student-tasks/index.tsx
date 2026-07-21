@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { API } from '../../api/api';
 import { notifications } from '@mantine/notifications';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -51,6 +52,14 @@ const Lessons = () => {
   const [homeworkFile, setHomeworkFile] = useState<File | null>(null);
   const [lessonDate, setLessonDate] = useState('');
 
+  // Davomat sahifasidan "Darsni tugatish" bilan kelinganda: guruh + sana tanlab,
+  // uy vazifasini biriktirish uchun modalni avtomatik ochamiz.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const autoOpenGroupId = searchParams.get('groupId');
+  const autoOpenDate = searchParams.get('date');
+  const shouldAutoOpen = searchParams.get('openHomework') === '1';
+  const autoOpenedRef = useRef(false);
+
   const { data: rawGroups } = useQuery({
     queryKey: ['groups'],
     queryFn: async () => {
@@ -60,7 +69,7 @@ const Lessons = () => {
   });
 
   const groups = useMemo<Group[]>(
-    () => (Array.isArray(rawGroups) ? rawGroups : (rawGroups as any)?.data ?? []),
+    () => (Array.isArray(rawGroups) ? rawGroups : (rawGroups as { data?: Group[] })?.data ?? []),
     [rawGroups],
   );
 
@@ -227,6 +236,39 @@ const Lessons = () => {
     if (!path) return '';
     return path.split('/').pop();
   };
+
+  // 1-qadam: URL'dan kelgan guruhni tanlaymiz (bir marta). Sanani query filtriga
+  // qo'ymaymiz — aks holda dars sanasi datetime formatida bo'lsa, aynan tenglik
+  // solishtiruvi uni ro'yxatdan chiqarib yuborardi.
+  useEffect(() => {
+    if (!shouldAutoOpen) return;
+    if (autoOpenGroupId) setSelectedGroupId(Number(autoOpenGroupId));
+  }, [shouldAutoOpen, autoOpenGroupId]);
+
+  // 2-qadam: darslar yuklangach modalni ochamiz — o'sha sanaga dars bo'lsa,
+  // uy vazifasini biriktirish uchun uni oldindan to'ldiramiz.
+  useEffect(() => {
+    if (!shouldAutoOpen || autoOpenedRef.current) return;
+    if (!autoOpenGroupId || Number(selectedGroupId) !== Number(autoOpenGroupId)) return;
+    // Dars ro'yxati yuklanib bo'lguncha kutamiz — bo'sh forma erta ochilmasin.
+    if (isLoading) return;
+
+    autoOpenedRef.current = true;
+    const existing = (lessons as Lesson[]).find((l) =>
+      autoOpenDate ? String(l.date).startsWith(autoOpenDate) : false,
+    );
+    if (existing) {
+      handleView(existing);
+    } else {
+      resetForm();
+      if (autoOpenDate) setLessonDate(autoOpenDate);
+      setIsModalOpen(true);
+    }
+
+    // Parametrlarni tozalaymiz — modal yopilib qayta ochilib qolmasin.
+    setSearchParams({}, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldAutoOpen, autoOpenGroupId, autoOpenDate, selectedGroupId, lessons, isLoading]);
 
   return (
     <div className="lessons-container container">

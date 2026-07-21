@@ -12,7 +12,7 @@ export interface FilterBarField<K extends string = string> {
   /** Filter obyektidagi kalit. */
   key: K;
   label: string;
-  type?: 'select' | 'date';
+  type?: 'select' | 'date' | 'text';
   /** Select uchun bo'sh qiymat matni ("Filial tanlang"). */
   placeholder?: string;
   options?: FilterBarOption[];
@@ -67,6 +67,17 @@ export default function FilterBar<K extends string>({
                   value={values[field.key] ?? ''}
                   onChange={(e: DateInputChangeEvent) => setValue(field.key, e.target.value)}
                   aria-label={field.label}
+                />
+              ) : field.type === 'text' ? (
+                <input
+                  id={id}
+                  className="fb-select"
+                  type="text"
+                  value={values[field.key] ?? ''}
+                  placeholder={field.placeholder}
+                  disabled={field.disabled}
+                  aria-label={field.label}
+                  onChange={(e) => setValue(field.key, e.target.value)}
                 />
               ) : (
                 <select

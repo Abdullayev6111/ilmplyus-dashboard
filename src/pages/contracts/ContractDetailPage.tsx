@@ -87,7 +87,7 @@ const ContractDetailPage: React.FC = () => {
   };
   const salaryTypeLabels: Record<string, string> = {
     shtat: t("contractsCreate.salaryTypeOptions.shtat"),
-    oquvchi: t("contractsCreate.salaryTypeOptions.oquvchi"),
+    foiz: t("contractsCreate.salaryTypeOptions.foiz"),
     soat: t("contractsCreate.salaryTypeOptions.soat"),
   };
   const vacationTypeLabels: Record<string, string> = {

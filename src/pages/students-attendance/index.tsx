@@ -2,8 +2,13 @@ import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { notifications } from '@mantine/notifications';
 import { API } from '../../api/api';
 import './studentsAttendance.css';
+import { Protected } from '../../components/Protected';
+import ConfirmModal from '../../components/ConfirmModal';
+import { getApiErrorMessage } from '@/utils/apiError';
+import type { Lesson } from '@/types/lesson.types';
 import type {
   Attendance,
   GroupData,
@@ -13,6 +18,45 @@ import type {
   StudentsResponse,
 } from '@/types/studentsAttendance.types';
 import type { Group } from '../../types/groups.types';
+
+/** Backend status → badge klass + tarjima kaliti. */
+const STUDENT_STATUS_META: Record<string, { key: string; cls: string }> = {
+  active: { key: 'st_active', cls: 'aktiv' },
+  Aktiv: { key: 'st_active', cls: 'aktiv' },
+  frozen: { key: 'st_frozen', cls: 'frozen' },
+  dropped: { key: 'st_dropped', cls: 'dropped' },
+  graduated: { key: 'st_graduated', cls: 'graduated' },
+  Noaktiv: { key: 'noaktiv', cls: 'noaktiv' },
+};
+
+const getStatusMeta = (s?: string) =>
+  STUDENT_STATUS_META[s ?? ''] ?? { key: 'st_active', cls: 'aktiv' };
+
+// Backend sanalarni Toshkent yarim tunini UTC'da saqlaydi
+// (masalan "2026-07-17T19:00:00Z" = 2026-07-18 00:00 +05).
+// Shu sabab sanani Asia/Tashkent mintaqasida "YYYY-MM-DD" ko'rinishiga keltiramiz.
+const APP_TZ = 'Asia/Tashkent';
+
+const toTashkentDate = (value: unknown): string => {
+  if (!value) return '';
+  // "DD.MM.YYYY" bo'lsa — bevosita ISO'ga aylantiramiz.
+  const dotMatch = String(value).match(/^(\d{2})\.(\d{2})\.(\d{4})/);
+  if (dotMatch) return `${dotMatch[3]}-${dotMatch[2]}-${dotMatch[1]}`;
+  const d = new Date(String(value));
+  if (Number.isNaN(d.getTime())) return '';
+  // en-CA => "YYYY-MM-DD"
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: APP_TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(d);
+};
+
+const isSameDay = (raw: unknown, today: Date): boolean => {
+  const a = toTashkentDate(raw);
+  return a !== '' && a === toTashkentDate(today);
+};
 
 const DAY_SHORT: Record<string, string> = {
   monday: 'Du',
@@ -80,15 +124,15 @@ const Popover = ({
   };
 
   return (
-    <div className="popover-overlay" onClick={onCancel}>
-      <div className="attendance-popover" onClick={(e) => e.stopPropagation()}>
-        <div className="popover-section">
-          <span className="popover-title">{t('studentsAttendance.davomat')}:</span>
-          <div className="davomat-options">
+    <div className="sa-popover-overlay" onClick={onCancel}>
+      <div className="sa-attendance-popover" onClick={(e) => e.stopPropagation()}>
+        <div className="sa-popover-section">
+          <span className="sa-popover-title">{t('studentsAttendance.davomat')}:</span>
+          <div className="sa-davomat-options">
             {(['present', 'absent', 'late', 'reason'] as const).map((opt) => (
               <button
                 key={opt}
-                className={`option-btn${status === opt ? ' active' : ''}`}
+                className={`sa-option-btn${status === opt ? ' active' : ''}`}
                 onClick={() => setStatus(opt)}
               >
                 <div className={`legend-dot dot-${opt}`} />
@@ -98,12 +142,12 @@ const Popover = ({
           </div>
         </div>
 
-        <div className="popover-section">
-          <span className="popover-title">{t('studentsAttendance.baho')}:</span>
-          <div className="grade-input-wrap">
+        <div className="sa-popover-section">
+          <span className="sa-popover-title">{t('studentsAttendance.baho')}:</span>
+          <div className="sa-grade-input-wrap">
             <input
               type="number"
-              className="grade-field"
+              className="sa-grade-field"
               value={grade ?? ''}
               onChange={(e) => setGrade(e.target.value === '' ? undefined : Number(e.target.value))}
             />
@@ -111,26 +155,26 @@ const Popover = ({
         </div>
 
         {status === 'reason' && (
-          <div className="popover-section">
-            <span className="popover-title">{t('studentsAttendance.reason_label')}:</span>
+          <div className="sa-popover-section">
+            <span className="sa-popover-title">{t('studentsAttendance.reason_label')}:</span>
             <textarea
-              className="reason-field"
+              className="sa-reason-field"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
             />
           </div>
         )}
 
-        <div className="popover-actions">
+        <div className="sa-popover-actions">
           {attendance.id && (
-            <button className="pop-cancel" style={{ color: 'red' }} onClick={onDelete}>
+            <button className="sa-pop-cancel" style={{ color: 'red' }} onClick={onDelete}>
               {t('studentsAttendance.delete')}
             </button>
           )}
-          <button className="pop-save" onClick={handleSave}>
+          <button className="sa-pop-save" onClick={handleSave}>
             {t('studentsAttendance.save')}
           </button>
-          <button className="pop-cancel" onClick={onCancel}>
+          <button className="sa-pop-cancel" onClick={onCancel}>
             {t('studentsAttendance.cancel')}
           </button>
         </div>
@@ -268,16 +312,23 @@ const GroupSelector: React.FC = () => {
 const StudentsAttendance: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const groupId = searchParams.get('groupId');
 
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [startModalOpen, setStartModalOpen] = useState(false);
+  const [startTopic, setStartTopic] = useState('');
+  const [confirmEndOpen, setConfirmEndOpen] = useState(false);
+  const [autoPrompted, setAutoPrompted] = useState(false);
   const [selectedCell, setSelectedCell] = useState<{
     studentId: number;
     date: string;
     attendance?: Attendance;
   } | null>(null);
+
+  const todayStr = useMemo(() => toTashkentDate(new Date()), []);
 
   const { data: studentsData } = useQuery<StudentsResponse>({
     queryKey: ['students', groupId],
@@ -312,28 +363,167 @@ const StudentsAttendance: React.FC = () => {
     enabled: !!groupId,
   });
 
+  // Davomat faqat "ongoing" dars paytida qo'yiladi — bugungi darsni topamiz.
+  const { data: lessonsData } = useQuery<Lesson[]>({
+    queryKey: ['lessons', groupId],
+    queryFn: () =>
+      API.get('/lessons', { params: { group_id: groupId, per_page: 200 } }).then((res) => {
+        const arr = Array.isArray(res.data) ? res.data : (res.data?.data ?? []);
+        return arr as Lesson[];
+      }),
+    enabled: !!groupId,
+  });
+
+  const todayLesson = useMemo(
+    () =>
+      (lessonsData ?? []).find(
+        (l) => Number(l.group_id) === Number(groupId) && isSameDay(l.date, new Date()),
+      ),
+    [lessonsData, groupId],
+  );
+  const lessonStatus = todayLesson?.status;
+  const lessonActive = lessonStatus === 'ongoing';
+
+  // Bugun guruhning dars kunimi? (group.days asosida)
+  const todayIsLessonDay = useMemo(() => {
+    if (!groupData?.days) return false;
+    const todayDow = new Date().getDay();
+    return groupData.days.some((d) => DAY_INDEX[d.toLowerCase()] === todayDow);
+  }, [groupData]);
+
+  // Dars vaqti — guruhning start_time/end_time (masalan "15:00-16:30").
+  const lessonTime = useMemo(() => {
+    const g = groupData as Record<string, unknown> | undefined;
+    const fmt = (v: unknown) => (typeof v === 'string' ? v.slice(0, 5) : '');
+    const start = fmt(g?.start_time);
+    const end = fmt(g?.end_time);
+    if (!start && !end) return '';
+    return end ? `${start}-${end}` : start;
+  }, [groupData]);
+
+  const notifyError = (error: unknown, fallbackKey: string) =>
+    notifications.show({
+      title: t('studentsAttendance.notif_error_title'),
+      message: getApiErrorMessage(error, t(fallbackKey)),
+      color: 'red',
+    });
+
+  const notifySuccess = (messageKey: string) =>
+    notifications.show({
+      title: t('studentsAttendance.notif_success_title'),
+      message: t(messageKey),
+      color: 'green',
+    });
+
+  const invalidateAttendanceQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ['student_attendance'] });
+    // balansi davomatdan keyin o'zgaradi — o'quvchilar ro'yxatini ham yangilaymiz
+    queryClient.invalidateQueries({ queryKey: ['students', groupId] });
+    queryClient.invalidateQueries({ queryKey: ['group', groupId] });
+  };
+
+  const startLessonMutation = useMutation({
+    mutationFn: (id: number) => API.post(`/lessons/${id}/start`),
+    onSuccess: () => notifySuccess('studentsAttendance.lesson_started'),
+    onError: (error) => notifyError(error, 'studentsAttendance.lesson_start_error'),
+    onSettled: () => {
+      setStartModalOpen(false);
+      // 409 (allaqachon boshlangan) holatida ham holatni yangilaymiz
+      queryClient.invalidateQueries({ queryKey: ['lessons', groupId] });
+    },
+  });
+
+  // Bugungi dars yozuvi bo'lmasa — avval yaratamiz (mavzu bilan), so'ng boshlaymiz.
+  const createAndStartMutation = useMutation({
+    mutationFn: async (topic: string) => {
+      const form = new FormData();
+      form.append('group_id', String(groupId));
+      form.append('date', todayStr);
+      form.append('topic', topic);
+      // Backend homework_title_uz ni majburiy qiladi — vaqtincha mavzu bilan to'ldiramiz.
+      // Asl uy vazifasi dars tugaganda darslar sahifasida yangilanadi.
+      form.append('homework_title_uz', topic);
+      const res = await API.post('/lessons', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const created = (res.data?.data ?? res.data) as Lesson | undefined;
+      if (created?.id) {
+        await API.post(`/lessons/${created.id}/start`);
+      }
+      return created;
+    },
+    onSuccess: () => notifySuccess('studentsAttendance.lesson_started'),
+    onError: (error) => notifyError(error, 'studentsAttendance.lesson_start_error'),
+    onSettled: () => {
+      setStartModalOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['lessons', groupId] });
+    },
+  });
+
+  const startBusy = startLessonMutation.isPending || createAndStartMutation.isPending;
+
+  const handleConfirmStart = () => {
+    if (todayLesson) {
+      startLessonMutation.mutate(todayLesson.id);
+    } else {
+      createAndStartMutation.mutate(startTopic.trim());
+    }
+  };
+
+  // Dars boshlanishi kerak bo'lgan holat (bugun dars kuni, hali ongoing/completed emas).
+  const startNeeded =
+    Boolean(todayLesson || todayIsLessonDay) &&
+    lessonStatus !== 'ongoing' &&
+    lessonStatus !== 'completed';
+
+  // Guruh tanlangach / ma'lumot yuklangach — start modalini bir marta avtomatik ochamiz.
+  // Effekt emas, render fazasida (ConfirmModal'dagi kabi) — cascading render bo'lmasligi uchun.
+  if (groupId && startNeeded && !autoPrompted) {
+    setAutoPrompted(true);
+    setStartModalOpen(true);
+  }
+
+  const endLessonMutation = useMutation({
+    mutationFn: (id: number) => API.post(`/lessons/${id}/end`),
+    onSuccess: () => notifySuccess('studentsAttendance.lesson_ended'),
+    onError: (error) => notifyError(error, 'studentsAttendance.lesson_end_error'),
+    onSettled: () => {
+      setConfirmEndOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['lessons', groupId] });
+      invalidateAttendanceQueries();
+      // Dars tugagach — uy vazifasini biriktirish uchun darslar sahifasiga o'tamiz,
+      // guruh + o'sha sana bilan modal avtomatik ochiladi.
+      navigate(
+        `/student-tasks?groupId=${groupId}&date=${todayStr}&openHomework=1&lessonId=${todayLesson?.id ?? ''}`,
+      );
+    },
+  });
+
   const createMutation = useMutation({
     mutationFn: (data: Attendance) => API.post('/student_attendance', data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['student_attendance'] });
+      invalidateAttendanceQueries();
       setSelectedCell(null);
     },
+    onError: (error) => notifyError(error, 'studentsAttendance.attendance_error'),
   });
 
   const updateMutation = useMutation({
     mutationFn: (data: Attendance) => API.put(`/student_attendance/${data.id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['student_attendance'] });
+      invalidateAttendanceQueries();
       setSelectedCell(null);
     },
+    onError: (error) => notifyError(error, 'studentsAttendance.attendance_error'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => API.delete(`/student_attendance/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['student_attendance'] });
+      invalidateAttendanceQueries();
       setSelectedCell(null);
     },
+    onError: (error) => notifyError(error, 'studentsAttendance.attendance_error'),
   });
 
   const lessonDatesInMonth = useMemo(() => {
@@ -361,13 +551,15 @@ const StudentsAttendance: React.FC = () => {
 
   const handleCellClick = useCallback(
     (studentId: number, day: number) => {
+      // Davomat faqat dars boshlangan (ongoing) paytda belgilanadi.
+      if (!lessonActive) return;
       const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const attendance = (attendanceData?.[studentId] || []).find((a) =>
         String(a.date).startsWith(dateStr),
       );
       setSelectedCell({ studentId, date: dateStr, attendance });
     },
-    [attendanceData, currentYear, currentMonth],
+    [attendanceData, currentYear, currentMonth, lessonActive],
   );
 
   if (!groupId) return <GroupSelector />;
@@ -504,12 +696,8 @@ const StudentsAttendance: React.FC = () => {
                       </span>
                       <span className="student-phone">{student.phone}</span>
                     </div>
-                    <div
-                      className={`status-badge status-${student?.status === 'Noaktiv' ? 'noaktiv' : 'aktiv'}`}
-                    >
-                      {t(
-                        `studentsAttendance.${student?.status === 'Noaktiv' ? 'noaktiv' : 'aktiv'}`,
-                      )}
+                    <div className={`status-badge status-${getStatusMeta(student?.status).cls}`}>
+                      {t(`studentsAttendance.${getStatusMeta(student?.status).key}`)}
                     </div>
                   </div>
                 </td>
@@ -519,7 +707,7 @@ const StudentsAttendance: React.FC = () => {
                     String(a.date).startsWith(dateStr),
                   );
                   return (
-                    <td key={day} className="attendance-cell">
+                    <td key={day} className={`attendance-cell${lessonActive ? '' : ' cell-locked'}`}>
                       <AttendanceDot
                         status={att?.status}
                         grade={att?.score}
@@ -560,10 +748,8 @@ const StudentsAttendance: React.FC = () => {
                 </span>
                 <span className="student-phone">{student.phone}</span>
               </div>
-              <div
-                className={`status-badge status-${student?.status === 'Noaktiv' ? 'noaktiv' : 'aktiv'}`}
-              >
-                {t(`studentsAttendance.${student?.status === 'Noaktiv' ? 'noaktiv' : 'aktiv'}`)}
+              <div className={`status-badge status-${getStatusMeta(student?.status).cls}`}>
+                {t(`studentsAttendance.${getStatusMeta(student?.status).key}`)}
               </div>
             </div>
             <div className="card-body">
@@ -601,6 +787,89 @@ const StudentsAttendance: React.FC = () => {
           </div>
         ))}
       </div>
+
+      <Protected permission="student_attendance.create">
+        <div className="lesson-control-fixed">
+          {(todayLesson || todayIsLessonDay) &&
+            lessonStatus !== 'ongoing' &&
+            lessonStatus !== 'completed' && (
+              <button
+                className="lesson-btn btn-start"
+                onClick={() => setStartModalOpen(true)}
+                disabled={startBusy}
+              >
+                {t('studentsAttendance.darsni_boshlash')}
+                {lessonTime && <span>{lessonTime}</span>}
+              </button>
+            )}
+          {!todayLesson && !todayIsLessonDay && (
+            <button className="lesson-btn btn-disabled" disabled>
+              {t('studentsAttendance.no_lesson_today')}
+            </button>
+          )}
+          {lessonStatus === 'ongoing' && (
+            <button
+              className="lesson-btn btn-end"
+              onClick={() => setConfirmEndOpen(true)}
+              disabled={endLessonMutation.isPending}
+            >
+              {t('studentsAttendance.darsni_tamomlash')}
+              {lessonTime && <span>{lessonTime}</span>}
+            </button>
+          )}
+          {lessonStatus === 'completed' && (
+            <button className="lesson-btn btn-disabled" disabled>
+              {t('studentsAttendance.lesson_completed')}
+            </button>
+          )}
+        </div>
+      </Protected>
+
+      {startModalOpen && (
+        <div className="modal-centered-overlay">
+          <div className="start-lesson-modal">
+            <h2>{t('studentsAttendance.start_lesson_title')}</h2>
+            {lessonTime && <p className="start-lesson-time">🕒 {lessonTime}</p>}
+            <p>{t('studentsAttendance.start_lesson_desc')}</p>
+
+            {!todayLesson && (
+              <div className="start-topic-field">
+                <label className="end-field-label">
+                  {t('studentsAttendance.lesson_topic_label')}
+                </label>
+                <input
+                  className="end-field-input"
+                  value={startTopic}
+                  disabled={startBusy}
+                  autoFocus
+                  onChange={(e) => setStartTopic(e.target.value)}
+                />
+              </div>
+            )}
+
+            <button
+              className="start-modal-btn"
+              type="button"
+              disabled={startBusy || (!todayLesson && !startTopic.trim())}
+              onClick={handleConfirmStart}
+            >
+              {t('studentsAttendance.start')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <ConfirmModal
+        open={confirmEndOpen}
+        title={t('studentsAttendance.end_lesson_title')}
+        message={t('studentsAttendance.end_confirm_desc')}
+        confirmLabel={t('studentsAttendance.end_confirm_btn')}
+        cancelLabel={t('studentsAttendance.cancel')}
+        tone="danger"
+        busy={endLessonMutation.isPending}
+        onConfirm={() => todayLesson && endLessonMutation.mutate(todayLesson.id)}
+        onCancel={() => setConfirmEndOpen(false)}
+      />
 
       {selectedCell && (
         <Popover

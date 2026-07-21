@@ -335,6 +335,24 @@
   background: #fffafa !important;
 }
 
+.status-frozen {
+  border-color: #3f88c9 !important;
+  color: #3f88c9 !important;
+  background: #f0f7ff !important;
+}
+
+.status-dropped {
+  border-color: var(--absent-color) !important;
+  color: var(--absent-color) !important;
+  background: #fffafa !important;
+}
+
+.status-graduated {
+  border-color: #8b5cf6 !important;
+  color: #8b5cf6 !important;
+  background: #f7f5ff !important;
+}
+
 /* ===== ATTENDANCE CELL ===== */
 .attendance-cell {
   display: table-cell !important;
@@ -486,21 +504,22 @@
   gap: 4px !important;
 }
 
-/* ===== POPOVER ===== */
-.popover-overlay {
+/* ===== POPOVER (sa- prefiks: global .popover-overlay / .attendance-popover bilan
+   to'qnashmasin; z-index sidebar/header 1000 dan ustun bo'lishi kerak) ===== */
+.sa-popover-overlay {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 100 !important;
+  z-index: 10000 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   background: rgba(0, 0, 0, 0.2) !important;
 }
 
-.attendance-popover {
+.sa-attendance-popover {
   position: relative !important;
   top: unset !important;
   left: unset !important;
@@ -512,27 +531,27 @@
   padding: 20px !important;
   width: 280px !important;
   border: 1px solid #eee !important;
-  z-index: 101 !important;
+  z-index: 10001 !important;
 }
 
-.popover-section {
+.sa-popover-section {
   margin-bottom: 16px !important;
 }
 
-.popover-title {
+.sa-popover-title {
   font-weight: 700 !important;
   font-size: 14px !important;
   margin-bottom: 10px !important;
   display: block !important;
 }
 
-.davomat-options {
+.sa-davomat-options {
   display: flex !important;
   flex-direction: column !important;
   gap: 8px !important;
 }
 
-.option-btn {
+.sa-option-btn {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -546,25 +565,25 @@
   text-align: left !important;
 }
 
-.option-btn:hover {
+.sa-option-btn:hover {
   background: #f5f5f5 !important;
 }
 
-.option-btn.active {
+.sa-option-btn.active {
   border-color: var(--primary-color) !important;
   background: rgba(254, 145, 0, 0.05) !important;
 }
 
-.grade-input-wrap {
+.sa-grade-input-wrap {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
   gap: 10px !important;
 }
 
-.grade-field {
-  width: 60px !important;
-  height: 40px !important;
+.sa-grade-field {
+  width: 56px !important;
+  height: 52px !important;
   border: 1px solid var(--border-color) !important;
   border-radius: 8px !important;
   text-align: center !important;
@@ -573,7 +592,7 @@
   font-size: 18px !important;
 }
 
-.reason-field {
+.sa-reason-field {
   width: 100% !important;
   padding: 8px !important;
   border: 1px solid var(--border-color) !important;
@@ -583,23 +602,27 @@
   box-sizing: border-box !important;
 }
 
-.popover-actions {
+.sa-popover-actions {
   display: flex !important;
   flex-direction: row !important;
   gap: 10px !important;
   justify-content: flex-end !important;
 }
 
-.pop-cancel {
-  background: #f5f5f5 !important;
-  border: none !important;
+.sa-pop-cancel {
+  background: #fff !important;
+  border: 1px solid var(--border-color) !important;
   padding: 8px 16px !important;
   border-radius: 6px !important;
   cursor: pointer !important;
   font-size: 13px !important;
 }
 
-.pop-save {
+.sa-pop-cancel:hover {
+  background: #f5f5f5 !important;
+}
+
+.sa-pop-save {
   background: var(--primary-color) !important;
   color: white !important;
   border: none !important;
@@ -648,6 +671,20 @@
   background: var(--absent-color) !important;
   color: white !important;
 }
+.btn-disabled {
+  background: #d5dae0 !important;
+  color: #6b7280 !important;
+  cursor: not-allowed !important;
+  justify-content: center !important;
+}
+
+/* Dars boshlanmagan bo'lsa kataklar bosilmasligini bildiradi */
+.attendance-cell.cell-locked .attendance-dot {
+  cursor: not-allowed !important;
+}
+.attendance-cell.cell-locked .attendance-dot:hover {
+  transform: none !important;
+}
 
 /* ===== MODAL ===== */
 .modal-centered-overlay {
@@ -660,7 +697,7 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  z-index: 200 !important;
+  z-index: 10000 !important;
 }
 
 .start-lesson-modal {
@@ -682,6 +719,39 @@
   margin-top: 20px !important;
   cursor: pointer !important;
   font-size: 15px !important;
+}
+
+.start-modal-btn:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+.start-topic-field {
+  text-align: left !important;
+  margin-top: 16px !important;
+}
+
+.start-lesson-time {
+  font-family: noto-b !important;
+  font-size: 15px !important;
+  color: var(--primary-color) !important;
+  margin-bottom: 6px !important;
+}
+
+.end-field-label {
+  display: block !important;
+  font-family: noto-sb !important;
+  font-size: 13px !important;
+  margin: 12px 0 6px !important;
+}
+
+.end-field-input {
+  width: 100% !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  font-size: 14px !important;
+  box-sizing: border-box !important;
 }
 
 /* ===== GROUP SELECTOR ===== */
@@ -862,11 +932,11 @@
     border-radius: 12px !important;
   }
 
-  .popover-overlay {
+  .sa-popover-overlay {
     align-items: flex-end !important;
   }
 
-  .attendance-popover {
+  .sa-attendance-popover {
     width: 100% !important;
     border-radius: 20px 20px 0 0 !important;
     padding-bottom: 40px !important;

@@ -1,0 +1,4554 @@
+diff --git a/src/App.tsx b/src/App.tsx
+index a3c0bcf..9b7fdd9 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -41,6 +41,9 @@ import ContractConfirmPage from './pages/contract-confirm';
+ import SetPasswordPage from './pages/set-password';
+ import Finances from './pages/finance';
+ import DebtsPage from './pages/debts';
++import PayrollDistribution from './pages/payroll-distribution';
++import PayrollAdjustments from './pages/payroll-adjustments';
++import AdjustmentForm from './pages/payroll-adjustments/AdjustmentForm';
+ 
+ import './index.css';
+ import '@mantine/core/styles.css';
+@@ -112,6 +115,10 @@ const App = () => {
+             <Route path="/contracts/:id" element={<ContractDetailPage />} />
+           </Route>
+ 
++          <Route element={<PermissionRoute permission="payroll_distributions.create" />}>
++            <Route path="/payroll/distributions/:employeeId" element={<PayrollDistribution />} />
++          </Route>
++
+           <Route element={<PermissionRoute permission="roles.view" />}>
+             <Route path="/roles" element={<RoleManagement />} />
+           </Route>
+@@ -150,6 +157,17 @@ const App = () => {
+           <Route element={<PermissionRoute permission="jamgarma_loans.view" />}>
+             <Route path="/debts" element={<DebtsPage />} />
+           </Route>
++          <Route element={<PermissionRoute permission="payroll_adjustments.view" />}>
++            <Route path="/payroll-adjustments" element={<PayrollAdjustments />} />
++            <Route path="/payroll-adjustments/:id" element={<AdjustmentForm />} />
++          </Route>
++          {/* Yaratish/tahrirlash alohida ruxsat talab qiladi — .view yetarli emas. */}
++          <Route element={<PermissionRoute permission="payroll_adjustments.create" />}>
++            <Route path="/payroll-adjustments/create" element={<AdjustmentForm />} />
++          </Route>
++          <Route element={<PermissionRoute permission="payroll_adjustments.edit" />}>
++            <Route path="/payroll-adjustments/:id/edit" element={<AdjustmentForm />} />
++          </Route>
+ 
+           <Route element={<PermissionRoute permission="student_contracts.view" />}>
+             <Route path="/students-contract" element={<StudentsContract />} />
+diff --git a/src/components/ConfirmModal/confirmModal.css b/src/components/ConfirmModal/confirmModal.css
+new file mode 100644
+index 0000000..c387389
+--- /dev/null
++++ b/src/components/ConfirmModal/confirmModal.css
+@@ -0,0 +1,144 @@
++/* Tasdiqlash modali. Klasslar `cm-` prefiksi bilan scope qilingan: global
++ * `.modal-overlay` / `.modal-container` uch xil sahifa CSS'ida (lid, tasks,
++ * expenses) qayta-qayta e'lon qilingan va bundle tartibiga qarab ustma-ust
++ * tushadi — shunga tayanmaymiz. */
++
++.cm-overlay {
++  position: fixed;
++  inset: 0;
++  background: rgba(0, 0, 0, 0.5);
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  z-index: 10000;
++  padding: 16px;
++}
++
++.cm-container {
++  background: #ffffff;
++  border-radius: 10px;
++  width: 100%;
++  max-width: 420px;
++  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
++  overflow: hidden;
++}
++
++.cm-header {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 12px;
++  padding: 16px 18px;
++  background: #003366;
++}
++
++.cm-title {
++  font-family: noto-b, sans-serif;
++  font-size: 15px;
++  color: #ffffff;
++  margin: 0;
++}
++
++.cm-close-btn {
++  background: transparent;
++  border: none;
++  color: #ffffff;
++  cursor: pointer;
++  display: flex;
++  padding: 2px;
++  border-radius: 4px;
++  transition: opacity 0.18s ease;
++}
++.cm-close-btn:hover {
++  opacity: 0.75;
++}
++
++.cm-body {
++  padding: 20px 18px;
++  font-family: noto-r, sans-serif;
++  font-size: 14px;
++  color: #1a1a1a;
++  line-height: 1.5;
++}
++
++/* Sabab maydoni — faqat reasonRequired bo'lganda (masalan rad etish) */
++.cm-reason {
++  margin-top: 14px;
++}
++.cm-reason-label {
++  display: block;
++  margin-bottom: 5px;
++  font-family: noto-m, sans-serif;
++  font-size: 13px;
++  color: #1a1a1a;
++}
++.cm-req {
++  color: #e70a0a;
++  margin-left: 2px;
++}
++.cm-reason-input {
++  width: 100%;
++  min-height: 68px;
++  padding: 8px 10px;
++  border: 1px solid #cbd5e1;
++  border-radius: 6px;
++  outline: none;
++  resize: vertical;
++  font-family: noto-r, sans-serif;
++  font-size: 13px;
++  transition:
++    border-color 0.18s ease,
++    box-shadow 0.18s ease;
++}
++.cm-reason-input:focus {
++  border-color: #003366;
++  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
++}
++
++.cm-actions {
++  display: flex;
++  justify-content: flex-end;
++  gap: 10px;
++  padding: 0 18px 18px;
++}
++
++.cm-btn {
++  padding: 9px 18px;
++  border: none;
++  border-radius: 6px;
++  font-family: noto-b, sans-serif;
++  font-size: 13px;
++  color: #ffffff;
++  cursor: pointer;
++  transition: opacity 0.18s ease;
++  white-space: nowrap;
++}
++.cm-btn:hover:not(:disabled) {
++  opacity: 0.88;
++}
++.cm-btn:disabled {
++  opacity: 0.5;
++  cursor: not-allowed;
++}
++
++.cm-btn--cancel {
++  background: #6b7280;
++}
++.cm-btn--danger {
++  background: #e70a0a;
++}
++.cm-btn--success {
++  background: #2aa411;
++}
++.cm-btn--primary {
++  background: #003366;
++}
++
++@media (max-width: 480px) {
++  .cm-actions {
++    flex-direction: column-reverse;
++  }
++  .cm-btn {
++    width: 100%;
++  }
++}
+diff --git a/src/components/ConfirmModal/index.tsx b/src/components/ConfirmModal/index.tsx
+new file mode 100644
+index 0000000..02fa6e8
+--- /dev/null
++++ b/src/components/ConfirmModal/index.tsx
+@@ -0,0 +1,136 @@
++import { useEffect, useState } from 'react';
++import { useTranslation } from 'react-i18next';
++import './confirmModal.css';
++
++/* ------------------------------------------------------------------ *
++ * Tasdiqlash modali — `window.confirm` o'rniga.
++ * Qaytarib bo'lmaydigan amallardan oldin ishlatiladi.
++ * ------------------------------------------------------------------ */
++
++type Tone = 'danger' | 'success' | 'primary';
++
++interface ConfirmModalProps {
++  open: boolean;
++  title: string;
++  message: string;
++  confirmLabel: string;
++  cancelLabel: string;
++  /** Tasdiqlash tugmasi rangi — amalning xarakteriga qarab. */
++  tone?: Tone;
++  /** So'rov ketayotganda ikkala tugma ham bloklanadi. */
++  busy?: boolean;
++  /** Sabab maydonini ko'rsatadi va to'ldirilmaguncha tasdiqlashni bloklaydi. */
++  reasonRequired?: boolean;
++  reasonLabel?: string;
++  /** Sabab so'ralgan bo'lsa, kiritilgan matn bilan chaqiriladi. */
++  onConfirm: (reason?: string) => void;
++  onCancel: () => void;
++}
++
++const ConfirmModal = ({
++  open,
++  title,
++  message,
++  confirmLabel,
++  cancelLabel,
++  tone = 'primary',
++  busy = false,
++  reasonRequired = false,
++  reasonLabel,
++  onConfirm,
++  onCancel,
++}: ConfirmModalProps) => {
++  const { t } = useTranslation();
++  const [reason, setReason] = useState('');
++
++  // Escape bilan yopish — ModalPattern'dagi xulq-atvor bilan bir xil.
++  useEffect(() => {
++    if (!open) return;
++    const handleKeyDown = (e: KeyboardEvent) => {
++      if (e.key === 'Escape' && !busy) onCancel();
++    };
++    document.addEventListener('keydown', handleKeyDown);
++    return () => document.removeEventListener('keydown', handleKeyDown);
++  }, [open, busy, onCancel]);
++
++  // Har ochilishda sabab tozalanadi — oldingi amalning matni qolib ketmasin.
++  // Effekt emas, render fazasida (cascading render bo'lmasligi uchun):
++  // https://react.dev/learn/you-might-not-need-an-effect
++  const [wasOpen, setWasOpen] = useState(open);
++  if (open !== wasOpen) {
++    setWasOpen(open);
++    if (open) setReason('');
++  }
++
++  if (!open) return null;
++
++  const confirmDisabled = busy || (reasonRequired && !reason.trim());
++
++  return (
++    <div className="cm-overlay" onClick={() => !busy && onCancel()}>
++      <div
++        className="cm-container"
++        role="dialog"
++        aria-modal="true"
++        aria-label={title}
++        onClick={(e) => e.stopPropagation()}
++      >
++        <div className="cm-header">
++          <h2 className="cm-title">{title}</h2>
++          <button
++            className="cm-close-btn"
++            type="button"
++            disabled={busy}
++            onClick={onCancel}
++            aria-label={t('modalPattern.close')}
++          >
++            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
++              <path
++                d="M18 6L6 18M6 6l12 12"
++                stroke="currentColor"
++                strokeWidth="2"
++                strokeLinecap="round"
++                strokeLinejoin="round"
++              />
++            </svg>
++          </button>
++        </div>
++
++        <div className="cm-body">
++          {message}
++          {reasonRequired && (
++            <div className="cm-reason">
++              <label className="cm-reason-label">
++                {reasonLabel}
++                <span className="cm-req">*</span>
++              </label>
++              <textarea
++                className="cm-reason-input"
++                value={reason}
++                disabled={busy}
++                autoFocus
++                onChange={(e) => setReason(e.target.value)}
++              />
++            </div>
++          )}
++        </div>
++
++        <div className="cm-actions">
++          <button className="cm-btn cm-btn--cancel" type="button" disabled={busy} onClick={onCancel}>
++            {cancelLabel}
++          </button>
++          <button
++            className={`cm-btn cm-btn--${tone}`}
++            type="button"
++            disabled={confirmDisabled}
++            onClick={() => onConfirm(reasonRequired ? reason.trim() : undefined)}
++          >
++            {confirmLabel}
++          </button>
++        </div>
++      </div>
++    </div>
++  );
++};
++
++export default ConfirmModal;
+diff --git a/src/messages/en.json b/src/messages/en.json
+index 5b15324..d228e8a 100644
+--- a/src/messages/en.json
++++ b/src/messages/en.json
+@@ -57,9 +57,12 @@
+     "financeScoreSheet": "Financial Report",
+     "jamgarma": "Jamg'armalar",
+     "debts": "Debts",
++    "payrollAdjustments": "Payroll Adjustments",
+     "finances": "Accounts and transactions between them",
+     "debtsTitle": "Inter-fund lending and borrowing",
+-    "staffAttendance": "Employee Attendance"
++    "staffAttendance": "Employee Attendance",
++    "Studentsattendance": "Student Attendance",
++    "payroll": "Salary Distribution"
+   },
+   "dashboard": {
+     "allLids": "TOTAL LEADS",
+@@ -941,6 +944,30 @@
+     "start_lesson_title": "Start Lesson",
+     "start_lesson_desc": "Start the lesson to take attendance.",
+     "start": "Start",
++    "no_lesson_today": "No lesson today",
++    "create_today_lesson": "Create today's lesson",
++    "lesson_completed": "Lesson completed",
++    "start_confirm_title": "Start Lesson",
++    "start_confirm_desc": "A lesson can only be started on its scheduled day. Confirm starting the lesson?",
++    "lesson_topic_label": "Lesson topic",
++    "end_lesson_title": "End Lesson",
++    "end_lesson_desc": "Enter the homework and finish the lesson.",
++    "end_confirm_desc": "End the lesson and go to the homework assignment page?",
++    "end_confirm_btn": "End Lesson",
++    "homework_title_label": "Homework title",
++    "homework_desc_label": "Homework description",
++    "homework_file_label": "File (optional)",
++    "lesson_started": "Lesson started",
++    "lesson_ended": "Lesson ended",
++    "lesson_start_error": "Failed to start the lesson",
++    "lesson_end_error": "Failed to end the lesson",
++    "attendance_error": "Failed to save attendance",
++    "notif_success_title": "Success",
++    "notif_error_title": "Error",
++    "st_active": "Active",
++    "st_frozen": "Frozen",
++    "st_dropped": "Dropped",
++    "st_graduated": "Graduated",
+     "months": {
+       "jan": "January",
+       "feb": "February",
+@@ -1350,6 +1377,152 @@
+     "pdfError": "Failed to generate PDF.",
+     "printError": "Failed to print."
+   },
++  "payrollDistribution": {
++    "title": "Distribution window",
++    "back": "Back",
++    "save": "Save",
++    "cancel": "Cancel",
++    "loading": "Loading...",
++    "error": "Failed to load data.",
++    "choose": "Select",
++    "soum": "soum",
++    "yes": "Yes",
++    "no": "No",
++    "savedTitle": "Saved",
++    "savedMessage": "Payroll distribution saved successfully.",
++    "info": {
++      "fullName": "Full name",
++      "departmentPosition": "Department and position",
++      "branch": "Branch",
++      "balance": "Balance",
++      "agreedPercent": "Agreed percent",
++      "contractOklad": "Contract salary"
++    },
++    "tabs": {
++      "avans": "ADVANCE",
++      "oylik": "SALARY"
++    },
++    "fields": {
++      "comment": "Comment",
++      "jamiAvansNaqdsiz": "Total advance cashless",
++      "avansNaqdsiz": "Advance cashless",
++      "avansNaqdAuto": "Advance cash (automatic)",
++      "jamiOylikNaqdsiz": "Total salary cashless",
++      "jamiOylikNaqd": "Total salary cash",
++      "oylikNaqdsiz": "Salary cashless",
++      "oylikNaqdsizAuto": "Salary cashless (automatic)",
++      "oylikNaqdAuto": "Salary cash (automatic)",
++      "oylikNaqd": "Salary cash",
++      "avansNaqd": "Advance cash",
++      "privilegedPart": "Privileged part of salary",
++      "taxPayer": "Who pays the income tax",
++      "cashTax": "Withhold tax from cash"
++    },
++    "taxPayerOptions": {
++      "employee": "At employee's expense",
++      "organization": "At organization's expense"
++    },
++    "errorTitle": "Error",
++    "saveErrorMessage": "Saving failed. Please try again.",
++    "periodLocked": "This period is closed — the distribution cannot be changed.",
++    "validation": {
++      "maxExceeded": "Must not exceed {{max}} soum"
++    }
++  },
++  "payrollAdjustments": {
++    "title": "Payroll Adjustments",
++    "newBtn": "New adjustment",
++    "loading": "Loading...",
++    "error": "Failed to load data.",
++    "noData": "No data found",
++    "select": "Select",
++    "savedTitle": "Done",
++    "savedMessage": "Adjustment saved successfully.",
++    "approvedMessage": "Adjustment approved.",
++    "rejectedMessage": "Adjustment rejected.",
++    "footer": "Showing {{start}}-{{end}} of {{total}}",
++    "filters": {
++      "period": "Period",
++      "branch": "Branch",
++      "all": "All",
++      "employeeId": "Employee ID",
++      "employeeIdPlaceholder": "E.g. 123",
++      "lastName": "Last name",
++      "firstName": "First name",
++      "middleName": "Middle name",
++      "department": "Department"
++    },
++    "table": {
++      "employeeId": "Employee ID",
++      "fullName": "Full name",
++      "departmentPosition": "Department / Position",
++      "adjustments": "Adjustments",
++      "lateHours": "Late hours",
++      "earlyLeaveHours": "Early leave hours",
++      "actions": "Actions",
++      "statusLabel": "Status:",
++      "createdBy": "Created by:",
++      "approvedBy": "Approved by:",
++      "commentLabel": "Comment:",
++      "hours": "hrs"
++    },
++    "status": {
++      "new": "New",
++      "approved": "Approved",
++      "rejected": "Rejected"
++    },
++    "actions": {
++      "edit": "Adjust",
++      "view": "View",
++      "reject": "Reject",
++      "approve": "Approve",
++      "save": "Save",
++      "cancel": "Cancel"
++    },
++    "info": {
++      "fullName": "Full name",
++      "departmentPosition": "Department and position",
++      "branch": "Branch"
++    },
++    "types": {
++      "extra": {
++        "title": "Worked extra",
++        "desc": "Entered hours are",
++        "bold": "added to salary"
++      },
++      "absent": {
++        "title": "Did not work",
++        "desc": "Entered hours are",
++        "bold": "deducted from salary"
++      },
++      "substitute": {
++        "title": "Worked instead of another",
++        "desc": "Entered hours are",
++        "bold": "added at 100%"
++      }
++    },
++    "fields": {
++      "date": "Date",
++      "periodHint": "⚠️ If the payroll period is closed (salary paid or sent for approval) — entry is not possible.",
++      "hoursWorked": "How many hours did the employee work?",
++      "hoursNotWorked": "How many hours did the employee not work?",
++      "substitute": "Which employee did they substitute for?",
++      "comment": "Comment",
++      "employee": "Employee"
++    },
++    "errorTitle": "Error",
++    "saveErrorMessage": "Saving failed. Please try again.",
++    "decisionErrorMessage": "The action failed. Please try again.",
++    "back": "Back",
++    "confirm": {
++      "approveTitle": "Approve adjustment",
++      "approveMessage": "Approve the adjustment for {{name}}? This cannot be undone.",
++      "rejectTitle": "Reject adjustment",
++      "rejectMessage": "Reject the adjustment for {{name}}? This cannot be undone.",
++      "cancel": "Close",
++      "reasonLabel": "Rejection reason"
++    }
++  },
+   "expenses": {
+     "expenseTitle": "Expenses",
+     "addNewExpense": "Add Expense",
+@@ -1455,6 +1628,8 @@
+     "contractType": "Contract Type",
+     "contractConclusionTerm": "Contract Conclusion Term",
+     "salaryType": "Salary Type for Contract",
++    "salaryBasis": "Salary Calculation Basis",
++    "salaryPercent": "Percentage (%)",
+     "vacationType": "Labor Leave",
+     "contractTypeOptions": {
+       "asosiy": "Main employment",
+@@ -1473,9 +1648,16 @@
+     },
+     "salaryTypeOptions": {
+       "shtat": "According to staffing schedule",
+-      "oquvchi": "According to number of students",
++      "foiz": "Percentage based",
+       "soat": "According to teaching hours"
+     },
++    "salaryBasisOptions": {
++      "totalHours": "Total working hours",
++      "baseSalary": "Base salary",
++      "hourlySalary": "Hourly salary",
++      "baseWorkHours": "Base working hours",
++      "hourlyWorkHours": "Hourly working hours"
++    },
+     "vacationOptions": {
+       "given": "Provided",
+       "notGiven": "Not provided"
+diff --git a/src/messages/ru.json b/src/messages/ru.json
+index 8a6532c..749c743 100644
+--- a/src/messages/ru.json
++++ b/src/messages/ru.json
+@@ -57,9 +57,12 @@
+     "financeScoreSheet": "Финансовый отчёт",
+     "jamgarma": "Джамгармалар",
+     "debts": "Долги",
++    "payrollAdjustments": "Корректировки зарплаты",
+     "finances": "Счета и операции между ними",
+     "debtsTitle": "Взаимное кредитование и заимствование между фондами",
+-    "staffAttendance": "Посещаемость сотрудников"
++    "staffAttendance": "Посещаемость сотрудников",
++    "Studentsattendance": "Посещаемость студентов",
++    "payroll": "Распределение зарплаты"
+   },
+   "dashboard": {
+     "allLids": "ВСЕГО ЛИДОВ",
+@@ -945,6 +948,30 @@
+     "start_lesson_title": "Начать урок",
+     "start_lesson_desc": "Начните урок, чтобы отметить посещаемость.",
+     "start": "Начать",
++    "no_lesson_today": "Сегодня нет урока",
++    "create_today_lesson": "Создать сегодняшний урок",
++    "lesson_completed": "Урок завершён",
++    "start_confirm_title": "Начать урок",
++    "start_confirm_desc": "Урок можно начать только в день урока. Подтвердить начало урока?",
++    "lesson_topic_label": "Тема урока",
++    "end_lesson_title": "Завершить урок",
++    "end_lesson_desc": "Введите домашнее задание и завершите урок.",
++    "end_confirm_desc": "Завершить урок и перейти к странице назначения домашнего задания?",
++    "end_confirm_btn": "Завершить урок",
++    "homework_title_label": "Название задания",
++    "homework_desc_label": "Описание задания",
++    "homework_file_label": "Файл (необязательно)",
++    "lesson_started": "Урок начат",
++    "lesson_ended": "Урок завершён",
++    "lesson_start_error": "Ошибка при начале урока",
++    "lesson_end_error": "Ошибка при завершении урока",
++    "attendance_error": "Ошибка при сохранении посещаемости",
++    "notif_success_title": "Успешно",
++    "notif_error_title": "Ошибка",
++    "st_active": "Активный",
++    "st_frozen": "Заморожен",
++    "st_dropped": "Отчислен",
++    "st_graduated": "Выпустился",
+     "months": {
+       "jan": "Январь",
+       "feb": "Февраль",
+@@ -1354,6 +1381,152 @@
+     "pdfError": "Ошибка при создании PDF.",
+     "printError": "Ошибка при печати."
+   },
++  "payrollDistribution": {
++    "title": "Окно распределения",
++    "back": "Назад",
++    "save": "Сохранить",
++    "cancel": "Отмена",
++    "loading": "Загрузка...",
++    "error": "Ошибка при загрузке данных.",
++    "choose": "Выберите",
++    "soum": "сум",
++    "yes": "Да",
++    "no": "Нет",
++    "savedTitle": "Сохранено",
++    "savedMessage": "Распределение заработной платы успешно сохранено.",
++    "info": {
++      "fullName": "ФИО",
++      "departmentPosition": "Отдел и должность",
++      "branch": "Филиал",
++      "balance": "Баланс",
++      "agreedPercent": "Согласованный процент",
++      "contractOklad": "Оклад по договору"
++    },
++    "tabs": {
++      "avans": "АВАНС",
++      "oylik": "ЗАРПЛАТА"
++    },
++    "fields": {
++      "comment": "Комментарий",
++      "jamiAvansNaqdsiz": "Всего аванс безналичный",
++      "avansNaqdsiz": "Аванс безналичный",
++      "avansNaqdAuto": "Аванс наличный (автоматически)",
++      "jamiOylikNaqdsiz": "Всего зарплата безналичная",
++      "jamiOylikNaqd": "Всего зарплата наличная",
++      "oylikNaqdsiz": "Зарплата безналичная",
++      "oylikNaqdsizAuto": "Зарплата безналичная (автоматически)",
++      "oylikNaqdAuto": "Зарплата наличная (автоматически)",
++      "oylikNaqd": "Зарплата наличная",
++      "avansNaqd": "Аванс наличный",
++      "privilegedPart": "Льготная часть заработной платы",
++      "taxPayer": "За чей счёт уплачивается подоходный налог",
++      "cashTax": "Удерживать ли налог с наличных"
++    },
++    "taxPayerOptions": {
++      "employee": "За счёт сотрудника",
++      "organization": "За счёт организации"
++    },
++    "errorTitle": "Ошибка",
++    "saveErrorMessage": "При сохранении произошла ошибка. Попробуйте ещё раз.",
++    "periodLocked": "Период закрыт — распределение изменить нельзя.",
++    "validation": {
++      "maxExceeded": "Не должно превышать {{max}} сум"
++    }
++  },
++  "payrollAdjustments": {
++    "title": "Корректировки зарплаты",
++    "newBtn": "Новая корректировка",
++    "loading": "Загрузка...",
++    "error": "Ошибка при загрузке данных.",
++    "noData": "Данные не найдены",
++    "select": "Выберите",
++    "savedTitle": "Готово",
++    "savedMessage": "Корректировка успешно сохранена.",
++    "approvedMessage": "Корректировка одобрена.",
++    "rejectedMessage": "Корректировка отклонена.",
++    "footer": "Показано {{start}}-{{end}} из {{total}}",
++    "filters": {
++      "period": "Период",
++      "branch": "Филиал",
++      "all": "Все",
++      "employeeId": "ID сотрудника",
++      "employeeIdPlaceholder": "Например: 123",
++      "lastName": "Фамилия",
++      "firstName": "Имя",
++      "middleName": "Отчество",
++      "department": "Отдел"
++    },
++    "table": {
++      "employeeId": "ID сотрудника",
++      "fullName": "ФИО",
++      "departmentPosition": "Отдел / Должность",
++      "adjustments": "Корректировки",
++      "lateHours": "Часы опоздания",
++      "earlyLeaveHours": "Часы раннего ухода",
++      "actions": "Действия",
++      "statusLabel": "Статус:",
++      "createdBy": "Внёс:",
++      "approvedBy": "Одобрил:",
++      "commentLabel": "Комментарий:",
++      "hours": "ч."
++    },
++    "status": {
++      "new": "Новый",
++      "approved": "Одобрено",
++      "rejected": "Отклонено"
++    },
++    "actions": {
++      "edit": "Корректировать",
++      "view": "Просмотр",
++      "reject": "Отклонить",
++      "approve": "Одобрить",
++      "save": "Сохранить",
++      "cancel": "Отмена"
++    },
++    "info": {
++      "fullName": "ФИО",
++      "departmentPosition": "Отдел и должность",
++      "branch": "Филиал"
++    },
++    "types": {
++      "extra": {
++        "title": "Работал дополнительно",
++        "desc": "Введённые часы к зарплате",
++        "bold": "добавляются"
++      },
++      "absent": {
++        "title": "Не работал",
++        "desc": "Введённые часы из зарплаты",
++        "bold": "вычитаются"
++      },
++      "substitute": {
++        "title": "Работал вместо другого",
++        "desc": "Введённые часы к зарплате",
++        "bold": "добавляются на 100%"
++      }
++    },
++    "fields": {
++      "date": "Дата",
++      "periodHint": "⚠️ Если период зарплаты закрыт (зарплата выдана или отправлена на утверждение) — ввод невозможен.",
++      "hoursWorked": "Сколько часов сотрудник работал?",
++      "hoursNotWorked": "Сколько часов сотрудник не работал?",
++      "substitute": "Вместо какого сотрудника работал?",
++      "comment": "Комментарий",
++      "employee": "Сотрудник"
++    },
++    "errorTitle": "Ошибка",
++    "saveErrorMessage": "При сохранении произошла ошибка. Попробуйте ещё раз.",
++    "decisionErrorMessage": "При выполнении действия произошла ошибка. Попробуйте ещё раз.",
++    "back": "Назад",
++    "confirm": {
++      "approveTitle": "Одобрить корректировку",
++      "approveMessage": "Одобрить корректировку для {{name}}? Действие нельзя отменить.",
++      "rejectTitle": "Отклонить корректировку",
++      "rejectMessage": "Отклонить корректировку для {{name}}? Действие нельзя отменить.",
++      "cancel": "Закрыть",
++      "reasonLabel": "Причина отклонения"
++    }
++  },
+   "expenses": {
+     "expenseTitle": "Расходы",
+     "addNewExpense": "Добавить расход",
+@@ -1459,6 +1632,8 @@
+     "contractType": "Тип договора",
+     "contractConclusionTerm": "Срок заключения договора",
+     "salaryType": "Тип оплаты по договору",
++    "salaryBasis": "Основа расчёта оплаты",
++    "salaryPercent": "Процент (%)",
+     "vacationType": "Трудовой отпуск",
+     "contractTypeOptions": {
+       "asosiy": "По основной работе",
+@@ -1477,9 +1652,16 @@
+     },
+     "salaryTypeOptions": {
+       "shtat": "Согласно штатному расписанию",
+-      "oquvchi": "В соответствии с количеством учеников",
++      "foiz": "На процентной основе",
+       "soat": "В соответствии с учебными часами"
+     },
++    "salaryBasisOptions": {
++      "totalHours": "Общее рабочее время",
++      "baseSalary": "Базовая зарплата",
++      "hourlySalary": "Почасовая зарплата",
++      "baseWorkHours": "Основные рабочие часы",
++      "hourlyWorkHours": "Почасовые рабочие часы"
++    },
+     "vacationOptions": {
+       "given": "Предоставляется",
+       "notGiven": "Не предоставляется"
+diff --git a/src/messages/uz.json b/src/messages/uz.json
+index 54429b2..38be87d 100644
+--- a/src/messages/uz.json
++++ b/src/messages/uz.json
+@@ -43,7 +43,7 @@
+     "contracts": "Shartnomalar",
+     "regions": "Viloyatlar",
+     "districts": "Tumanlar",
+-    "expenses": "Xarajatlar",
++    "expenses": "Chiqimlar",
+     "lessons": "O‘quvchi vazifalar",
+     "ipTelephone": "IP Telefononiya",
+     "logout": "Chiqish",
+@@ -57,9 +57,12 @@
+     "financeScoreSheet": "Hisobotlar",
+     "jamgarma": "Jamg‘armalar",
+     "debts": "Qarzlar",
++    "payrollAdjustments": "Ish haqqi tuzatishlar",
+     "finances": "Xisob raqam va ular orasida tranzaksiyalar",
+     "debtsTitle": "Jamg‘armalar aro qarz oldi berdisi",
+-    "staffAttendance": "Xodim davomati"
++    "staffAttendance": "Xodim davomati",
++    "Studentsattendance": "O‘quvchilar davomati",
++    "payroll": "Ish haqqini taqsimlash"
+   },
+   "dashboard": {
+     "allLids": "JAMI LIDLAR",
+@@ -945,6 +948,30 @@
+     "start_lesson_title": "Darsni boshlash",
+     "start_lesson_desc": "Davomatni olish uchun darsni boshlang.",
+     "start": "Boshlash",
++    "no_lesson_today": "Bugun dars yo‘q",
++    "create_today_lesson": "Bugungi darsni yaratish",
++    "lesson_completed": "Dars yakunlangan",
++    "start_confirm_title": "Darsni boshlash",
++    "start_confirm_desc": "Dars faqat dars kunida boshlanadi. Darsni boshlashni tasdiqlaysizmi?",
++    "lesson_topic_label": "Dars mavzusi",
++    "end_lesson_title": "Darsni tugatish",
++    "end_lesson_desc": "Uy vazifasini kiriting va darsni yakunlang.",
++    "end_confirm_desc": "Darsni tugatib, uy vazifasini biriktirish sahifasiga o‘tasizmi?",
++    "end_confirm_btn": "Darsni tugatish",
++    "homework_title_label": "Vazifa nomi",
++    "homework_desc_label": "Vazifa tavsifi",
++    "homework_file_label": "Fayl (ixtiyoriy)",
++    "lesson_started": "Dars boshlandi",
++    "lesson_ended": "Dars yakunlandi",
++    "lesson_start_error": "Darsni boshlashda xatolik",
++    "lesson_end_error": "Darsni tugatishda xatolik",
++    "attendance_error": "Davomatni saqlashda xatolik",
++    "notif_success_title": "Muvaffaqiyatli",
++    "notif_error_title": "Xatolik",
++    "st_active": "Aktiv",
++    "st_frozen": "Muzlatilgan",
++    "st_dropped": "Tashlab ketgan",
++    "st_graduated": "Bitirgan",
+     "months": {
+       "jan": "Yanvar",
+       "feb": "Fevral",
+@@ -1354,6 +1381,152 @@
+     "pdfError": "PDF yaratishda xatolik yuz berdi.",
+     "printError": "Chop etishda xatolik yuz berdi."
+   },
++  "payrollDistribution": {
++    "title": "Taqsimlash oynasi",
++    "back": "Orqaga",
++    "save": "Saqlash",
++    "cancel": "Bekor qilish",
++    "loading": "Yuklanmoqda...",
++    "error": "Ma’lumotni yuklashda xatolik yuz berdi.",
++    "choose": "Tanlang",
++    "soum": "so‘m",
++    "yes": "Ha",
++    "no": "Yo‘q",
++    "savedTitle": "Saqlandi",
++    "savedMessage": "Ish haqi taqsimoti muvaffaqiyatli saqlandi.",
++    "info": {
++      "fullName": "FISH",
++      "departmentPosition": "Bo‘lim va lavozim",
++      "branch": "Filial",
++      "balance": "Balans",
++      "agreedPercent": "Kelishilgan foiz",
++      "contractOklad": "Shartnoma bo‘yicha oklad"
++    },
++    "tabs": {
++      "avans": "AVANS",
++      "oylik": "OYLIK"
++    },
++    "fields": {
++      "comment": "Izoh",
++      "jamiAvansNaqdsiz": "Jami avans naqdsiz",
++      "avansNaqdsiz": "Avans naqdsiz",
++      "avansNaqdAuto": "Avans naqd(avtomatik)",
++      "jamiOylikNaqdsiz": "Jami oylik naqdsiz",
++      "jamiOylikNaqd": "Jami oylik naqd",
++      "oylikNaqdsiz": "Oylik naqdsiz",
++      "oylikNaqdsizAuto": "Oylik naqdsiz(avtomatik)",
++      "oylikNaqdAuto": "Oylik naqd(avtomatik)",
++      "oylikNaqd": "Oylik naqd",
++      "avansNaqd": "Avans naqd",
++      "privilegedPart": "Ish haqining imtiyozli qismi",
++      "taxPayer": "Daromad solig‘i kimning hisobidan to‘lanadi",
++      "cashTax": "Naqd puldan soliq olinsinmi"
++    },
++    "taxPayerOptions": {
++      "employee": "Xodim hisobidan",
++      "organization": "Tashkilot hisobidan"
++    },
++    "errorTitle": "Xatolik",
++    "saveErrorMessage": "Saqlashda xatolik yuz berdi. Qaytadan urinib ko‘ring.",
++    "periodLocked": "Bu davr yopilgan — taqsimotni o‘zgartirib bo‘lmaydi.",
++    "validation": {
++      "maxExceeded": "{{max}} so‘mdan ko‘p bo‘lmasligi kerak"
++    }
++  },
++  "payrollAdjustments": {
++    "title": "Ish haqqi tuzatishlar",
++    "newBtn": "Yangi tuzatish",
++    "loading": "Yuklanmoqda...",
++    "error": "Ma’lumotni yuklashda xatolik yuz berdi.",
++    "noData": "Ma’lumot topilmadi",
++    "select": "Tanlang",
++    "savedTitle": "Bajarildi",
++    "savedMessage": "Tuzatish muvaffaqiyatli saqlandi.",
++    "approvedMessage": "Tuzatishga ruxsat berildi.",
++    "rejectedMessage": "Tuzatish bekor qilindi.",
++    "footer": "Jami: {{total}}tadan {{start}}-{{end}}tagacha ko‘rsatmoqda",
++    "filters": {
++      "period": "Davr",
++      "branch": "Filial",
++      "all": "Barchasi",
++      "employeeId": "Xodim IDsi",
++      "employeeIdPlaceholder": "Masalan: 123",
++      "lastName": "Familiya",
++      "firstName": "Ism",
++      "middleName": "Otasining ismi",
++      "department": "Bo‘lim"
++    },
++    "table": {
++      "employeeId": "Xodim ID",
++      "fullName": "F.I.SH",
++      "departmentPosition": "Bo‘lim / Lavozim",
++      "adjustments": "Tuzatishlar",
++      "lateHours": "Kechikish soatlari",
++      "earlyLeaveHours": "Erta ketish soatlari",
++      "actions": "Amallar",
++      "statusLabel": "Status:",
++      "createdBy": "Kiritgan shaxs:",
++      "approvedBy": "Tasdiqlagan shaxs:",
++      "commentLabel": "Izoh:",
++      "hours": "soat"
++    },
++    "status": {
++      "new": "Yangi",
++      "approved": "Tasdiqlangan",
++      "rejected": "Bekor qilingan"
++    },
++    "actions": {
++      "edit": "Tuzatish",
++      "view": "Ko‘rish",
++      "reject": "Bekor qilish",
++      "approve": "Ruxsat berish",
++      "save": "Saqlash",
++      "cancel": "Bekor qilish"
++    },
++    "info": {
++      "fullName": "FISH",
++      "departmentPosition": "Bo‘lim va lavozim",
++      "branch": "Filial"
++    },
++    "types": {
++      "extra": {
++        "title": "Qo‘shimcha ishladi",
++        "desc": "Kiritilgan soat oylikka",
++        "bold": "qo‘shiladi"
++      },
++      "absent": {
++        "title": "Ishlamadi",
++        "desc": "Kiritilgan soat oylikka",
++        "bold": "ayriladi"
++      },
++      "substitute": {
++        "title": "Boshqasining o‘rniga ishladi",
++        "desc": "Kiritilgan soat oylikka",
++        "bold": "100% qo‘shiladi"
++      }
++    },
++    "fields": {
++      "date": "Sana",
++      "periodHint": "⚠️ Oylik davri o‘tib ketgan (oylik berilgan yoki tasdiqlashga yuborilgan) bo‘lsa — kiritib bo‘lmaydi.",
++      "hoursWorked": "Xodim necha soat ishladi?",
++      "hoursNotWorked": "Xodim necha soat ishlamadi?",
++      "substitute": "Xodim qaysi xodimning o‘rniga ishladi?",
++      "comment": "Izoh",
++      "employee": "Xodim"
++    },
++    "errorTitle": "Xatolik",
++    "saveErrorMessage": "Saqlashda xatolik yuz berdi. Qaytadan urinib ko‘ring.",
++    "decisionErrorMessage": "Amalni bajarishda xatolik yuz berdi. Qaytadan urinib ko‘ring.",
++    "back": "Orqaga",
++    "confirm": {
++      "approveTitle": "Tuzatishga ruxsat berish",
++      "approveMessage": "{{name}} uchun kiritilgan tuzatishga ruxsat berilsinmi? Amalni qaytarib bo‘lmaydi.",
++      "rejectTitle": "Tuzatishni bekor qilish",
++      "rejectMessage": "{{name}} uchun kiritilgan tuzatish bekor qilinsinmi? Amalni qaytarib bo‘lmaydi.",
++      "cancel": "Yopish",
++      "reasonLabel": "Rad etish sababi"
++    }
++  },
+   "expenses": {
+     "expenseTitle": "Chiqimlar",
+     "addNewExpense": "Chiqim kiritish",
+@@ -1459,6 +1632,8 @@
+     "contractType": "Shartnoma turi",
+     "contractConclusionTerm": "Shartnoma tuzish muddati",
+     "salaryType": "Shartnoma uchun oylik turi",
++    "salaryBasis": "Oylik hisoblash asosi",
++    "salaryPercent": "Foiz (%)",
+     "vacationType": "Mehnat ta’tili",
+     "contractTypeOptions": {
+       "asosiy": "Asosiy ish bo‘yicha",
+@@ -1477,9 +1652,16 @@
+     },
+     "salaryTypeOptions": {
+       "shtat": "Shtat jadvaliga muvofiq",
+-      "oquvchi": "O‘quvchi soniga muvofiq",
++      "foiz": "Foiz asosida",
+       "soat": "O‘quv soatlariga muvofiq"
+     },
++    "salaryBasisOptions": {
++      "totalHours": "Umumiy ish soati",
++      "baseSalary": "Asosiy maosh",
++      "hourlySalary": "Soatlik maosh",
++      "baseWorkHours": "Asosiy ish soati",
++      "hourlyWorkHours": "Soatlik ish soati"
++    },
+     "vacationOptions": {
+       "given": "Beriladi",
+       "notGiven": "Berilmaydi"
+diff --git a/src/pages/lessons/index.tsx b/src/pages/lessons/index.tsx
+index 2b812f0..47200bc 100644
+--- a/src/pages/lessons/index.tsx
++++ b/src/pages/lessons/index.tsx
+@@ -1,4 +1,5 @@
+-import { useState, useMemo } from 'react';
++import { useState, useMemo, useEffect, useRef } from 'react';
++import { useSearchParams } from 'react-router-dom';
+ import { API } from '../../api/api';
+ import { notifications } from '@mantine/notifications';
+ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+@@ -63,6 +64,14 @@ const Lessons = () => {
+   const [homeworkFile, setHomeworkFile] = useState<File | null>(null);
+   const [lessonDate, setLessonDate] = useState('');
+ 
++  // Davomat sahifasidan "Darsni tugatish" bilan kelinganda: guruh + sana tanlab,
++  // uy vazifasini biriktirish uchun modalni avtomatik ochamiz.
++  const [searchParams, setSearchParams] = useSearchParams();
++  const autoOpenGroupId = searchParams.get('groupId');
++  const autoOpenDate = searchParams.get('date');
++  const shouldAutoOpen = searchParams.get('openHomework') === '1';
++  const autoOpenedRef = useRef(false);
++
+   // Guruhlar o'qituvchi `pinfl` i bo'yicha filtrlanadi va dars sanalari `days` /
+   // `start_time` / `end_time` dan hisoblanadi — /options/groups bularni bermaydi.
+   const { data: rawGroups = [] } = useQuery({
+@@ -250,6 +259,38 @@ const Lessons = () => {
+     return path.split('/').pop();
+   };
+ 
++  // 1-qadam: URL'dan kelgan guruh + sanani tanlaymiz (bir marta).
++  useEffect(() => {
++    if (!shouldAutoOpen) return;
++    if (autoOpenGroupId) setSelectedGroupId(Number(autoOpenGroupId));
++    if (autoOpenDate) setLessonDate(autoOpenDate);
++  }, [shouldAutoOpen, autoOpenGroupId, autoOpenDate]);
++
++  // 2-qadam: darslar yuklangach modalni ochamiz — o'sha sanaga dars bo'lsa,
++  // uy vazifasini biriktirish uchun uni oldindan to'ldiramiz.
++  useEffect(() => {
++    if (!shouldAutoOpen || autoOpenedRef.current) return;
++    if (!autoOpenGroupId || Number(selectedGroupId) !== Number(autoOpenGroupId)) return;
++    // Dars ro'yxati yuklanib bo'lguncha kutamiz — bo'sh forma erta ochilmasin.
++    if (isLoading) return;
++
++    autoOpenedRef.current = true;
++    const existing = (lessons as Lesson[]).find((l) =>
++      autoOpenDate ? String(l.date).startsWith(autoOpenDate) : false,
++    );
++    if (existing) {
++      handleView(existing);
++    } else {
++      resetForm();
++      if (autoOpenDate) setLessonDate(autoOpenDate);
++      setIsModalOpen(true);
++    }
++
++    // Parametrlarni tozalaymiz — modal yopilib qayta ochilib qolmasin.
++    setSearchParams({}, { replace: true });
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [shouldAutoOpen, autoOpenGroupId, autoOpenDate, selectedGroupId, lessons, isLoading]);
++
+   return (
+     <div className="lessons-container container">
+       <div className="lessons-header">
+diff --git a/src/pages/payroll-adjustments/AdjustmentForm.tsx b/src/pages/payroll-adjustments/AdjustmentForm.tsx
+new file mode 100644
+index 0000000..08f691f
+--- /dev/null
++++ b/src/pages/payroll-adjustments/AdjustmentForm.tsx
+@@ -0,0 +1,425 @@
++import { useEffect, useRef, useState } from 'react';
++import { useNavigate, useParams, useLocation } from 'react-router-dom';
++import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
++import { useTranslation } from 'react-i18next';
++import { notifications } from '@mantine/notifications';
++import { API } from '@/api/api';
++import { useOptions } from '@/api/options';
++import DateInput from '@/components/DateInput';
++import { getApiErrorMessage } from '@/utils/apiError';
++import './payrollAdjustments.css';
++
++/* ------------------------------------------------------------------ *
++ * Ish haqqi tuzatish formasi — alohida page.
++ *   /payroll-adjustments/create      -> yangi
++ *   /payroll-adjustments/:id/edit    -> tuzatish
++ *   /payroll-adjustments/:id         -> ko'rish (read-only)
++ *
++ * Tur (type) tanlovi maydonlarni boshqaradi:
++ *   extra_worked -> Sana + soat (oylikka qo'shiladi)
++ *   not_worked   -> Sana + soat (oylikdan ayriladi)
++ *   substituted  -> Sana + kimning o'rniga + soat (100% qo'shiladi)
++ *
++ * Maydon nomlari jonli API bilan tasdiqlangan (2026-07-17):
++ *   izoh -> `note` ("comment" jim e'tiborsiz qoldiriladi)
++ *   kimning o'rniga: so'rovda `substituted_for_employee_id`,
++ *   javobda `substituted_for` = { id, full_name }
++ * ------------------------------------------------------------------ */
++
++type AdjType = 'extra_worked' | 'not_worked' | 'substituted';
++
++/** UI tartibi + i18n/CSS kaliti (backend enumidan farq qiladi). */
++const TYPES: { key: AdjType; slug: string; icon: string }[] = [
++  { key: 'extra_worked', slug: 'extra', icon: '+' },
++  { key: 'not_worked', slug: 'absent', icon: '−' },
++  { key: 'substituted', slug: 'substitute', icon: '↔' },
++];
++
++const TYPE_KEYS = TYPES.map((tp) => tp.key) as string[];
++
++interface AdjustmentResponse {
++  id?: number;
++  employee_id?: number;
++  type?: string;
++  date?: string | null;
++  hours?: number | string | null;
++  note?: string | null;
++  substituted_for?: { id?: number; full_name?: string } | null;
++  employee?: {
++    id?: number;
++    full_name?: string;
++    department?: string | null;
++    position?: string | null;
++    branch?: string | null;
++  };
++}
++
++/** Ro'yxatdan uzatilgan xodim ma'lumoti — header darhol chizilishi uchun. */
++interface NavState {
++  employeeId?: number;
++  fullName?: string;
++  department?: string;
++  position?: string;
++  branch?: string;
++}
++
++interface FormState {
++  type: AdjType;
++  date: string;
++  hours: number | '';
++  comment: string;
++  substitute_employee_id: number | '';
++  /** Yangi tuzatishda xodim shu yerda tanlanadi (tahrir/ko'rishda yozuvdan keladi). */
++  employee_id: number | '';
++}
++
++const EMPTY_FORM: FormState = {
++  type: 'extra_worked',
++  date: '',
++  hours: '',
++  comment: '',
++  substitute_employee_id: '',
++  employee_id: '',
++};
++
++const AdjustmentForm = () => {
++  const { id } = useParams<{ id: string }>();
++  const navigate = useNavigate();
++  const location = useLocation();
++  const { t } = useTranslation();
++  const queryClient = useQueryClient();
++
++  const navState = (location.state as NavState) || {};
++
++  // /payroll-adjustments/:id  -> ko'rish;  /:id/edit -> tuzatish;  /create -> yangi
++  const isView = !!id && !location.pathname.endsWith('/edit');
++  const isEdit = !!id && location.pathname.endsWith('/edit');
++
++  const [form, setForm] = useState<FormState>(EMPTY_FORM);
++  const [showErrors, setShowErrors] = useState(false);
++  const seeded = useRef(false);
++
++  const { data: employeeOptions = [] } = useOptions('employees');
++
++  const {
++    data: adjustment,
++    isLoading,
++    isError,
++  } = useQuery<AdjustmentResponse>({
++    queryKey: ['payroll-adjustment', id],
++    queryFn: async () => {
++      const { data } = await API.get(`/payroll/adjustments/${id}`);
++      return data?.data ?? data;
++    },
++    enabled: !!id,
++    // Har ochilganda eng oxirgi saqlangan qiymatlar bilan to'lsin.
++    staleTime: 0,
++    gcTime: 0,
++    refetchOnMount: 'always',
++  });
++
++  // Mavjud yozuvni formaga bir marta seed qilish.
++  useEffect(() => {
++    if (!adjustment || seeded.current) return;
++    seeded.current = true;
++    const rawType = (adjustment.type || 'extra_worked') as AdjType;
++    setForm({
++      type: TYPE_KEYS.includes(rawType) ? rawType : 'extra_worked',
++      date: (adjustment.date || '').slice(0, 10),
++      hours:
++        adjustment.hours === null || adjustment.hours === undefined ? '' : Number(adjustment.hours),
++      comment: adjustment.note || '',
++      substitute_employee_id: adjustment.substituted_for?.id ?? '',
++      employee_id: adjustment.employee_id ?? adjustment.employee?.id ?? '',
++    });
++  }, [adjustment]);
++
++  // ---- Header qiymatlari ----
++  const emp = adjustment?.employee;
++  // Yangi tuzatishda xodim yozuvdan ham, navState'dan ham kelmaydi — formada tanlanadi.
++  const employeeId = adjustment?.employee_id ?? emp?.id ?? navState.employeeId ?? form.employee_id;
++  /** Xodim tanlash select'i faqat yangi tuzatishda va kontekst bo'lmaganda kerak. */
++  const needsEmployeePicker = !id && navState.employeeId === undefined;
++
++  const pickedEmployee = employeeOptions.find((o) => o.id === form.employee_id);
++  const fullName = emp?.full_name || navState.fullName || pickedEmployee?.label || '-';
++  const departmentName = emp?.department || navState.department || '-';
++  const positionName = emp?.position || navState.position || '-';
++  const branchName = emp?.branch || navState.branch || '-';
++
++  const isSubstitute = form.type === 'substituted';
++
++  const saveMutation = useMutation({
++    mutationFn: async () => {
++      // Maydon nomlari jonli API bilan tasdiqlangan: izoh `note`, o'rniga
++      // ishlangan xodim `substituted_for_employee_id`.
++      const payload: Record<string, unknown> = {
++        employee_id: employeeId,
++        type: form.type,
++        date: form.date,
++        hours: form.hours === '' ? null : Number(form.hours),
++        note: form.comment || null,
++      };
++      // "Boshqasining o'rniga ishladi" da kimning o'rniga ishlagani yuboriladi.
++      if (isSubstitute) {
++        payload.substituted_for_employee_id =
++          form.substitute_employee_id === '' ? null : Number(form.substitute_employee_id);
++      }
++
++      const { data } = isEdit
++        ? await API.put(`/payroll/adjustments/${id}`, payload)
++        : await API.post('/payroll/adjustments', payload);
++      return data;
++    },
++    onSuccess: () => {
++      queryClient.invalidateQueries({ queryKey: ['payroll-adjustments'] });
++      notifications.show({
++        title: t('payrollAdjustments.savedTitle'),
++        message: t('payrollAdjustments.savedMessage'),
++        color: 'green',
++      });
++      navigate('/payroll-adjustments');
++    },
++    // A.1: ilgari onError yo'q edi — backend rad etsa forma jim turardi.
++    onError: (error) => {
++      notifications.show({
++        title: t('payrollAdjustments.errorTitle'),
++        message: getApiErrorMessage(error, t('payrollAdjustments.saveErrorMessage')),
++        color: 'red',
++      });
++    },
++  });
++
++  const isValid =
++    !!form.date &&
++    form.hours !== '' &&
++    (!isSubstitute || form.substitute_employee_id !== '') &&
++    (!needsEmployeePicker || form.employee_id !== '');
++
++  const handleSave = () => {
++    setShowErrors(true);
++    if (!isValid) return;
++    saveMutation.mutate();
++  };
++
++  const invalid = (empty: boolean) => (showErrors && empty ? 'pa-invalid' : '');
++
++  const types = TYPES.map((tp) => ({
++    key: tp.key,
++    slug: tp.slug,
++    icon: tp.icon,
++    title: t(`payrollAdjustments.types.${tp.slug}.title`),
++    desc: t(`payrollAdjustments.types.${tp.slug}.desc`),
++    bold: t(`payrollAdjustments.types.${tp.slug}.bold`),
++  }));
++
++  if (id && isLoading) {
++    return (
++      <div className="pa-container container">
++        <div className="pa-loading">{t('payrollAdjustments.loading')}</div>
++      </div>
++    );
++  }
++  if (id && isError) {
++    return (
++      <div className="pa-container container">
++        <div className="pa-error">{t('payrollAdjustments.error')}</div>
++      </div>
++    );
++  }
++
++  return (
++    <div className="pa-container container">
++      <div className="pa-form-card">
++        {/* Ma'lumot bandi */}
++        <div className="pa-info">
++          <div className="pa-info-item">
++            <span className="pa-info-label">{t('payrollAdjustments.info.fullName')}</span>
++            <span className="pa-info-value">{fullName}</span>
++          </div>
++          <div className="pa-info-item">
++            <span className="pa-info-label">{t('payrollAdjustments.info.departmentPosition')}</span>
++            <span className="pa-info-value">
++              {departmentName} / {positionName}
++            </span>
++          </div>
++          <div className="pa-info-item">
++            <span className="pa-info-label">{t('payrollAdjustments.info.branch')}</span>
++            <span className="pa-info-value">{branchName}</span>
++          </div>
++        </div>
++
++        {/* Yangi tuzatish jadvaldan emas, to'g'ridan-to'g'ri ochilganda xodim
++            shu yerda tanlanadi — aks holda employee_id bo'sh ketib 422 bo'lardi. */}
++        {needsEmployeePicker && (
++          <div className="pa-row">
++            <div className="pa-field">
++              <label>
++                {t('payrollAdjustments.fields.employee')}
++                <span className="req">*</span>
++              </label>
++              <select
++                className={invalid(form.employee_id === '')}
++                value={form.employee_id}
++                onChange={(e) =>
++                  setForm({
++                    ...form,
++                    employee_id: e.target.value === '' ? '' : Number(e.target.value),
++                    substitute_employee_id: '',
++                  })
++                }
++              >
++                <option value="">{t('payrollAdjustments.select')}</option>
++                {employeeOptions.map((o) => (
++                  <option key={o.id} value={o.id}>
++                    {o.label}
++                  </option>
++                ))}
++              </select>
++            </div>
++            <div className="pa-field" />
++          </div>
++        )}
++
++        {/* 3 ta tur kartasi */}
++        <div className="pa-types">
++          {types.map((tp) => (
++            <button
++              key={tp.key}
++              type="button"
++              disabled={isView}
++              className={`pa-type pa-type--${tp.slug} ${form.type === tp.key ? 'active' : ''}`}
++              onClick={() => setForm({ ...form, type: tp.key, substitute_employee_id: '' })}
++            >
++              <span className="pa-type-icon">{tp.icon}</span>
++              <span className="pa-type-title">{tp.title}</span>
++              <span className="pa-type-desc">
++                {tp.desc} <b>{tp.bold}</b>
++              </span>
++            </button>
++          ))}
++        </div>
++
++        {/* Sana | (o'rniga ishlagan xodim) */}
++        <div className="pa-row">
++          <div className="pa-field">
++            <label>
++              {t('payrollAdjustments.fields.date')}
++              <span className="req">*</span>
++            </label>
++            <DateInput
++              value={form.date}
++              disabled={isView}
++              className={invalid(!form.date)}
++              onChange={(e) => setForm({ ...form, date: e.target.value })}
++            />
++            <span className="pa-hint">{t('payrollAdjustments.fields.periodHint')}</span>
++          </div>
++
++          {isSubstitute ? (
++            <div className="pa-field">
++              <label>
++                {t('payrollAdjustments.fields.substitute')}
++                <span className="req">*</span>
++              </label>
++              <select
++                disabled={isView}
++                className={invalid(form.substitute_employee_id === '')}
++                value={form.substitute_employee_id}
++                onChange={(e) =>
++                  setForm({
++                    ...form,
++                    substitute_employee_id: e.target.value === '' ? '' : Number(e.target.value),
++                  })
++                }
++              >
++                <option value="">{t('payrollAdjustments.select')}</option>
++                {employeeOptions
++                  .filter((o) => o.id !== employeeId)
++                  .map((o) => (
++                    <option key={o.id} value={o.id}>
++                      {o.label}
++                    </option>
++                  ))}
++              </select>
++            </div>
++          ) : (
++            <div className="pa-field">
++              <label>
++                {form.type === 'not_worked'
++                  ? t('payrollAdjustments.fields.hoursNotWorked')
++                  : t('payrollAdjustments.fields.hoursWorked')}
++                <span className="req">*</span>
++              </label>
++              <input
++                type="number"
++                min={0}
++                disabled={isView}
++                className={invalid(form.hours === '')}
++                value={form.hours}
++                onChange={(e) =>
++                  setForm({ ...form, hours: e.target.value === '' ? '' : Number(e.target.value) })
++                }
++              />
++            </div>
++          )}
++        </div>
++
++        {/* substitute rejimida soat alohida qatorda */}
++        {isSubstitute && (
++          <div className="pa-row">
++            <div className="pa-field">
++              <label>
++                {t('payrollAdjustments.fields.hoursWorked')}
++                <span className="req">*</span>
++              </label>
++              <input
++                type="number"
++                min={0}
++                disabled={isView}
++                className={invalid(form.hours === '')}
++                value={form.hours}
++                onChange={(e) =>
++                  setForm({ ...form, hours: e.target.value === '' ? '' : Number(e.target.value) })
++                }
++              />
++            </div>
++          </div>
++        )}
++
++        {/* Izoh */}
++        <div className="pa-row pa-row--1">
++          <div className="pa-field">
++            <label>{t('payrollAdjustments.fields.comment')}</label>
++            <textarea
++              disabled={isView}
++              value={form.comment}
++              onChange={(e) => setForm({ ...form, comment: e.target.value })}
++            />
++          </div>
++        </div>
++
++        {/* Tugmalar: center'da — chapda Bekor qilish, o'ngda Saqlash */}
++        <div className="pa-form-actions">
++          {/* B.5: "Bekor qilish" jadvalda tuzatishni RAD ETISH ma'nosida ishlatiladi —
++              formada esa shunchaki orqaga qaytish. Bir xil qizil tugma, ikki xil
++              oqibat chalkash edi. */}
++          <button className="pa-btn pa-btn--danger" onClick={() => navigate('/payroll-adjustments')}>
++            {t('payrollAdjustments.back')}
++          </button>
++          {!isView && (
++            <button
++              className="pa-btn pa-btn--primary"
++              disabled={saveMutation.isPending}
++              onClick={handleSave}
++            >
++              {t('payrollAdjustments.actions.save')}
++            </button>
++          )}
++        </div>
++      </div>
++    </div>
++  );
++};
++
++export default AdjustmentForm;
+diff --git a/src/pages/payroll-adjustments/index.tsx b/src/pages/payroll-adjustments/index.tsx
+new file mode 100644
+index 0000000..122623b
+--- /dev/null
++++ b/src/pages/payroll-adjustments/index.tsx
+@@ -0,0 +1,522 @@
++import { useMemo, useState } from 'react';
++import { useNavigate } from 'react-router-dom';
++import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
++import { useTranslation } from 'react-i18next';
++import { notifications } from '@mantine/notifications';
++import { API } from '@/api/api';
++import { useOptions } from '@/api/options';
++import { Protected } from '@/components/Protected';
++import ConfirmModal from '@/components/ConfirmModal';
++import FilterBar, { type FilterBarField } from '@/components/FilterBar';
++import { type FilterBarValues } from '@/components/FilterBar/filterBar.utils';
++import { formatDate } from '@/utils/date';
++import { getApiErrorMessage } from '@/utils/apiError';
++import './payrollAdjustments.css';
++
++/* ------------------------------------------------------------------ *
++ * Ish haqqi tuzatishlar — Moliya bo'limi.
++ * GET /payroll/adjustments (filtrlar bilan), approve/reject amallari.
++ * Amallar tugmalari statusga + ruxsatga qarab ko'rinadi.
++ * ------------------------------------------------------------------ */
++
++type FilterKey =
++  | 'period'
++  | 'branch_id'
++  | 'employee_id'
++  | 'last_name'
++  | 'first_name'
++  | 'middle_name'
++  | 'department_id';
++
++/** Maydon nomlari jonli API javobi bilan tekshirilgan (2026-07-17). */
++interface Adjustment {
++  id: number;
++  employee_id?: number;
++  status?: string;
++  type?: string;
++  date?: string | null;
++  hours?: number | string | null;
++  /** Izoh — backend `note` deb qaytaradi ("comment" emas). */
++  note?: string | null;
++  /** Tasdiqlagan/rad etgan shaxs — `approved_by` emas. */
++  reviewed_by?: { full_name?: string } | string | null;
++  reviewed_at?: string | null;
++  created_by?: { full_name?: string } | string | null;
++  created_at?: string | null;
++  substituted_for?: { id?: number; full_name?: string } | null;
++  /**
++   * DIQQAT: "Kechikish soatlari" / "Erta ketish soatlari" ustunlari UI'da bor,
++   * lekin backend bu maydonlarni QAYTARMAYDI — ustunlar doim 0 ko'rsatadi.
++   * Spetsifikatsiyada ham bu ustunlar yo'q. Ustunlarni olib tashlash yoki
++   * backendga qo'shish — hal qilinmagan savol.
++   */
++  late_hours?: number | string | null;
++  early_leave_hours?: number | string | null;
++  employee?: {
++    id?: number;
++    full_name?: string;
++    department?: string | null;
++    position?: string | null;
++  };
++}
++
++/** Tasdiqlash modali holati: qaysi tuzatish uchun qaysi amal so'ralmoqda. */
++type ConfirmState = { id: number; action: 'approve' | 'reject'; name: string } | null;
++
++/** Server `meta.per_page` bermasa shu qiymat ishlatiladi (backend defaulti = 30). */
++const FALLBACK_PER_PAGE = 30;
++
++/** Laravel paginator javobi: { data, links, meta }. */
++interface PaginatedResponse {
++  rows: Adjustment[];
++  total: number;
++  perPage: number;
++  lastPage: number;
++}
++
++const EMPTY_FILTERS: FilterBarValues<FilterKey> = {
++  period: '',
++  branch_id: '',
++  employee_id: '',
++  last_name: '',
++  first_name: '',
++  middle_name: '',
++  department_id: '',
++};
++
++/** Bo'sh filtrlarni so'rovga qo'shmaymiz. */
++const cleanParams = (obj: Record<string, unknown>) =>
++  Object.fromEntries(
++    Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== ''),
++  );
++
++/** created_by/approved_by matn ham, obyekt ham bo'lishi mumkin. */
++const personName = (v: Adjustment['created_by']): string => {
++  if (!v) return '-';
++  if (typeof v === 'string') return v || '-';
++  return v.full_name || '-';
++};
++
++const PayrollAdjustments = () => {
++  const { t } = useTranslation();
++  const navigate = useNavigate();
++  const queryClient = useQueryClient();
++
++  const [filters, setFilters] = useState<FilterBarValues<FilterKey>>(EMPTY_FILTERS);
++  const [page, setPage] = useState(1);
++  // Tasdiqlash modali: qaysi qator uchun qanday amal so'ralayotgani.
++  const [confirmState, setConfirmState] = useState<ConfirmState>(null);
++
++  const { data: branchOptions = [] } = useOptions('branches');
++  const { data: departmentOptions = [] } = useOptions('departments');
++
++  const fields: FilterBarField<FilterKey>[] = [
++    { key: 'period', label: t('payrollAdjustments.filters.period'), type: 'date' },
++    {
++      key: 'branch_id',
++      label: t('payrollAdjustments.filters.branch'),
++      type: 'select',
++      placeholder: t('payrollAdjustments.filters.all'),
++      options: branchOptions.map((o) => ({ value: o.id, label: o.label })),
++    },
++    {
++      key: 'employee_id',
++      label: t('payrollAdjustments.filters.employeeId'),
++      type: 'text',
++      placeholder: t('payrollAdjustments.filters.employeeIdPlaceholder'),
++    },
++    {
++      key: 'last_name',
++      label: t('payrollAdjustments.filters.lastName'),
++      type: 'text',
++      placeholder: t('payrollAdjustments.filters.lastName'),
++    },
++    {
++      key: 'first_name',
++      label: t('payrollAdjustments.filters.firstName'),
++      type: 'text',
++      placeholder: t('payrollAdjustments.filters.firstName'),
++    },
++    {
++      key: 'middle_name',
++      label: t('payrollAdjustments.filters.middleName'),
++      type: 'text',
++      placeholder: t('payrollAdjustments.filters.middleName'),
++    },
++    {
++      key: 'department_id',
++      label: t('payrollAdjustments.filters.department'),
++      type: 'select',
++      placeholder: t('payrollAdjustments.filters.all'),
++      options: departmentOptions.map((o) => ({ value: o.id, label: o.label })),
++    },
++  ];
++
++  // "Davr" sanasidan period_year / period_month ajratiladi.
++  const params = useMemo(() => {
++    const period = filters.period ?? '';
++    const [year, month] = period ? period.split('-') : [];
++    return cleanParams({
++      period_year: year,
++      period_month: month ? String(Number(month)) : '',
++      branch_id: filters.branch_id,
++      employee_id: filters.employee_id,
++      last_name: filters.last_name,
++      first_name: filters.first_name,
++      middle_name: filters.middle_name,
++      department_id: filters.department_id,
++    });
++  }, [filters]);
++
++  // Sahifalash server tomonda: `page` yuboriladi, jami/oxirgi sahifa `meta`dan olinadi.
++  // Ilgari butun ro'yxat client'da kesilardi — backend 30 tadan qaytargani uchun
++  // 31-yozuvdan keyingilariga umuman yetib bo'lmasdi.
++  const {
++    data,
++    isLoading,
++    isError,
++    isPlaceholderData,
++  } = useQuery<PaginatedResponse>({
++    queryKey: ['payroll-adjustments', params, page],
++    queryFn: async () => {
++      const { data } = await API.get('/payroll/adjustments', {
++        params: { ...params, page },
++      });
++      // Paginator bo'lmasa (oddiy massiv) — hammasi bitta sahifa deb qaraladi.
++      const rows: Adjustment[] = Array.isArray(data) ? data : (data?.data ?? []);
++      const meta = data?.meta;
++      return {
++        rows: Array.isArray(rows) ? rows : [],
++        total: meta?.total ?? rows.length,
++        perPage: meta?.per_page ?? FALLBACK_PER_PAGE,
++        lastPage: meta?.last_page ?? 1,
++      };
++    },
++    // Sahifa almashganda jadval bo'shab ketmasin — eski sahifa ko'rinib turadi.
++    placeholderData: (previous) => previous,
++    staleTime: 5 * 60 * 1000,
++    gcTime: 10 * 60 * 1000,
++  });
++
++  const rows = data?.rows ?? [];
++  const total = data?.total ?? 0;
++  const perPage = data?.perPage ?? FALLBACK_PER_PAGE;
++  const totalPages = Math.max(1, data?.lastPage ?? 1);
++  const start = (page - 1) * perPage;
++
++  // Sahifalar soni kamayib qolsa (masalan yozuvlar o'chirilgan bo'lsa) oxirgi
++  // mavjud sahifaga qaytamiz. Effekt emas, render fazasida — React shu naqshni
++  // tavsiya qiladi: https://react.dev/learn/you-might-not-need-an-effect
++  const [lastSeenTotalPages, setLastSeenTotalPages] = useState(totalPages);
++  if (totalPages !== lastSeenTotalPages) {
++    setLastSeenTotalPages(totalPages);
++    if (page > totalPages) setPage(totalPages);
++  }
++
++  const decisionMutation = useMutation({
++    mutationFn: async ({
++      id,
++      action,
++      reason,
++    }: {
++      id: number;
++      action: 'approve' | 'reject';
++      reason?: string;
++    }) => {
++      // Rad etishda `reject_reason` majburiy — yuborilmasa backend 422 qaytaradi.
++      const body = action === 'reject' ? { reject_reason: reason } : undefined;
++      const { data } = await API.patch(`/payroll/adjustments/${id}/${action}`, body);
++      return data;
++    },
++    onSuccess: (_d, { action }) => {
++      queryClient.invalidateQueries({ queryKey: ['payroll-adjustments'] });
++      notifications.show({
++        title: t('payrollAdjustments.savedTitle'),
++        message:
++          action === 'approve'
++            ? t('payrollAdjustments.approvedMessage')
++            : t('payrollAdjustments.rejectedMessage'),
++        color: action === 'approve' ? 'green' : 'red',
++      });
++    },
++    // A.1: xato jim yutilmasin — ilgari onError yo'q edi va amal bajarilmaganda
++    // foydalanuvchi hech qanday belgi ko'rmasdi.
++    onError: (error) => {
++      notifications.show({
++        title: t('payrollAdjustments.errorTitle'),
++        message: getApiErrorMessage(error, t('payrollAdjustments.decisionErrorMessage')),
++        color: 'red',
++      });
++    },
++    onSettled: () => setConfirmState(null),
++  });
++
++  const statusLabel = (status?: string) => {
++    const key = (status || '').toLowerCase();
++    if (key === 'approved') return t('payrollAdjustments.status.approved');
++    if (key === 'rejected') return t('payrollAdjustments.status.rejected');
++    if (key === 'new' || key === 'pending') return t('payrollAdjustments.status.new');
++    return status || '-';
++  };
++
++  const statusClass = (status?: string) => {
++    const key = (status || '').toLowerCase();
++    if (key === 'approved') return 'pa-status--approved';
++    if (key === 'rejected') return 'pa-status--rejected';
++    return 'pa-status--new';
++  };
++
++  /** Faqat "yangi"/"kutilmoqda" tuzatish tahrirlanadi va tasdiqlanadi. */
++  const isPending = (status?: string) => {
++    const key = (status || '').toLowerCase();
++    return key === '' || key === 'new' || key === 'pending';
++  };
++
++  return (
++    <div className="pa-container container">
++      <div className="pa-header">
++        <Protected permission="payroll_adjustments.create">
++          <button
++            className="pa-btn pa-btn--primary"
++            onClick={() => navigate('/payroll-adjustments/create')}
++          >
++            {t('payrollAdjustments.newBtn')}
++          </button>
++        </Protected>
++      </div>
++
++      <div className="pa-card">
++        <div className="pa-card-filters">
++          <FilterBar
++            fields={fields}
++            values={filters}
++            onChange={(v) => {
++              setFilters(v);
++              setPage(1);
++            }}
++            onReset={() => {
++              setFilters(EMPTY_FILTERS);
++              setPage(1);
++            }}
++            ariaLabel={t('payrollAdjustments.title')}
++          />
++        </div>
++
++        <div className="pa-table-scroll">
++          <table className="pa-table">
++            <thead>
++              <tr>
++                <th>{t('payrollAdjustments.table.employeeId')}</th>
++                <th>{t('payrollAdjustments.table.fullName')}</th>
++                <th>{t('payrollAdjustments.table.departmentPosition')}</th>
++                <th>{t('payrollAdjustments.table.adjustments')}</th>
++                <th>{t('payrollAdjustments.table.lateHours')}</th>
++                <th>{t('payrollAdjustments.table.earlyLeaveHours')}</th>
++                <th>{t('payrollAdjustments.table.actions')}</th>
++              </tr>
++            </thead>
++            <tbody>
++              {isLoading ? (
++                <tr>
++                  <td colSpan={7} className="pa-empty">
++                    {t('payrollAdjustments.loading')}
++                  </td>
++                </tr>
++              ) : isError ? (
++                <tr>
++                  <td colSpan={7} className="pa-empty">
++                    {t('payrollAdjustments.error')}
++                  </td>
++                </tr>
++              ) : rows.length === 0 ? (
++                <tr>
++                  <td colSpan={7} className="pa-empty">
++                    {t('payrollAdjustments.noData')}
++                  </td>
++                </tr>
++              ) : (
++                rows.map((row) => {
++                  const emp = row.employee || {};
++                  const pending = isPending(row.status);
++                  // A.3: faqat shu qatorning tugmalari bloklanadi — ilgari
++                  // umumiy `decisionMutation.isPending` butun jadvalni o'chirardi.
++                  const rowBusy =
++                    decisionMutation.isPending && decisionMutation.variables?.id === row.id;
++                  return (
++                    <tr key={row.id}>
++                      <td>{emp.id ?? row.employee_id ?? '-'}</td>
++                      <td className="pa-emp-name">{emp.full_name || '-'}</td>
++                      <td>
++                        <div className="pa-dept">{emp.department || '-'}</div>
++                        <div className="pa-position">{emp.position || '-'}</div>
++                      </td>
++                      <td>
++                        <div className="pa-adj-cell">
++                          <span>
++                            {t('payrollAdjustments.table.statusLabel')}{' '}
++                            <span className={`pa-status ${statusClass(row.status)}`}>
++                              {statusLabel(row.status)}
++                            </span>
++                          </span>
++                          <span>
++                            {t('payrollAdjustments.table.createdBy')} {personName(row.created_by)}
++                          </span>
++                          <span className="pa-adj-meta">{formatDate(row.created_at, '-')}</span>
++                          <span>
++                            {t('payrollAdjustments.table.approvedBy')} {personName(row.reviewed_by)}
++                          </span>
++                          <span className="pa-adj-meta">{formatDate(row.reviewed_at, '-')}</span>
++                          <span>
++                            {row.hours ?? 0} {t('payrollAdjustments.table.hours')}{' '}
++                            {formatDate(row.date, '-')}
++                          </span>
++                          <span>
++                            {t('payrollAdjustments.table.commentLabel')} {row.note || ''}
++                          </span>
++                        </div>
++                      </td>
++                      <td>{row.late_hours ?? 0}</td>
++                      <td>{row.early_leave_hours ?? 0}</td>
++                      <td>
++                        <div className="pa-actions">
++                          {pending && (
++                            <Protected permission="payroll_adjustments.edit">
++                              <button
++                                className="pa-btn pa-btn--primary"
++                                onClick={() => navigate(`/payroll-adjustments/${row.id}/edit`)}
++                              >
++                                {t('payrollAdjustments.actions.edit')}
++                              </button>
++                            </Protected>
++                          )}
++
++                          <Protected permission="payroll_adjustments.view">
++                            <button
++                              className="pa-btn pa-btn--primary"
++                              onClick={() => navigate(`/payroll-adjustments/${row.id}`)}
++                            >
++                              {t('payrollAdjustments.actions.view')}
++                            </button>
++                          </Protected>
++
++                          {pending && (
++                            <>
++                              <Protected permission="payroll_adjustments.reject">
++                                <button
++                                  className="pa-btn pa-btn--danger"
++                                  disabled={rowBusy}
++                                  onClick={() =>
++                                    setConfirmState({
++                                      id: row.id,
++                                      action: 'reject',
++                                      name: emp.full_name || '-',
++                                    })
++                                  }
++                                >
++                                  {t('payrollAdjustments.actions.reject')}
++                                </button>
++                              </Protected>
++                              <Protected permission="payroll_adjustments.approve">
++                                <button
++                                  className="pa-btn pa-btn--success"
++                                  disabled={rowBusy}
++                                  onClick={() =>
++                                    setConfirmState({
++                                      id: row.id,
++                                      action: 'approve',
++                                      name: emp.full_name || '-',
++                                    })
++                                  }
++                                >
++                                  {t('payrollAdjustments.actions.approve')}
++                                </button>
++                              </Protected>
++                            </>
++                          )}
++                        </div>
++                      </td>
++                    </tr>
++                  );
++                })
++              )}
++            </tbody>
++          </table>
++        </div>
++
++        {!isLoading && total > 0 && (
++          <div className="pa-footer">
++            <span>
++              {t('payrollAdjustments.footer', {
++                total,
++                start: start + 1,
++                end: Math.min(start + rows.length, total),
++              })}
++            </span>
++            <div className="pa-pages">
++              <button
++                className="pa-page-btn"
++                disabled={page === 1 || isPlaceholderData}
++                onClick={() => setPage((p) => p - 1)}
++              >
++                ‹
++              </button>
++              {Array.from({ length: totalPages }, (_, i) => i + 1)
++                .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
++                .map((p, idx, arr) => (
++                  <span key={p} style={{ display: 'flex', gap: 6 }}>
++                    {idx > 0 && arr[idx - 1] !== p - 1 && <span>…</span>}
++                    <button
++                      className={`pa-page-btn ${page === p ? 'active' : ''}`}
++                      onClick={() => setPage(p)}
++                    >
++                      {p}
++                    </button>
++                  </span>
++                ))}
++              <button
++                className="pa-page-btn"
++                disabled={page === totalPages || isPlaceholderData}
++                onClick={() => setPage((p) => p + 1)}
++              >
++                ›
++              </button>
++            </div>
++          </div>
++        )}
++      </div>
++
++      <ConfirmModal
++        open={!!confirmState}
++        title={t(
++          confirmState?.action === 'reject'
++            ? 'payrollAdjustments.confirm.rejectTitle'
++            : 'payrollAdjustments.confirm.approveTitle',
++        )}
++        message={t(
++          confirmState?.action === 'reject'
++            ? 'payrollAdjustments.confirm.rejectMessage'
++            : 'payrollAdjustments.confirm.approveMessage',
++          { name: confirmState?.name ?? '' },
++        )}
++        confirmLabel={t(
++          confirmState?.action === 'reject'
++            ? 'payrollAdjustments.actions.reject'
++            : 'payrollAdjustments.actions.approve',
++        )}
++        cancelLabel={t('payrollAdjustments.confirm.cancel')}
++        tone={confirmState?.action === 'reject' ? 'danger' : 'success'}
++        busy={decisionMutation.isPending}
++        // Rad etish sababi backendda majburiy — shu yerda so'raladi.
++        reasonRequired={confirmState?.action === 'reject'}
++        reasonLabel={t('payrollAdjustments.confirm.reasonLabel')}
++        onConfirm={(reason) =>
++          confirmState &&
++          decisionMutation.mutate({ id: confirmState.id, action: confirmState.action, reason })
++        }
++        onCancel={() => setConfirmState(null)}
++      />
++    </div>
++  );
++};
++
++export default PayrollAdjustments;
+diff --git a/src/pages/payroll-adjustments/payrollAdjustments.css b/src/pages/payroll-adjustments/payrollAdjustments.css
+new file mode 100644
+index 0000000..099610b
+--- /dev/null
++++ b/src/pages/payroll-adjustments/payrollAdjustments.css
+@@ -0,0 +1,441 @@
++/* Ish haqqi tuzatishlar — ro'yxat va tuzatish formasi.
++   Palitra: #003366, #E70A0A, #000000, #2AA411, #FE9100, border #BDBDBD. */
++
++.pa-container {
++  width: calc(100% - 140px);
++  margin-top: 50px !important;
++  margin-left: 140px !important;
++  display: flex;
++  flex-direction: column;
++  gap: 20px;
++  min-height: calc(100vh - 50px);
++}
++
++.pa-header {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 16px;
++}
++
++.pa-title {
++  font-family: noto-b, sans-serif;
++  font-size: 22px;
++  color: #000000;
++}
++
++/* ---------- Jadval kartasi ---------- */
++.pa-card {
++  background: #ffffff;
++  border: 1px solid #bdbdbd;
++  border-radius: 12px;
++  overflow: hidden;
++}
++
++.pa-card-filters {
++  padding: 14px 16px;
++  border-bottom: 1px solid #bdbdbd;
++}
++
++.pa-table-scroll {
++  overflow-x: auto;
++}
++
++.pa-table {
++  width: 100%;
++  border-collapse: collapse;
++  min-width: 900px;
++}
++
++.pa-table th {
++  padding: 14px 16px;
++  text-align: left;
++  font-family: noto-b, sans-serif;
++  font-size: 12px;
++  letter-spacing: 0.3px;
++  text-transform: uppercase;
++  color: #000000;
++  background: #ffffff;
++  border-bottom: 1px solid #bdbdbd;
++  white-space: nowrap;
++}
++
++.pa-table td {
++  padding: 14px 16px;
++  border-bottom: 1px solid #bdbdbd;
++  font-family: noto-m, sans-serif;
++  font-size: 13px;
++  color: #000000;
++  vertical-align: top;
++}
++
++.pa-table tr:last-child td {
++  border-bottom: none;
++}
++
++.pa-empty {
++  padding: 40px 16px;
++  text-align: center;
++  color: #6b7280;
++  font-family: noto-m, sans-serif;
++}
++
++.pa-emp-name {
++  font-family: noto-b, sans-serif;
++  color: #000000;
++}
++
++.pa-dept {
++  font-family: noto-b, sans-serif;
++  font-size: 12px;
++  color: #000000;
++}
++.pa-position {
++  font-size: 11px;
++  color: #6b7280;
++}
++
++/* ---------- TUZATISHLAR katagi ---------- */
++.pa-adj-cell {
++  display: flex;
++  flex-direction: column;
++  gap: 2px;
++  font-size: 12px;
++  line-height: 1.5;
++  min-width: 240px;
++}
++
++.pa-adj-meta {
++  font-size: 11px;
++  color: #6b7280;
++}
++
++.pa-status {
++  font-family: noto-b, sans-serif;
++}
++.pa-status--new {
++  color: #fe9100;
++}
++.pa-status--approved {
++  color: #2aa411;
++}
++.pa-status--rejected {
++  color: #e70a0a;
++}
++
++/* ---------- Amallar ustuni: 4 tugma column holatda ---------- */
++.pa-actions {
++  display: flex;
++  flex-direction: column;
++  gap: 8px;
++  min-width: 130px;
++}
++
++.pa-btn {
++  padding: 8px 16px;
++  border: none;
++  border-radius: 6px;
++  font-family: noto-b, sans-serif;
++  font-size: 13px;
++  color: #ffffff;
++  cursor: pointer;
++  transition: opacity 0.18s ease;
++  white-space: nowrap;
++}
++.pa-btn:hover:not(:disabled) {
++  opacity: 0.88;
++}
++.pa-btn:disabled {
++  opacity: 0.5;
++  cursor: not-allowed;
++}
++
++.pa-btn--primary {
++  background: #003366;
++}
++.pa-btn--danger {
++  background: #e70a0a;
++}
++.pa-btn--success {
++  background: #2aa411;
++}
++
++/* ---------- Footer / sahifalash ---------- */
++.pa-footer {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 16px;
++  padding: 14px 16px;
++  border-top: 1px solid #bdbdbd;
++  font-family: noto-m, sans-serif;
++  font-size: 12px;
++  color: #6b7280;
++  flex-wrap: wrap;
++}
++
++.pa-pages {
++  display: flex;
++  align-items: center;
++  gap: 6px;
++}
++
++.pa-page-btn {
++  min-width: 30px;
++  height: 30px;
++  padding: 0 6px;
++  border: 1px solid #bdbdbd;
++  border-radius: 6px;
++  background: #ffffff;
++  color: #000000;
++  font-family: noto-m, sans-serif;
++  font-size: 12px;
++  cursor: pointer;
++}
++.pa-page-btn:hover:not(:disabled) {
++  border-color: #003366;
++  color: #003366;
++}
++.pa-page-btn.active {
++  background: #003366;
++  border-color: #003366;
++  color: #ffffff;
++}
++.pa-page-btn:disabled {
++  opacity: 0.45;
++  cursor: not-allowed;
++}
++
++/* =========================================================
++   Tuzatish formasi
++   ========================================================= */
++.pa-form-card {
++  background: #ffffff;
++  border: 1px solid #bdbdbd;
++  border-radius: 12px;
++  padding: 22px;
++  display: flex;
++  flex-direction: column;
++  gap: 20px;
++}
++
++/* Ma'lumot bandi */
++.pa-info {
++  background: #003366;
++  border-radius: 8px;
++  padding: 14px 20px;
++  display: grid;
++  gap: 8px 24px;
++  grid-template-columns: repeat(3, minmax(0, 1fr));
++}
++.pa-info-item {
++  display: flex;
++  flex-direction: column;
++  gap: 5px;
++  min-width: 0;
++}
++.pa-info-label {
++  font-family: noto-b, sans-serif;
++  font-size: 11px;
++  letter-spacing: 0.3px;
++  text-transform: uppercase;
++  color: #fe9100;
++}
++.pa-info-value {
++  font-family: noto-b, sans-serif;
++  font-size: 13px;
++  color: #ffffff;
++  word-break: break-word;
++}
++
++/* 3 ta tur kartasi */
++.pa-types {
++  display: grid;
++  grid-template-columns: repeat(3, minmax(0, 1fr));
++  gap: 14px;
++}
++
++.pa-type {
++  border: 1px solid #bdbdbd;
++  border-radius: 8px;
++  padding: 16px 12px;
++  background: #ffffff;
++  text-align: center;
++  cursor: pointer;
++  transition: all 0.18s ease;
++  display: flex;
++  flex-direction: column;
++  gap: 4px;
++  align-items: center;
++}
++.pa-type:hover:not(:disabled) {
++  border-color: #003366;
++}
++.pa-type:disabled {
++  cursor: not-allowed;
++}
++.pa-type.active {
++  background: #e6e6e6;
++  border-color: #bdbdbd;
++}
++
++.pa-type-icon {
++  font-size: 20px;
++  font-family: noto-b, sans-serif;
++  line-height: 1;
++}
++.pa-type--extra .pa-type-icon {
++  color: #2aa411;
++}
++.pa-type--absent .pa-type-icon {
++  color: #e70a0a;
++}
++.pa-type--substitute .pa-type-icon {
++  color: #fe9100;
++}
++
++.pa-type-title {
++  font-family: noto-b, sans-serif;
++  font-size: 14px;
++  color: #000000;
++}
++.pa-type-desc {
++  font-size: 11px;
++  color: #6b7280;
++  line-height: 1.4;
++}
++.pa-type-desc b {
++  color: #000000;
++}
++
++/* Forma maydonlari */
++.pa-row {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 16px 24px;
++}
++.pa-row--1 {
++  grid-template-columns: 1fr;
++}
++
++.pa-field {
++  display: flex;
++  flex-direction: column;
++  gap: 6px;
++  min-width: 0;
++}
++.pa-field label {
++  font-family: noto-m, sans-serif;
++  font-size: 13px;
++  color: #000000;
++}
++.pa-field label .req {
++  color: #e70a0a;
++  margin-left: 3px;
++}
++
++.pa-field input,
++.pa-field select,
++.pa-field textarea {
++  width: 100%;
++  padding: 10px 12px;
++  border: 1px solid #bdbdbd;
++  border-radius: 8px;
++  font-family: noto-m, sans-serif;
++  font-size: 13px;
++  color: #000000;
++  background: #ffffff;
++  outline: none;
++  transition: border-color 0.18s ease;
++}
++.pa-field textarea {
++  min-height: 80px;
++  resize: vertical;
++}
++.pa-field input:focus,
++.pa-field select:focus,
++.pa-field textarea:focus {
++  border-color: #003366;
++}
++.pa-field input:disabled,
++.pa-field select:disabled,
++.pa-field textarea:disabled {
++  background: #f3f4f6;
++  cursor: not-allowed;
++}
++.pa-field input.pa-invalid,
++.pa-field select.pa-invalid {
++  border-color: #e70a0a;
++}
++
++.pa-hint {
++  font-size: 11px;
++  color: #6b7280;
++  line-height: 1.4;
++}
++
++/* Tugmalar: center'da — chapda Bekor qilish, o'ngda Saqlash */
++.pa-form-actions {
++  display: flex;
++  justify-content: center;
++  align-items: center;
++  gap: 14px;
++  margin-top: 4px;
++}
++.pa-form-actions .pa-btn {
++  padding: 10px 32px;
++  font-size: 14px;
++}
++
++.pa-loading,
++.pa-error {
++  padding: 50px 20px;
++  text-align: center;
++  font-family: noto-m, sans-serif;
++  font-size: 14px;
++  color: #003366;
++}
++.pa-error {
++  color: #e70a0a;
++}
++
++/* ---------- Responsive ---------- */
++@media (max-width: 1200px) {
++  .pa-container {
++    padding: 20px 22px 34px;
++  }
++}
++
++@media (max-width: 992px) {
++  .pa-container {
++    width: calc(100% - 90px);
++    margin-left: 90px !important;
++  }
++  .pa-info {
++    grid-template-columns: repeat(2, minmax(0, 1fr));
++  }
++  .pa-types {
++    grid-template-columns: 1fr;
++  }
++}
++
++@media (max-width: 768px) {
++  .pa-container {
++    width: 100%;
++    margin-left: 0 !important;
++    padding: 16px 14px 30px;
++  }
++  .pa-info {
++    grid-template-columns: 1fr;
++  }
++  .pa-row {
++    grid-template-columns: 1fr;
++  }
++  .pa-form-actions {
++    flex-direction: column-reverse;
++    align-items: stretch;
++  }
++  .pa-form-actions .pa-btn {
++    width: 100%;
++  }
++}
+diff --git a/src/pages/payroll-distribution/index.tsx b/src/pages/payroll-distribution/index.tsx
+new file mode 100644
+index 0000000..690a1aa
+--- /dev/null
++++ b/src/pages/payroll-distribution/index.tsx
+@@ -0,0 +1,811 @@
++import React, { useEffect, useMemo, useRef, useState } from "react";
++import { useParams, useNavigate, useLocation, useSearchParams } from "react-router-dom";
++import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
++import { useTranslation } from "react-i18next";
++import { notifications } from "@mantine/notifications";
++import { API } from "../../api/api";
++import { getLocalized } from "../../utils/getLocalized";
++import { getApiErrorMessage } from "../../utils/apiError";
++import "./payrollDistribution.css";
++
++/* ------------------------------------------------------------------ *
++ * Ish haqini taqsimlash (payroll distribution) sahifasi.
++ * Contracts jadvalidagi "Oylik taqsimlash" tugmasidan alohida page
++ * sifatida ochiladi (modal emas).
++ *
++ * Rejim (scheme) form API javobidan olinadi:
++ *   scheme === "foiz"  -> FOIZLI UI (AVANS / OYLIK tab lari)
++ *   aks holda          -> XODIMLAR UI (oklad, tabsiz)
++ * Contracts'dan kelgan monthly_salary_type header'ni darhol chizish uchun
++ * fallback bo'lib xizmat qiladi.
++ *
++ * Avtomatik (kulrang) maydonlar client-side ayirma bilan hisoblanadi;
++ * formulalar `useMemo` bloklarida bir joyda turadi — backend boshqacha
++ * hisoblasa, faqat o'sha joyni tuzatish yetarli.
++ * ------------------------------------------------------------------ */
++
++type Scheme = "foiz" | "oklad";
++// Backend enum: SalaryDistribution::KIND_ADVANCE / KIND_SALARY.
++// UI'da AVANS/OYLIK deb ko'rsatiladi, backendga advance/salary yuboriladi.
++type Kind = "advance" | "salary";
++
++interface LocalizedObj {
++  name_uz?: string | null;
++  name_ru?: string | null;
++  name_en?: string | null;
++  name?: string | null;
++}
++
++/** Backend bo'lim/lavozim/filialni matn sifatida beradi; eski kod obyekt uzatishi mumkin. */
++type NameLike = string | LocalizedObj | null | undefined;
++
++interface DistFormResponse {
++  scheme?: string;
++  kind?: string;
++  period?: { year?: number; month?: number };
++  period_locked?: boolean;
++  employee?: {
++    id?: number;
++    full_name?: string;
++    first_name?: string;
++    last_name?: string;
++    middle_name?: string;
++    department?: NameLike;
++    position?: NameLike;
++    branch?: NameLike;
++  };
++  branch?: NameLike;
++  /** foiz: joriy balans */
++  balance?: number | string;
++  /** foiz: kelishilgan foiz */
++  agreed_percent?: number | string;
++  /** oklad: shartnoma bo'yicha oklad (backend shu nom bilan qaytaradi) */
++  contract_salary?: number | string;
++  /** Kiritilgan tuzatishlar soati (hozircha UI'da ko'rsatilmaydi). */
++  adjustment_hours?: number | string;
++  /** Maksimal chegaralar: total_cashless — "jami naqdsiz" uchun shift. */
++  limits?: { total_cashless?: number; privileged_amount?: number };
++  /** maydonlar uchun oldindan hisoblangan default qiymatlar */
++  values?: Record<string, number | string | null>;
++}
++
++/** Router state — header'ni darhol chizish uchun contracts'dan uzatiladi. */
++interface NavState {
++  fullName?: string;
++  department?: LocalizedObj;
++  position?: LocalizedObj;
++  branch?: LocalizedObj;
++  salaryType?: string; // 'foiz' | 'shtat' | 'soat'
++  balance?: number | string;
++  agreedPercent?: number | string;
++  oklad?: number | string;
++}
++
++interface FoizFields {
++  comment: string;
++  jami_naqdsiz: number | "";
++  naqdsiz: number | "";
++  imtiyozli: number | "";
++  tax_payer: string;
++  cash_tax: string;
++}
++
++interface OkladFields {
++  comment: string;
++  jami_oylik_naqdsiz: number | "";
++  avans_naqdsiz: number | "";
++  avans_naqd: number | "";
++  imtiyozli: number | "";
++  tax_payer: string;
++  cash_tax: string;
++}
++
++const emptyFoiz: FoizFields = {
++  comment: "",
++  jami_naqdsiz: "",
++  naqdsiz: "",
++  imtiyozli: "",
++  tax_payer: "",
++  cash_tax: "",
++};
++
++const emptyOklad: OkladFields = {
++  comment: "",
++  jami_oylik_naqdsiz: "",
++  avans_naqdsiz: "",
++  avans_naqd: "",
++  imtiyozli: "",
++  tax_payer: "",
++  cash_tax: "",
++};
++
++/** Raqamni "4 500 000" ko'rinishida (bo'shliq bilan) formatlaydi. */
++const fmt = (n: number | "" | undefined | null): string =>
++  n === "" || n === undefined || n === null ? "" : Number(n).toLocaleString("ru-RU");
++
++/** Foydalanuvchi kiritgan matndan faqat raqamlarni ajratib oladi. */
++const parseNum = (s: string): number | "" => {
++  const digits = s.replace(/\D/g, "");
++  return digits === "" ? "" : Number(digits);
++};
++
++const num = (v: number | string | undefined | null): number => {
++  if (v === "" || v === undefined || v === null) return 0;
++  const n = Number(v);
++  return Number.isNaN(n) ? 0 : n;
++};
++
++const toNumOrEmpty = (v: unknown): number | "" =>
++  v === null || v === undefined || v === "" ? "" : Number(v);
++
++/** Bo'lim/lavozim/filial matn ham, lokalizatsiya obyekti ham bo'lishi mumkin. */
++const resolveName = (v: NameLike, lang: string): string => {
++  if (!v) return "-";
++  if (typeof v === "string") return v.trim() || "-";
++  return getLocalized(v, "name", lang);
++};
++
++const PayrollDistribution: React.FC = () => {
++  const { employeeId } = useParams<{ employeeId: string }>();
++  const navigate = useNavigate();
++  const location = useLocation();
++  const [searchParams] = useSearchParams();
++  const { t, i18n } = useTranslation();
++  const queryClient = useQueryClient();
++
++  const navState = (location.state as NavState) || {};
++
++  // Davr: URL query orqali override qilinadi, aks holda joriy oy/yil.
++  const now = new Date();
++  const periodYear = Number(searchParams.get("year")) || now.getFullYear();
++  const periodMonth = Number(searchParams.get("month")) || now.getMonth() + 1;
++
++  const [kind, setKind] = useState<Kind>("advance");
++
++  // Har bir tab uchun alohida holat — tab almashganda kiritilganlar saqlanadi.
++  const [avans, setAvans] = useState<FoizFields>(emptyFoiz);
++  const [oylik, setOylik] = useState<FoizFields>(emptyFoiz);
++  const [oklad, setOklad] = useState<OkladFields>(emptyOklad);
++  const [showErrors, setShowErrors] = useState(false);
++
++  // Qaysi (rejim/kind) uchun default qiymatlar bir marta seed qilinganini kuzatadi.
++  const seeded = useRef<Set<string>>(new Set());
++
++  const {
++    data: form,
++    isLoading,
++    isError,
++  } = useQuery<DistFormResponse>({
++    queryKey: ["payroll-distribution-form", employeeId, periodYear, periodMonth, kind],
++    queryFn: async () => {
++      const { data } = await API.get(`/payroll/distributions/form/${employeeId}`, {
++        params: { period_year: periodYear, period_month: periodMonth, kind },
++      });
++      // Javob { data: { ... } } ko'rinishida keladi
++      return data?.data ?? data;
++    },
++    enabled: !!employeeId,
++    // A.5: `kind` queryKey ichida — tab almashganda yangi so'rov ketadi. Oldingi
++    // javob placeholder bo'lib turmasa `isLoading` butun sahifani (header + tab'lar)
++    // "Yuklanmoqda..." bilan almashtiradi va ekran sakraydi. Header qiymatlari
++    // (balans, foiz) ikkala tab uchun bir xil, shuning uchun bu xavfsiz.
++    placeholderData: (previous) => previous,
++    staleTime: 5 * 60 * 1000,
++    gcTime: 10 * 60 * 1000,
++  });
++
++  // Rejim: backend `scheme` ("percent" | "fixed") — haqiqat manbai. navState faqat
++  // javob kelgunicha zaxira (contracts'dagi salary_type: percent/staff_schedule/
++  // academic_hours). Foizli -> AVANS/OYLIK tabli UI; aks holda -> oklad UI.
++  const scheme: Scheme = useMemo(() => {
++    const raw = (form?.scheme || navState.salaryType || "").toLowerCase();
++    if (raw === "percent" || raw === "foiz") return "foiz";
++    return "oklad";
++  }, [form?.scheme, navState.salaryType]);
++
++  // Form default qiymatlarini tegishli holatga bir marta seed qilish.
++  useEffect(() => {
++    if (!form?.values) return;
++    const v = form.values;
++    if (scheme === "foiz") {
++      const key = `foiz:${kind}`;
++      if (seeded.current.has(key)) return;
++      seeded.current.add(key);
++      const seed: FoizFields = {
++        comment: (v.comment as string) ?? "",
++        jami_naqdsiz: toNumOrEmpty(v.jami_naqdsiz),
++        naqdsiz: toNumOrEmpty(v.naqdsiz),
++        imtiyozli: toNumOrEmpty(v.imtiyozli),
++        tax_payer: (v.tax_payer as string) ?? "",
++        cash_tax: (v.cash_tax as string) ?? "",
++      };
++      (kind === "advance" ? setAvans : setOylik)(seed);
++    } else {
++      if (seeded.current.has("oklad")) return;
++      seeded.current.add("oklad");
++      setOklad({
++        comment: (v.comment as string) ?? "",
++        jami_oylik_naqdsiz: toNumOrEmpty(v.jami_oylik_naqdsiz),
++        avans_naqdsiz: toNumOrEmpty(v.avans_naqdsiz),
++        avans_naqd: toNumOrEmpty(v.avans_naqd),
++        imtiyozli: toNumOrEmpty(v.imtiyozli),
++        tax_payer: (v.tax_payer as string) ?? "",
++        cash_tax: (v.cash_tax as string) ?? "",
++      });
++    }
++  }, [form, scheme, kind]);
++
++  // ---- Header qiymatlari ----
++  const fullName =
++    form?.employee?.full_name ||
++    [form?.employee?.last_name, form?.employee?.first_name, form?.employee?.middle_name]
++      .filter(Boolean)
++      .join(" ") ||
++    navState.fullName ||
++    "-";
++  const departmentName = resolveName(
++    form?.employee?.department ?? navState.department,
++    i18n.language,
++  );
++  const positionName = resolveName(form?.employee?.position ?? navState.position, i18n.language);
++  // Filial backend'da employee ichida matn sifatida keladi
++  const branchName = resolveName(
++    form?.employee?.branch ?? form?.branch ?? navState.branch,
++    i18n.language,
++  );
++  const balance = form?.balance ?? navState.balance;
++  const agreedPercent = form?.agreed_percent ?? navState.agreedPercent;
++  // Backend `contract_salary` nomi bilan qaytaradi. navState faqat zaxira —
++  // u contracts jadvalidagi `base_salary` (asosiy maosh), shartnoma okladi emas,
++  // shuning uchun backend qiymati doim ustun turishi kerak.
++  const okladTotal = num(form?.contract_salary ?? navState.oklad);
++  const periodLocked = form?.period_locked === true;
++
++  const soum = t("payrollDistribution.soum");
++
++  // ---- Tanlov (select) variantlari ----
++  const taxPayerOptions = [
++    { value: "employee", label: t("payrollDistribution.taxPayerOptions.employee") },
++    { value: "organization", label: t("payrollDistribution.taxPayerOptions.organization") },
++  ];
++  const yesNoOptions = [
++    { value: "yes", label: t("payrollDistribution.yes") },
++    { value: "no", label: t("payrollDistribution.no") },
++  ];
++
++  // ---- Avtomatik (kulrang) maydonlar: client-side ayirma ----
++  const foizState = kind === "advance" ? avans : oylik;
++  const setFoizState = kind === "advance" ? setAvans : setOylik;
++  // Foiz naqd (avtomatik) = balans − jami naqdsiz.
++  // Ilgari `jami_naqdsiz − naqdsiz` edi — bu backend hisobiga zid. Tasdiq:
++  // saqlangan yozuvda balance=80000, total_cashless=20000 -> payout_cash=60000
++  // (backend o'zi hisoblaydi, frontend bu maydonni yubormaydi). Eski formula
++  // 20000-10000=10000 ko'rsatardi, ya'ni ekrandagi son bazadagidan farq qilardi.
++  const foizNaqdAuto = Math.max(0, num(balance) - num(foizState.jami_naqdsiz));
++
++  // oklad rejimi avtomatik maydonlari
++  const jamiOylikNaqdAuto = Math.max(0, okladTotal - num(oklad.jami_oylik_naqdsiz)); // oklad − jami oylik naqdsiz
++  const oylikNaqdsizAuto = Math.max(0, num(oklad.jami_oylik_naqdsiz) - num(oklad.avans_naqdsiz)); // jami oylik naqdsiz − avans naqdsiz
++  const oylikNaqdAuto = Math.max(0, jamiOylikNaqdAuto - num(oklad.avans_naqd)); // jami oylik naqd − avans naqd
++
++  // ---- Maksimal chegaralar (spetsifikatsiya "…dan ko'p bo'lmasligi kerak") ----
++  // "Jami naqdsiz" shifti backenddan keladi: foizda balans, okladda shartnoma oklad.
++  const maxTotalCashless = num(form?.limits?.total_cashless ?? (scheme === "foiz" ? balance : okladTotal));
++  const maxPrivilegedApi = num(form?.limits?.privileged_amount ?? maxTotalCashless);
++
++  const limitMsg = (max: number) =>
++    t("payrollDistribution.validation.maxExceeded", { max: fmt(max) });
++
++  /** Foizli rejim chegaralari. */
++  const foizLimitErrors = useMemo(() => {
++    const errors: Partial<Record<keyof FoizFields, string>> = {};
++    const jami = num(foizState.jami_naqdsiz);
++    // Jami naqdsiz ≤ balans
++    if (foizState.jami_naqdsiz !== "" && jami > maxTotalCashless) {
++      errors.jami_naqdsiz = limitMsg(maxTotalCashless);
++    }
++    // Naqdsiz ≤ jami naqdsiz
++    if (foizState.naqdsiz !== "" && num(foizState.naqdsiz) > jami) {
++      errors.naqdsiz = limitMsg(jami);
++    }
++    // Imtiyozli qism ≤ jami naqdsiz (va backend shiftidan oshmasin)
++    if (foizState.imtiyozli !== "") {
++      const maxPrivileged = Math.min(jami, maxPrivilegedApi);
++      if (num(foizState.imtiyozli) > maxPrivileged) errors.imtiyozli = limitMsg(maxPrivileged);
++    }
++    return errors;
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [foizState, maxTotalCashless, maxPrivilegedApi, i18n.language]);
++
++  /** Oklad rejimi chegaralari. */
++  const okladLimitErrors = useMemo(() => {
++    const errors: Partial<Record<keyof OkladFields, string>> = {};
++    const jamiNaqdsiz = num(oklad.jami_oylik_naqdsiz);
++    // Jami oylik naqdsiz ≤ shartnomadagi oylik
++    if (oklad.jami_oylik_naqdsiz !== "" && jamiNaqdsiz > maxTotalCashless) {
++      errors.jami_oylik_naqdsiz = limitMsg(maxTotalCashless);
++    }
++    // Avans naqdsiz ≤ jami oylik naqdsiz
++    if (oklad.avans_naqdsiz !== "" && num(oklad.avans_naqdsiz) > jamiNaqdsiz) {
++      errors.avans_naqdsiz = limitMsg(jamiNaqdsiz);
++    }
++    // Avans naqd ≤ jami oylik naqd (avtomatik hisoblangan)
++    if (oklad.avans_naqd !== "" && num(oklad.avans_naqd) > jamiOylikNaqdAuto) {
++      errors.avans_naqd = limitMsg(jamiOylikNaqdAuto);
++    }
++    // Imtiyozli qism ≤ jami oylik naqdsiz (va backend shiftidan oshmasin)
++    if (oklad.imtiyozli !== "") {
++      const maxPrivileged = Math.min(jamiNaqdsiz, maxPrivilegedApi);
++      if (num(oklad.imtiyozli) > maxPrivileged) errors.imtiyozli = limitMsg(maxPrivileged);
++    }
++    return errors;
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [oklad, maxTotalCashless, maxPrivilegedApi, jamiOylikNaqdAuto, i18n.language]);
++
++  // ---- Saqlash mutatsiyasi ----
++  const saveMutation = useMutation({
++    mutationFn: async () => {
++      const base = {
++        period_year: periodYear,
++        period_month: periodMonth,
++      };
++      // Backend maydon nomlari (jonli API bilan tasdiqlangan):
++      //   Izoh          -> `note`  ("comment" jim e'tiborsiz qoldiriladi!)
++      //   percent: kind + total_cashless + payout_cashless
++      //   fixed:   total_cashless + advance_cashless + advance_cash (kind yuborilmaydi)
++      // Avtomatik maydonlar (payout_cashless/total_cash/payout_cash fixed'da) —
++      // backend o'zi hisoblaydi, yuborilmaydi.
++      const payload =
++        scheme === "foiz"
++          ? {
++              ...base,
++              kind,
++              note: foizState.comment,
++              total_cashless: num(foizState.jami_naqdsiz),
++              payout_cashless: num(foizState.naqdsiz),
++              privileged_amount: num(foizState.imtiyozli),
++              income_tax_payer: foizState.tax_payer,
++              cash_tax: foizState.cash_tax,
++            }
++          : {
++              ...base,
++              note: oklad.comment,
++              total_cashless: num(oklad.jami_oylik_naqdsiz),
++              advance_cashless: num(oklad.avans_naqdsiz),
++              advance_cash: num(oklad.avans_naqd),
++              privileged_amount: num(oklad.imtiyozli),
++              income_tax_payer: oklad.tax_payer,
++              cash_tax: oklad.cash_tax,
++            };
++      const { data } = await API.post(`/payroll/distributions/${employeeId}`, payload);
++      return data;
++    },
++    onSuccess: () => {
++      queryClient.invalidateQueries({ queryKey: ["payroll-distributions"] });
++      notifications.show({
++        title: t("payrollDistribution.savedTitle"),
++        message: t("payrollDistribution.savedMessage"),
++        color: "green",
++      });
++      navigate(-1);
++    },
++    // A.1: ilgari onError yo'q edi — saqlash muvaffaqiyatsiz bo'lsa foydalanuvchi
++    // hech narsa ko'rmasdi va ma'lumot saqlandi deb o'ylardi.
++    onError: (error) => {
++      notifications.show({
++        title: t("payrollDistribution.errorTitle"),
++        message: getApiErrorMessage(error, t("payrollDistribution.saveErrorMessage")),
++        color: "red",
++      });
++    },
++  });
++
++  // ---- Validatsiya ----
++  const isFoizValid =
++    foizState.jami_naqdsiz !== "" &&
++    foizState.naqdsiz !== "" &&
++    foizState.tax_payer !== "" &&
++    foizState.cash_tax !== "" &&
++    Object.keys(foizLimitErrors).length === 0;
++  const isOkladValid =
++    oklad.jami_oylik_naqdsiz !== "" &&
++    oklad.avans_naqdsiz !== "" &&
++    oklad.avans_naqd !== "" &&
++    oklad.tax_payer !== "" &&
++    oklad.cash_tax !== "" &&
++    Object.keys(okladLimitErrors).length === 0;
++  const isValid = scheme === "foiz" ? isFoizValid : isOkladValid;
++
++  const handleSave = () => {
++    setShowErrors(true);
++    if (!isValid || periodLocked) return;
++    saveMutation.mutate();
++  };
++
++  // Bo'sh majburiy maydon (saqlash bosilgandan keyin) yoki chegara buzilishi —
++  // ikkalasi ham qizil ramka bilan belgilanadi.
++  const invalid = (empty: boolean, limitError?: string) =>
++    (showErrors && empty) || limitError ? "pd-invalid" : "";
++
++  /** Chegara buzilgan bo'lsa maydon ostida izoh chiqaradi. */
++  const errorText = (message?: string) =>
++    message ? <span className="pd-field-error">{message}</span> : null;
++
++  if (isLoading) {
++    return (
++      <div className="pd-container">
++        <div className="pd-loading">{t("payrollDistribution.loading")}</div>
++      </div>
++    );
++  }
++  if (isError) {
++    return (
++      <div className="pd-container">
++        <div className="pd-error">{t("payrollDistribution.error")}</div>
++      </div>
++    );
++  }
++
++  return (
++    <div className="pd-container">
++      <div className="pd-card">
++        {/* Ma'lumot bandi */}
++        <div className={`pd-info ${scheme === "oklad" ? "pd-info--oklad" : ""}`}>
++          <div className="pd-info-item">
++            <span className="pd-info-label">{t("payrollDistribution.info.fullName")}</span>
++            <span className="pd-info-value">{fullName}</span>
++          </div>
++          <div className="pd-info-item">
++            <span className="pd-info-label">{t("payrollDistribution.info.departmentPosition")}</span>
++            <span className="pd-info-value">
++              {departmentName} / {positionName}
++            </span>
++          </div>
++          <div className="pd-info-item">
++            <span className="pd-info-label">{t("payrollDistribution.info.branch")}</span>
++            <span className="pd-info-value">{branchName}</span>
++          </div>
++          {scheme === "foiz" ? (
++            <>
++              <div className="pd-info-item">
++                <span className="pd-info-label">{t("payrollDistribution.info.balance")}</span>
++                <span className="pd-info-value">
++                  {balance != null && balance !== "" ? `${fmt(Number(balance))} ${soum}` : "-"}
++                </span>
++              </div>
++              <div className="pd-info-item">
++                <span className="pd-info-label">{t("payrollDistribution.info.agreedPercent")}</span>
++                <span className="pd-info-value">
++                  {agreedPercent != null && agreedPercent !== "" ? `${agreedPercent}%` : "-"}
++                </span>
++              </div>
++            </>
++          ) : (
++            <div className="pd-info-item">
++              <span className="pd-info-label">{t("payrollDistribution.info.contractOklad")}</span>
++              <span className="pd-info-value">{okladTotal ? `${fmt(okladTotal)} ${soum}` : "-"}</span>
++            </div>
++          )}
++        </div>
++
++        {scheme === "foiz" ? (
++          <>
++            {/* Tab lar */}
++            <div className="pd-tabs">
++              <button
++                className={`pd-tab ${kind === "advance" ? "active" : ""}`}
++                onClick={() => setKind("advance")}
++              >
++                {t("payrollDistribution.tabs.avans")}
++              </button>
++              <button
++                className={`pd-tab ${kind === "salary" ? "active" : ""}`}
++                onClick={() => setKind("salary")}
++              >
++                {t("payrollDistribution.tabs.oylik")}
++              </button>
++            </div>
++
++            {/* FOIZLI forma */}
++            <div className="pd-form">
++              {periodLocked && (
++                <div className="pd-locked">⚠️ {t("payrollDistribution.periodLocked")}</div>
++              )}
++
++              <div className="pd-row pd-row--1">
++                <div className="pd-field">
++                  <label>{t("payrollDistribution.fields.comment")}</label>
++                  <textarea
++                    disabled={periodLocked}
++                    value={foizState.comment}
++                    onChange={(e) => setFoizState({ ...foizState, comment: e.target.value })}
++                  />
++                </div>
++              </div>
++
++              <div className="pd-row">
++                <div className="pd-field">
++                  <label>
++                    {kind === "advance"
++                      ? t("payrollDistribution.fields.jamiAvansNaqdsiz")
++                      : t("payrollDistribution.fields.jamiOylikNaqdsiz")}
++                    <span className="req">*</span>
++                  </label>
++                  <input
++                    className={invalid(foizState.jami_naqdsiz === "", foizLimitErrors.jami_naqdsiz)}
++                    inputMode="numeric"
++                    placeholder="0"
++                    disabled={periodLocked}
++                    value={fmt(foizState.jami_naqdsiz)}
++                    onChange={(e) => setFoizState({ ...foizState, jami_naqdsiz: parseNum(e.target.value) })}
++                  />
++                  {errorText(foizLimitErrors.jami_naqdsiz)}
++                </div>
++                <div className="pd-field">
++                  <label>
++                    {kind === "advance"
++                      ? t("payrollDistribution.fields.avansNaqdsiz")
++                      : t("payrollDistribution.fields.oylikNaqdsiz")}
++                    <span className="req">*</span>
++                  </label>
++                  <input
++                    className={invalid(foizState.naqdsiz === "", foizLimitErrors.naqdsiz)}
++                    inputMode="numeric"
++                    placeholder="0"
++                    disabled={periodLocked}
++                    value={fmt(foizState.naqdsiz)}
++                    onChange={(e) => setFoizState({ ...foizState, naqdsiz: parseNum(e.target.value) })}
++                  />
++                  {errorText(foizLimitErrors.naqdsiz)}
++                </div>
++              </div>
++
++              <div className="pd-row">
++                <div className="pd-field">
++                  <label>
++                    {kind === "advance"
++                      ? t("payrollDistribution.fields.avansNaqdAuto")
++                      : t("payrollDistribution.fields.oylikNaqdAuto")}
++                    <span className="req">*</span>
++                  </label>
++                  <input className="pd-auto" value={fmt(foizNaqdAuto)} readOnly tabIndex={-1} />
++                </div>
++                <div className="pd-field">
++                  <label>{t("payrollDistribution.fields.privilegedPart")}</label>
++                  <input
++                    className={invalid(false, foizLimitErrors.imtiyozli)}
++                    inputMode="numeric"
++                    placeholder="0"
++                    disabled={periodLocked}
++                    value={fmt(foizState.imtiyozli)}
++                    onChange={(e) => setFoizState({ ...foizState, imtiyozli: parseNum(e.target.value) })}
++                  />
++                  {errorText(foizLimitErrors.imtiyozli)}
++                </div>
++              </div>
++
++              <div className="pd-row">
++                <div className="pd-field">
++                  <label>
++                    {t("payrollDistribution.fields.taxPayer")}
++                    <span className="req">*</span>
++                  </label>
++                  <select
++                    className={invalid(foizState.tax_payer === "")}
++                    disabled={periodLocked}
++                    value={foizState.tax_payer}
++                    onChange={(e) => setFoizState({ ...foizState, tax_payer: e.target.value })}
++                  >
++                    <option value="">{t("payrollDistribution.choose")}</option>
++                    {taxPayerOptions.map((o) => (
++                      <option key={o.value} value={o.value}>
++                        {o.label}
++                      </option>
++                    ))}
++                  </select>
++                </div>
++                <div className="pd-field">
++                  <label>
++                    {t("payrollDistribution.fields.cashTax")}
++                    <span className="req">*</span>
++                  </label>
++                  <select
++                    className={invalid(foizState.cash_tax === "")}
++                    disabled={periodLocked}
++                    value={foizState.cash_tax}
++                    onChange={(e) => setFoizState({ ...foizState, cash_tax: e.target.value })}
++                  >
++                    <option value="">{t("payrollDistribution.choose")}</option>
++                    {yesNoOptions.map((o) => (
++                      <option key={o.value} value={o.value}>
++                        {o.label}
++                      </option>
++                    ))}
++                  </select>
++                </div>
++              </div>
++
++              <div className="pd-actions">
++                <button
++                  className="pd-btn pd-btn-save"
++                  onClick={handleSave}
++                  disabled={saveMutation.isPending || periodLocked}
++                >
++                  {t("payrollDistribution.save")}
++                </button>
++                <button className="pd-btn pd-btn-cancel" onClick={() => navigate(-1)}>
++                  {t("payrollDistribution.back")}
++                </button>
++              </div>
++            </div>
++          </>
++        ) : (
++          /* XODIMLAR (oklad) forma */
++          <div className="pd-form">
++            {periodLocked && (
++              <div className="pd-locked">⚠️ {t("payrollDistribution.periodLocked")}</div>
++            )}
++
++            <div className="pd-row pd-row--1">
++              <div className="pd-field">
++                <label>{t("payrollDistribution.fields.comment")}</label>
++                <textarea
++                  disabled={periodLocked}
++                  value={oklad.comment}
++                  onChange={(e) => setOklad({ ...oklad, comment: e.target.value })}
++                />
++              </div>
++            </div>
++
++            <div className="pd-row">
++              <div className="pd-field">
++                <label>
++                  {t("payrollDistribution.fields.jamiOylikNaqdsiz")}
++                  <span className="req">*</span>
++                </label>
++                <input
++                  className={invalid(
++                    oklad.jami_oylik_naqdsiz === "",
++                    okladLimitErrors.jami_oylik_naqdsiz,
++                  )}
++                  inputMode="numeric"
++                  placeholder="0"
++                  disabled={periodLocked}
++                  value={fmt(oklad.jami_oylik_naqdsiz)}
++                  onChange={(e) => setOklad({ ...oklad, jami_oylik_naqdsiz: parseNum(e.target.value) })}
++                />
++                {errorText(okladLimitErrors.jami_oylik_naqdsiz)}
++              </div>
++              <div className="pd-field">
++                <label>
++                  {t("payrollDistribution.fields.jamiOylikNaqd")}
++                  <span className="req">*</span>
++                </label>
++                <input className="pd-auto" value={fmt(jamiOylikNaqdAuto)} readOnly tabIndex={-1} />
++              </div>
++            </div>
++
++            <div className="pd-row">
++              <div className="pd-field">
++                <label>
++                  {t("payrollDistribution.fields.avansNaqdsiz")}
++                  <span className="req">*</span>
++                </label>
++                <input
++                  className={invalid(oklad.avans_naqdsiz === "", okladLimitErrors.avans_naqdsiz)}
++                  inputMode="numeric"
++                  placeholder="0"
++                  disabled={periodLocked}
++                  value={fmt(oklad.avans_naqdsiz)}
++                  onChange={(e) => setOklad({ ...oklad, avans_naqdsiz: parseNum(e.target.value) })}
++                />
++                {errorText(okladLimitErrors.avans_naqdsiz)}
++              </div>
++              <div className="pd-field">
++                <label>
++                  {t("payrollDistribution.fields.avansNaqd")}
++                  <span className="req">*</span>
++                </label>
++                <input
++                  className={invalid(oklad.avans_naqd === "", okladLimitErrors.avans_naqd)}
++                  inputMode="numeric"
++                  placeholder="0"
++                  disabled={periodLocked}
++                  value={fmt(oklad.avans_naqd)}
++                  onChange={(e) => setOklad({ ...oklad, avans_naqd: parseNum(e.target.value) })}
++                />
++                {errorText(okladLimitErrors.avans_naqd)}
++              </div>
++            </div>
++
++            <div className="pd-row">
++              <div className="pd-field">
++                <label>
++                  {t("payrollDistribution.fields.oylikNaqdsizAuto")}
++                  <span className="req">*</span>
++                </label>
++                <input className="pd-auto" value={fmt(oylikNaqdsizAuto)} readOnly tabIndex={-1} />
++              </div>
++              <div className="pd-field">
++                <label>{t("payrollDistribution.fields.oylikNaqd")}</label>
++                <input className="pd-auto" value={fmt(oylikNaqdAuto)} readOnly tabIndex={-1} />
++              </div>
++            </div>
++
++            <div className="pd-row">
++              <div className="pd-field">
++                <label>{t("payrollDistribution.fields.privilegedPart")}</label>
++                <input
++                  className={invalid(false, okladLimitErrors.imtiyozli)}
++                  inputMode="numeric"
++                  placeholder="0"
++                  disabled={periodLocked}
++                  value={fmt(oklad.imtiyozli)}
++                  onChange={(e) => setOklad({ ...oklad, imtiyozli: parseNum(e.target.value) })}
++                />
++                {errorText(okladLimitErrors.imtiyozli)}
++              </div>
++              <div className="pd-field">
++                <label>
++                  {t("payrollDistribution.fields.taxPayer")}
++                  <span className="req">*</span>
++                </label>
++                <select
++                  className={invalid(oklad.tax_payer === "")}
++                  disabled={periodLocked}
++                  value={oklad.tax_payer}
++                  onChange={(e) => setOklad({ ...oklad, tax_payer: e.target.value })}
++                >
++                  <option value="">{t("payrollDistribution.choose")}</option>
++                  {taxPayerOptions.map((o) => (
++                    <option key={o.value} value={o.value}>
++                      {o.label}
++                    </option>
++                  ))}
++                </select>
++              </div>
++            </div>
++
++            <div className="pd-row">
++              <div className="pd-field">
++                <label>
++                  {t("payrollDistribution.fields.cashTax")}
++                  <span className="req">*</span>
++                </label>
++                <select
++                  className={invalid(oklad.cash_tax === "")}
++                  disabled={periodLocked}
++                  value={oklad.cash_tax}
++                  onChange={(e) => setOklad({ ...oklad, cash_tax: e.target.value })}
++                >
++                  <option value="">{t("payrollDistribution.choose")}</option>
++                  {yesNoOptions.map((o) => (
++                    <option key={o.value} value={o.value}>
++                      {o.label}
++                    </option>
++                  ))}
++                </select>
++              </div>
++              <div className="pd-field" />
++            </div>
++
++            <div className="pd-actions">
++              <button
++                className="pd-btn pd-btn-save"
++                onClick={handleSave}
++                disabled={saveMutation.isPending || periodLocked}
++              >
++                {t("payrollDistribution.save")}
++              </button>
++              <button className="pd-btn pd-btn-cancel" onClick={() => navigate(-1)}>
++                {t("payrollDistribution.back")}
++              </button>
++            </div>
++          </div>
++        )}
++      </div>
++    </div>
++  );
++};
++
++export default PayrollDistribution;
+diff --git a/src/pages/payroll-distribution/payrollDistribution.css b/src/pages/payroll-distribution/payrollDistribution.css
+new file mode 100644
+index 0000000..f9c5446
+--- /dev/null
++++ b/src/pages/payroll-distribution/payrollDistribution.css
+@@ -0,0 +1,318 @@
++/* Ish haqini taqsimlash sahifasi (modal emas, alohida page).
++   Palitra: #003366, #FE9100, #000000, #FFFFFF, #E70A0A.
++   Dastlab container ga moslashadi, keyin 1920px -> 768px oralig'ida responsive. */
++
++.pd-container {
++  width: calc(100% - 140px);
++  margin-top: 50px !important;
++  margin-left: 140px !important;
++  /* padding: 24px 30px 40px; */
++  display: flex;
++  flex-direction: column;
++  gap: 20px;
++  min-height: calc(100vh - 50px);
++}
++
++/* Sahifa kartasi */
++.pd-card {
++  background: #ffffff;
++  border: 1px solid #e2e8f0;
++  border-radius: 18px;
++  box-shadow: 0 4px 20px rgba(0, 51, 102, 0.06);
++  padding: 26px 28px 30px;
++  width: 100%;
++  display: flex;
++  flex-direction: column;
++  gap: 22px;
++}
++
++/* Sarlavha qatori: chapda orqaga tugma + oyna nomi */
++.pd-topbar {
++  display: flex;
++  align-items: center;
++  gap: 16px;
++}
++
++.pd-back-pill {
++  display: inline-flex;
++  align-items: center;
++  gap: 8px;
++  background: #fe9100;
++  color: #ffffff;
++  border: none;
++  border-radius: 8px;
++  padding: 8px 18px;
++  font-family: noto-b, sans-serif;
++  font-size: 14px;
++  cursor: pointer;
++  transition: background 0.2s ease;
++}
++.pd-back-pill:hover {
++  background: #e68200;
++}
++
++.pd-title {
++  font-family: noto-b, sans-serif;
++  font-size: 20px;
++  color: #000000;
++}
++
++/* Ma'lumot bandi (dark blue) */
++.pd-info {
++  background: #003366;
++  border-radius: 10px;
++  padding: 16px 22px;
++  display: grid;
++  gap: 8px 26px;
++  grid-template-columns: repeat(5, minmax(0, 1fr));
++}
++.pd-info--oklad {
++  grid-template-columns: repeat(4, minmax(0, 1fr));
++}
++
++.pd-info-item {
++  display: flex;
++  flex-direction: column;
++  gap: 6px;
++  min-width: 0;
++}
++.pd-info-label {
++  font-family: noto-b, sans-serif;
++  font-size: 12px;
++  letter-spacing: 0.3px;
++  color: #fe9100;
++  text-transform: uppercase;
++}
++.pd-info-value {
++  font-family: noto-m, sans-serif;
++  font-size: 14px;
++  color: #ffffff;
++  word-break: break-word;
++}
++
++/* Tab lar (AVANS / OYLIK) */
++.pd-tabs {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 14px;
++}
++.pd-tab {
++  padding: 13px 10px;
++  border-radius: 8px;
++  border: 1.5px solid #cbd5e1;
++  background: #ffffff;
++  color: #000000;
++  font-family: noto-b, sans-serif;
++  font-size: 15px;
++  letter-spacing: 0.4px;
++  cursor: pointer;
++  transition: all 0.18s ease;
++}
++.pd-tab:hover {
++  border-color: #003366;
++}
++.pd-tab.active {
++  background: #003366;
++  border-color: #003366;
++  color: #ffffff;
++}
++
++/* Forma to'ri */
++.pd-form {
++  display: flex;
++  flex-direction: column;
++  gap: 18px;
++}
++.pd-row {
++  display: grid;
++  gap: 16px 26px;
++  grid-template-columns: 1fr 1fr;
++}
++.pd-row--1 {
++  grid-template-columns: 1fr;
++}
++
++.pd-field {
++  display: flex;
++  flex-direction: column;
++  gap: 7px;
++  min-width: 0;
++}
++.pd-field label {
++  font-family: noto-m, sans-serif;
++  font-size: 13px;
++  color: #000000;
++}
++.pd-field label .req {
++  color: #e70a0a;
++  margin-left: 3px;
++}
++
++.pd-field input,
++.pd-field select,
++.pd-field textarea {
++  padding: 12px 14px;
++  border: 1.5px solid #cbd5e1;
++  border-radius: 10px;
++  font-size: 14px;
++  color: #000000;
++  background: #ffffff;
++  outline: none;
++  font-family: noto-m, sans-serif;
++  transition:
++    border-color 0.18s ease,
++    box-shadow 0.18s ease;
++  width: 100%;
++}
++.pd-field textarea {
++  min-height: 74px;
++  resize: vertical;
++}
++.pd-field input:focus,
++.pd-field select:focus,
++.pd-field textarea:focus {
++  border-color: #003366;
++  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
++}
++
++/* Avtomatik (read-only) maydon: kulrang fon */
++.pd-field input.pd-auto {
++  background: #d9dde2;
++  border-color: #cbd5e1;
++  color: #000000;
++  cursor: not-allowed;
++}
++
++.pd-field input.pd-invalid,
++.pd-field select.pd-invalid {
++  border-color: #e70a0a;
++}
++
++/* Chegara buzilganda maydon ostidagi izoh (faqat xato bo'lganda chiziladi) */
++.pd-field-error {
++  display: block;
++  margin-top: 4px;
++  font-family: noto-r, sans-serif;
++  font-size: 12px;
++  color: #e70a0a;
++}
++
++/* Davr yopilgan — formaning tepasidagi ogohlantirish */
++.pd-locked {
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  padding: 10px 14px;
++  margin-bottom: 14px;
++  border: 1px solid #f0c14b;
++  background: #fff8e5;
++  border-radius: 6px;
++  font-family: noto-m, sans-serif;
++  font-size: 13px;
++  color: #7a5c00;
++}
++
++/* Pastki tugmalar: chapda Saqlash, o'ngda Bekor qilish */
++.pd-actions {
++  display: flex;
++  justify-content: center;
++  align-items: center;
++  gap: 18px;
++  margin-top: 6px;
++}
++.pd-btn {
++  padding: 11px 34px;
++  border-radius: 9px;
++  border: none;
++  font-family: noto-b, sans-serif;
++  font-size: 15px;
++  cursor: pointer;
++  transition: all 0.18s ease;
++}
++.pd-btn-save {
++  background: #003366;
++  color: #ffffff;
++}
++.pd-btn-save:hover {
++  background: #00284f;
++}
++.pd-btn-save:disabled {
++  background: #94a3b8;
++  cursor: not-allowed;
++}
++.pd-btn-cancel {
++  background: #e70a0a;
++  color: #ffffff;
++}
++.pd-btn-cancel:hover {
++  background: #c50808;
++}
++
++.pd-loading,
++.pd-error {
++  padding: 60px 20px;
++  text-align: center;
++  font-family: noto-m, sans-serif;
++  font-size: 15px;
++  color: #003366;
++}
++.pd-error {
++  color: #e70a0a;
++}
++
++/* ---- Responsive: 1920px -> 768px ---- */
++@media (max-width: 1400px) {
++  .pd-card {
++    max-width: 960px;
++  }
++}
++
++@media (max-width: 1200px) {
++  .pd-container {
++    padding: 20px 22px 34px;
++  }
++  .pd-info {
++    gap: 10px 20px;
++  }
++}
++
++@media (max-width: 992px) {
++  .pd-container {
++    width: calc(100% - 90px);
++    margin-left: 90px !important;
++  }
++  /* Sarlavha va qiymatlarni ikki ustunga joylash */
++  .pd-info,
++  .pd-info--oklad {
++    grid-template-columns: repeat(2, minmax(0, 1fr));
++  }
++}
++
++@media (max-width: 768px) {
++  .pd-container {
++    width: 100%;
++    margin-left: 0 !important;
++    padding: 16px 14px 30px;
++  }
++  .pd-card {
++    padding: 20px 16px 24px;
++    border-radius: 14px;
++  }
++  .pd-info,
++  .pd-info--oklad {
++    grid-template-columns: 1fr;
++  }
++  .pd-row {
++    grid-template-columns: 1fr;
++  }
++  .pd-tabs {
++    grid-template-columns: 1fr;
++  }
++  .pd-actions {
++    flex-direction: column;
++    align-items: stretch;
++  }
++  .pd-btn {
++    width: 100%;
++  }
++}
+diff --git a/src/pages/students-attendance/index.tsx b/src/pages/students-attendance/index.tsx
+index 16da844..69e73af 100644
+--- a/src/pages/students-attendance/index.tsx
++++ b/src/pages/students-attendance/index.tsx
+@@ -1,13 +1,17 @@
+ import React, { useState, useMemo, useCallback, memo } from 'react';
+ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+ import { useTranslation } from 'react-i18next';
+-import { useSearchParams } from 'react-router-dom';
++import { useSearchParams, useNavigate } from 'react-router-dom';
++import { notifications } from '@mantine/notifications';
+ import { API } from '../../api/api';
+ import './studentsAttendance.css';
+ import { Protected } from '../../components/Protected';
++import ConfirmModal from '../../components/ConfirmModal';
+ import GroupCard from '../../components/GroupCard';
+ import { formatDate } from '@/utils/date';
++import { getApiErrorMessage } from '@/utils/apiError';
+ import type { Group } from '@/types/group.types';
++import type { Lesson } from '@/types/lesson.types';
+ import type {
+   Attendance,
+   GroupData,
+@@ -17,6 +21,45 @@ import type {
+   StudentsResponse,
+ } from '@/types/studentsAttendance.types';
+ 
++/** Backend status → badge klass + tarjima kaliti. */
++const STUDENT_STATUS_META: Record<string, { key: string; cls: string }> = {
++  active: { key: 'st_active', cls: 'aktiv' },
++  Aktiv: { key: 'st_active', cls: 'aktiv' },
++  frozen: { key: 'st_frozen', cls: 'frozen' },
++  dropped: { key: 'st_dropped', cls: 'dropped' },
++  graduated: { key: 'st_graduated', cls: 'graduated' },
++  Noaktiv: { key: 'noaktiv', cls: 'noaktiv' },
++};
++
++const getStatusMeta = (s?: string) =>
++  STUDENT_STATUS_META[s ?? ''] ?? { key: 'st_active', cls: 'aktiv' };
++
++// Backend sanalarni Toshkent yarim tunini UTC'da saqlaydi
++// (masalan "2026-07-17T19:00:00Z" = 2026-07-18 00:00 +05).
++// Shu sabab sanani Asia/Tashkent mintaqasida "YYYY-MM-DD" ko'rinishiga keltiramiz.
++const APP_TZ = 'Asia/Tashkent';
++
++const toTashkentDate = (value: unknown): string => {
++  if (!value) return '';
++  // "DD.MM.YYYY" bo'lsa — bevosita ISO'ga aylantiramiz.
++  const dotMatch = String(value).match(/^(\d{2})\.(\d{2})\.(\d{4})/);
++  if (dotMatch) return `${dotMatch[3]}-${dotMatch[2]}-${dotMatch[1]}`;
++  const d = new Date(String(value));
++  if (Number.isNaN(d.getTime())) return '';
++  // en-CA => "YYYY-MM-DD"
++  return new Intl.DateTimeFormat('en-CA', {
++    timeZone: APP_TZ,
++    year: 'numeric',
++    month: '2-digit',
++    day: '2-digit',
++  }).format(d);
++};
++
++const isSameDay = (raw: unknown, today: Date): boolean => {
++  const a = toTashkentDate(raw);
++  return a !== '' && a === toTashkentDate(today);
++};
++
+ const DAY_INDEX: Record<string, number> = {
+   monday: 1,
+   tuesday: 2,
+@@ -73,15 +116,15 @@ const Popover = ({
+   };
+ 
+   return (
+-    <div className="popover-overlay" onClick={onCancel}>
+-      <div className="attendance-popover" onClick={(e) => e.stopPropagation()}>
+-        <div className="popover-section">
+-          <span className="popover-title">{t('studentsAttendance.davomat')}:</span>
+-          <div className="davomat-options">
++    <div className="sa-popover-overlay" onClick={onCancel}>
++      <div className="sa-attendance-popover" onClick={(e) => e.stopPropagation()}>
++        <div className="sa-popover-section">
++          <span className="sa-popover-title">{t('studentsAttendance.davomat')}:</span>
++          <div className="sa-davomat-options">
+             {(['present', 'absent', 'late', 'reason'] as const).map((opt) => (
+               <button
+                 key={opt}
+-                className={`option-btn${status === opt ? ' active' : ''}`}
++                className={`sa-option-btn${status === opt ? ' active' : ''}`}
+                 onClick={() => setStatus(opt)}
+               >
+                 <div className={`legend-dot dot-${opt}`} />
+@@ -91,12 +134,12 @@ const Popover = ({
+           </div>
+         </div>
+ 
+-        <div className="popover-section">
+-          <span className="popover-title">{t('studentsAttendance.baho')}:</span>
+-          <div className="grade-input-wrap">
++        <div className="sa-popover-section">
++          <span className="sa-popover-title">{t('studentsAttendance.baho')}:</span>
++          <div className="sa-grade-input-wrap">
+             <input
+               type="number"
+-              className="grade-field"
++              className="sa-grade-field"
+               value={grade ?? ''}
+               onChange={(e) => setGrade(e.target.value === '' ? undefined : Number(e.target.value))}
+             />
+@@ -104,27 +147,27 @@ const Popover = ({
+         </div>
+ 
+         {status === 'reason' && (
+-          <div className="popover-section">
+-            <span className="popover-title">{t('studentsAttendance.reason_label')}:</span>
++          <div className="sa-popover-section">
++            <span className="sa-popover-title">{t('studentsAttendance.reason_label')}:</span>
+             <textarea
+-              className="reason-field"
++              className="sa-reason-field"
+               value={comment}
+               onChange={(e) => setComment(e.target.value)}
+             />
+           </div>
+         )}
+ 
+-        <div className="popover-actions">
++        <div className="sa-popover-actions">
+           {attendance.id && (
+-            <button className="pop-cancel" style={{ color: 'red' }} onClick={onDelete}>
++            <button className="sa-pop-cancel" style={{ color: 'red' }} onClick={onDelete}>
+               {t('studentsAttendance.delete')}
+             </button>
+           )}
+ 
+-          <button className="pop-save" onClick={handleSave}>
++          <button className="sa-pop-save" onClick={handleSave}>
+             {t('studentsAttendance.save')}
+           </button>
+-          <button className="pop-cancel" onClick={onCancel}>
++          <button className="sa-pop-cancel" onClick={onCancel}>
+             {t('studentsAttendance.cancel')}
+           </button>
+         </div>
+@@ -156,19 +199,24 @@ const GroupSelector: React.FC = () => {
+ const StudentsAttendance: React.FC = () => {
+   const { t } = useTranslation();
+   const queryClient = useQueryClient();
++  const navigate = useNavigate();
+   const [searchParams] = useSearchParams();
+   const groupId = searchParams.get('groupId');
+ 
+   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+-  const [lessonActive, setLessonActive] = useState(false);
+-  const [showStartModal, setShowStartModal] = useState(true);
++  const [startModalOpen, setStartModalOpen] = useState(false);
++  const [startTopic, setStartTopic] = useState('');
++  const [confirmEndOpen, setConfirmEndOpen] = useState(false);
++  const [autoPrompted, setAutoPrompted] = useState(false);
+   const [selectedCell, setSelectedCell] = useState<{
+     studentId: number;
+     date: string;
+     attendance?: Attendance;
+   } | null>(null);
+ 
++  const todayStr = useMemo(() => toTashkentDate(new Date()), []);
++
+   const { data: studentsData } = useQuery<StudentsResponse>({
+     queryKey: ['students', groupId],
+     queryFn: () =>
+@@ -204,28 +252,167 @@ const StudentsAttendance: React.FC = () => {
+     enabled: !!groupId,
+   });
+ 
++  // Davomat faqat "ongoing" dars paytida qo'yiladi — bugungi darsni topamiz.
++  const { data: lessonsData } = useQuery<Lesson[]>({
++    queryKey: ['lessons', groupId],
++    queryFn: () =>
++      API.get('/lessons', { params: { group_id: groupId, per_page: 200 } }).then((res) => {
++        const arr = Array.isArray(res.data) ? res.data : (res.data?.data ?? []);
++        return arr as Lesson[];
++      }),
++    enabled: !!groupId,
++  });
++
++  const todayLesson = useMemo(
++    () =>
++      (lessonsData ?? []).find(
++        (l) => Number(l.group_id) === Number(groupId) && isSameDay(l.date, new Date()),
++      ),
++    [lessonsData, groupId],
++  );
++  const lessonStatus = todayLesson?.status;
++  const lessonActive = lessonStatus === 'ongoing';
++
++  // Bugun guruhning dars kunimi? (group.days asosida)
++  const todayIsLessonDay = useMemo(() => {
++    if (!groupData?.days) return false;
++    const todayDow = new Date().getDay();
++    return groupData.days.some((d) => DAY_INDEX[d.toLowerCase()] === todayDow);
++  }, [groupData]);
++
++  // Dars vaqti — guruhning start_time/end_time (masalan "15:00-16:30").
++  const lessonTime = useMemo(() => {
++    const g = groupData as Record<string, unknown> | undefined;
++    const fmt = (v: unknown) => (typeof v === 'string' ? v.slice(0, 5) : '');
++    const start = fmt(g?.start_time);
++    const end = fmt(g?.end_time);
++    if (!start && !end) return '';
++    return end ? `${start}-${end}` : start;
++  }, [groupData]);
++
++  const notifyError = (error: unknown, fallbackKey: string) =>
++    notifications.show({
++      title: t('studentsAttendance.notif_error_title'),
++      message: getApiErrorMessage(error, t(fallbackKey)),
++      color: 'red',
++    });
++
++  const notifySuccess = (messageKey: string) =>
++    notifications.show({
++      title: t('studentsAttendance.notif_success_title'),
++      message: t(messageKey),
++      color: 'green',
++    });
++
++  const invalidateAttendanceQueries = () => {
++    queryClient.invalidateQueries({ queryKey: ['student_attendance'] });
++    // balansi davomatdan keyin o'zgaradi — o'quvchilar ro'yxatini ham yangilaymiz
++    queryClient.invalidateQueries({ queryKey: ['students', groupId] });
++    queryClient.invalidateQueries({ queryKey: ['group', groupId] });
++  };
++
++  const startLessonMutation = useMutation({
++    mutationFn: (id: number) => API.post(`/lessons/${id}/start`),
++    onSuccess: () => notifySuccess('studentsAttendance.lesson_started'),
++    onError: (error) => notifyError(error, 'studentsAttendance.lesson_start_error'),
++    onSettled: () => {
++      setStartModalOpen(false);
++      // 409 (allaqachon boshlangan) holatida ham holatni yangilaymiz
++      queryClient.invalidateQueries({ queryKey: ['lessons', groupId] });
++    },
++  });
++
++  // Bugungi dars yozuvi bo'lmasa — avval yaratamiz (mavzu bilan), so'ng boshlaymiz.
++  const createAndStartMutation = useMutation({
++    mutationFn: async (topic: string) => {
++      const form = new FormData();
++      form.append('group_id', String(groupId));
++      form.append('date', todayStr);
++      form.append('topic', topic);
++      // Backend homework_title_uz ni majburiy qiladi — vaqtincha mavzu bilan to'ldiramiz.
++      // Asl uy vazifasi dars tugaganda darslar sahifasida yangilanadi.
++      form.append('homework_title_uz', topic);
++      const res = await API.post('/lessons', form, {
++        headers: { 'Content-Type': 'multipart/form-data' },
++      });
++      const created = (res.data?.data ?? res.data) as Lesson | undefined;
++      if (created?.id) {
++        await API.post(`/lessons/${created.id}/start`);
++      }
++      return created;
++    },
++    onSuccess: () => notifySuccess('studentsAttendance.lesson_started'),
++    onError: (error) => notifyError(error, 'studentsAttendance.lesson_start_error'),
++    onSettled: () => {
++      setStartModalOpen(false);
++      queryClient.invalidateQueries({ queryKey: ['lessons', groupId] });
++    },
++  });
++
++  const startBusy = startLessonMutation.isPending || createAndStartMutation.isPending;
++
++  const handleConfirmStart = () => {
++    if (todayLesson) {
++      startLessonMutation.mutate(todayLesson.id);
++    } else {
++      createAndStartMutation.mutate(startTopic.trim());
++    }
++  };
++
++  // Dars boshlanishi kerak bo'lgan holat (bugun dars kuni, hali ongoing/completed emas).
++  const startNeeded =
++    Boolean(todayLesson || todayIsLessonDay) &&
++    lessonStatus !== 'ongoing' &&
++    lessonStatus !== 'completed';
++
++  // Guruh tanlangach / ma'lumot yuklangach — start modalini bir marta avtomatik ochamiz.
++  // Effekt emas, render fazasida (ConfirmModal'dagi kabi) — cascading render bo'lmasligi uchun.
++  if (startNeeded && !autoPrompted) {
++    setAutoPrompted(true);
++    setStartModalOpen(true);
++  }
++
++  const endLessonMutation = useMutation({
++    mutationFn: (id: number) => API.post(`/lessons/${id}/end`),
++    onSuccess: () => notifySuccess('studentsAttendance.lesson_ended'),
++    onError: (error) => notifyError(error, 'studentsAttendance.lesson_end_error'),
++    onSettled: () => {
++      setConfirmEndOpen(false);
++      queryClient.invalidateQueries({ queryKey: ['lessons', groupId] });
++      invalidateAttendanceQueries();
++      // Dars tugagach — uy vazifasini biriktirish uchun darslar sahifasiga o'tamiz,
++      // guruh + o'sha sana bilan modal avtomatik ochiladi.
++      navigate(
++        `/lessons?groupId=${groupId}&date=${todayStr}&openHomework=1&lessonId=${todayLesson?.id ?? ''}`,
++      );
++    },
++  });
++
+   const createMutation = useMutation({
+     mutationFn: (data: Attendance) => API.post('/student_attendance', data),
+     onSuccess: () => {
+-      queryClient.invalidateQueries({ queryKey: ['student_attendance'] });
++      invalidateAttendanceQueries();
+       setSelectedCell(null);
+     },
++    onError: (error) => notifyError(error, 'studentsAttendance.attendance_error'),
+   });
+ 
+   const updateMutation = useMutation({
+     mutationFn: (data: Attendance) => API.put(`/student_attendance/${data.id}`, data),
+     onSuccess: () => {
+-      queryClient.invalidateQueries({ queryKey: ['student_attendance'] });
++      invalidateAttendanceQueries();
+       setSelectedCell(null);
+     },
++    onError: (error) => notifyError(error, 'studentsAttendance.attendance_error'),
+   });
+ 
+   const deleteMutation = useMutation({
+     mutationFn: (id: number) => API.delete(`/student_attendance/${id}`),
+     onSuccess: () => {
+-      queryClient.invalidateQueries({ queryKey: ['student_attendance'] });
++      invalidateAttendanceQueries();
+       setSelectedCell(null);
+     },
++    onError: (error) => notifyError(error, 'studentsAttendance.attendance_error'),
+   });
+ 
+   const lessonDatesInMonth = useMemo(() => {
+@@ -253,6 +440,7 @@ const StudentsAttendance: React.FC = () => {
+ 
+   const handleCellClick = useCallback(
+     (studentId: number, day: number) => {
++      // Davomat faqat dars boshlangan (ongoing) paytda belgilanadi.
+       if (!lessonActive) return;
+       const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+       const attendance = (attendanceData?.[studentId] || []).find((a) =>
+@@ -402,12 +590,8 @@ const StudentsAttendance: React.FC = () => {
+                       </span>
+                       <span className="student-phone">{student.phone}</span>
+                     </div>
+-                    <div
+-                      className={`status-badge status-${student?.status === 'Noaktiv' ? 'noaktiv' : 'aktiv'}`}
+-                    >
+-                      {t(
+-                        `studentsAttendance.${student?.status === 'Noaktiv' ? 'noaktiv' : 'aktiv'}`,
+-                      )}
++                    <div className={`status-badge status-${getStatusMeta(student?.status).cls}`}>
++                      {t(`studentsAttendance.${getStatusMeta(student?.status).key}`)}
+                     </div>
+                   </div>
+                 </td>
+@@ -417,7 +601,7 @@ const StudentsAttendance: React.FC = () => {
+                     String(a.date).startsWith(dateStr),
+                   );
+                   return (
+-                    <td key={day} className="attendance-cell">
++                    <td key={day} className={`attendance-cell${lessonActive ? '' : ' cell-locked'}`}>
+                       <AttendanceDot
+                         status={att?.status}
+                         grade={att?.score}
+@@ -458,10 +642,8 @@ const StudentsAttendance: React.FC = () => {
+                 </span>
+                 <span className="student-phone">{student.phone}</span>
+               </div>
+-              <div
+-                className={`status-badge status-${student?.status === 'Noaktiv' ? 'noaktiv' : 'aktiv'}`}
+-              >
+-                {t(`studentsAttendance.${student?.status === 'Noaktiv' ? 'noaktiv' : 'aktiv'}`)}
++              <div className={`status-badge status-${getStatusMeta(student?.status).cls}`}>
++                {t(`studentsAttendance.${getStatusMeta(student?.status).key}`)}
+               </div>
+             </div>
+             <div className="card-body">
+@@ -502,38 +684,87 @@ const StudentsAttendance: React.FC = () => {
+ 
+       <Protected permission="student_attendance.create">
+         <div className="lesson-control-fixed">
+-          <button
+-            className={`lesson-btn ${lessonActive ? 'btn-end' : 'btn-start'}`}
+-            onClick={() => setLessonActive(!lessonActive)}
+-          >
+-            {lessonActive
+-              ? t('studentsAttendance.darsni_tamomlash')
+-              : t('studentsAttendance.darsni_boshlash')}
+-            <span>10:00</span>
+-          </button>
+-        </div>
+-      </Protected>
+-
+-      <Protected permission="student_attendance.create">
+-        {showStartModal && !lessonActive && (
+-          <div className="modal-centered-overlay">
+-            <div className="start-lesson-modal">
+-              <h2>{t('studentsAttendance.start_lesson_title')}</h2>
+-              <p>{t('studentsAttendance.start_lesson_desc')}</p>
++          {(todayLesson || todayIsLessonDay) &&
++            lessonStatus !== 'ongoing' &&
++            lessonStatus !== 'completed' && (
+               <button
+-                className="start-modal-btn"
+-                onClick={() => {
+-                  setLessonActive(true);
+-                  setShowStartModal(false);
+-                }}
++                className="lesson-btn btn-start"
++                onClick={() => setStartModalOpen(true)}
++                disabled={startBusy}
+               >
+-                {t('studentsAttendance.start')}
++                {t('studentsAttendance.darsni_boshlash')}
++                {lessonTime && <span>{lessonTime}</span>}
+               </button>
+-            </div>
+-          </div>
+-        )}
++            )}
++          {!todayLesson && !todayIsLessonDay && (
++            <button className="lesson-btn btn-disabled" disabled>
++              {t('studentsAttendance.no_lesson_today')}
++            </button>
++          )}
++          {lessonStatus === 'ongoing' && (
++            <button
++              className="lesson-btn btn-end"
++              onClick={() => setConfirmEndOpen(true)}
++              disabled={endLessonMutation.isPending}
++            >
++              {t('studentsAttendance.darsni_tamomlash')}
++              {lessonTime && <span>{lessonTime}</span>}
++            </button>
++          )}
++          {lessonStatus === 'completed' && (
++            <button className="lesson-btn btn-disabled" disabled>
++              {t('studentsAttendance.lesson_completed')}
++            </button>
++          )}
++        </div>
+       </Protected>
+ 
++      {startModalOpen && (
++        <div className="modal-centered-overlay">
++          <div className="start-lesson-modal">
++            <h2>{t('studentsAttendance.start_lesson_title')}</h2>
++            {lessonTime && <p className="start-lesson-time">🕒 {lessonTime}</p>}
++            <p>{t('studentsAttendance.start_lesson_desc')}</p>
++
++            {!todayLesson && (
++              <div className="start-topic-field">
++                <label className="end-field-label">
++                  {t('studentsAttendance.lesson_topic_label')}
++                </label>
++                <input
++                  className="end-field-input"
++                  value={startTopic}
++                  disabled={startBusy}
++                  autoFocus
++                  onChange={(e) => setStartTopic(e.target.value)}
++                />
++              </div>
++            )}
++
++            <button
++              className="start-modal-btn"
++              type="button"
++              disabled={startBusy || (!todayLesson && !startTopic.trim())}
++              onClick={handleConfirmStart}
++            >
++              {t('studentsAttendance.start')}
++            </button>
++          </div>
++        </div>
++      )}
++
++      <ConfirmModal
++        open={confirmEndOpen}
++        title={t('studentsAttendance.end_lesson_title')}
++        message={t('studentsAttendance.end_confirm_desc')}
++        confirmLabel={t('studentsAttendance.end_confirm_btn')}
++        cancelLabel={t('studentsAttendance.cancel')}
++        tone="danger"
++        busy={endLessonMutation.isPending}
++        onConfirm={() => todayLesson && endLessonMutation.mutate(todayLesson.id)}
++        onCancel={() => setConfirmEndOpen(false)}
++      />
++
+       {selectedCell && (
+         <Popover
+           attendance={popoverAttendance}
+diff --git a/src/pages/students-attendance/studentsAttendance.css b/src/pages/students-attendance/studentsAttendance.css
+index aad7617..80554e7 100644
+--- a/src/pages/students-attendance/studentsAttendance.css
++++ b/src/pages/students-attendance/studentsAttendance.css
+@@ -199,7 +199,7 @@
+   text-align: left;
+   font-family: noto-b;
+   font-size: 14px;
+-  min-width: 240px;
++  min-width: 280px;
+   border-bottom: 2px solid var(--border-color);
+   position: sticky;
+   top: 0;
+@@ -266,7 +266,7 @@
+ .student-info-cell {
+   display: table-cell;
+   padding: 10px 16px;
+-  min-width: 240px;
++  min-width: 280px;
+   vertical-align: middle;
+   /* MUHIM: flexbox ishlatma, table-cell bo'lishi kerak */
+ }
+@@ -300,9 +300,11 @@
+   font-family: noto-sb;
+   font-size: 15px;
+   color: var(--text-color);
+-  white-space: nowrap;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
++  white-space: normal;
++  overflow: visible;
++  text-overflow: unset;
++  word-break: break-word;
++  line-height: 1.25;
+   display: block;
+ }
+ 
+@@ -337,6 +339,24 @@
+   background: #fffafa;
+ }
+ 
++.status-frozen {
++  border-color: #3f88c9;
++  color: #3f88c9;
++  background: #f0f7ff;
++}
++
++.status-dropped {
++  border-color: var(--absent-color);
++  color: var(--absent-color);
++  background: #fffafa;
++}
++
++.status-graduated {
++  border-color: #8b5cf6;
++  color: #8b5cf6;
++  background: #f7f5ff;
++}
++
+ /* ===== ATTENDANCE CELL - MUHIM ===== */
+ .attendance-cell {
+   display: table-cell; /* MUHIM: table-cell bo'lishi kerak */
+@@ -492,20 +512,24 @@
+ }
+ 
+ /* ===== POPOVER ===== */
+-.popover-overlay {
+-  position: fixed;
+-  top: 0;
+-  left: 0;
+-  width: 100vw;
+-  height: 100vh;
+-  z-index: 100;
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
++.sa-popover-overlay {
++  position: fixed !important;
++  top: 0 !important;
++  left: 0 !important;
++  width: 100vw !important;
++  height: 100vh !important;
++  z-index: 10000 !important;
++  display: flex !important;
++  align-items: center !important;
++  justify-content: center !important;
+   background: rgba(0, 0, 0, 0.2);
+ }
+ 
+-.attendance-popover {
++.sa-attendance-popover {
++  position: relative !important;
++  top: auto !important;
++  left: auto !important;
++  transform: none !important;
+   background: white;
+   border-radius: 12px;
+   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+@@ -514,24 +538,24 @@
+   border: 1px solid #eee;
+ }
+ 
+-.popover-section {
++.sa-popover-section {
+   margin-bottom: 16px;
+ }
+ 
+-.popover-title {
++.sa-popover-title {
+   font-family: noto-b;
+   font-size: 14px;
+   margin-bottom: 10px;
+   display: block;
+ }
+ 
+-.davomat-options {
++.sa-davomat-options {
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+ }
+ 
+-.option-btn {
++.sa-option-btn {
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+@@ -545,25 +569,25 @@
+   text-align: left;
+ }
+ 
+-.option-btn:hover {
++.sa-option-btn:hover {
+   background: #f5f5f5;
+ }
+ 
+-.option-btn.active {
++.sa-option-btn.active {
+   border-color: var(--primary-color);
+   background: rgba(254, 145, 0, 0.05);
+ }
+ 
+-.grade-input-wrap {
++.sa-grade-input-wrap {
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   gap: 10px;
+ }
+ 
+-.grade-field {
+-  width: 60px;
+-  height: 40px;
++.sa-grade-field {
++  width: 56px;
++  height: 52px;
+   border: 1px solid var(--border-color);
+   border-radius: 8px;
+   text-align: center;
+@@ -571,7 +595,7 @@
+   font-size: 18px;
+ }
+ 
+-.reason-field {
++.sa-reason-field {
+   width: 100%;
+   padding: 8px;
+   border: 1px solid var(--border-color);
+@@ -581,23 +605,27 @@
+   box-sizing: border-box;
+ }
+ 
+-.popover-actions {
++.sa-popover-actions {
+   display: flex;
+   flex-direction: row;
+   gap: 10px;
+   justify-content: flex-end;
+ }
+ 
+-.pop-cancel {
+-  background: #f5f5f5;
+-  border: none;
++.sa-pop-cancel {
++  background: #fff;
++  border: 1px solid var(--border-color);
+   padding: 8px 16px;
+   border-radius: 6px;
+   cursor: pointer;
+   font-size: 13px;
+ }
+ 
+-.pop-save {
++.sa-pop-cancel:hover {
++  background: #f5f5f5;
++}
++
++.sa-pop-save {
+   background: var(--primary-color);
+   color: white;
+   border: none;
+@@ -646,6 +674,20 @@
+   background: var(--absent-color);
+   color: white;
+ }
++.btn-disabled {
++  background: #d5dae0;
++  color: #6b7280;
++  cursor: not-allowed;
++  justify-content: center;
++}
++
++/* Dars boshlanmagan bo'lsa kataklar bosilmasligini bildiradi */
++.attendance-cell.cell-locked .attendance-dot {
++  cursor: not-allowed;
++}
++.attendance-cell.cell-locked .attendance-dot:hover {
++  transform: none;
++}
+ 
+ /* ===== MODAL ===== */
+ .modal-centered-overlay {
+@@ -658,7 +700,7 @@
+   display: flex;
+   align-items: center;
+   justify-content: center;
+-  z-index: 200;
++  z-index: 10000;
+ }
+ 
+ .start-lesson-modal {
+@@ -682,6 +724,82 @@
+   font-size: 15px;
+ }
+ 
++.start-modal-btn:disabled {
++  opacity: 0.6;
++  cursor: not-allowed;
++}
++
++.start-topic-field {
++  text-align: left;
++  margin-top: 16px;
++}
++
++.start-lesson-time {
++  font-family: noto-b;
++  font-size: 15px;
++  color: var(--primary-color);
++  margin-bottom: 6px;
++}
++
++/* ===== END LESSON MODAL (uy vazifa) ===== */
++.end-lesson-modal {
++  background: white;
++  padding: 28px;
++  border-radius: 20px;
++  max-width: 440px;
++  width: 92%;
++  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
++}
++
++.end-lesson-modal h2 {
++  font-family: noto-b;
++  font-size: 20px;
++  margin-bottom: 6px;
++}
++
++.end-lesson-modal p {
++  font-family: noto-m;
++  font-size: 13px;
++  color: #666;
++  margin-bottom: 16px;
++}
++
++.end-field-label {
++  display: block;
++  font-family: noto-sb;
++  font-size: 13px;
++  margin: 12px 0 6px;
++}
++
++.end-field-input,
++.end-field-textarea,
++.end-field-file {
++  width: 100%;
++  border: 1px solid var(--border-color);
++  border-radius: 8px;
++  padding: 10px;
++  font-size: 14px;
++  box-sizing: border-box;
++}
++
++.end-field-textarea {
++  min-height: 80px;
++  resize: vertical;
++}
++
++.end-modal-actions {
++  display: flex;
++  flex-direction: row;
++  justify-content: flex-end;
++  gap: 10px;
++  margin-top: 20px;
++}
++
++.end-modal-actions .start-modal-btn {
++  margin-top: 0;
++  padding: 10px 24px;
++}
++
+ /* ===== GROUP SELECTOR ===== */
+ .group-selector-wrapper {
+   margin-bottom: 20px;
+@@ -838,11 +956,11 @@
+     border-radius: 12px;
+   }
+ 
+-  .popover-overlay {
++  .sa-popover-overlay {
+     align-items: flex-end;
+   }
+ 
+-  .attendance-popover {
++  .sa-attendance-popover {
+     width: 100%;
+     border-radius: 20px 20px 0 0;
+     padding-bottom: 40px;
+diff --git a/src/types/lesson.types.ts b/src/types/lesson.types.ts
+index e63c384..89c4f60 100644
+--- a/src/types/lesson.types.ts
++++ b/src/types/lesson.types.ts
+@@ -19,6 +19,8 @@ export interface Teacher {
+   full_name?: string;
+ }
+ 
++export type LessonStatus = 'scheduled' | 'ongoing' | 'completed';
++
+ export interface Lesson {
+   id: number;
+   group_id: number;
+@@ -28,6 +30,10 @@ export interface Lesson {
+   homework_title: string;
+   homework_description: string;
+   homework_file: string;
++  /** scheduled → ongoing → completed */
++  status?: LessonStatus;
++  started_at?: string | null;
++  ended_at?: string | null;
+   group?: Group;
+   teacher?: Teacher;
+ }
+diff --git a/src/types/studentsAttendance.types.ts b/src/types/studentsAttendance.types.ts
+index fa39146..60ff4b0 100644
+--- a/src/types/studentsAttendance.types.ts
++++ b/src/types/studentsAttendance.types.ts
+@@ -1,10 +1,19 @@
++/** Backend yangi enum: active/frozen/dropped/graduated. Eski 'Aktiv'/'Noaktiv' ham kelishi mumkin. */
++export type StudentStatus =
++  | 'active'
++  | 'frozen'
++  | 'dropped'
++  | 'graduated'
++  | 'Aktiv'
++  | 'Noaktiv';
++
+ export interface Student {
+   id: number;
+   first_name: string;
+   last_name: string;
+   father_name?: string;
+   phone: string;
+-  status: 'Aktiv' | 'Noaktiv';
++  status: StudentStatus;
+   balance: number | string;
+   last_payment_date: string;
+   is_active?: boolean;
+diff --git a/src/utils/apiError.ts b/src/utils/apiError.ts
+new file mode 100644
+index 0000000..ad616e8
+--- /dev/null
++++ b/src/utils/apiError.ts
+@@ -0,0 +1,27 @@
++/**
++ * Backend xato javobidan foydalanuvchiga ko'rsatiladigan matnni ajratib oladi.
++ *
++ * Laravel odatda ikki ko'rinishda qaytaradi:
++ *   422 -> { message, errors: { field: ["matn", ...] } }
++ *   4xx/5xx -> { message }
++ *
++ * Maydon xatolari bo'lsa — birinchisi olinadi (notification bitta qatorli).
++ */
++export function getApiErrorMessage(error: unknown, fallback: string): string {
++  const response = (error as { response?: { data?: unknown } })?.response;
++  const data = response?.data as
++    | { message?: unknown; errors?: Record<string, unknown> }
++    | undefined;
++
++  if (!data) return fallback;
++
++  const firstFieldError = data.errors && Object.values(data.errors)[0];
++  if (Array.isArray(firstFieldError) && typeof firstFieldError[0] === 'string') {
++    return firstFieldError[0];
++  }
++  if (typeof firstFieldError === 'string') return firstFieldError;
++
++  if (typeof data.message === 'string' && data.message.trim()) return data.message;
++
++  return fallback;
++}

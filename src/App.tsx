@@ -64,6 +64,9 @@ import SetPasswordPage from './pages/set-password';
 import Finances from './pages/finance';
 import JamgarmaPage from './pages/finance/Jamgarma';
 import DebtsPage from './pages/debts';
+import PayrollDistribution from './pages/payroll-distribution';
+import PayrollAdjustments from './pages/payroll-adjustments';
+import AdjustmentForm from './pages/payroll-adjustments/AdjustmentForm';
 
 // Archive pages
 import UsersArchive from './pages/users/archive';
@@ -211,6 +214,14 @@ const App = () => {
           <Route path="/finances" element={<Finances />} />
           <Route path="/jamgarma" element={<JamgarmaPage />} />
           <Route path="/debts" element={<DebtsPage />} />
+
+          {/* Ish haqi: taqsimlash (contracts'dan ochiladi) va tuzatishlar.
+              Ruxsat sahifa ichida `Protected` orqali tekshiriladi. */}
+          <Route path="/payroll/distributions/:employeeId" element={<PayrollDistribution />} />
+          <Route path="/payroll-adjustments" element={<PayrollAdjustments />} />
+          <Route path="/payroll-adjustments/create" element={<AdjustmentForm />} />
+          <Route path="/payroll-adjustments/:id/edit" element={<AdjustmentForm />} />
+          <Route path="/payroll-adjustments/:id" element={<AdjustmentForm />} />
 
           {/* Arxivlar */}
           <Route path="/users/archive" element={<UsersArchive />} />

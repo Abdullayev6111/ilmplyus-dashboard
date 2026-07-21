@@ -292,3 +292,88 @@
   border-radius: 12px;
   white-space: nowrap;
 }
+
+/* Pagination */
+.students-pagesize {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.students-pagesize label {
+  font-size: 13px;
+  color: #666;
+}
+
+.students-pagesize select {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid #dde3ec;
+  border-radius: 6px;
+  background: #fff;
+  color: #003366;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.students-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 20px;
+  margin-top: 8px;
+}
+
+.students-pagination__info {
+  font-size: 13px;
+  color: #666;
+}
+
+.students-pagination__pages {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.students-pagination__btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid #dde3ec;
+  background: #fff;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #003366;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+}
+
+.students-pagination__btn:hover:not(:disabled) {
+  background-color: #f5faff;
+  border-color: #003366;
+}
+
+.students-pagination__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.students-pagination__btn--active {
+  background-color: #003366;
+  border-color: #003366;
+  color: #fff;
+  font-weight: 600;
+}
+
+.students-pagination__ellipsis {
+  font-size: 13px;
+  color: #666;
+  padding: 0 4px;
+  user-select: none;
+}

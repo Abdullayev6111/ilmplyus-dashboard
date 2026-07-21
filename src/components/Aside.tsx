@@ -31,7 +31,7 @@ import userIcon from '../assets/images/aside-users.svg';
 import employeeIcon from '../assets/images/briefcase-solid-full.svg';
 import organizationIcon from '../assets/images/school-solid-full.svg';
 import coursesIcon from '../assets/images/aside-school.svg';
-import salariesIcon from '../assets/images/money-check-dollar-solid-full.svg';
+// import salariesIcon from '../assets/images/money-check-dollar-solid-full.svg';
 import salesDepartmentIcon from '../assets/images/chart-line-solid-full.svg';
 import testIcon from '../assets/images/clipboard-check-solid-full.svg';
 import trashIcon from '../assets/images/trash-solid-full.svg';
@@ -257,13 +257,13 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
         { label: t('aside.commissions'), path: '/commissions', permission: 'commissions.view' },
       ],
     },
-    {
-      id: 'salaries-group',
-      label: t('aside.salaries'),
-      imgIcon: salariesIcon,
-      paths: ['/salaries'],
-      children: [{ label: t('aside.salary'), path: '/salaries', permission: 'salaries.view' }],
-    },
+    // {
+    //   id: 'salaries-group',
+    //   label: t('aside.salaries'),
+    //   imgIcon: salariesIcon,
+    //   paths: ['/salaries'],
+    //   children: [{ label: t('aside.salary'), path: '/salaries', permission: 'salaries.view' }],
+    // },
     {
       id: 'trash-group',
       label: t('aside.trash'),

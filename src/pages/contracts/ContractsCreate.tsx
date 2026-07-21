@@ -39,6 +39,8 @@ interface FormState {
   contract_type: string;
   contract_conclusion_term: string;
   salary_type: string;
+  salary_basis: string;
+  salary_percent: number | '';
   contract_number: string;
   contract_duration: string;
   probation_enabled: boolean;
@@ -118,6 +120,8 @@ export function ContractsCreate({
     contract_type: '',
     contract_conclusion_term: '',
     salary_type: '',
+    salary_basis: '',
+    salary_percent: '',
     contract_number: '',
     contract_duration: '',
     probation_enabled: false,
@@ -205,6 +209,11 @@ export function ContractsCreate({
           contract_conclusion_term:
             contract.contract_duration_months || contract.contract_conclusion_term || '',
           salary_type: contract.monthly_salary_type || contract.salary_type || '',
+          salary_basis: contract.salary_basis || '',
+          salary_percent:
+            contract.salary_percent === null || contract.salary_percent === undefined
+              ? ''
+              : Number(contract.salary_percent),
           contract_number: contract.contract_number ? String(contract.contract_number) : '',
           contract_duration:
             contract.contract_duration != null ? String(contract.contract_duration) : '',
@@ -247,6 +256,14 @@ export function ContractsCreate({
       (p) => Number(p.department_id) === Number(formData.department_id),
     );
   }, [positions, formData.department_id]);
+
+  // "Shartnoma uchun oylik turi" tanlovi "Oylik hisoblash asosi" optionlarini belgilaydi.
+  // "foiz" da esa select o'rniga foiz qiymati kiritiladi.
+  const salaryBasisOptions = useMemo<string[]>(() => {
+    if (formData.salary_type === 'shtat') return ['totalHours', 'baseSalary', 'hourlySalary'];
+    if (formData.salary_type === 'soat') return ['totalHours', 'baseWorkHours', 'hourlyWorkHours'];
+    return [];
+  }, [formData.salary_type]);
 
   const hourlyRate = useMemo(() => {
     const workingHours = Number(formData.working_hours);
@@ -309,6 +326,11 @@ export function ContractsCreate({
     if (!formData.contract_type) newErrors.contract_type = req;
     if (!formData.contract_conclusion_term) newErrors.contract_conclusion_term = req;
     if (!formData.salary_type) newErrors.salary_type = req;
+    if (formData.salary_type === 'foiz') {
+      if (formData.salary_percent === '') newErrors.salary_percent = req;
+    } else if (formData.salary_type && !formData.salary_basis) {
+      newErrors.salary_basis = req;
+    }
     if (!formData.contract_duration) newErrors.contract_duration = req;
 
     // Probation
@@ -446,6 +468,11 @@ export function ContractsCreate({
         contract_duration: String(formData.contract_duration),
         contract_duration_months: formData.contract_conclusion_term,
         monthly_salary_type: formData.salary_type,
+        salary_basis: formData.salary_type === 'foiz' ? null : formData.salary_basis || null,
+        salary_percent:
+          formData.salary_type === 'foiz' && formData.salary_percent !== ''
+            ? Number(formData.salary_percent)
+            : null,
         probation_period: formData.probation_enabled ? `${formData.probation_days} kun` : null,
         probation_end_date: probationEndDate,
         working_hours_monthly: Number(formData.working_hours),
@@ -1036,16 +1063,72 @@ export function ContractsCreate({
             </label>
             <select
               value={formData.salary_type}
-              onChange={(e) => setFormData({ ...formData, salary_type: e.target.value })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  salary_type: e.target.value,
+                  salary_basis: '',
+                  salary_percent: '',
+                })
+              }
               className={errors.salary_type ? 'error' : ''}
             >
               <option value="">{t('contractsCreate.select')}</option>
               <option value="shtat">{t('contractsCreate.salaryTypeOptions.shtat')}</option>
-              <option value="oquvchi">{t('contractsCreate.salaryTypeOptions.oquvchi')}</option>
+              <option value="foiz">{t('contractsCreate.salaryTypeOptions.foiz')}</option>
               <option value="soat">{t('contractsCreate.salaryTypeOptions.soat')}</option>
             </select>
           </div>
         </div>
+
+        {/* Oylik hisoblash asosi — "Shartnoma uchun oylik turi" tanloviga bog'liq */}
+        {formData.salary_type === 'foiz' && (
+          <div className="crow crow-3">
+            <div className="form-group">
+              <label>
+                {t('contractsCreate.salaryPercent')} <span className="required">*</span>
+              </label>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                placeholder="%"
+                value={formData.salary_percent}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    salary_percent: e.target.value === '' ? '' : Number(e.target.value),
+                  })
+                }
+                className={errors.salary_percent ? 'error' : ''}
+              />
+              {errors.salary_percent && <span className="error-text">{errors.salary_percent}</span>}
+            </div>
+          </div>
+        )}
+
+        {salaryBasisOptions.length > 0 && (
+          <div className="crow crow-3">
+            <div className="form-group">
+              <label>
+                {t('contractsCreate.salaryBasis')} <span className="required">*</span>
+              </label>
+              <select
+                value={formData.salary_basis}
+                onChange={(e) => setFormData({ ...formData, salary_basis: e.target.value })}
+                className={errors.salary_basis ? 'error' : ''}
+              >
+                <option value="">{t('contractsCreate.select')}</option>
+                {salaryBasisOptions.map((key) => (
+                  <option key={key} value={key}>
+                    {t(`contractsCreate.salaryBasisOptions.${key}`)}
+                  </option>
+                ))}
+              </select>
+              {errors.salary_basis && <span className="error-text">{errors.salary_basis}</span>}
+            </div>
+          </div>
+        )}
 
         {/* Shartnoma muddati | Sinov muddati | Sinov muddati kunda */}
         <div className="crow crow-3">

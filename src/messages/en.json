@@ -94,7 +94,10 @@
     "jamgarma": "Jamg'armalar",
     "debts": "Debts",
     "commissions": "Commissions",
-    "scoreSheet": "Reports"
+    "scoreSheet": "Reports",
+    "payrollAdjustments": "Payroll Adjustments",
+    "Studentsattendance": "Student Attendance",
+    "payroll": "Salary Distribution"
   },
   "payments": {
     "mainTitle": "Payments",
@@ -651,7 +654,9 @@
     "newPassword": "New Password",
     "passwordHint": "Leave blank to keep password unchanged",
     "archiveTitle": "Students Archive",
-    "passwordPlaceholder": "Password"
+    "passwordPlaceholder": "Password",
+    "rowsLabel": "Rows:",
+    "paginationInfo": "Showing {{from}}-{{to}} of {{total}}"
   },
   "districts": {
     "choose": "Select district",
@@ -1699,7 +1704,31 @@
     "courseLabel": "Course",
     "noGroupsFound": "No groups found",
     "fish": "Full Name",
-    "balans": "Balance:"
+    "balans": "Balance:",
+    "no_lesson_today": "No lesson today",
+    "create_today_lesson": "Create today's lesson",
+    "lesson_completed": "Lesson completed",
+    "start_confirm_title": "Start Lesson",
+    "start_confirm_desc": "A lesson can only be started on its scheduled day. Confirm starting the lesson?",
+    "lesson_topic_label": "Lesson topic",
+    "end_lesson_title": "End Lesson",
+    "end_lesson_desc": "Enter the homework and finish the lesson.",
+    "end_confirm_desc": "End the lesson and go to the homework assignment page?",
+    "end_confirm_btn": "End Lesson",
+    "homework_title_label": "Homework title",
+    "homework_desc_label": "Homework description",
+    "homework_file_label": "File (optional)",
+    "lesson_started": "Lesson started",
+    "lesson_ended": "Lesson ended",
+    "lesson_start_error": "Failed to start the lesson",
+    "lesson_end_error": "Failed to end the lesson",
+    "attendance_error": "Failed to save attendance",
+    "notif_success_title": "Success",
+    "notif_error_title": "Error",
+    "st_active": "Active",
+    "st_frozen": "Frozen",
+    "st_dropped": "Dropped",
+    "st_graduated": "Graduated"
   },
   "studentTasks": {
     "pageTitle": "Student Tasks",
@@ -2607,8 +2636,15 @@
     },
     "salaryTypeOptions": {
       "shtat": "According to staffing schedule",
-      "oquvchi": "According to number of students",
+      "foiz": "Percentage based",
       "soat": "According to teaching hours"
+    },
+    "salaryBasisOptions": {
+      "totalHours": "Total working hours",
+      "baseSalary": "Base salary",
+      "hourlySalary": "Hourly salary",
+      "baseWorkHours": "Base working hours",
+      "hourlyWorkHours": "Hourly working hours"
     },
     "vacationOptions": {
       "given": "Provided",
@@ -2653,6 +2689,8 @@
     "contractType": "Contract Type",
     "contractConclusionTerm": "Contract Conclusion Term",
     "salaryType": "Salary Type for Contract",
+    "salaryBasis": "Salary Calculation Basis",
+    "salaryPercent": "Percentage (%)",
     "contractDuration": "Contract Duration",
     "probation": "Probation Period",
     "probationOptions": {
@@ -2742,5 +2780,154 @@
       "sourceId": "Select Source"
     },
     "save": "Save"
+  },
+  "payrollDistribution": {
+    "title": "Distribution window",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Failed to load data.",
+    "choose": "Select",
+    "soum": "soum",
+    "yes": "Yes",
+    "no": "No",
+    "savedTitle": "Saved",
+    "savedMessage": "Payroll distribution saved successfully.",
+    "info": {
+      "fullName": "Full name",
+      "departmentPosition": "Department and position",
+      "branch": "Branch",
+      "balance": "Balance",
+      "agreedPercent": "Agreed percent",
+      "contractOklad": "Contract salary"
+    },
+    "tabs": {
+      "avans": "ADVANCE",
+      "oylik": "SALARY"
+    },
+    "fields": {
+      "comment": "Comment",
+      "jamiAvansNaqdsiz": "Total advance cashless",
+      "avansNaqdsiz": "Advance cashless",
+      "avansNaqdAuto": "Advance cash (automatic)",
+      "jamiOylikNaqdsiz": "Total salary cashless",
+      "jamiOylikNaqd": "Total salary cash",
+      "oylikNaqdsiz": "Salary cashless",
+      "oylikNaqdsizAuto": "Salary cashless (automatic)",
+      "oylikNaqdAuto": "Salary cash (automatic)",
+      "oylikNaqd": "Salary cash",
+      "avansNaqd": "Advance cash",
+      "privilegedPart": "Privileged part of salary",
+      "taxPayer": "Who pays the income tax",
+      "cashTax": "Withhold tax from cash"
+    },
+    "taxPayerOptions": {
+      "employee": "At employee's expense",
+      "organization": "At organization's expense"
+    },
+    "errorTitle": "Error",
+    "saveErrorMessage": "Saving failed. Please try again.",
+    "periodLocked": "This period is closed — the distribution cannot be changed.",
+    "validation": {
+      "maxExceeded": "Must not exceed {{max}} soum"
+    }
+  },
+  "payrollAdjustments": {
+    "title": "Payroll Adjustments",
+    "newBtn": "New adjustment",
+    "loading": "Loading...",
+    "error": "Failed to load data.",
+    "noData": "No data found",
+    "select": "Select",
+    "savedTitle": "Done",
+    "savedMessage": "Adjustment saved successfully.",
+    "approvedMessage": "Adjustment approved.",
+    "rejectedMessage": "Adjustment rejected.",
+    "footer": "Showing {{start}}-{{end}} of {{total}}",
+    "filters": {
+      "period": "Period",
+      "branch": "Branch",
+      "all": "All",
+      "employeeId": "Employee ID",
+      "employeeIdPlaceholder": "E.g. 123",
+      "lastName": "Last name",
+      "firstName": "First name",
+      "middleName": "Middle name",
+      "department": "Department"
+    },
+    "table": {
+      "employeeId": "Employee ID",
+      "fullName": "Full name",
+      "departmentPosition": "Department / Position",
+      "adjustments": "Adjustments",
+      "lateHours": "Late hours",
+      "earlyLeaveHours": "Early leave hours",
+      "actions": "Actions",
+      "statusLabel": "Status:",
+      "createdBy": "Created by:",
+      "approvedBy": "Approved by:",
+      "commentLabel": "Comment:",
+      "hours": "hrs"
+    },
+    "status": {
+      "new": "New",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "actions": {
+      "edit": "Adjust",
+      "view": "View",
+      "reject": "Reject",
+      "approve": "Approve",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "info": {
+      "fullName": "Full name",
+      "departmentPosition": "Department and position",
+      "branch": "Branch"
+    },
+    "types": {
+      "extra": {
+        "title": "Worked extra",
+        "desc": "Entered hours are",
+        "bold": "added to salary"
+      },
+      "absent": {
+        "title": "Did not work",
+        "desc": "Entered hours are",
+        "bold": "deducted from salary"
+      },
+      "substitute": {
+        "title": "Worked instead of another",
+        "desc": "Entered hours are",
+        "bold": "added at 100%"
+      }
+    },
+    "fields": {
+      "date": "Date",
+      "periodHint": "⚠️ If the payroll period is closed (salary paid or sent for approval) — entry is not possible.",
+      "hoursWorked": "How many hours did the employee work?",
+      "hoursNotWorked": "How many hours did the employee not work?",
+      "substitute": "Which employee did they substitute for?",
+      "comment": "Comment",
+      "employee": "Employee"
+    },
+    "errorTitle": "Error",
+    "saveErrorMessage": "Saving failed. Please try again.",
+    "decisionErrorMessage": "The action failed. Please try again.",
+    "back": "Back",
+    "confirm": {
+      "approveTitle": "Approve adjustment",
+      "approveMessage": "Approve the adjustment for {{name}}? This cannot be undone.",
+      "rejectTitle": "Reject adjustment",
+      "rejectMessage": "Reject the adjustment for {{name}}? This cannot be undone.",
+      "cancel": "Close",
+      "reasonLabel": "Rejection reason"
+    }
+  },
+  "modalPattern": {
+    "close": "Close"
   }
 }
