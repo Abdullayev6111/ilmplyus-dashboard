@@ -204,7 +204,7 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
       id: 'finances-group',
       label: t('aside.finances'),
       imgIcon: financesIcon,
-      paths: ['/finances', '/jamgarma', '/debts'],
+      paths: ['/finances', '/jamgarma', '/debts', '/payroll-adjustments'],
       children: [
         {
           label: t('aside.scoreSheet'),
@@ -220,6 +220,11 @@ const Aside = ({ collapsed, onOpen, onClose }: Props) => {
           label: t('aside.debts'),
           path: '/debts',
           permission: 'jamgarma_loans.view',
+        },
+        {
+          label: t('aside.payrollAdjustments'),
+          path: '/payroll-adjustments',
+          permission: 'payroll_adjustments.view',
         },
       ],
     },

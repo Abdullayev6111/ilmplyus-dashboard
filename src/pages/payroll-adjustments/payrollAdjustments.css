@@ -2,9 +2,9 @@
    Palitra: #003366, #E70A0A, #000000, #2AA411, #FE9100, border #BDBDBD. */
 
 .pa-container {
-  width: calc(100% - 140px);
+  width: calc(100% - 80px);
   margin-top: 50px !important;
-  margin-left: 140px !important;
+  margin-left: 40px !important;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -67,6 +67,13 @@
   font-size: 13px;
   color: #000000;
   vertical-align: top;
+}
+
+/* Xodim ID ustuni global jadval stillari sabab torayib qolmasin. */
+.pa-table th:first-child,
+.pa-table td:first-child {
+  width: 150px !important;
+  min-width: 150px !important;
 }
 
 .pa-table tr:last-child td {

@@ -344,7 +344,7 @@ const Contracts: React.FC = () => {
                         <Protected permission="employee_contracts.edit">
                           <div
                             className="action-icon salary-icon"
-                            onClick={() => navigate(`/contracts/${contract.id}?action=salary`)}
+                            onClick={() => navigate(`/payroll/distributions/${emp.id}`)}
                             title={t("contracts.actions.salary")}
                           >
                             <i className="fas fa-coins"></i>

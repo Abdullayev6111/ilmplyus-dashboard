@@ -3,10 +3,9 @@
    Dastlab container ga moslashadi, keyin 1920px -> 768px oralig'ida responsive. */
 
 .pd-container {
-  width: calc(100% - 140px);
+  width: calc(100% - 80px);
   margin-top: 50px !important;
-  margin-left: 140px !important;
-  /* padding: 24px 30px 40px; */
+  margin-left: 40px !important;
   display: flex;
   flex-direction: column;
   gap: 20px;
