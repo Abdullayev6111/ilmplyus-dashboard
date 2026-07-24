@@ -84,6 +84,8 @@ export interface Option {
   account_type?: string;
   balance?: number | string;
   capacity?: number;
+  start_date?: string | null;
+  end_date?: string | null;
   floor?: number;
   commission_percent?: number | string;
 

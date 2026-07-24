@@ -150,8 +150,11 @@ const Lessons = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: async (formData: FormData) => {
-      const res = await API.post('/lessons', formData, {
+    mutationFn: async ({ formData, lessonId }: { formData: FormData; lessonId?: number }) => {
+      // Mavjud darsning uy vazifasi yangilanadi; aks holda yangi dars yaratiladi.
+      // Laravel multipart PUT so'rovini `_method` orqali qabul qiladi.
+      if (lessonId) formData.append('_method', 'PUT');
+      const res = await API.post(lessonId ? `/lessons/${lessonId}` : '/lessons', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return res.data;
@@ -201,7 +204,7 @@ const Lessons = () => {
     setTopic(lesson.topic);
     setHomeworkTitle(lesson.homework_title);
     setHomeworkDescription(lesson.homework_description);
-    setLessonDate(lesson.date);
+    setLessonDate(String(lesson.date).slice(0, 10));
     setLessonFile(null); // Clear file inputs so new files can be attached if they want
     setHomeworkFile(null);
     setIsModalOpen(true);
@@ -216,11 +219,11 @@ const Lessons = () => {
     formData.append('date', lessonDate || new Date().toISOString().split('T')[0]);
     formData.append('topic', topic);
     if (lessonFile) formData.append('lesson_file', lessonFile);
-    formData.append('homework_title', homeworkTitle);
-    formData.append('homework_description', homeworkDescription);
+    formData.append('homework_title_uz', homeworkTitle);
+    formData.append('homework_description_uz', homeworkDescription);
     if (homeworkFile) formData.append('homework_file', homeworkFile);
 
-    mutation.mutate(formData);
+    mutation.mutate({ formData, lessonId: selectedLesson?.id });
   };
 
   const handleFileChange = (

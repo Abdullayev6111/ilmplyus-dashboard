@@ -329,7 +329,7 @@
     },
     "permissionActions": {
       "view": "View",
-      "create": "Add",
+      "create": "Create",
       "edit": "Edit",
       "delete": "Delete",
       "attach_group": "Attach group",
@@ -346,7 +346,18 @@
       "add_transfer_maker": "Add transfer maker",
       "remove_transfer_maker": "Remove transfer maker",
       "add_withdrawer": "Add withdrawer",
-      "remove_withdrawer": "Remove withdrawer"
+      "remove_withdrawer": "Remove withdrawer",
+      "update": "Update",
+      "restore": "Restore",
+      "destroy": "Permanently delete",
+      "close": "Close",
+      "reopen": "Reopen",
+      "department": {
+        "pedagog": { "view": "Pedagogical department" },
+        "mamuriy": { "view": "Administrative department" },
+        "texnik": { "view": "Technical department" },
+        "sotuv": { "view": "Sales department" }
+      }
     },
     "dashboardSections": "Dashboard sections"
   },
@@ -573,6 +584,12 @@
     "type": {
       "in": "Checked in",
       "out": "Checked out"
+    },
+    "tabs": {
+      "pedagog": "Pedagogical department",
+      "mamuriy": "Administrative department",
+      "texnik": "Technical department",
+      "sotuv": "Sales department"
     },
     "detail": {
       "workedDays": "Worked days",
@@ -1019,6 +1036,7 @@
       "teacher": "Teacher",
       "teacherPlaceholder": "Select a teacher",
       "group": "Group",
+      "noMatchingGroups": "No matching group available",
       "groupPlaceholder": "Select a group",
       "room": "Room",
       "roomPlaceholder": "Select a room",
@@ -2015,7 +2033,11 @@
     "jamgarma_loan_forfeitures": "Fund loan forfeitures",
     "jamgarma_transactions": "Fund transactions",
     "payment_gateway_commissions": "Payment gateway commissions",
-    "payment_commission_logs": "Commission logs"
+    "payment_commission_logs": "Commission logs",
+    "payroll_settings": "Payroll Settings",
+    "payroll_periods": "Payroll Periods",
+    "payroll_adjustments": "Payroll Adjustments",
+    "payroll_distributions": "Payroll Distributions"
   },
   "studentsContract": {
     "loading": "Loading...",

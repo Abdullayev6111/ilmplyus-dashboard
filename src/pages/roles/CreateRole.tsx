@@ -52,7 +52,8 @@ const CreateRole = () => {
       const permName = typeof perm === 'string' ? perm : perm.name;
       if (!permName || !permId) return;
 
-      const [moduleName, action] = permName.split('.');
+      const [moduleName, ...actionParts] = permName.split('.');
+      const action = actionParts.join('.');
       if (moduleName && action) {
         if (!modulesMap[moduleName]) {
           modulesMap[moduleName] = [];

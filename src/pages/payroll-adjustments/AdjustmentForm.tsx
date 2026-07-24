@@ -7,6 +7,7 @@ import { API } from '@/api/api';
 import { useOptions } from '@/api/options';
 import DateInput from '@/components/DateInput';
 import { getApiErrorMessage } from '@/utils/apiError';
+import { usePermission } from '@/hooks/usePermission';
 import './payrollAdjustments.css';
 
 /* ------------------------------------------------------------------ *
@@ -94,6 +95,12 @@ const AdjustmentForm = () => {
   // /payroll-adjustments/:id  -> ko'rish;  /:id/edit -> tuzatish;  /create -> yangi
   const isView = !!id && !location.pathname.endsWith('/edit');
   const isEdit = !!id && location.pathname.endsWith('/edit');
+  const requiredPermission = isEdit
+    ? 'payroll_adjustments.edit'
+    : isView
+      ? 'payroll_adjustments.view'
+      : 'payroll_adjustments.create';
+  const canAccess = usePermission(requiredPermission);
 
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [showErrors, setShowErrors] = useState(false);
@@ -112,7 +119,7 @@ const AdjustmentForm = () => {
       const { data } = await API.get(`/payroll/adjustments/${id}`);
       return data?.data ?? data;
     },
-    enabled: !!id,
+    enabled: !!id && canAccess,
     // Har ochilganda eng oxirgi saqlangan qiymatlar bilan to'lsin.
     staleTime: 0,
     gcTime: 0,
@@ -213,6 +220,8 @@ const AdjustmentForm = () => {
     desc: t(`payrollAdjustments.types.${tp.slug}.desc`),
     bold: t(`payrollAdjustments.types.${tp.slug}.bold`),
   }));
+
+  if (!canAccess) return null;
 
   if (id && isLoading) {
     return (

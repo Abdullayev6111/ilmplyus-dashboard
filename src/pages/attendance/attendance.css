@@ -9,6 +9,86 @@
   position: relative;
 }
 
+/* Bo'lim tablari (permission bilan ko'rinadi) */
+.attendance-dept-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.attendance-dept-tab {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  font-family: noto-m;
+  font-size: 15px;
+  color: #666;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.attendance-dept-tab:hover {
+  color: #003366;
+  background: rgba(0, 51, 102, 0.04);
+}
+
+.attendance-dept-tab.active {
+  color: #003366;
+  border-bottom-color: #fe9100;
+  font-family: noto-b;
+}
+
+/* Kunning yagona badge'i: "09:00-18:00 Kelgan" (vaqt oralig'i + umumiy status) */
+.attendance-day-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-family: noto-b;
+  white-space: nowrap;
+  background: #f1f5f9;
+}
+
+.attendance-day-times {
+  font-family: noto-b;
+  color: #003366;
+}
+
+.attendance-day-status.status-plus {
+  background: #e6f4ea;
+}
+
+.attendance-day-status.status-k {
+  background: #fff4e5;
+}
+
+.attendance-day-status.status-nb {
+  background: #fdecea;
+}
+
+.attendance-day-status.status-s {
+  background: #fff8e1;
+}
+
+/* Tanlangan kunda yozuv bo'lmaganda ko'rsatiladigan oxirgi faollik */
+.attendance-last-activity {
+  opacity: 0.6;
+}
+
+.attendance-last-date {
+  font-size: 11px;
+  color: #777;
+  margin-left: 5px;
+  font-family: noto-m;
+}
+
 /* Filters */
 .attendance-filters {
   display: flex;

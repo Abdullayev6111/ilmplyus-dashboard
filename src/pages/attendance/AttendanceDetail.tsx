@@ -16,6 +16,7 @@ import {
   statusLabelKey,
   shortTime,
   durationBetween,
+  monthRange,
   type StatusCode,
 } from './attendance.utils';
 
@@ -77,8 +78,11 @@ const AttendanceDetail = () => {
   const { data, isLoading } = useQuery<{ data: FlatAttendanceRecord[] }>({
     queryKey: ['attendances', month],
     queryFn: async () => {
-      const { data } = await API.get('/attendances', { params: { month, per_page: 1000 } });
-      return data;
+      const { from, to } = monthRange(month);
+      const { data } = await API.get('/attendances', { params: { from, to, per_page: 1000 } });
+      // Backend ba'zan tekis massiv, ba'zan { data: [...] } qaytaradi
+      const list = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [];
+      return { data: list };
     },
     placeholderData: keepPreviousData,
   });

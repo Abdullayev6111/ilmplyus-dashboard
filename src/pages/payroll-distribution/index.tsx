@@ -6,6 +6,8 @@ import { notifications } from "@mantine/notifications";
 import { API } from "../../api/api";
 import { getLocalized } from "../../utils/getLocalized";
 import { getApiErrorMessage } from "../../utils/apiError";
+import { Protected } from "../../components/Protected";
+import { usePermission } from "../../hooks/usePermission";
 import "./payrollDistribution.css";
 
 /* ------------------------------------------------------------------ *
@@ -152,6 +154,7 @@ const PayrollDistribution: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
+  const canView = usePermission("payroll_distributions.view");
 
   const navState = (location.state as NavState) || {};
 
@@ -184,7 +187,7 @@ const PayrollDistribution: React.FC = () => {
       // Javob { data: { ... } } ko'rinishida keladi
       return data?.data ?? data;
     },
-    enabled: !!employeeId,
+    enabled: !!employeeId && canView,
     // A.5: `kind` queryKey ichida — tab almashganda yangi so'rov ketadi. Oldingi
     // javob placeholder bo'lib turmasa `isLoading` butun sahifani (header + tab'lar)
     // "Yuklanmoqda..." bilan almashtiradi va ekran sakraydi. Header qiymatlari
@@ -431,6 +434,8 @@ const PayrollDistribution: React.FC = () => {
   const errorText = (message?: string) =>
     message ? <span className="pd-field-error">{message}</span> : null;
 
+  if (!canView) return null;
+
   if (isLoading) {
     return (
       <div className="pd-container">
@@ -626,13 +631,15 @@ const PayrollDistribution: React.FC = () => {
               </div>
 
               <div className="pd-actions">
-                <button
-                  className="pd-btn pd-btn-save"
-                  onClick={handleSave}
-                  disabled={saveMutation.isPending || periodLocked}
-                >
-                  {t("payrollDistribution.save")}
-                </button>
+                <Protected permission="payroll_distributions.create">
+                  <button
+                    className="pd-btn pd-btn-save"
+                    onClick={handleSave}
+                    disabled={saveMutation.isPending || periodLocked}
+                  >
+                    {t("payrollDistribution.save")}
+                  </button>
+                </Protected>
                 <button className="pd-btn pd-btn-cancel" onClick={() => navigate(-1)}>
                   {t("payrollDistribution.back")}
                 </button>
@@ -790,13 +797,15 @@ const PayrollDistribution: React.FC = () => {
             </div>
 
             <div className="pd-actions">
-              <button
-                className="pd-btn pd-btn-save"
-                onClick={handleSave}
-                disabled={saveMutation.isPending || periodLocked}
-              >
-                {t("payrollDistribution.save")}
-              </button>
+                <Protected permission="payroll_distributions.create">
+                  <button
+                    className="pd-btn pd-btn-save"
+                    onClick={handleSave}
+                    disabled={saveMutation.isPending || periodLocked}
+                  >
+                    {t("payrollDistribution.save")}
+                  </button>
+                </Protected>
               <button className="pd-btn pd-btn-cancel" onClick={() => navigate(-1)}>
                 {t("payrollDistribution.back")}
               </button>

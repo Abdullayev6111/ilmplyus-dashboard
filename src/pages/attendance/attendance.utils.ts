@@ -51,6 +51,17 @@ export const statusLabelKey = (code: StatusCode): string => CODE_TO_LABEL_KEY[co
 /** "14:48:07" → "14:48" */
 export const shortTime = (time?: string | null): string => (time ? time.slice(0, 5) : '');
 
+/**
+ * "2026-07" → { from: "2026-07-01", to: "2026-07-31" }.
+ * Backend /attendances oyni `month` emas, `from`/`to` oralig'i bilan filtrlaydi.
+ */
+export const monthRange = (month: string): { from: string; to: string } => {
+  const [y, m] = month.split('-').map(Number);
+  const mm = String(m).padStart(2, '0');
+  const lastDay = new Date(y, m, 0).getDate();
+  return { from: `${y}-${mm}-01`, to: `${y}-${mm}-${String(lastDay).padStart(2, '0')}` };
+};
+
 /** Ikki vaqt orasidagi farq, "8s 12d" ko'rinishida */
 export const durationBetween = (from?: string | null, to?: string | null): string => {
   if (!from || !to) return '-';

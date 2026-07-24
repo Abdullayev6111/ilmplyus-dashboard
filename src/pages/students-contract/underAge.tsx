@@ -12,7 +12,6 @@ import type {
   RepresentativeFormData,
 } from "@/types/studentContract.types";
 import type { Lid } from "@/types/lid.types";
-import type { Group } from "@/types/group.types";
 import { notifications } from "@mantine/notifications";
 import { API } from "@/api/api";
 import { useOptions, optionLabel, type Option } from "@/api/options";
@@ -61,10 +60,18 @@ const MinorStudentCard = ({
   onRemove: (index: number) => void;
   showRemove: boolean;
   allLids: Lid[];
-  allGroups: Group[];
+  allGroups: Option[];
   allCourses: Option[];
 }) => {
   const { t, i18n } = useTranslation();
+  const matchingGroups = useMemo(
+    () =>
+      allGroups.filter(
+        (group) =>
+          String(group.course_id) === student.course_id && String(group.level_id) === student.level_id,
+      ),
+    [allGroups, student.course_id, student.level_id],
+  );
   const [lidSearchTerm, setLidSearchTerm] = useState(student.lid_id || "");
   const [showLidDropdown, setShowLidDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -187,8 +194,11 @@ const MinorStudentCard = ({
               placeholder={t('studentsContract.form.lidSearchPlaceholder')}
               value={lidSearchTerm || student.lid_id}
               onChange={(e) => {
-                setLidSearchTerm(e.target.value);
-                onChange(index, "lid_id", e.target.value);
+                const value = e.target.value;
+                setLidSearchTerm(value);
+                onChange(index, "lid_id", value);
+                const exactLid = allLids.find((lid) => String(lid.id) === value);
+                if (exactLid) handleLidSelect(exactLid);
                 setShowLidDropdown(true);
               }}
               onFocus={() => setShowLidDropdown(true)}
@@ -465,14 +475,19 @@ const MinorStudentCard = ({
           <select
             className="sc-form-select"
             value={student.group_id}
+            disabled={!student.course_id || !student.level_id || matchingGroups.length === 0}
             onChange={(e) => onChange(index, "group_id", e.target.value)}
           >
-            <option value="">{t('studentsContract.form.select')}</option>
-            {(allGroups || []).map((g: Group) => (
+            <option value="">
+              {student.course_id && student.level_id && matchingGroups.length === 0
+                ? t('studentsContract.form.noMatchingGroups')
+                : t('studentsContract.form.select')}
+            </option>
+            {matchingGroups.map((g) => (
               <option key={g.id} value={g.id}>
-                {g.name}
+                {g.label}
               </option>
-            ))}
+              ))}
           </select>
         </div>
         <div className="sc-form-col">
@@ -483,8 +498,9 @@ const MinorStudentCard = ({
             className="sc-form-select"
             value={student.course_id}
             onChange={(e) => {
-              onChange(index, "course_id", e.target.value);
-              onChange(index, "level_id", ""); // Reset level when course changes
+                onChange(index, "course_id", e.target.value);
+                onChange(index, "level_id", ""); // Reset level when course changes
+                onChange(index, "group_id", "");
             }}
           >
             <option value="">{t('studentsContract.form.select')}</option>
@@ -502,7 +518,10 @@ const MinorStudentCard = ({
           <select
             className="sc-form-select"
             value={student.level_id}
-            onChange={(e) => onChange(index, "level_id", e.target.value)}
+            onChange={(e) => {
+              onChange(index, "level_id", e.target.value);
+              onChange(index, "group_id", "");
+            }}
           >
             <option value="">{t('studentsContract.form.select')}</option>
             {(
@@ -699,13 +718,7 @@ const UnderAge = () => {
 
   // Guruh tanlanganda shartnoma sanalari `start_date` / `end_date` dan olinadi —
   // /options/groups bularni bermaydi.
-  const { data: allGroups } = useQuery({
-    queryKey: ["groups-all"],
-    queryFn: () =>
-      API.get("/groups", { params: { per_page: 1000 } }).then((res) =>
-        Array.isArray(res.data) ? res.data : res.data?.data || [],
-      ),
-  });
+  const { data: allGroups } = useOptions("groups");
 
   const { data: allCourses } = useOptions("courses");
 
@@ -802,7 +815,7 @@ const UnderAge = () => {
 
         // Auto-fill dates when group is selected
         if (field === "group_id" && value && allGroups) {
-          const group = allGroups.find((g: Group) => String(g.id) === value);
+          const group = allGroups.find((g) => String(g.id) === value);
           if (group) {
             updated.course_start_date = formatDateForInput(group.start_date);
             updated.course_end_date = formatDateForInput(group.end_date);

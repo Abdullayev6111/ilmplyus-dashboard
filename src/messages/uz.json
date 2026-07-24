@@ -354,7 +354,18 @@
       "add_transfer_maker": "O‘tkazma qiluvchi qo‘sish",
       "remove_transfer_maker": "O‘tkazma qiluvchini o‘chirish",
       "add_withdrawer": "Yechib oluvchi qo‘sish",
-      "remove_withdrawer": "Yechib oluvchini o‘chirish"
+      "remove_withdrawer": "Yechib oluvchini o‘chirish",
+      "update": "Yangilash",
+      "restore": "Tiklash",
+      "destroy": "Butunlay o‘chirish",
+      "close": "Yopish",
+      "reopen": "Qayta ochish",
+      "department": {
+        "pedagog": { "view": "Pedagogik bo‘lim" },
+        "mamuriy": { "view": "Ma’muriy bo‘lim" },
+        "texnik": { "view": "Texnik bo‘lim" },
+        "sotuv": { "view": "Sotuv bo‘limi" }
+      }
     },
     "dashboardSections": "Dashboard bo‘limlari"
   },
@@ -715,6 +726,12 @@
       "in": "Kirdi",
       "out": "Chiqdi"
     },
+    "tabs": {
+      "pedagog": "Pedagogik bo‘lim",
+      "mamuriy": "Ma’muriy bo‘lim",
+      "texnik": "Texnik bo‘lim",
+      "sotuv": "Sotuv bo‘limi"
+    },
     "detail": {
       "workedDays": "Ish kunlari",
       "totalHours": "Jami ish vaqti",
@@ -1020,6 +1037,7 @@
       "teacher": "O‘qituvchi",
       "teacherPlaceholder": "O‘qituvchini tanlang",
       "group": "Guruh",
+      "noMatchingGroups": "Mos guruh mavjud emas",
       "groupPlaceholder": "Guruhni tanlang",
       "room": "Xona",
       "roomPlaceholder": "Xonani tanlang",
@@ -2016,7 +2034,11 @@
     "jamgarma_loan_forfeitures": "Jamg‘arma qarzlarini kechirish",
     "jamgarma_transactions": "Jamg‘arma tranzaksiyalari",
     "payment_gateway_commissions": "To‘lov tizimi komissiyalari",
-    "payment_commission_logs": "Komissiya loglari"
+    "payment_commission_logs": "Komissiya loglari",
+    "payroll_settings": "Ish haqi sozlamalari",
+    "payroll_periods": "Ish haqi davrlari",
+    "payroll_adjustments": "Ish haqi tuzatishlari",
+    "payroll_distributions": "Ish haqi taqsimlash"
   },
   "studentsContract": {
     "loading": "Yuklanmoqda...",

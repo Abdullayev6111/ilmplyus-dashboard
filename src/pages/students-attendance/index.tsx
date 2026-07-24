@@ -485,18 +485,16 @@ const StudentsAttendance: React.FC = () => {
 
   const endLessonMutation = useMutation({
     mutationFn: (id: number) => API.post(`/lessons/${id}/end`),
-    onSuccess: () => notifySuccess('studentsAttendance.lesson_ended'),
-    onError: (error) => notifyError(error, 'studentsAttendance.lesson_end_error'),
-    onSettled: () => {
+    onSuccess: () => {
+      notifySuccess('studentsAttendance.lesson_ended');
       setConfirmEndOpen(false);
       queryClient.invalidateQueries({ queryKey: ['lessons', groupId] });
       invalidateAttendanceQueries();
-      // Dars tugagach — uy vazifasini biriktirish uchun darslar sahifasiga o'tamiz,
-      // guruh + o'sha sana bilan modal avtomatik ochiladi.
       navigate(
         `/student-tasks?groupId=${groupId}&date=${todayStr}&openHomework=1&lessonId=${todayLesson?.id ?? ''}`,
       );
     },
+    onError: (error) => notifyError(error, 'studentsAttendance.lesson_end_error'),
   });
 
   const createMutation = useMutation({
@@ -551,15 +549,15 @@ const StudentsAttendance: React.FC = () => {
 
   const handleCellClick = useCallback(
     (studentId: number, day: number) => {
-      // Davomat faqat dars boshlangan (ongoing) paytda belgilanadi.
-      if (!lessonActive) return;
       const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      // Davomat faqat aynan bugungi ongoing dars sanasida belgilanadi.
+      if (!lessonActive || dateStr !== todayStr) return;
       const attendance = (attendanceData?.[studentId] || []).find((a) =>
         String(a.date).startsWith(dateStr),
       );
       setSelectedCell({ studentId, date: dateStr, attendance });
     },
-    [attendanceData, currentYear, currentMonth, lessonActive],
+    [attendanceData, currentYear, currentMonth, lessonActive, todayStr],
   );
 
   if (!groupId) return <GroupSelector />;
@@ -703,11 +701,12 @@ const StudentsAttendance: React.FC = () => {
                 </td>
                 {lessonDatesInMonth.map((day) => {
                   const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                  const cellActive = lessonActive && dateStr === todayStr;
                   const att = (attendanceData?.[student.id] || []).find((a) =>
                     String(a.date).startsWith(dateStr),
                   );
                   return (
-                    <td key={day} className={`attendance-cell${lessonActive ? '' : ' cell-locked'}`}>
+                    <td key={day} className={`attendance-cell${cellActive ? '' : ' cell-locked'}`}>
                       <AttendanceDot
                         status={att?.status}
                         grade={att?.score}

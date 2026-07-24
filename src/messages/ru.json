@@ -355,7 +355,18 @@
       "add_transfer_maker": "Добавить исполнителя перевода",
       "remove_transfer_maker": "Удалить исполнителя перевода",
       "add_withdrawer": "Добавить получателя",
-      "remove_withdrawer": "Удалить получателя"
+      "remove_withdrawer": "Удалить получателя",
+      "update": "Обновить",
+      "restore": "Восстановить",
+      "destroy": "Удалить навсегда",
+      "close": "Закрыть",
+      "reopen": "Открыть снова",
+      "department": {
+        "pedagog": { "view": "Педагогический отдел" },
+        "mamuriy": { "view": "Административный отдел" },
+        "texnik": { "view": "Технический отдел" },
+        "sotuv": { "view": "Отдел продаж" }
+      }
     },
     "dashboardSections": "Разделы дашборда"
   },
@@ -577,6 +588,12 @@
     "type": {
       "in": "Вошёл",
       "out": "Вышел"
+    },
+    "tabs": {
+      "pedagog": "Педагогический отдел",
+      "mamuriy": "Административный отдел",
+      "texnik": "Технический отдел",
+      "sotuv": "Отдел продаж"
     },
     "detail": {
       "workedDays": "Рабочие дни",
@@ -1019,6 +1036,7 @@
       "teacher": "Учитель",
       "teacherPlaceholder": "Выберите учителя",
       "group": "Группа",
+      "noMatchingGroups": "Подходящая группа не найдена",
       "groupPlaceholder": "Выберите группу",
       "room": "Кабинет",
       "roomPlaceholder": "Выберите кабинет",
@@ -2015,7 +2033,11 @@
     "jamgarma_loan_forfeitures": "Списания займов фондов",
     "jamgarma_transactions": "Транзакции фондов",
     "payment_gateway_commissions": "Комиссии платежного шлюза",
-    "payment_commission_logs": "Журналы комиссий"
+    "payment_commission_logs": "Журналы комиссий",
+    "payroll_settings": "Настройки зарплаты",
+    "payroll_periods": "Периоды зарплаты",
+    "payroll_adjustments": "Корректировки зарплаты",
+    "payroll_distributions": "Распределение зарплаты"
   },
   "studentsContract": {
     "loading": "Загрузка...",

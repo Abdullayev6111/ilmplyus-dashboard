@@ -40,6 +40,7 @@ export interface Group extends BaseEntity {
   lids_count?: number;
   students_count?: number;
   leads_count?: number;
+  label?: string;
 }
 
 export interface GroupsApiResponse extends PaginationMeta {

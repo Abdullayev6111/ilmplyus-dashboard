@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,6 @@ import {
   emptyRepresentative,
 } from "@/types/studentContract.types";
 import type { Lid } from "@/types/lid.types";
-import type { Group } from "@/types/group.types";
 import "./studentsContracts.css";
 import { API } from "@/api/api";
 import { useOptions, optionLabel, type Option } from "@/api/options";
@@ -81,6 +80,7 @@ const OrganizationStudentCard = ({
   allLids,
   allGroups,
   allCourses,
+  onLidSelect,
 }: {
   student: OrganizationStudentFormData;
   index: number;
@@ -92,10 +92,19 @@ const OrganizationStudentCard = ({
   onRemove: (index: number) => void;
   showRemove: boolean;
   allLids: Lid[];
-  allGroups: Group[];
+  allGroups: Option[];
   allCourses: Option[];
+  onLidSelect: (lid: Lid) => void;
 }) => {
   const { t, i18n } = useTranslation();
+  const matchingGroups = useMemo(
+    () =>
+      allGroups.filter(
+        (group) =>
+          String(group.course_id) === student.course_id && String(group.level_id) === student.level_id,
+      ),
+    [allGroups, student.course_id, student.level_id],
+  );
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -124,6 +133,7 @@ const OrganizationStudentCard = ({
   });
 
   const handleLidSelect = (lid: Lid) => {
+    onLidSelect(lid);
     onChange(index, "lid_id", String(lid.id));
     onChange(index, "first_name", lid.first_name || student.first_name);
     onChange(index, "last_name", lid.last_name || student.last_name);
@@ -256,9 +266,12 @@ const OrganizationStudentCard = ({
             value={student.lid_id || searchTerm}
             onFocus={() => setShowDropdown(true)}
             onChange={(e) => {
-              setSearchTerm(e.target.value);
+              const value = e.target.value;
+              setSearchTerm(value);
               setShowDropdown(true);
-              if (!e.target.value) onChange(index, "lid_id", "");
+              if (!value) onChange(index, "lid_id", "");
+              const exactLid = allLids.find((lid) => String(lid.id) === value);
+              if (exactLid) handleLidSelect(exactLid);
             }}
           />
           {showDropdown && (
@@ -556,9 +569,10 @@ const OrganizationStudentCard = ({
             className="sc-form-select"
             style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}
             value={student.course_id}
-            onChange={(e) => {
-              onChange(index, "course_id", e.target.value);
-              onChange(index, "level_id", "");
+              onChange={(e) => {
+                onChange(index, "course_id", e.target.value);
+                onChange(index, "level_id", "");
+                onChange(index, "group_id", "");
             }}
           >
             <option value="">{t('studentsContract.form.select')}</option>
@@ -577,7 +591,10 @@ const OrganizationStudentCard = ({
             className="sc-form-select"
             style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}
             value={student.level_id}
-            onChange={(e) => onChange(index, "level_id", e.target.value)}
+            onChange={(e) => {
+              onChange(index, "level_id", e.target.value);
+              onChange(index, "group_id", "");
+            }}
           >
             <option value="">{t('studentsContract.form.select')}</option>
             {(
@@ -624,14 +641,19 @@ const OrganizationStudentCard = ({
             className="sc-form-select"
             style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}
             value={student.group_id}
+            disabled={!student.course_id || !student.level_id || matchingGroups.length === 0}
             onChange={(e) => onChange(index, "group_id", e.target.value)}
           >
-            <option value="">{t('studentsContract.form.select')}</option>
-            {(allGroups || []).map((g: Group) => (
+            <option value="">
+              {student.course_id && student.level_id && matchingGroups.length === 0
+                ? t('studentsContract.form.noMatchingGroups')
+                : t('studentsContract.form.select')}
+            </option>
+            {matchingGroups.map((g) => (
               <option key={g.id} value={g.id}>
-                {g.name}
+                {g.label}
               </option>
-            ))}
+              ))}
           </select>
         </div>
       </div>
@@ -1273,13 +1295,7 @@ const RepresentativeEntity = () => {
 
   // Guruh tanlanganda shartnoma sanalari `start_date` / `end_date` dan olinadi —
   // /options/groups bularni bermaydi.
-  const { data: allGroups } = useQuery({
-    queryKey: ["groups-all"],
-    queryFn: () =>
-      API.get("/groups", { params: { per_page: 1000 } }).then((res) =>
-        Array.isArray(res.data) ? res.data : res.data?.data || [],
-      ),
-  });
+  const { data: allGroups } = useOptions("groups");
 
   const { data: allCourses } = useOptions("courses");
 
@@ -1347,7 +1363,7 @@ const RepresentativeEntity = () => {
 
         // Auto-fill dates when group is selected
         if (field === "group_id" && value && allGroups) {
-          const group = allGroups.find((g: Group) => String(g.id) === value);
+          const group = allGroups.find((g) => String(g.id) === value);
           if (group) {
             updated.course_start_date = formatDateForInput(group.start_date);
             updated.course_end_date = formatDateForInput(group.end_date);
@@ -2350,6 +2366,14 @@ const RepresentativeEntity = () => {
               allLids={allLids || []}
               allGroups={allGroups || []}
               allCourses={allCourses || []}
+              onLidSelect={(lid) => {
+                if (!lid.branch) return;
+                setOrganization((prev) => ({
+                  ...prev,
+                  branch_id: String(lid.branch_id ?? lid.branch?.id ?? prev.branch_id),
+                  city: lid.branch?.city || prev.city,
+                }));
+              }}
             />
           ))}
           <button

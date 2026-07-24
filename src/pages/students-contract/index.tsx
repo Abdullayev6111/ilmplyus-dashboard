@@ -51,12 +51,18 @@ const getStatusType = (status: string) => {
 
 const getStatusKey = (status: string): string => {
   switch (status) {
-    case 'active': return 'studentsContract.status.active';
-    case 'completed': return 'studentsContract.status.completed';
-    case 'in_progress': return 'studentsContract.status.inProgress';
-    case 'cancelled': return 'studentsContract.status.cancelled';
-    case 'expired': return 'studentsContract.status.expired';
-    default: return 'studentsContract.status.inProgress';
+    case 'active':
+      return 'studentsContract.status.active';
+    case 'completed':
+      return 'studentsContract.status.completed';
+    case 'in_progress':
+      return 'studentsContract.status.inProgress';
+    case 'cancelled':
+      return 'studentsContract.status.cancelled';
+    case 'expired':
+      return 'studentsContract.status.expired';
+    default:
+      return 'studentsContract.status.inProgress';
   }
 };
 
@@ -196,17 +202,17 @@ const AdultContractForm = () => {
 
   const { data: allBranches } = useOptions('branches');
 
-  // Guruh tanlanganda shartnoma sanalari `start_date` / `end_date` dan olinadi —
-  // /options/groups bularni bermaydi.
-  const { data: allGroups } = useQuery({
-    queryKey: ['groups-all'],
-    queryFn: () =>
-      API.get('/groups', { params: { per_page: 1000 } }).then((res) =>
-        Array.isArray(res.data) ? res.data : res.data?.data || [],
-      ),
-  });
-
+  const { data: allGroups } = useOptions('groups');
   const { data: allCourses } = useOptions('courses');
+  const matchingGroups = useMemo(
+    () =>
+      (allGroups ?? []).filter(
+        (group) =>
+          String(group.course_id) === formData.course_id &&
+          String(group.level_id) === formData.level_id,
+      ),
+    [allGroups, formData.course_id, formData.level_id],
+  );
 
   const searchResults = useMemo(() => {
     if (!lidSearchTerm) return [];
@@ -266,7 +272,8 @@ const AdultContractForm = () => {
   // Auto-fill dates and calculate total price when group is selected
   useEffect(() => {
     if (formData.group_id && allGroups) {
-      const selectedGroup = allGroups.find((g: Group) => String(g.id) === formData.group_id);
+      const groups = allGroups as Group[];
+      const selectedGroup = groups.find((g) => String(g.id) === formData.group_id);
       if (selectedGroup) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setFormData((prev) => {
@@ -706,7 +713,10 @@ const AdultContractForm = () => {
                   maxLength={2}
                   value={formData.passport_series}
                   onChange={(e) => {
-                    const val = e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 2);
+                    const val = e.target.value
+                      .replace(/[^a-zA-Z]/g, '')
+                      .toUpperCase()
+                      .slice(0, 2);
                     handleChange('passport_series', val);
                   }}
                 />
@@ -822,23 +832,7 @@ const AdultContractForm = () => {
                 onChange={(e) => handleChange('birth_date', e.target.value)}
               />
             </div>
-            <div className="sc-form-group">
-              <label className="sc-form-label">
-                {t('studentsContract.form.group')} <span>*</span>
-              </label>
-              <select
-                className="sc-form-select"
-                value={formData.group_id}
-                onChange={(e) => handleChange('group_id', e.target.value)}
-              >
-                <option value="">{t('studentsContract.form.select')}</option>
-                {(allGroups || []).map((g: Group) => (
-                  <option key={g.id} value={g.id}>
-                    {g.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+
             <div className="sc-form-group">
               <label className="sc-form-label">
                 {t('studentsContract.form.course')} <span>*</span>
@@ -849,6 +843,7 @@ const AdultContractForm = () => {
                 onChange={(e) => {
                   handleChange('course_id', e.target.value);
                   handleChange('level_id', ''); // Reset level when course changes
+                  handleChange('group_id', '');
                 }}
               >
                 <option value="">{t('studentsContract.form.select')}</option>
@@ -866,7 +861,10 @@ const AdultContractForm = () => {
               <select
                 className="sc-form-select"
                 value={formData.level_id}
-                onChange={(e) => handleChange('level_id', e.target.value)}
+                onChange={(e) => {
+                  handleChange('level_id', e.target.value);
+                  handleChange('group_id', '');
+                }}
               >
                 <option value="">{t('studentsContract.form.select')}</option>
                 {(
@@ -878,7 +876,28 @@ const AdultContractForm = () => {
                 ))}
               </select>
             </div>
-
+            <div className="sc-form-group">
+              <label className="sc-form-label">
+                {t('studentsContract.form.group')} <span>*</span>
+              </label>
+              <select
+                className="sc-form-select"
+                value={formData.group_id}
+                disabled={!formData.course_id || !formData.level_id || matchingGroups.length === 0}
+                onChange={(e) => handleChange('group_id', e.target.value)}
+              >
+                <option value="">
+                  {formData.course_id && formData.level_id && matchingGroups.length === 0
+                    ? t('demoLesson.modal.noMatchingGroups')
+                    : t('studentsContract.form.select')}
+                </option>
+                {matchingGroups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.label}
+                  </option>
+                ))}
+              </select>
+            </div>
             {}
             <div className="sc-form-group span-2">
               <label className="sc-form-label">
@@ -1015,7 +1034,9 @@ const AdultContractForm = () => {
           onClick={handleSubmit}
           disabled={createMutation.isPending || updateMutation.isPending}
         >
-          {createMutation.isPending || updateMutation.isPending ? t('studentsContract.form.saving') : t('studentsContract.form.save')}
+          {createMutation.isPending || updateMutation.isPending
+            ? t('studentsContract.form.saving')
+            : t('studentsContract.form.save')}
         </button>
         <button
           className="sc-form-cancel-btn"
@@ -1435,9 +1456,7 @@ const StudentsContract = () => {
                 <span className="sc-contract-option-icon">
                   <i className="fa-solid fa-user"></i>
                 </span>
-                <span className="sc-contract-option-text">
-                  {t('studentsContract.modal.adult')}
-                </span>
+                <span className="sc-contract-option-text">{t('studentsContract.modal.adult')}</span>
                 <span className="sc-contract-option-arrow">
                   <i className="fa-solid fa-chevron-right"></i>
                 </span>
@@ -1446,14 +1465,15 @@ const StudentsContract = () => {
                 <span className="sc-contract-option-icon">
                   <i className="fa-solid fa-child"></i>
                 </span>
-                <span className="sc-contract-option-text">
-                  {t('studentsContract.modal.minor')}
-                </span>
+                <span className="sc-contract-option-text">{t('studentsContract.modal.minor')}</span>
                 <span className="sc-contract-option-arrow">
                   <i className="fa-solid fa-chevron-right"></i>
                 </span>
               </button>
-              <button className="sc-contract-option" onClick={() => handleContractSelect('legal_bilateral')}>
+              <button
+                className="sc-contract-option"
+                onClick={() => handleContractSelect('legal_bilateral')}
+              >
                 <span className="sc-contract-option-icon">
                   <i className="fa-solid fa-building"></i>
                 </span>
@@ -1484,10 +1504,7 @@ const StudentsContract = () => {
       )}
 
       {printContractId !== null && (
-        <ContractPrintModal
-          contractId={printContractId}
-          onClose={() => setPrintContractId(null)}
-        />
+        <ContractPrintModal contractId={printContractId} onClose={() => setPrintContractId(null)} />
       )}
     </div>
   );

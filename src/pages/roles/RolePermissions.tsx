@@ -78,7 +78,8 @@ const RolePermissions = () => {
 
         if (!permName || !permId) return;
 
-        const [moduleName, action] = permName.split('.');
+        const [moduleName, ...actionParts] = permName.split('.');
+        const action = actionParts.join('.');
         if (moduleName && action) {
           if (!initialState[moduleName]) {
             initialState[moduleName] = [];
@@ -102,7 +103,8 @@ const RolePermissions = () => {
 
       if (!permName || !permId) return;
 
-      const [moduleName, action] = permName.split('.');
+      const [moduleName, ...actionParts] = permName.split('.');
+      const action = actionParts.join('.');
       if (moduleName && action) {
         if (!modulesMap[moduleName]) {
           modulesMap[moduleName] = [];

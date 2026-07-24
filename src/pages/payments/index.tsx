@@ -69,20 +69,65 @@ const Payments = () => {
   // Guruhlar o'quvchining filiali bo'yicha filtrlanadi; tahrirlashda barchasi ko'rinadi.
   const groupBranchId = editingPayment ? undefined : (selectedStudent?.branch_id as number | undefined);
   const { data: groupsData } = useOptions('groups', { branch_id: groupBranchId });
-  const groupOptions = groupsData ?? [];
+  const groupOptions = useMemo(() => groupsData ?? [], [groupsData]);
 
   const applyStudentSelection = (student: OptionItem) => {
+    // /options/students endi o'quvchining groups[] va courses[] ro'yxatini qaytaradi.
+    // courses[] elementiga backend group_id qo'shib beradi — kurs shu orqali guruhga bog'lanadi.
+    const studentGroups = Array.isArray(student.groups)
+      ? (student.groups as { id: number; label?: string }[])
+      : [];
+    const studentCourses = Array.isArray(student.courses)
+      ? (student.courses as { id: number; label?: string; group_id?: number }[])
+      : [];
+
+    const firstGroup = studentGroups[0];
+    const linkedCourse = firstGroup
+      ? studentCourses.find((c) => Number(c.group_id) === Number(firstGroup.id)) ??
+        studentCourses[0]
+      : studentCourses[0];
+
     setFormData((prev) => ({
       ...prev,
       student_id: String(student.id),
       student_code: String(student.student_code ?? ''),
       branch_id: String(student.branch_id ?? ''),
       payment_type: String(student.branch_id ?? '') === prev.branch_id ? prev.payment_type : '',
-      group_id: '',
-      course_id: '',
+      group_id: firstGroup ? String(firstGroup.id) : '',
+      course_id: linkedCourse ? String(linkedCourse.id) : '',
       teacher_id: '',
     }));
   };
+
+  // Tanlangan guruhdan kurs/o'qituvchi avto-to'ldiriladi. Guruhlar ro'yxati
+  // o'quvchi tanlangandan keyin filial bo'yicha yuklanadi, shuning uchun bu
+  // qiymatlar state'ga yozilmaydi — render vaqtida hisoblanadi. Foydalanuvchi
+  // qo'lda tanlagan bo'lsa (formData'da qiymat bor) o'shanisi ustun turadi.
+  const groupOfForm = groupOptions.find((g) => String(g.id) === formData.group_id);
+  const effectiveCourseId =
+    formData.course_id || (groupOfForm?.course_id ? String(groupOfForm.course_id) : '');
+  const effectiveTeacherId =
+    formData.teacher_id || (groupOfForm?.teacher_id ? String(groupOfForm.teacher_id) : '');
+
+  // Kurs/guruh selectlarida faqat tanlangan o'quvchiga tegishli ro'yxat chiqadi
+  // (/options/students dagi groups[] va courses[]). Tahrirlashda o'quvchi options
+  // ro'yxatida topilmasa, eski to'lovlar buzilmasligi uchun to'liq ro'yxat qoladi.
+  const studentGroupList = Array.isArray(selectedStudent?.groups)
+    ? (selectedStudent?.groups as { id: number; label?: string }[])
+    : [];
+  const studentCourseList = Array.isArray(selectedStudent?.courses)
+    ? (selectedStudent?.courses as { id: number; label?: string; group_id?: number }[])
+    : [];
+  const modalGroupOptions = selectedStudent
+    ? studentGroupList
+    : editingPayment
+      ? groupOptions
+      : [];
+  const modalCourseOptions = selectedStudent
+    ? studentCourseList
+    : editingPayment
+      ? (coursesData ?? [])
+      : [];
 
   const handleAccountNumberChange = (value: string) => {
     const match = studentsData?.find((s) => s.student_code === value);
@@ -226,15 +271,15 @@ const Payments = () => {
       return;
     }
 
-    if (!formData.course_id || !formData.branch_id || !formData.cashier_id) {
+    if (!effectiveCourseId || !formData.branch_id || !formData.cashier_id) {
       alert(
         t('payments.courseBranchCashierRequiredAlert', 'Kurs, Filial va Kassir tanlanishi shart!'),
       );
       return;
     }
 
-    const selectedCourse = coursesData?.find((c) => c.id === Number(formData.course_id));
-    const selectedTeacher = employeesData?.find((e) => e.id === Number(formData.teacher_id));
+    const selectedCourse = coursesData?.find((c) => c.id === Number(effectiveCourseId));
+    const selectedTeacher = employeesData?.find((e) => e.id === Number(effectiveTeacherId));
     const selectedGroup = groupOptions.find((g) => g.id === Number(formData.group_id));
 
     const payload: PaymentPayload = {
@@ -244,10 +289,10 @@ const Payments = () => {
       course: selectedCourse?.label ?? '',
       group: selectedGroup?.label ?? '',
       teacher: selectedTeacher?.label ?? '',
-      course_id: Number(formData.course_id),
+      course_id: Number(effectiveCourseId),
       branch_id: Number(formData.branch_id),
       user_id: Number(formData.cashier_id),
-      teacher_id: formData.teacher_id ? Number(formData.teacher_id) : undefined,
+      teacher_id: effectiveTeacherId ? Number(effectiveTeacherId) : undefined,
       group_id: formData.group_id ? Number(formData.group_id) : undefined,
       student_id: Number(formData.student_id),
       payment_date: formData.payment_date || new Date().toISOString().split('T')[0],
@@ -350,6 +395,91 @@ const Payments = () => {
                 </div>
 
                 <div className="form-group">
+                  <label>{t('payments.course')}</label>
+                  <select
+                    value={effectiveCourseId}
+                    onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
+                    disabled={!editingPayment && !formData.student_id}
+                  >
+                    <option value="">
+                      {!editingPayment && !formData.student_id
+                        ? t('payments.chooseStudentFirst')
+                        : t('payments.choose')}
+                    </option>
+                    {modalCourseOptions.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>{t('payments.group')}</label>
+                  <select
+                    value={formData.group_id}
+                    onChange={(e) => {
+                      const groupId = e.target.value;
+                      const group = groupOptions.find((g) => String(g.id) === groupId);
+                      setFormData({
+                        ...formData,
+                        group_id: groupId,
+                        course_id: group?.course_id ? String(group.course_id) : formData.course_id,
+                        teacher_id: group?.teacher_id
+                          ? String(group.teacher_id)
+                          : formData.teacher_id,
+                      });
+                    }}
+                    disabled={!editingPayment && !formData.student_id}
+                  >
+                    <option value="">
+                      {!editingPayment && !formData.student_id
+                        ? t('payments.chooseStudentFirst')
+                        : t('payments.choose')}
+                    </option>
+                    {modalGroupOptions.map((g) => (
+                      <option key={g.id} value={g.id}>
+                        {g.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>{t('payments.teacher')}</label>
+                  <select
+                    value={effectiveTeacherId}
+                    onChange={(e) => setFormData({ ...formData, teacher_id: e.target.value })}
+                  >
+                    <option value="">{t('payments.choose')}</option>
+                    {employeesData?.map((e) => (
+                      <option key={e.id} value={e.id}>
+                        {e.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-right">
+                <div className="form-group">
+                  <label>{t('payments.branch')}</label>
+                  <select
+                    value={formData.branch_id}
+                    onChange={(e) =>
+                      setFormData({ ...formData, branch_id: e.target.value, payment_type: '' })
+                    }
+                  >
+                    <option value="">{t('payments.choose')}</option>
+                    {branchesData?.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
                   <label>{t('payments.amount')}</label>
                   <input
                     value={formData.amount}
@@ -387,86 +517,6 @@ const Payments = () => {
                     {usersData?.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-right">
-                <div className="form-group">
-                  <label>{t('payments.branch')}</label>
-                  <select
-                    value={formData.branch_id}
-                    onChange={(e) =>
-                      setFormData({ ...formData, branch_id: e.target.value, payment_type: '' })
-                    }
-                  >
-                    <option value="">{t('payments.choose')}</option>
-                    {branchesData?.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>{t('payments.course')}</label>
-                  <select
-                    value={formData.course_id}
-                    onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
-                  >
-                    <option value="">{t('payments.choose')}</option>
-                    {coursesData?.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>{t('payments.group')}</label>
-                  <select
-                    value={formData.group_id}
-                    onChange={(e) => {
-                      const groupId = e.target.value;
-                      const group = groupOptions.find((g) => String(g.id) === groupId);
-                      setFormData({
-                        ...formData,
-                        group_id: groupId,
-                        course_id: group?.course_id ? String(group.course_id) : formData.course_id,
-                        teacher_id: group?.teacher_id
-                          ? String(group.teacher_id)
-                          : formData.teacher_id,
-                      });
-                    }}
-                    disabled={!editingPayment && !formData.student_id}
-                  >
-                    <option value="">
-                      {!editingPayment && !formData.student_id
-                        ? t('payments.chooseStudentFirst')
-                        : t('payments.choose')}
-                    </option>
-                    {groupOptions.map((g) => (
-                      <option key={g.id} value={g.id}>
-                        {g.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>{t('payments.teacher')}</label>
-                  <select
-                    value={formData.teacher_id}
-                    onChange={(e) => setFormData({ ...formData, teacher_id: e.target.value })}
-                  >
-                    <option value="">{t('payments.choose')}</option>
-                    {employeesData?.map((e) => (
-                      <option key={e.id} value={e.id}>
-                        {e.label}
                       </option>
                     ))}
                   </select>

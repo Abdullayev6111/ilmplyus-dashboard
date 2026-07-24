@@ -6,6 +6,7 @@ import { notifications } from '@mantine/notifications';
 import { API } from '@/api/api';
 import { useOptions } from '@/api/options';
 import { Protected } from '@/components/Protected';
+import { usePermission } from '@/hooks/usePermission';
 import ConfirmModal from '@/components/ConfirmModal';
 import FilterBar, { type FilterBarField } from '@/components/FilterBar';
 import { type FilterBarValues } from '@/components/FilterBar/filterBar.utils';
@@ -101,6 +102,7 @@ const PayrollAdjustments = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const canView = usePermission('payroll_adjustments.view');
 
   const [filters, setFilters] = useState<FilterBarValues<FilterKey>>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
@@ -196,6 +198,7 @@ const PayrollAdjustments = () => {
     placeholderData: (previous) => previous,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: canView,
   });
 
   const rows = data?.rows ?? [];
@@ -271,6 +274,8 @@ const PayrollAdjustments = () => {
     const key = (status || '').toLowerCase();
     return key === '' || key === 'new' || key === 'pending';
   };
+
+  if (!canView) return null;
 
   return (
     <div className="pa-container container">
